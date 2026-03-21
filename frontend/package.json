@@ -10,7 +10,10 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "android:live": "cd android && ./gradlew clean && cd .. && ionic cap run android -l --external"
+    "android:build": "ionic build && npx cap copy android && npx cap open android",
+    "android:live": "ionic cap run android -l --external --host=192.168.1.101 --target=5386e850",
+    "android:clean": "cd android && gradlew clean && cd .. && ionic cap run android -l --external",
+    "assets:generate": "capacitor-assets generate --android && npx cap sync android"
   },
   "private": true,
   "dependencies": {
@@ -27,6 +30,7 @@
     "@capacitor/core": "8.2.0",
     "@capacitor/haptics": "8.0.1",
     "@capacitor/keyboard": "8.0.1",
+    "@capacitor/splash-screen": "^8.0.1",
     "@capacitor/status-bar": "8.0.1",
     "@ionic/angular": "^8.0.0",
     "ionicons": "^7.0.0",
@@ -44,6 +48,7 @@
     "@angular/cli": "^20.0.0",
     "@angular/compiler-cli": "^20.0.0",
     "@angular/language-service": "^20.0.0",
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "8.2.0",
     "@ionic/angular-toolkit": "^12.0.0",
     "@types/jasmine": "~5.1.0",
