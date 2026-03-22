@@ -8,15 +8,11 @@
         <outputRelativeToContentRoot value="true" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="auth-service" target="17" />
-      <module name="mirror-parent" target="21" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="auth-service" options="-parameters" />
-      <module name="mirror-parent" options="-parameters" />
+      <module name="api-gateway" options="-parameters" />
+      <module name="mirror-parent" options="" />
     </option>
   </component>
 </project>
