@@ -7,6 +7,20 @@
     <artifactId>mirror-parent</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-commons</artifactId>
+        </dependency>
+    </dependencies>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -22,6 +36,8 @@
 
     <modules>
         <module>api-gateway</module>
+        <module>discovery-server</module>
+        <module>memory-service</module>
     </modules>
 
     <dependencyManagement>
