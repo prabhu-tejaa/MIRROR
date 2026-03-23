@@ -42,3 +42,34 @@ body, html, ion-app, ion-router-outlet, .ion-page, ion-content {
   --background: transparent !important;
   background: transparent !important;
 }
+
+/* ── PREMIUM ALERT COMPONENT OVERRIDES ── */
+.premium-alert {
+  --background: rgba(0, 0, 0, 0.95);
+  --backdrop-opacity: 0.7;
+  
+  .alert-wrapper {
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+  }
+  
+  .alert-title {
+    color: white !important;
+    font-weight: 600 !important;
+  }
+  
+  .alert-message {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+    margin-top: 10px !important;
+  }
+  
+  .alert-button {
+    color: #b4c8ff !important;
+    font-weight: 600 !important;
+  }
+}

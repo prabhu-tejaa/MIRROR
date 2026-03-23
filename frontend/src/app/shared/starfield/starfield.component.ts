@@ -5,9 +5,12 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
+  OnInit,
   NgZone,
   HostListener,
 } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { StarfieldService } from './starfield.service';
 
 /**
  * StarfieldComponent — Premium plug-and-play animated starfield background.
@@ -20,7 +23,7 @@ import {
   templateUrl: './starfield.component.html',
   styleUrls: ['./starfield.component.scss'],
 })
-export class StarfieldComponent implements AfterViewInit, OnDestroy {
+export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   // ── Configurable Inputs ──────────────────────────────────────────
 
   @Input() starCount = 150;
@@ -59,6 +62,10 @@ export class StarfieldComponent implements AfterViewInit, OnDestroy {
   private paused = false;
   private visibilityHandler = () => this.onVisibilityChange();
 
+  private targetShape: 'none' | 'heart' = 'none';
+  private sub1!: Subscription;
+  private sub2!: Subscription;
+
   private pointerX = 0;
   private pointerY = 0;
 
@@ -71,9 +78,43 @@ export class StarfieldComponent implements AfterViewInit, OnDestroy {
     '#cce5ff', '#b8d4ff', '#ffefc1', '#ffd6a5', '#e8d0ff', '#ffc9de',
   ];
 
-  constructor(private ngZone: NgZone) {}
+  constructor(private ngZone: NgZone, private starfieldSvc: StarfieldService) {}
 
   // ── Lifecycle ────────────────────────────────────────────────────
+
+  ngOnInit(): void {
+    this.sub1 = this.starfieldSvc.formHeart$.subscribe(() => {
+      this.targetShape = 'heart';
+      const CX = this.width / 2;
+      const CY = this.height / 2;
+      const S = Math.min(this.width, this.height) / 45;
+
+      for (let star of this.stars) {
+        // Parametric time tracking along the sequence
+        const t = Math.random() * Math.PI * 2;
+        // Constructing a slightly thicker parametric outline (radius scaling)
+        const rScale = 0.6 + Math.random() * 0.5;
+
+        // Mathematical parametric bounds for universal heart shape formulation
+        const xBase = 16 * Math.pow(Math.sin(t), 3);
+        const yBase = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+
+        star.targetX = CX + S * xBase * rScale;
+        star.targetY = CY - S * yBase * rScale;
+        star.isTransitioning = true;
+      }
+    });
+
+    this.sub2 = this.starfieldSvc.disperse$.subscribe(() => {
+      this.targetShape = 'none';
+      for (let star of this.stars) {
+        star.isTransitioning = false;
+        // Bump velocities randomly mapping the explosion dispersion away into infinite context patterns!
+        star.vx += (Math.random() - 0.5) * 0.4;
+        star.vy += (Math.random() - 0.5) * 0.4;
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     if (this.respectReducedMotion) {
@@ -104,6 +145,8 @@ export class StarfieldComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.sub1) this.sub1.unsubscribe();
+    if (this.sub2) this.sub2.unsubscribe();
     cancelAnimationFrame(this.animationId);
     this.resizeObserver?.disconnect();
     clearTimeout(this.meteorTimeout);
@@ -371,8 +414,15 @@ export class StarfieldComponent implements AfterViewInit, OnDestroy {
 
     for (let i = 0; i < this.stars.length; i++) {
       const star = this.stars[i];
-      star.x += star.vx;
-      star.y += star.vy;
+      
+      if (this.targetShape === 'heart' && star.isTransitioning && star.targetX !== undefined && star.targetY !== undefined) {
+        // Render smooth deceleration physics easing gently onto the final parameterized target loci mapped globally
+        star.x += (star.targetX - star.x) * 0.04;
+        star.y += (star.targetY - star.y) * 0.04;
+      } else {
+        star.x += star.vx;
+        star.y += star.vy;
+      }
 
       if (this.twinkle) {
         star.twinklePhase += star.twinkleSpeed;
@@ -428,6 +478,8 @@ interface Star {
   color: string; depth: number;
   vx: number; vy: number;
   twinkleSpeed: number; twinklePhase: number;
+  targetX?: number; targetY?: number;
+  isTransitioning?: boolean;
 }
 
 interface Meteor {

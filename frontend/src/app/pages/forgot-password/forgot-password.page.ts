@@ -15,7 +15,6 @@ export class ForgotPasswordPage implements OnInit {
   forgotForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
-  emailSent = false;
 
   constructor(
     private fb: FormBuilder,
@@ -71,7 +70,10 @@ export class ForgotPasswordPage implements OnInit {
         if (emailValue.toLowerCase() === 'none@mirror.com') {
           this.forgotForm.controls['email'].setErrors({ notFound: true });
         } else {
-          this.emailSent = true;
+          this.navCtrl.navigateForward('/otp', {
+            queryParams: { flow: 'reset' },
+            animation: this.getCrossfadeAnimation()
+          });
         }
       }, 1500);
     }

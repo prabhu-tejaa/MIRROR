@@ -5,6 +5,7 @@ import { NavController, AnimationController, Animation } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
+import { StarfieldService } from '../../shared/starfield/starfield.service';
 
 @Component({
   selector: 'app-login',
@@ -22,7 +23,8 @@ export class LoginPage implements OnInit {
   constructor(
     private fb: FormBuilder, 
     private navCtrl: NavController,
-    private animationCtrl: AnimationController
+    private animationCtrl: AnimationController,
+    private starfieldSvc: StarfieldService
   ) {
     addIcons({ eye, eyeOff });
   }
@@ -32,6 +34,17 @@ export class LoginPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
+  }
+
+  ionViewWillEnter() {
+    // Ensuring caching layers from Ionic Router reliably un-hide upon returning from logged-in domains
+    const card = document.querySelector('.glassy-card') as HTMLElement;
+    const header = document.querySelector('.branding-header') as HTMLElement;
+    if (card) { card.style.opacity = '1'; card.style.transition = 'none'; }
+    if (header) { header.style.opacity = '1'; header.style.transition = 'none'; }
+    this.isLoading = false;
+    this.isSubmitted = false;
+    this.loginForm.reset();
   }
 
   get f() { return this.loginForm.controls; }
@@ -65,14 +78,27 @@ export class LoginPage implements OnInit {
     if (this.loginForm.valid) {
       this.isLoading = true;
       
-      // Simulate remote network verification phase
+      // Phase 1: Simulate network verification (1000ms)
       setTimeout(() => {
-        this.isLoading = false;
-        // Navigate with our custom dissolve transition replacing the default slide
-        this.navCtrl.navigateRoot('/tabs/tab1', { 
-          animation: this.getCrossfadeAnimation()
-        });
-      }, 1500);
+        // Fade out foreground UI elements smoothly mapping focus exclusively onto Background contexts
+        const card = document.querySelector('.glassy-card') as HTMLElement;
+        const header = document.querySelector('.branding-header') as HTMLElement;
+        
+        if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
+        if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
+        
+        // Phase 2: Transmit event to Starfield Engine transforming generic distributions into clustered Heart formations
+        this.starfieldSvc.formHeart();
+        
+        // Phase 3: Hold sequence visualizing Heart structure, orchestrate global Dispersion parameters, and execute unified crossfader dispatch
+        setTimeout(() => {
+          this.starfieldSvc.disperse();
+          this.navCtrl.navigateRoot('/tabs/tab1', { 
+            animation: this.getCrossfadeAnimation()
+          });
+        }, 3000);
+
+      }, 1000);
     }
   }
 
