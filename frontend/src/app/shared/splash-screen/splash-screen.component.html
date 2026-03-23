@@ -1,0 +1,11 @@
+<div class="splash-overlay" *ngIf="visible" [class.fade-out]="fadingOut" [style.--fade-duration.ms]="fadeOutDuration">
+
+  <div class="splash-content">
+    <div class="title-glow">
+      <h1 class="splash-title">{{ title }}</h1>
+    </div>
+    <p class="splash-tagline">{{ tagline }}</p>
+    <div class="pulse-ring"></div>
+  </div>
+
+</div>

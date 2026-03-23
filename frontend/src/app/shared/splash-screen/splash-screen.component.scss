@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap');
+
+.splash-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  background: transparent; /* starfield shows through */
+  transition: opacity var(--fade-duration, 800ms) ease-out;
+  opacity: 1;
+
+  &.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.splash-content {
+  text-align: center;
+  animation: contentReveal 1.2s ease-out both;
+}
+
+/* ── Title ────────────────────────────────────────── */
+
+.title-glow {
+  position: relative;
+  display: inline-block;
+}
+
+.splash-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 3.6rem;
+  letter-spacing: 0.45em;
+  color: #ffffff;
+  margin: 0;
+  text-shadow:
+    0 0 20px rgba(180, 200, 255, 0.5),
+    0 0 60px rgba(120, 140, 255, 0.25),
+    0 0 100px rgba(100, 120, 255, 0.15);
+  animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+/* ── Tagline ──────────────────────────────────────── */
+
+.splash-tagline {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: 1rem;
+  letter-spacing: 0.3em;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 1.2rem;
+  animation: taglineFade 1.8s ease-out 0.6s both;
+}
+
+/* ── Pulse ring ───────────────────────────────────── */
+
+.pulse-ring {
+  width: 80px;
+  height: 80px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  margin: 2.5rem auto 0;
+  animation: pulseExpand 2.4s ease-out infinite;
+}
+
+/* ── Keyframes ────────────────────────────────────── */
+
+@keyframes contentReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes titleGlow {
+  0% {
+    text-shadow:
+      0 0 20px rgba(180, 200, 255, 0.4),
+      0 0 60px rgba(120, 140, 255, 0.2),
+      0 0 100px rgba(100, 120, 255, 0.1);
+  }
+  100% {
+    text-shadow:
+      0 0 30px rgba(200, 220, 255, 0.6),
+      0 0 80px rgba(140, 160, 255, 0.35),
+      0 0 120px rgba(120, 140, 255, 0.2);
+  }
+}
+
+@keyframes taglineFade {
+  0% {
+    opacity: 0;
+    letter-spacing: 0.5em;
+  }
+  100% {
+    opacity: 1;
+    letter-spacing: 0.3em;
+  }
+}
+
+@keyframes pulseExpand {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
