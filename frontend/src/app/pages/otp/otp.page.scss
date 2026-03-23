@@ -1,227 +1,56 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
+@import '../signup/signup.page.scss';
 
-:host {
-  background: transparent !important;
-  --ion-background-color: transparent !important; 
+/* ── Modern 6-Digit Segmented OTP ── */
+.otp-group {
+  margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
 }
 
-ion-content.transparent-bg {
-  --background: transparent !important;
-  --ion-background-color: transparent !important;
-}
-
-ion-content.transparent-bg::part(background) {
-  background: transparent !important;
-}
-
-.login-wrapper {
+.otp-boxes-container {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  padding: 0 clamp(0.2rem, 1vw, 0.5rem);
+  cursor: text;
+}
+
+.otp-box {
+  width: clamp(38px, 12vw, 48px);
+  height: clamp(48px, 15vw, 60px);
+  background: rgba(200, 200, 220, 0.25); /* Much brighter distinct grey */
+  border: 2px solid rgba(255, 255, 255, 0.6); /* Thick white frosty ring */
+  border-radius: clamp(8px, 2vw, 12px);
+  display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  padding: clamp(1rem, 4vw, 2rem);
-  font-family: 'Outfit', sans-serif;
-  color: white;
-}
-
-/* ── Branding Header (Persistent Splash) ── */
-.branding-header {
-  text-align: center;
-  margin-bottom: clamp(2rem, 8vh, 3.5rem);
-}
-
-.title-glow {
-  position: relative;
-  display: inline-block;
-}
-
-.splash-title {
-  font-weight: 600;
-  font-size: clamp(2.5rem, 10vw, 3.8rem);
-  letter-spacing: clamp(0.2rem, 1vw, 0.45em);
-  color: #ffffff;
-  margin: 0;
-  text-shadow:
-    0 0 20px rgba(180, 200, 255, 0.4),
-    0 0 60px rgba(120, 140, 255, 0.2),
-    0 0 100px rgba(100, 120, 255, 0.1);
-  animation: titleGlow 4s ease-in-out infinite alternate;
-}
-
-.splash-tagline {
-  font-weight: 300;
-  font-size: clamp(0.7rem, 2.5vw, 0.95rem);
-  letter-spacing: clamp(0.15em, 0.8vw, 0.3em);
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: clamp(0.5rem, 2vh, 1.2rem);
-}
-
-/* ── Glassy Form Card ── */
-.glassy-card {
-  width: 100%;
-  max-width: 400px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: clamp(16px, 4vw, 20px);
-  padding: clamp(1.5rem, 6vw, 2.5rem) clamp(1rem, 4vw, 2rem);
-}
-
-.form-title {
-  text-align: center;
-  font-weight: 400;
   font-size: clamp(1.3rem, 5vw, 1.6rem);
-  letter-spacing: 0.1em;
-  margin-bottom: clamp(1.5rem, 5vh, 2.5rem);
-  color: rgba(255, 255, 255, 0.9);
-}
-
-/* ── Inputs ── */
-.input-group {
-  margin-bottom: clamp(1rem, 3vh, 1.5rem);
-  position: relative;
-}
-
-.glassy-input {
-  --background: rgba(255, 255, 255, 0.05);
-  --color: white;
-  --placeholder-color: rgba(255, 255, 255, 0.6);
-  --padding-start: clamp(1rem, 3vw, 1.2rem);
-  --padding-end: clamp(1rem, 3vw, 1.2rem);
-  --padding-top: clamp(1rem, 3vw, 1.2rem);
-  --padding-bottom: clamp(1rem, 3vw, 1.2rem);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: clamp(8px, 2vw, 12px);
-  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+  font-weight: 500;
+  color: white;
+  transition: all 0.3s ease;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  margin: 0;
-  font-family: inherit;
-  font-size: clamp(0.9rem, 3vw, 1rem);
-  transition: all 0.3s ease;
-
-  &.ion-focused, &:focus-within {
-    border-color: rgba(180, 200, 255, 0.8);
-    --background: rgba(255, 255, 255, 0.12);
-    box-shadow: 0 0 15px rgba(180, 200, 255, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.1);
-  }
-}
-
-.error-msg {
-  color: #ff6b6b;
-  font-size: clamp(0.7rem, 2vw, 0.8rem);
-  margin-top: 0.6rem;
-  padding-left: 0.5rem;
-}
-
-/* ── Premium Button ── */
-.premium-btn {
-  --background: rgba(255, 255, 255, 0.1);
-  --background-activated: rgba(255, 255, 255, 0.2);
-  --color: white;
-  --border-radius: clamp(8px, 2vw, 12px);
-  --box-shadow: none;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  font-weight: 600;
-  font-size: clamp(0.9rem, 3vw, 1rem);
-  letter-spacing: 0.15em;
-  margin-top: clamp(1rem, 3vh, 1.5rem);
-  height: clamp(45px, 6vh, 52px);
-  transition: all 0.3s ease;
-
-  &:hover, &:active {
-    --background: rgba(200, 220, 255, 0.2);
-    border-color: rgba(200, 220, 255, 0.5);
-    box-shadow: 0 0 20px rgba(180, 200, 255, 0.3);
-  }
-}
-
-.forgot-wrapper {
-  text-align: center;
-  margin-top: clamp(1rem, 3vh, 1.5rem);
-}
-
-.forgot-link {
-  font-size: clamp(0.75rem, 2.5vw, 0.85rem);
-  color: rgba(255, 255, 255, 0.6);
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.3s ease;
-
-  &:hover {
-    color: white;
-  }
-}
-
-.signup-wrapper {
-  text-align: center;
-  margin-top: clamp(1.2rem, 4vh, 2rem);
-}
-
-.signup-text {
-  font-size: clamp(0.85rem, 2.8vw, 0.95rem);
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.signup-link {
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  transition: all 0.3s ease;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+  pointer-events: none; /* Let clicks tunnel through correctly */
   
-  &:hover {
-    color: #b4c8ff;
-    text-shadow: 0 0 10px rgba(180, 200, 255, 0.5);
+  &.active {
+    border-color: rgba(180, 220, 255, 1);
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 15px rgba(180, 200, 255, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
   }
 }
 
-/* ── Animations ── */
-@keyframes titleGlow {
-  0% {
-    text-shadow:
-      0 0 20px rgba(180, 200, 255, 0.4),
-      0 0 60px rgba(120, 140, 255, 0.2);
-  }
-  100% {
-    text-shadow:
-      0 0 30px rgba(200, 220, 255, 0.6),
-      0 0 80px rgba(140, 160, 255, 0.35),
-      0 0 120px rgba(120, 140, 255, 0.2);
-  }
+.hidden-otp-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  pointer-events: none;
+  --padding-start: 0;
+  --padding-end: 0;
+  margin: 0;
 }
-
-@keyframes floatIn {
-  0% { opacity: 0; transform: translateY(-30px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes formFadeUp {
-  0% { opacity: 0; transform: translateY(40px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
-}
-
-.title-left {
-  display: inline-block;
-}
-
-.title-right {
-  display: inline-block;
-}
-
-@keyframes slideLeftIn {
-  0% { opacity: 0; transform: translateX(-60px); }
-  100% { opacity: 1; transform: translateX(0); }
-}
-
-@keyframes slideRightIn {
-  0% { opacity: 0; transform: translateX(60px); }
-  100% { opacity: 1; transform: translateX(0); }
-}
-.otp-input { text-align: center; letter-spacing: clamp(0.5em, 2vw, 1em); font-size: clamp(1.2rem, 5vw, 1.5rem); font-weight: 600; }

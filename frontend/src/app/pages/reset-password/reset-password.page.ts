@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { NavController, AnimationController, Animation, AlertController } from '@ionic/angular';
-import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox } from '@ionic/angular/standalone';
+import { NavController, AnimationController, Animation } from '@ionic/angular';
+import { IonContent, IonInput, IonButton, IonSpinner, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
 
-// Custom validator ensuring Passwords Match
 export function passwordsMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
   const password = control.get('password');
   const confirmPassword = control.get('confirmPassword');
@@ -27,14 +26,14 @@ export function passwordsMatchValidator(control: AbstractControl): { [key: strin
 }
 
 @Component({
-  selector: 'app-signup',
-  templateUrl: './signup.page.html',
-  styleUrls: ['./signup.page.scss'],
+  selector: 'app-reset-password',
+  templateUrl: './reset-password.page.html',
+  styleUrls: ['./reset-password.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox]
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon]
 })
-export class SignupPage implements OnInit {
-  signupForm!: FormGroup;
+export class ResetPasswordPage implements OnInit {
+  resetForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
   showPassword = false;
@@ -43,39 +42,21 @@ export class SignupPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private navCtrl: NavController,
-    private animationCtrl: AnimationController,
-    private alertCtrl: AlertController
+    private animationCtrl: AnimationController
   ) {
     addIcons({ eye, eyeOff });
   }
 
   ngOnInit() {
-    this.signupForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
+    this.resetForm = this.fb.group({
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
-      agreeTos: [false, [Validators.requiredTrue]]
+      confirmPassword: ['', [Validators.required]]
     }, { 
       validators: passwordsMatchValidator 
     });
   }
 
-  get f() { return this.signupForm.controls; }
-
-  async openTerms(event?: Event) {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    const alert = await this.alertCtrl.create({
-      header: 'Terms & Privacy Policy',
-      message: 'By joining, you agree to our placeholder terms. Ensure you are acting legally and morally on our platform. (Edit these rules later natively here.)',
-      buttons: ['I Understand'],
-      cssClass: 'premium-alert'
-    });
-    await alert.present();
-  }
+  get f() { return this.resetForm.controls; }
 
   private getCrossfadeAnimation(): any {
     return (baseEl: any, opts?: any): Animation => {
@@ -101,14 +82,14 @@ export class SignupPage implements OnInit {
     };
   }
 
-  onSignup() {
+  onReset() {
     this.isSubmitted = true;
-    if (this.signupForm.valid) {
+    if (this.resetForm.valid) {
       this.isLoading = true;
       setTimeout(() => {
         this.isLoading = false;
-        this.navCtrl.navigateRoot('/otp', { 
-          queryParams: { flow: 'signup' },
+        // Password fully reset! Boot immediately back into Login 
+        this.navCtrl.navigateRoot('/login', { 
           animation: this.getCrossfadeAnimation()
         });
       }, 1500);
@@ -116,7 +97,7 @@ export class SignupPage implements OnInit {
   }
 
   goToLogin() {
-    this.navCtrl.navigateBack('/login', { 
+    this.navCtrl.navigateRoot('/login', { 
       animation: this.getCrossfadeAnimation() 
     });
   }
