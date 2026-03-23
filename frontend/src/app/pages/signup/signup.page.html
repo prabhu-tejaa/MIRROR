@@ -1,0 +1,110 @@
+<ion-content [fullscreen]="true" class="transparent-bg">
+  <div class="login-wrapper" style="padding: clamp(0.5rem, 3vw, 2rem);">
+    
+    <!-- Premium Branding Header -->
+    <div class="branding-header" style="margin-bottom: clamp(1.5rem, 4vh, 2.5rem);">
+      <div class="title-glow">
+        <h1 class="splash-title" style="font-size: clamp(2rem, 8vw, 3rem);">J O I N</h1>
+      </div>
+      <p class="splash-tagline">Begin your journey.</p>
+    </div>
+
+    <!-- Glassy Authentication Form -->
+    <div class="glassy-card">
+      <h2 class="form-title">Create Account</h2>
+      
+      <form [formGroup]="signupForm" (ngSubmit)="onSignup()">
+        
+        <div class="input-group">
+          <ion-input
+            formControlName="username"
+            type="text"
+            placeholder="Username"
+            class="glassy-input"
+          ></ion-input>
+          @if (isSubmitted && f['username'].errors) {
+            <div class="error-msg">
+              @if (f['username'].errors['required']) { <span>Username required</span> }
+              @if (f['username'].errors['minlength']) { <span>Minimum 3 characters</span> }
+            </div>
+          }
+        </div>
+
+        <div class="input-group">
+          <ion-input
+            formControlName="email"
+            type="email"
+            placeholder="Email Address"
+            class="glassy-input"
+          ></ion-input>
+          @if (isSubmitted && f['email'].errors) {
+            <div class="error-msg">
+              @if (f['email'].errors['required']) { <span>Email required</span> }
+              @if (f['email'].errors['email']) { <span>Must be a valid email</span> }
+            </div>
+          }
+        </div>
+
+        <div class="input-group">
+          <ion-input
+            formControlName="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Password"
+            class="glassy-input"
+          >
+            <ion-icon slot="end" color="light" [name]="showPassword ? 'eye' : 'eye-off'" (click)="showPassword = !showPassword" style="font-size: 1.4rem; margin-right: 0.5rem; cursor: pointer;"></ion-icon>
+          </ion-input>
+          @if (isSubmitted && f['password'].errors) {
+            <div class="error-msg">
+              @if (f['password'].errors['required']) { <span>Password required</span> }
+              @if (f['password'].errors['minlength']) { <span>Minimum 6 characters</span> }
+            </div>
+          }
+        </div>
+
+        <div class="input-group">
+          <ion-input
+            formControlName="confirmPassword"
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            placeholder="Confirm Password"
+            class="glassy-input"
+          >
+            <ion-icon slot="end" color="light" [name]="showConfirmPassword ? 'eye' : 'eye-off'" (click)="showConfirmPassword = !showConfirmPassword" style="font-size: 1.4rem; margin-right: 0.5rem; cursor: pointer;"></ion-icon>
+          </ion-input>
+          @if (isSubmitted && f['confirmPassword'].errors) {
+            <div class="error-msg">
+              @if (f['confirmPassword'].errors['required']) { <span>Confirm your password</span> }
+              @if (f['confirmPassword'].errors['mismatch']) { <span>Passwords do not match!</span> }
+            </div>
+          }
+        </div>
+
+        <div class="tos-wrapper input-group">
+          <div class="tos-container">
+            <ion-checkbox formControlName="agreeTos" class="glassy-checkbox" color="light" justify="start" labelPlacement="end">
+              <span class="tos-text">I agree to the <a (click)="openTerms()" class="tos-link" style="color: white; font-weight: 500; text-decoration: underline;">Terms & Privacy Policy</a></span>
+            </ion-checkbox>
+          </div>
+          @if (isSubmitted && f['agreeTos'].errors) {
+            <div class="error-msg" style="margin-top: 0;">
+              @if (f['agreeTos'].errors['required']) { <span>You must agree to continue</span> }
+            </div>
+          }
+        </div>
+
+        <ion-button type="submit" expand="block" class="premium-btn" [disabled]="isLoading">
+          @if (!isLoading) {
+            <span>Create Account</span>
+          } @else {
+            <ion-spinner name="crescent" color="light"></ion-spinner>
+          }
+        </ion-button>
+        
+        <div class="signup-wrapper">
+          <span class="signup-text">Already have an account? <a (click)="goToLogin()" class="signup-link">Log In</a></span>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</ion-content>

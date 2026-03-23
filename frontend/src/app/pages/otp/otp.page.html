@@ -1,0 +1,50 @@
+<ion-content [fullscreen]="true" class="transparent-bg">
+  <div class="login-wrapper">
+    
+    <!-- Premium Branding Header -->
+    <div class="branding-header">
+      <div class="title-glow">
+        <h1 class="splash-title" style="font-size: clamp(2.5rem, 10vw, 3.8rem);">O T P</h1>
+      </div>
+      <p class="splash-tagline">Enter your verification code.</p>
+    </div>
+
+    <!-- Glassy Authentication Form -->
+    <div class="glassy-card">
+      <h2 class="form-title">Verify Email</h2>
+      
+      <form [formGroup]="otpForm" (ngSubmit)="onVerify()">
+        
+        <div class="input-group">
+          <ion-input
+            formControlName="code"
+            type="tel"
+            maxlength="6"
+            placeholder="0  0  0  0  0  0"
+            class="glassy-input otp-input"
+          ></ion-input>
+          @if (isSubmitted && f['code'].errors) {
+            <div class="error-msg">
+              @if (f['code'].errors['required']) { <span>Verification code required</span> }
+              @if (f['code'].errors['pattern']) { <span>Must be exactly 6 digits</span> }
+            </div>
+          }
+        </div>
+
+        <ion-button type="submit" expand="block" class="premium-btn" [disabled]="isLoading">
+          @if (!isLoading) {
+            <span>Verify & Enter</span>
+          } @else {
+            <ion-spinner name="crescent" color="light"></ion-spinner>
+          }
+        </ion-button>
+        
+        <div class="signup-wrapper">
+          <span class="signup-text">Didn't receive the code? <a class="signup-link">Resend</a></span><br><br>
+          <span class="signup-text"><a (click)="goToLogin()" class="signup-link">Back to Login</a></span>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</ion-content>

@@ -1,0 +1,69 @@
+<ion-content [fullscreen]="true" class="transparent-bg">
+  <div class="login-wrapper">
+    
+    <!-- Premium Branding Header (Former Splash Screen) -->
+    <div class="branding-header">
+      <div class="title-glow">
+        <h1 class="splash-title">
+          <span class="title-left">MIR</span><span class="title-right">ЯOЯ</span>
+        </h1>
+      </div>
+      <p class="splash-tagline">Reflect. Discover. Grow.</p>
+    </div>
+
+    <!-- Glassy Authentication Form -->
+    <div class="glassy-card">
+      <h2 class="form-title">Welcome</h2>
+      
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+        
+        <div class="input-group">
+          <ion-input
+            formControlName="email"
+            type="email"
+            placeholder="Email Address"
+            class="glassy-input"
+          ></ion-input>
+          
+          <div *ngIf="isSubmitted && f['email'].errors" class="error-msg">
+            <span *ngIf="f['email'].errors['required']">Email is required</span>
+            <span *ngIf="f['email'].errors['email']">Must be a valid email</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <ion-input
+            formControlName="password"
+            [type]="showPassword ? 'text' : 'password'"
+            placeholder="Password"
+            class="glassy-input"
+          >
+            <ion-icon slot="end" color="light" [name]="showPassword ? 'eye' : 'eye-off'" (click)="showPassword = !showPassword" style="font-size: 1.4rem; margin-right: 0.5rem; cursor: pointer;"></ion-icon>
+          </ion-input>
+          
+          <div *ngIf="isSubmitted && f['password'].errors" class="error-msg">
+            <span *ngIf="f['password'].errors['required']">Password is required</span>
+            <span *ngIf="f['password'].errors['minlength']">Password must be at least 6 characters</span>
+          </div>
+        </div>
+
+        <ion-button type="submit" expand="block" class="premium-btn" [disabled]="isLoading">
+          @if (!isLoading) {
+            <span>Sign In</span>
+          } @else {
+            <ion-spinner name="crescent" color="light"></ion-spinner>
+          }
+        </ion-button>
+        
+        <div class="forgot-wrapper">
+          <a (click)="goToForgot()" class="forgot-link">Forgot Password?</a>
+        </div>
+        
+        <div class="signup-wrapper">
+          <span class="signup-text">Don't have an account? <a (click)="goToSignup()" class="signup-link">Sign Up</a></span>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</ion-content>

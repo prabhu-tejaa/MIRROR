@@ -35,3 +35,10 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* ── FORCE GLOBAL TRANSPARENCY SO STARFIELD SHOWS ── */
+body, html, ion-app, ion-router-outlet, .ion-page, ion-content {
+  --ion-background-color: transparent !important;
+  --background: transparent !important;
+  background: transparent !important;
+}
