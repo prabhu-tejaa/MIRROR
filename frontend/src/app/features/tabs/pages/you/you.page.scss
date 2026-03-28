@@ -1,6 +1,6 @@
 .shape-palette-container {
   position: absolute;
-  bottom: calc(max(80px, 12vh) + env(safe-area-inset-bottom));
+  bottom: calc(75px + env(safe-area-inset-bottom, 0px));
   left: 0;
   right: 0;
   width: 100%;

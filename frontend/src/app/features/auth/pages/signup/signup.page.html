@@ -74,18 +74,21 @@
             <div class="error-msg">
               @if (f['password'].errors['required']) { 
                 <span>{{ 'SIGNUP.ERROR_PASSWORD_REQUIRED' | translate }}</span> 
-              } @else if (f['password'].errors['minlength']) { 
-                <span>{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span> 
-              } @else if (f['password'].errors['maxlength']) { 
-                <span>{{ 'SIGNUP.ERROR_PASSWORD_MAXLENGTH' | translate }}</span> 
-              } @else if (f['password'].errors['missingUpper']) { 
-                <span>{{ 'SIGNUP.ERROR_PASS_UPPER' | translate }}</span> 
-              } @else if (f['password'].errors['missingLower']) { 
-                <span>{{ 'SIGNUP.ERROR_PASS_LOWER' | translate }}</span> 
-              } @else if (f['password'].errors['missingNumeric']) { 
-                <span>{{ 'SIGNUP.ERROR_PASS_NUMBER' | translate }}</span> 
-              } @else if (f['password'].errors['missingSpecial']) { 
-                <span>{{ 'SIGNUP.ERROR_PASS_SYMBOL' | translate }}</span> 
+              } 
+              
+              <!-- Complexity errors shown first and together -->
+              @if (f['password'].errors['missingUpper']) { <span>{{ 'SIGNUP.ERROR_PASS_UPPER' | translate }}</span> }
+              @if (f['password'].errors['missingLower']) { <span>{{ 'SIGNUP.ERROR_PASS_LOWER' | translate }}</span> }
+              @if (f['password'].errors['missingNumeric']) { <span>{{ 'SIGNUP.ERROR_PASS_NUMBER' | translate }}</span> }
+              @if (f['password'].errors['missingSpecial']) { <span>{{ 'SIGNUP.ERROR_PASS_SYMBOL' | translate }}</span> }
+              
+              <!-- Length errors shown last if no complexity errors are showing, or just as secondary -->
+              @if (!f['password'].errors['required'] && !f['password'].errors['missingUpper'] && !f['password'].errors['missingLower'] && !f['password'].errors['missingNumeric'] && !f['password'].errors['missingSpecial']) {
+                @if (f['password'].errors['minlength']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span> }
+                @if (f['password'].errors['maxlength']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_MAXLENGTH' | translate }}</span> }
+              } @else if (f['password'].errors['minlength'] && !f['password'].errors['required']) {
+                <!-- Still show length if specifically small, but complexity is prioritized above -->
+                <span style="opacity: 0.8; font-size: 0.75rem;">{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span>
               }
             </div>
           }
@@ -95,9 +98,50 @@
           <div class="tos-container" style="display: flex; align-items: center; justify-content: flex-start; gap: 12px;">
             <ion-checkbox formControlName="agreeTos" class="glassy-checkbox"></ion-checkbox>
             <span class="tos-text" style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.8); line-height: 1.4;">
-              {{ 'SIGNUP.TOS_PREFIX' | translate }}<a (click)="openTerms($event)" href="javascript:void(0)" class="signup-link" style="display: inline-block; padding: 2px 4px; position: relative; z-index: 100;">{{ 'SIGNUP.TOS_LINK' | translate }}</a>
+              {{ 'SIGNUP.TOS_PREFIX' | translate }}<a id="open-terms" class="signup-link" style="display: inline-block; padding: 2px 4px; position: relative; z-index: 100;">{{ 'SIGNUP.TOS_LINK' | translate }}</a>
             </span>
           </div>
+
+          <!-- Premium Inline Modal for Terms -->
+          <ion-modal trigger="open-terms" class="premium-modal" #modal>
+            <ng-template>
+              <ion-header class="ion-no-border">
+                <ion-toolbar class="glassy-toolbar">
+                  <ion-title>{{ 'SIGNUP.TOS_LINK' | translate }}</ion-title>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="modal.dismiss()" class="close-btn">
+                      <ion-icon name="close-outline"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content class="ion-padding glassy-modal-content">
+                <div class="modal-body glassy-body">
+                  <div class="section-badge">{{ 'SIGNUP.TOS_LINK' | translate }}</div>
+                  <h2>Welcome to Mirror</h2>
+                  <p>By joining, you agree to our placeholder terms. Ensure you are acting legally and morally on our platform.</p>
+                  
+                  <div class="rules-list">
+                    <div class="rule-item">
+                      <span class="rule-index">01</span>
+                      <p>Respect others: Treat everyone with dignity and kindness.</p>
+                    </div>
+                    <div class="rule-item">
+                      <span class="rule-index">02</span>
+                      <p>No illegal content: Zero tolerance for any unlawful behavior.</p>
+                    </div>
+                    <div class="rule-item">
+                      <span class="rule-index">03</span>
+                      <p>Be excellent to each other: Foster a positive and supportive community.</p>
+                    </div>
+                  </div>
+                  
+                  <div class="bottom-spacer"></div>
+                </div>
+              </ion-content>
+            </ng-template>
+          </ion-modal>
+
           @if (isSubmitted && f['agreeTos'].errors) {
             <div class="error-msg" style="margin-top: 0.5rem;">
               @if (f['agreeTos'].errors['required']) { <span>{{ 'SIGNUP.ERROR_TOS_REQUIRED' | translate }}</span> }

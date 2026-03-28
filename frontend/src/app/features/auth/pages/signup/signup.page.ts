@@ -2,9 +2,9 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject }
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation, AlertController } from '@ionic/angular';
-import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox } from '@ionic/angular/standalone';
+import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { eye, eyeOff } from 'ionicons/icons';
+import { eye, eyeOff, closeOutline } from 'ionicons/icons';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
 
@@ -14,14 +14,13 @@ import { strictPasswordValidator } from '../../../../shared/validators/password.
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox, TranslatePipe],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupPage implements OnInit {
   private fb = inject(FormBuilder);
   private navCtrl = inject(NavController);
   private animationCtrl = inject(AnimationController);
-  private alertCtrl = inject(AlertController);
   private cdr = inject(ChangeDetectorRef);
 
   signupForm!: FormGroup;
@@ -30,7 +29,7 @@ export class SignupPage implements OnInit {
   showPassword = false;
 
   constructor() {
-    addIcons({ eye, eyeOff });
+    addIcons({ eye, eyeOff, closeOutline });
   }
 
   ngOnInit() {
@@ -43,20 +42,6 @@ export class SignupPage implements OnInit {
   }
 
   get f() { return this.signupForm.controls; }
-
-  async openTerms(event?: Event) {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    const alert = await this.alertCtrl.create({
-      header: 'Terms & Privacy Policy',
-      message: 'By joining, you agree to our placeholder terms. Ensure you are acting legally and morally on our platform. (Edit these rules later natively here.)',
-      buttons: ['I Understand'],
-      cssClass: 'premium-alert'
-    });
-    await alert.present();
-  }
 
   private getCrossfadeAnimation(): any {
     return (baseEl: any, opts?: any): Animation => {
