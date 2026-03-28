@@ -1,0 +1,51 @@
+import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Network } from '@capacitor/network';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ConnectionService implements OnDestroy {
+  private online$ = new BehaviorSubject<boolean>(true); 
+
+  constructor(private ngZone: NgZone) {
+    this.initializeNetworkListeners();
+  }
+
+  private async initializeNetworkListeners() {
+    
+    const status = await Network.getStatus();
+    this.updateStatus(status.connected);
+
+await Network.addListener('networkStatusChange', status => {
+      
+      this.ngZone.run(() => {
+        this.updateStatus(status.connected);
+      });
+    });
+  }
+
+  private updateStatus(connected: boolean) {
+    if (this.online$.value !== connected) {
+      this.online$.next(connected);
+    }
+  }
+
+  get isOnline$(): Observable<boolean> {
+    return this.online$.asObservable();
+  }
+
+  get isOnline(): boolean {
+    return this.online$.value;
+  }
+
+async checkConnection(): Promise<boolean> {
+    const status = await Network.getStatus();
+    this.updateStatus(status.connected);
+    return status.connected;
+  }
+
+  ngOnDestroy(): void {
+    Network.removeAllListeners();
+  }
+}

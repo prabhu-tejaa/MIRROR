@@ -72,9 +72,8 @@ export class OtpPage implements OnInit, OnDestroy {
 
   resendCode() {
     if (this.resendTimer === 0) {
-      // Triggering backend logic to email fresh OTP would go here.
-      // We will loop back and lock out the button functionally on the UI.
-      this.startResendTimer();
+
+this.startResendTimer();
     }
   }
 
@@ -130,17 +129,17 @@ export class OtpPage implements OnInit, OnDestroy {
         if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
         
         if (this.flowContext === 'reset') {
-          // Send user purely to Password Replacement utility bridging the flow safely.
+          
           this.navCtrl.navigateRoot('/reset-password', {
             animation: this.getCrossfadeAnimation()
           });
         } else {
-          // Standard signup access! Launch full Starfield sequence
+          
           this.starfieldSvc.formHeart();
           
           setTimeout(() => {
             this.starfieldSvc.disperse();
-            // Access granted! Transition to main app interface seamlessly.
+            
             this.navCtrl.navigateRoot('/tabs/tab1', { 
               animation: this.getCrossfadeAnimation()
             });

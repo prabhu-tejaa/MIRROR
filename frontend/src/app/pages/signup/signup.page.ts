@@ -6,25 +6,6 @@ import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox } fro
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
 
-// Custom validator ensuring Passwords Match
-export function passwordsMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
-  const password = control.get('password');
-  const confirmPassword = control.get('confirmPassword');
-
-  if (!password || !confirmPassword) return null;
-  
-  if (confirmPassword.errors && !confirmPassword.errors['mismatch']) {
-    return null;
-  }
-
-  if (password.value !== confirmPassword.value) {
-    confirmPassword.setErrors({ mismatch: true });
-    return { mismatch: true };
-  } else {
-    confirmPassword.setErrors(null);
-    return null;
-  }
-}
 
 @Component({
   selector: 'app-signup',
@@ -38,7 +19,6 @@ export class SignupPage implements OnInit {
   isSubmitted = false;
   isLoading = false;
   showPassword = false;
-  showConfirmPassword = false;
 
   constructor(
     private fb: FormBuilder,
@@ -54,10 +34,7 @@ export class SignupPage implements OnInit {
       username: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
       agreeTos: [false, [Validators.requiredTrue]]
-    }, { 
-      validators: passwordsMatchValidator 
     });
   }
 

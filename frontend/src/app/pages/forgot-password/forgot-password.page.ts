@@ -61,13 +61,10 @@ export class ForgotPasswordPage implements OnInit {
       
       const emailValue = this.forgotForm.value.email;
 
-      // Emulate server checking the database
-      setTimeout(() => {
+setTimeout(() => {
         this.isLoading = false;
-        
-        // Mocking the scenario where an account is missing entirely 
-        // using our defined test condition parameters
-        if (emailValue.toLowerCase() === 'none@mirror.com') {
+
+if (emailValue.toLowerCase() === 'none@mirror.com') {
           this.forgotForm.controls['email'].setErrors({ notFound: true });
         } else {
           this.navCtrl.navigateForward('/otp', {

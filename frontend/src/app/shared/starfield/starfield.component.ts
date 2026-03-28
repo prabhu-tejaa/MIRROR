@@ -12,11 +12,6 @@ import {
 import { Subscription } from 'rxjs';
 import { StarfieldService } from './starfield.service';
 
-/**
- * StarfieldComponent — Premium plug-and-play animated starfield background.
- *
- * Mobile-optimised: no ctx.filter, pre-rendered nebulae, batched draws.
- */
 @Component({
   selector: 'app-starfield',
   standalone: true,
@@ -24,9 +19,8 @@ import { StarfieldService } from './starfield.service';
   styleUrls: ['./starfield.component.scss'],
 })
 export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
-  // ── Configurable Inputs ──────────────────────────────────────────
 
-  @Input() starCount = 150;
+@Input() starCount = 150;
   @Input() speed = 0.05;
   @Input() minSize = 0.2;
   @Input() maxSize = 1.2;
@@ -43,9 +37,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() fadeInDuration = 1500;
   @Input() respectReducedMotion = true;
 
-  // ── Internal state ───────────────────────────────────────────────
-
-  @ViewChild('canvas', { static: true })
+@ViewChild('canvas', { static: true })
   private canvasRef!: ElementRef<HTMLCanvasElement>;
 
   private ctx!: CanvasRenderingContext2D;
@@ -70,7 +62,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   private pointerY = 0;
 
   private nebulae: Nebula[] = [];
-  private nebulaCanvas!: HTMLCanvasElement; // pre-rendered nebula layer
+  private nebulaCanvas!: HTMLCanvasElement; 
   private meteorTimeout: any;
 
   private readonly STAR_COLORS = [
@@ -80,9 +72,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private ngZone: NgZone, private starfieldSvc: StarfieldService) {}
 
-  // ── Lifecycle ────────────────────────────────────────────────────
-
-  ngOnInit(): void {
+ngOnInit(): void {
     this.sub1 = this.starfieldSvc.formHeart$.subscribe(() => {
       this.targetShape = 'heart';
       const CX = this.width / 2;
@@ -90,13 +80,12 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       const S = Math.min(this.width, this.height) / 45;
 
       for (let star of this.stars) {
-        // Parametric time tracking along the sequence
+        
         const t = Math.random() * Math.PI * 2;
-        // Constructing a slightly thicker parametric outline (radius scaling)
+        
         const rScale = 0.6 + Math.random() * 0.5;
 
-        // Mathematical parametric bounds for universal heart shape formulation
-        const xBase = 16 * Math.pow(Math.sin(t), 3);
+const xBase = 16 * Math.pow(Math.sin(t), 3);
         const yBase = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
 
         star.targetX = CX + S * xBase * rScale;
@@ -109,7 +98,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       this.targetShape = 'none';
       for (let star of this.stars) {
         star.isTransitioning = false;
-        // Bump velocities randomly mapping the explosion dispersion away into infinite context patterns!
+        
         star.vx += (Math.random() - 0.5) * 0.4;
         star.vy += (Math.random() - 0.5) * 0.4;
       }
@@ -123,7 +112,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const canvas = this.canvasRef.nativeElement;
     this.ctx = canvas.getContext('2d', { alpha: false })!;
-    this.dpr = Math.min(window.devicePixelRatio || 1, 2); // cap at 2x for perf
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2); 
     this.resize();
     this.initStars();
     this.renderNebulaLayer();
@@ -167,9 +156,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  // ── Pointer / Touch ─────────────────────────────────────────────
-
-  @HostListener('window:mousemove', ['$event'])
+@HostListener('window:mousemove', ['$event'])
   onMouseMove(e: MouseEvent): void {
     if (!this.parallax) return;
     this.pointerX = (e.clientX / this.width - 0.5) * 2;
@@ -184,14 +171,12 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pointerY = (t.clientY / this.height - 0.5) * 2;
   }
 
-  // ── Private ──────────────────────────────────────────────────────
-
-  private resize(): void {
+private resize(): void {
     const canvas = this.canvasRef.nativeElement;
     const parent = canvas.parentElement!;
     this.width = parent.clientWidth;
     this.height = parent.clientHeight;
-    // Use device pixel ratio for sharp rendering but cap at 2x
+    
     canvas.width = this.width * this.dpr;
     canvas.height = this.height * this.dpr;
     canvas.style.width = this.width + 'px';
@@ -199,9 +184,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
   }
 
-  /* ---------- Stars ---------- */
-
-  private initStars(): void {
+private initStars(): void {
     this.stars = [];
     for (let i = 0; i < this.starCount; i++) {
       this.stars.push(this.createStar(true));
@@ -211,7 +194,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   private createStar(randomPosition: boolean): Star {
     const size = this.minSize + Math.random() * (this.maxSize - this.minSize);
     const opacity = this.minOpacity + Math.random() * (this.maxOpacity - this.minOpacity);
-    // Gentle speed variation — smaller stars barely move
+    
     const speedFactor = 0.2 + (size / this.maxSize) * 0.8;
     const angle = Math.random() * Math.PI * 2;
     const starSpeed = this.speed * speedFactor;
@@ -232,19 +215,16 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       x, y, size, baseOpacity: opacity, opacity, color, depth,
       vx: Math.cos(angle) * starSpeed,
       vy: Math.sin(angle) * starSpeed,
-      // Very gentle twinkle — stars pulse slowly between 80-100% of their opacity
+      
       twinkleSpeed: 0.002 + Math.random() * 0.008,
       twinklePhase: Math.random() * Math.PI * 2,
     };
   }
 
-  /* ---------- Nebulae (pre-rendered to offscreen canvas) ---------- */
-
-  private renderNebulaLayer(): void {
+private renderNebulaLayer(): void {
     if (!this.nebulaGlow) return;
 
-    // Create offscreen canvas once and blit it each frame (MUCH cheaper)
-    this.nebulaCanvas = document.createElement('canvas');
+this.nebulaCanvas = document.createElement('canvas');
     this.nebulaCanvas.width = this.width * this.dpr;
     this.nebulaCanvas.height = this.height * this.dpr;
     const nCtx = this.nebulaCanvas.getContext('2d')!;
@@ -277,9 +257,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /* ---------- Shooting stars ---------- */
-
-  private scheduleMeteor(): void {
+private scheduleMeteor(): void {
     const [min, max] = this.shootingStarInterval;
     const delay = min + Math.random() * (max - min);
     this.meteorTimeout = setTimeout(() => {
@@ -310,9 +288,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  /* ---------- Animation loop ---------- */
-
-  private animate = (): void => {
+private animate = (): void => {
     if (this.paused) return;
     this.draw();
     if (!this.reducedMotion) {
@@ -330,23 +306,19 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       globalAlpha = Math.min(1, elapsed / this.fadeInDuration);
     }
 
-    // Background
-    ctx.globalAlpha = 1;
+ctx.globalAlpha = 1;
     ctx.fillStyle = this.backgroundColor;
     ctx.fillRect(0, 0, width, height);
 
-    // Nebulae — just blit the pre-rendered canvas (very fast)
-    if (this.nebulaGlow && this.nebulaCanvas) {
+if (this.nebulaGlow && this.nebulaCanvas) {
       ctx.globalAlpha = globalAlpha;
       ctx.drawImage(this.nebulaCanvas, 0, 0, width, height);
     }
 
-    // Parallax offset
-    const px = this.parallax ? this.pointerX * this.parallaxStrength : 0;
+const px = this.parallax ? this.pointerX * this.parallaxStrength : 0;
     const py = this.parallax ? this.pointerY * this.parallaxStrength : 0;
 
-    // Stars — batch by color to reduce state changes
-    ctx.globalAlpha = globalAlpha;
+ctx.globalAlpha = globalAlpha;
     for (const star of this.stars) {
       const drawX = star.x + px * star.depth;
       const drawY = star.y + py * star.depth;
@@ -361,8 +333,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       );
     }
 
-    // Shooting stars
-    this.drawMeteors(globalAlpha);
+this.drawMeteors(globalAlpha);
 
     ctx.globalAlpha = 1;
   }
@@ -370,8 +341,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   private drawMeteors(globalAlpha: number): void {
     const { ctx } = this;
 
-    // Sparkle particles
-    for (const s of this.sparkles) {
+for (const s of this.sparkles) {
       ctx.globalAlpha = s.life * globalAlpha * 0.7;
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(s.x - s.size, s.y - s.size, s.size * 2, s.size * 2);
@@ -384,8 +354,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       const tailX = m.x - dirX * m.length;
       const tailY = m.y - dirY * m.length;
 
-      // Trail gradient
-      const gradient = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+const gradient = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
       gradient.addColorStop(0, `rgba(255, 255, 255, ${m.life * globalAlpha})`);
       gradient.addColorStop(0.3, `rgba(200, 220, 255, ${m.life * 0.6 * globalAlpha})`);
       gradient.addColorStop(1, 'rgba(180, 160, 255, 0)');
@@ -398,8 +367,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       ctx.lineTo(tailX, tailY);
       ctx.stroke();
 
-      // Simple bright head (no radial gradients — just a white dot)
-      ctx.globalAlpha = m.life * 0.9 * globalAlpha;
+ctx.globalAlpha = m.life * 0.9 * globalAlpha;
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       ctx.arc(m.x, m.y, m.width * 1.5, 0, Math.PI * 2);
@@ -407,16 +375,14 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /* ---------- Update ---------- */
-
-  private update(): void {
+private update(): void {
     const margin = 10;
 
     for (let i = 0; i < this.stars.length; i++) {
       const star = this.stars[i];
       
       if (this.targetShape === 'heart' && star.isTransitioning && star.targetX !== undefined && star.targetY !== undefined) {
-        // Render smooth deceleration physics easing gently onto the final parameterized target loci mapped globally
+        
         star.x += (star.targetX - star.x) * 0.04;
         star.y += (star.targetY - star.y) * 0.04;
       } else {
@@ -426,7 +392,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
 
       if (this.twinkle) {
         star.twinklePhase += star.twinkleSpeed;
-        // Gentle pulse: 80%–100% of base opacity (not 50%–100%)
+        
         star.opacity = star.baseOpacity * (0.8 + 0.2 * Math.sin(star.twinklePhase));
       }
 
@@ -438,15 +404,13 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
 
-    // Meteors + sparkles (limit sparkle count)
-    for (let i = this.meteors.length - 1; i >= 0; i--) {
+for (let i = this.meteors.length - 1; i >= 0; i--) {
       const m = this.meteors[i];
       m.x += m.vx;
       m.y += m.vy;
       m.life -= m.decay;
 
-      // Emit sparkle particles (capped to avoid accumulation)
-      if (m.life > 0.2 && this.sparkles.length < 30 && Math.random() > 0.5) {
+if (m.life > 0.2 && this.sparkles.length < 30 && Math.random() > 0.5) {
         this.sparkles.push({
           x: m.x + (Math.random() - 0.5) * 3,
           y: m.y + (Math.random() - 0.5) * 3,
@@ -469,8 +433,6 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 }
-
-// ── Types ─────────────────────────────────────────────────────────
 
 interface Star {
   x: number; y: number; size: number;

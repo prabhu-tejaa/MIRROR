@@ -37,7 +37,7 @@ export class LoginPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    // Ensuring caching layers from Ionic Router reliably un-hide upon returning from logged-in domains
+    
     const card = document.querySelector('.glassy-card') as HTMLElement;
     const header = document.querySelector('.branding-header') as HTMLElement;
     if (card) { card.style.opacity = '1'; card.style.transition = 'none'; }
@@ -77,21 +77,18 @@ export class LoginPage implements OnInit {
     this.isSubmitted = true;
     if (this.loginForm.valid) {
       this.isLoading = true;
-      
-      // Phase 1: Simulate network verification (1000ms)
-      setTimeout(() => {
-        // Fade out foreground UI elements smoothly mapping focus exclusively onto Background contexts
+
+setTimeout(() => {
+        
         const card = document.querySelector('.glassy-card') as HTMLElement;
         const header = document.querySelector('.branding-header') as HTMLElement;
         
         if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
         if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
-        
-        // Phase 2: Transmit event to Starfield Engine transforming generic distributions into clustered Heart formations
-        this.starfieldSvc.formHeart();
-        
-        // Phase 3: Hold sequence visualizing Heart structure, orchestrate global Dispersion parameters, and execute unified crossfader dispatch
-        setTimeout(() => {
+
+this.starfieldSvc.formHeart();
+
+setTimeout(() => {
           this.starfieldSvc.disperse();
           this.navCtrl.navigateRoot('/tabs/tab1', { 
             animation: this.getCrossfadeAnimation()
