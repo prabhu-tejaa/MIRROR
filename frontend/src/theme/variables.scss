@@ -1,0 +1,30 @@
+
+
+:root, body, html {
+  --ion-background-color: transparent !important;
+  --ion-background-color-rgb: 0, 0, 0 !important;
+  background: transparent !important;
+}
+
+:root {
+  --ion-toolbar-background: rgba(0, 0, 0, 0.55);
+  --ion-toolbar-color: #ffffff;
+
+  --ion-tab-bar-background: rgba(0, 0, 0, 0.70);
+  --ion-tab-bar-color: rgba(255, 255, 255, 0.6);
+  --ion-tab-bar-color-selected: #ffffff;
+
+  --ion-item-background: transparent;
+  --ion-card-background: rgba(255, 255, 255, 0.06);
+
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+}
+
+ion-content {
+  --background: transparent;
+}
+
+ion-content::part(scroll) {
+  background: transparent;
+}

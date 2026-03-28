@@ -1,0 +1,65 @@
+<ion-content [fullscreen]="true" class="transparent-bg">
+  <div class="login-wrapper">
+
+<div class="branding-header">
+      <div class="title-glow">
+        <h1 class="splash-title" style="font-size: clamp(2.5rem, 10vw, 3.8rem);">O T P</h1>
+      </div>
+      <p class="splash-tagline">Enter your verification code.</p>
+    </div>
+
+<div class="glassy-card">
+      <h2 class="form-title">Verify Email</h2>
+      
+      <form [formGroup]="otpForm" (ngSubmit)="onVerify()">
+        
+        <div class="input-group otp-group">
+          <div class="otp-boxes-container" (click)="focusInput()">
+            <div class="otp-box" [class.active]="currentLength === 0">{{ getDigit(0) }}</div>
+            <div class="otp-box" [class.active]="currentLength === 1">{{ getDigit(1) }}</div>
+            <div class="otp-box" [class.active]="currentLength === 2">{{ getDigit(2) }}</div>
+            <div class="otp-box" [class.active]="currentLength === 3">{{ getDigit(3) }}</div>
+            <div class="otp-box" [class.active]="currentLength === 4">{{ getDigit(4) }}</div>
+            <div class="otp-box" [class.active]="currentLength === 5">{{ getDigit(5) }}</div>
+            
+            <ion-input
+              #hiddenInput
+              formControlName="code"
+              type="tel"
+              inputmode="numeric"
+              maxlength="6"
+              class="hidden-otp-input"
+            ></ion-input>
+          </div>
+          
+          @if (isSubmitted && f['code'].errors) {
+            <div class="error-msg" style="text-align: center;">
+              @if (f['code'].errors['required']) { <span>Verification code required</span> }
+              @if (f['code'].errors['pattern']) { <span>Must be a 6-digit number</span> }
+            </div>
+          }
+        </div>
+
+        <ion-button type="submit" expand="block" class="premium-btn" [disabled]="isLoading">
+          @if (!isLoading) {
+            <span>{{ flowContext === 'reset' ? 'Verify & Reset' : 'Verify & Enter' }}</span>
+          } @else {
+            <ion-spinner name="crescent" color="dark"></ion-spinner>
+          }
+        </ion-button>
+        
+        <div class="signup-wrapper">
+          <span class="signup-text">Didn't receive the code? 
+            @if (resendTimer > 0) {
+              <span class="signup-link" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;">Resend in {{resendTimer}}s</span>
+            } @else {
+              <a (click)="resendCode()" class="signup-link">Resend</a>
+            }
+          </span><br><br>
+          <span class="signup-text"><a (click)="goToLogin()" class="signup-link">Back to Login</a></span>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</ion-content>
