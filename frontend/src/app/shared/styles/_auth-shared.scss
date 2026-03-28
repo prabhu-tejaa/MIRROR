@@ -186,6 +186,25 @@ ion-content.transparent-bg::part(background) {
   margin-top: clamp(0.5rem, 1.5vh, 1.2rem);
 }
 
+.signup-text {
+  font-size: clamp(0.85rem, 2.8vw, 0.95rem);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.signup-link {
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    color: #b4c8ff;
+    text-shadow: 0 0 10px rgba(180, 200, 255, 0.5);
+  }
+}
+
 @media (max-height: 750px) {
   .branding-header { margin-bottom: 0.5rem; }
   .splash-title { font-size: clamp(2rem, 8vw, 3rem); }

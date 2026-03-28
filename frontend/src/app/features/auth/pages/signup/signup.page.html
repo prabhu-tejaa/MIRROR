@@ -25,10 +25,15 @@
             ></ion-input>
             @if (isSubmitted && f['username'].errors) {
               <div class="error-msg">
-                @if (f['username'].errors['required']) { <span>{{ 'SIGNUP.ERROR_USERNAME_REQUIRED' | translate }}</span> }
-                @if (f['username'].errors['minlength']) { <span>{{ 'SIGNUP.ERROR_USERNAME_MINLENGTH' | translate }}</span> }
-                @if (f['username'].errors['maxlength']) { <span>{{ 'SIGNUP.ERROR_USERNAME_MAXLENGTH' | translate }}</span> }
-                @if (f['username'].errors['pattern']) { <span>{{ 'SIGNUP.ERROR_USERNAME_PATTERN' | translate }}</span> }
+                @if (f['username'].errors['required']) { 
+                  <span>{{ 'SIGNUP.ERROR_USERNAME_REQUIRED' | translate }}</span> 
+                } @else if (f['username'].errors['minlength']) { 
+                  <span>{{ 'SIGNUP.ERROR_USERNAME_MINLENGTH' | translate }}</span> 
+                } @else if (f['username'].errors['maxlength']) { 
+                  <span>{{ 'SIGNUP.ERROR_USERNAME_MAXLENGTH' | translate }}</span> 
+                } @else if (f['username'].errors['pattern']) { 
+                  <span>{{ 'SIGNUP.ERROR_USERNAME_PATTERN' | translate }}</span> 
+                }
               </div>
             }
           </div>
@@ -42,9 +47,13 @@
             ></ion-input>
             @if (isSubmitted && f['email'].errors) {
               <div class="error-msg">
-                @if (f['email'].errors['required']) { <span>{{ 'SIGNUP.ERROR_EMAIL_REQUIRED' | translate }}</span> }
-                @if (f['email'].errors['email'] || f['email'].errors['pattern']) { <span>{{ 'SIGNUP.ERROR_EMAIL_INVALID' | translate }}</span> }
-                @if (f['email'].errors['maxlength']) { <span>{{ 'SIGNUP.ERROR_EMAIL_MAXLENGTH' | translate }}</span> }
+                @if (f['email'].errors['required']) { 
+                  <span>{{ 'SIGNUP.ERROR_EMAIL_REQUIRED' | translate }}</span> 
+                } @else if (f['email'].errors['email'] || f['email'].errors['pattern']) { 
+                  <span>{{ 'SIGNUP.ERROR_EMAIL_INVALID' | translate }}</span> 
+                } @else if (f['email'].errors['maxlength']) { 
+                  <span>{{ 'SIGNUP.ERROR_EMAIL_MAXLENGTH' | translate }}</span> 
+                }
               </div>
             }
           </div>
@@ -62,14 +71,22 @@
             <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" (click)="showPassword = !showPassword" style="font-size: 1.4rem; margin-right: 0.5rem; cursor: pointer; color: #888888;"></ion-icon>
           </ion-input>
           @if (isSubmitted && f['password'].errors) {
-            <div class="error-msg password-errors">
-              @if (f['password'].errors['required']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_REQUIRED' | translate }}</span> }
-              @if (f['password'].errors['minlength']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span> }
-              @if (f['password'].errors['maxlength']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_MAXLENGTH' | translate }}</span> }
-              @if (f['password'].errors['missingUpper']) { <span>{{ 'SIGNUP.ERROR_PASS_UPPER' | translate }}</span> }
-              @if (f['password'].errors['missingLower']) { <span>{{ 'SIGNUP.ERROR_PASS_LOWER' | translate }}</span> }
-              @if (f['password'].errors['missingNumeric']) { <span>{{ 'SIGNUP.ERROR_PASS_NUMBER' | translate }}</span> }
-              @if (f['password'].errors['missingSpecial']) { <span>{{ 'SIGNUP.ERROR_PASS_SYMBOL' | translate }}</span> }
+            <div class="error-msg">
+              @if (f['password'].errors['required']) { 
+                <span>{{ 'SIGNUP.ERROR_PASSWORD_REQUIRED' | translate }}</span> 
+              } @else if (f['password'].errors['minlength']) { 
+                <span>{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span> 
+              } @else if (f['password'].errors['maxlength']) { 
+                <span>{{ 'SIGNUP.ERROR_PASSWORD_MAXLENGTH' | translate }}</span> 
+              } @else if (f['password'].errors['missingUpper']) { 
+                <span>{{ 'SIGNUP.ERROR_PASS_UPPER' | translate }}</span> 
+              } @else if (f['password'].errors['missingLower']) { 
+                <span>{{ 'SIGNUP.ERROR_PASS_LOWER' | translate }}</span> 
+              } @else if (f['password'].errors['missingNumeric']) { 
+                <span>{{ 'SIGNUP.ERROR_PASS_NUMBER' | translate }}</span> 
+              } @else if (f['password'].errors['missingSpecial']) { 
+                <span>{{ 'SIGNUP.ERROR_PASS_SYMBOL' | translate }}</span> 
+              }
             </div>
           }
         </div>
@@ -78,7 +95,7 @@
           <div class="tos-container" style="display: flex; align-items: center; justify-content: flex-start; gap: 12px;">
             <ion-checkbox formControlName="agreeTos" class="glassy-checkbox"></ion-checkbox>
             <span class="tos-text" style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.8); line-height: 1.4;">
-              {{ 'SIGNUP.TOS_PREFIX' | translate }}<a (click)="openTerms($event)" class="tos-link" style="color: white; font-weight: 600; text-decoration: underline; cursor: pointer; position: relative; z-index: 10;">{{ 'SIGNUP.TOS_LINK' | translate }}</a>
+              {{ 'SIGNUP.TOS_PREFIX' | translate }}<a (click)="openTerms($event)" href="javascript:void(0)" class="signup-link" style="display: inline-block; padding: 2px 4px; position: relative; z-index: 100;">{{ 'SIGNUP.TOS_LINK' | translate }}</a>
             </span>
           </div>
           @if (isSubmitted && f['agreeTos'].errors) {

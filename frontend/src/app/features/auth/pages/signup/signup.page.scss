@@ -1,24 +1,6 @@
 @use '../../../../shared/styles/auth-shared' as *;
 
 // Signup-specific styles
-.signup-text {
-  font-size: clamp(0.85rem, 2.8vw, 0.95rem);
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.signup-link {
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    color: #b4c8ff;
-    text-shadow: 0 0 10px rgba(180, 200, 255, 0.5);
-  }
-}
 
 .tos-container {
   display: flex;
@@ -55,16 +37,6 @@
 }
 
 // Password errors shown in 2-col mini grid to save vertical space
-.password-errors {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr;
-  gap: 0 1rem;
-
-  span {
-    display: block;
-    line-height: 1.6;
-  }
-}
 
 // On narrow mobile collapse to single column
 @media (max-width: 480px) {
