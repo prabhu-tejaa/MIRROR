@@ -127,6 +127,11 @@ ion-content.transparent-bg::part(background) {
   margin-top: 0.6rem;
   padding-left: 0.5rem;
   animation: fadeIn 0.3s ease;
+
+  span {
+    display: block;
+    line-height: 1.6;
+  }
 }
 
 .premium-btn {

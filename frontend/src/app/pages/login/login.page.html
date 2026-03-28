@@ -25,7 +25,8 @@
           
           <div *ngIf="isSubmitted && f['email'].errors" class="error-msg">
             <span *ngIf="f['email'].errors['required']">{{ 'LOGIN.ERROR_EMAIL_REQUIRED' | translate }}</span>
-            <span *ngIf="f['email'].errors['email']">{{ 'LOGIN.ERROR_EMAIL_INVALID' | translate }}</span>
+            <span *ngIf="f['email'].errors['email'] || f['email'].errors['pattern']">{{ 'LOGIN.ERROR_EMAIL_INVALID' | translate }}</span>
+            <span *ngIf="f['email'].errors['maxlength']">{{ 'LOGIN.ERROR_EMAIL_MAXLENGTH' | translate }}</span>
           </div>
         </div>
 
@@ -41,7 +42,8 @@
           
           <div *ngIf="isSubmitted && f['password'].errors" class="error-msg">
             <span *ngIf="f['password'].errors['required']">{{ 'LOGIN.ERROR_PASSWORD_REQUIRED' | translate }}</span>
-            <span *ngIf="f['password'].errors['minlength']">{{ 'LOGIN.ERROR_PASSWORD_MINLENGTH' | translate }}</span>
+            <span *ngIf="f['password'].errors['maxlength']">{{ 'LOGIN.ERROR_PASSWORD_MAXLENGTH' | translate }}</span>
+            <span *ngIf="!f['password'].errors['required'] && !f['password'].errors['maxlength']">{{ 'LOGIN.ERROR_PASSWORD_INVALID' | translate }}</span>
           </div>
         </div>
 

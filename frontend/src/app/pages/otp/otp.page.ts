@@ -40,7 +40,7 @@ export class OtpPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.otpForm = this.fb.group({
-      code: ['', [Validators.required, Validators.pattern('^[0-9]{6}$')]]
+      code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6), Validators.pattern('^[0-9]{6}$')]]
     });
   }
 

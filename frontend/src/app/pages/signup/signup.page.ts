@@ -6,6 +6,7 @@ import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox } fro
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { strictPasswordValidator } from '../../shared/validators/password.validator';
 
 
 @Component({
@@ -34,9 +35,9 @@ export class SignupPage implements OnInit {
 
   ngOnInit() {
     this.signupForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(32), Validators.pattern('^[a-zA-Z0-9_.-]+$')]],
+      email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'), Validators.maxLength(254)]],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), strictPasswordValidator]],
       agreeTos: [false, [Validators.requiredTrue]]
     });
   }

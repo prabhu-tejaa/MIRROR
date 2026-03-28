@@ -24,7 +24,7 @@ export class ForgotPasswordPage implements OnInit {
   isLoading = false;
   ngOnInit() {
     this.forgotForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'), Validators.maxLength(254)]]
     });
   }
 

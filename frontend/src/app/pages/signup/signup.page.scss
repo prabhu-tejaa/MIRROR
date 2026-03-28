@@ -37,3 +37,47 @@
   --background: rgba(255, 255, 255, 0.1);
   margin: 0;
 }
+
+// Wider card for the 2-col layout
+.signup-card {
+  max-width: 680px !important;
+}
+
+// Side-by-side row for username + email
+.input-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  .input-group {
+    margin-bottom: clamp(0.8rem, 2vh, 1.2rem);
+  }
+}
+
+// Password errors shown in 2-col mini grid to save vertical space
+.password-errors {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 1rem;
+
+  span {
+    display: block;
+    line-height: 1.6;
+  }
+}
+
+// On narrow mobile collapse to single column
+@media (max-width: 480px) {
+  .signup-card {
+    max-width: 100% !important;
+  }
+
+  .input-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .password-errors {
+    grid-template-columns: 1fr;
+  }
+}

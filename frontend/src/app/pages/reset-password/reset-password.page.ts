@@ -6,6 +6,7 @@ import { IonContent, IonInput, IonButton, IonSpinner, IonIcon } from '@ionic/ang
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { strictPasswordValidator } from '../../shared/validators/password.validator';
 
 @Component({
   selector: 'app-reset-password',
@@ -32,7 +33,7 @@ export class ResetPasswordPage implements OnInit {
 
   ngOnInit() {
     this.resetForm = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), strictPasswordValidator]]
     });
   }
 
