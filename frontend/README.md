@@ -5,45 +5,44 @@
 ![Mobile](https://img.shields.io/badge/Ionic-8-3880FF?style=for-the-badge&logo=ionic)
 ![Platform](https://img.shields.io/badge/Android-Support-3DDC84?style=for-the-badge&logo=android)
 
-**MIRЯOЯ** is a premium, modern mobile and web application built with **Ionic 8** and **Angular 20**. It features a high-fidelity user experience, sleek glassmorphism design, and robust authentication systems, all while maintaining a "buttery smooth" performance on Android and Web.
+[cite_start]**MIRЯOЯ** is an AI Powered Memory and Emotional Analytics System[cite: 4]. [cite_start]Designed strictly as a single user personal reflection tool [cite: 62][cite_start], it solves the problem of transient insights by helping users capture, reflect on and identify patterns in their daily experiences and emotional journeys[cite: 27, 28, 42]. 
+
+[cite_start]The frontend is built with Ionic and Angular, delivering a unified, reactive UI across Web and Android platforms[cite: 49, 71].
 
 **Live Application**: [projectmirror.tech](https://projectmirror.tech)
-
-This project is submitted as part of the **Master of Computer Applications** (MCA) program at **Vellore Institute of Technology** (VIT).
 
 ---
 
 ## Key Features
 
-- **Premium Authentication**: One-page, borderless signup and login flows with real-time field synchronization.
-- **NIST & OWASP Compliant**: Granular password complexity rules and military-grade input validation.
-- **Global Support**: Complete Internationalization (i18n) system using JSON-based dictionaries.
-- **Interactive Spaces**: Integrated Chat, "You" Space, and Profile management through a seamless tabbed interface.
-- **Next-Gen Tech**: Built on the latest Angular 20 and Capacitor 8 stack for native-level performance.
-- **Adaptive Design**: Fully responsive UI with automated Dark Mode and HSL-tailored color palettes.
+* [cite_start]**Cross-Platform Interface**: Features a unified application architecture that provides a consistent, mobile-first experience across both Web and Android platforms[cite: 49].
+* [cite_start]**Multimodal Data Capture**: Built with a low-friction interface that supports both voice-to-text and direct text input, allowing users to log reflections in their preferred format[cite: 52, 53].
+* [cite_start]**Secure Authentication System**: Implements robust JWT-based authentication with persistent sessions, balancing security and data privacy with instant user access[cite: 50, 51].
+* [cite_start]**Core UI Architecture**: The presentation layer is categorized into interactive modules including Login, Chat, Visualizer, and Profile management[cite: 80, 81, 82].
+* [cite_start]**Interactive Growth Dashboard**: Includes dedicated UI components to display AI-driven pattern synthesis and historical reflections to the user[cite: 67].
+* **Adaptive & Global Design**: Fully responsive UI featuring automated Dark Mode, HSL-tailored color palettes, and Internationalization (i18n) support using JSON-based dictionaries.
 
 ---
 
 ## Tech Stack
 
-- **Core**: [Angular 20](https://angular.io/)
-- **UI Framework**: [Ionic 8](https://ionicframework.com/)
-- **Native Bridge**: [Capacitor 8](https://capacitorjs.com/)
-- **Logic**: TypeScript 5.9
-- **Styling**: SCSS (Modular & Component-based)
-- **State Management**: RxJS
+* [cite_start]**Frontend Framework**: Ionic combined with Angular for a unified, reactive user interface[cite: 71].
+* **Native Bridge**: Capacitor 8 for native Android deployment and optimization.
+* **Language & Logic**: TypeScript 5.9 with RxJS for state management.
+* **Styling**: Modular, component-based SCSS.
+* [cite_start]**Communication**: Handles REST requests and JWT token transmission to the Spring Boot microservices backend[cite: 85, 86].
 
 ---
 
 ## Project Structure
 
-Following a production-ready, feature-based architecture:
+[cite_start]Following a feature-based architecture aligned with the presentation layer design[cite: 80]:
 
 ```text
 src/
 ├── app/
-│   ├── core/         # Centralized Services & Guards
-│   ├── features/     # Feature-specific modules (Auth, Tabs, etc.)
+│   ├── core/         # Centralized Services & Auth Guards
+│   ├── features/     # Feature modules (Login, Chat, Visualizer, Profile)
 │   ├── shared/       # Reusable components & shared styles
 │   └── app.routes.ts # Main application routing
 ├── assets/
@@ -58,15 +57,15 @@ src/
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (LTS recommended)
-- [Ionic CLI](https://ionicframework.com/docs/cli) (`npm install -g @ionic/cli`)
-- [Angular CLI](https://angular.io/cli) (`npm install -g @angular/cli`)
+* Node.js (LTS recommended)
+* Ionic CLI (`npm install -g @ionic/cli`)
+* Angular CLI (`npm install -g @angular/cli`)
 
 ### Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/prabhu-tejaa/MIRROR.git
+git clone [https://github.com/prabhu-tejaa/MIRROR.git](https://github.com/prabhu-tejaa/MIRROR.git)
 
 # Install dependencies
 npm install
@@ -77,7 +76,8 @@ npm install
 ```bash
 # Serve locally
 npm run start
-# OR
+
+# OR use the Ionic CLI
 ionic serve
 ```
 
@@ -85,13 +85,13 @@ ionic serve
 
 ## Mobile Development (Android)
 
-MIRЯOЯ is fully optimized for Android deployment via Capacitor.
+[cite_start]MIRЯOЯ is optimized for Android deployment as part of its cross-platform scope[cite: 49].
 
 ```bash
-# Build and sync to Android
+# Build and sync to the Android project
 npm run android:build
 
-# Run with Live Reload (on connected device)
+# Run with Live Reload (on a connected device)
 npm run android:live
 ```
 
@@ -104,27 +104,25 @@ npm run android:live
 | Command | Description |
 | :--- | :--- |
 | `npm run start` | Serves the project locally with hot-reload. |
-| `npm run build` | Builds a production bundle. |
+| `npm run build` | Builds an optimized production bundle. |
 | `npm run lint` | Runs ESLint for code quality checks. |
-| `npm run android:build` | Syncs the codebase to the Android project. |
-| `npm run android:live` | Runs the app on a device with live reload enabled. |
+| `npm run android:build` | Syncs the compiled codebase to the native Android project. |
+| `npm run android:live` | Runs the app on a physical device with live reload enabled. |
 
 ---
 
 ## Developed By
 
-**Prabhu Teja Pamula**
-Reg No: **24EMCA1237**
-Software Engineer
-
-Under the guidance of:
-**Dr. Brijendra Singh**
-Associate Professor
-
-Master of Computer Applications (MCA) Project
-**Vellore Institute of Technology (VIT)**
+[cite_start]**Prabhu Teja Pamula** [cite: 6]
+[cite_start]Register Number: 24EMCA1237 [cite: 7]
 [Portfolio](https://prabhu-tejaa.github.io/portfolio/)
 
----
+**Project Guide:**
+[cite_start]Dr. Brijendra Singh [cite: 11]
+[cite_start]Associate Professor [cite: 12]
 
+[cite_start]Submitted as part of the Master of Computer Applications project at **Vellore Institute of Technology (VIT)**[cite: 1, 14].
+
+---
 *© 2026 MIRЯOЯ Project. Reflect. Discover. Grow.*
+```
