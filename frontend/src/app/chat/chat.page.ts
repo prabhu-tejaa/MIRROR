@@ -1,15 +1,15 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/angular/standalone';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { TranslatePipe } from '../shared/pipes/translate.pipe';
 
 @Component({
-  selector: 'app-tab3',
-  templateUrl: 'tab3.page.html',
-  styleUrls: ['tab3.page.scss'],
+  selector: 'app-chat',
+  templateUrl: 'chat.page.html',
+  styleUrls: ['chat.page.scss'],
   standalone: true,
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, ExploreContainerComponent, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Tab3Page {
-  constructor() {}
+export class ChatPage {
 }

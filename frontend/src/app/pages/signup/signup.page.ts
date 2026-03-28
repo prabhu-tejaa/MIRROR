@@ -1,10 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation, AlertController } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { strictPasswordValidator } from '../../shared/validators/password.validator';
 
 
 @Component({
@@ -12,30 +14,30 @@ import { eye, eyeOff } from 'ionicons/icons';
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupPage implements OnInit {
+  private fb = inject(FormBuilder);
+  private navCtrl = inject(NavController);
+  private animationCtrl = inject(AnimationController);
+  private alertCtrl = inject(AlertController);
+  private cdr = inject(ChangeDetectorRef);
+
   signupForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
   showPassword = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private navCtrl: NavController,
-    private animationCtrl: AnimationController,
-    private alertCtrl: AlertController,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor() {
     addIcons({ eye, eyeOff });
   }
 
   ngOnInit() {
     this.signupForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(32), Validators.pattern('^[a-zA-Z0-9_.-]+$')]],
+      email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'), Validators.maxLength(254)]],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), strictPasswordValidator]],
       agreeTos: [false, [Validators.requiredTrue]]
     });
   }

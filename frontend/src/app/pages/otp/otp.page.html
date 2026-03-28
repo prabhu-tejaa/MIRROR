@@ -3,13 +3,13 @@
 
 <div class="branding-header">
       <div class="title-glow">
-        <h1 class="splash-title" style="font-size: clamp(2.5rem, 10vw, 3.8rem);">O T P</h1>
+        <h1 class="splash-title" style="font-size: clamp(2.5rem, 10vw, 3.8rem);">{{ 'OTP.HEADER' | translate }}</h1>
       </div>
-      <p class="splash-tagline">Enter your verification code.</p>
+      <p class="splash-tagline">{{ 'OTP.TAGLINE' | translate }}</p>
     </div>
 
 <div class="glassy-card">
-      <h2 class="form-title">Verify Email</h2>
+      <h2 class="form-title">{{ 'OTP.TITLE' | translate }}</h2>
       
       <form [formGroup]="otpForm" (ngSubmit)="onVerify()">
         
@@ -34,29 +34,29 @@
           
           @if (isSubmitted && f['code'].errors) {
             <div class="error-msg" style="text-align: center;">
-              @if (f['code'].errors['required']) { <span>Verification code required</span> }
-              @if (f['code'].errors['pattern']) { <span>Must be a 6-digit number</span> }
+              @if (f['code'].errors['required']) { <span>{{ 'OTP.ERROR_REQUIRED' | translate }}</span> }
+              @if (f['code'].errors['pattern']) { <span>{{ 'OTP.ERROR_PATTERN' | translate }}</span> }
             </div>
           }
         </div>
 
         <ion-button type="submit" expand="block" class="premium-btn" [disabled]="isLoading">
           @if (!isLoading) {
-            <span>{{ flowContext === 'reset' ? 'Verify & Reset' : 'Verify & Enter' }}</span>
+            <span>{{ flowContext === 'reset' ? ('OTP.BUTTON_VERIFY_RESET' | translate) : ('OTP.BUTTON_VERIFY_ENTER' | translate) }}</span>
           } @else {
             <ion-spinner name="crescent" color="dark"></ion-spinner>
           }
         </ion-button>
         
         <div class="signup-wrapper">
-          <span class="signup-text">Didn't receive the code? 
+          <span class="signup-text">{{ 'OTP.DIDNT_RECEIVE' | translate }}
             @if (resendTimer > 0) {
               <span class="signup-link" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;">Resend in {{resendTimer}}s</span>
             } @else {
-              <a (click)="resendCode()" class="signup-link">Resend</a>
+              <a (click)="resendCode()" class="signup-link">{{ 'OTP.RESEND' | translate }}</a>
             }
           </span><br><br>
-          <span class="signup-text"><a (click)="goToLogin()" class="signup-link">Back to Login</a></span>
+          <span class="signup-text"><a (click)="goToLogin()" class="signup-link">{{ 'OTP.BACK_LINK' | translate }}</a></span>
         </div>
       </form>
     </div>

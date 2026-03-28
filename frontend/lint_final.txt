@@ -1,0 +1,26 @@
+﻿
+Linting "app"...
+
+C:\Users\91951\Desktop\Prabhu Teja\VIT\sem4\Project and Seminar\Project\MIRROR_PROJECT\MIRROR\frontend\src\app\pages\forgot-password\forgot-password.page.ts
+  26:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+C:\Users\91951\Desktop\Prabhu Teja\VIT\sem4\Project and Seminar\Project\MIRROR_PROJECT\MIRROR\frontend\src\app\pages\login\login.page.ts
+  31:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+C:\Users\91951\Desktop\Prabhu Teja\VIT\sem4\Project and Seminar\Project\MIRROR_PROJECT\MIRROR\frontend\src\app\pages\otp\otp.page.ts
+  35:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+C:\Users\91951\Desktop\Prabhu Teja\VIT\sem4\Project and Seminar\Project\MIRROR_PROJECT\MIRROR\frontend\src\app\pages\reset-password\reset-password.page.ts
+  29:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+C:\Users\91951\Desktop\Prabhu Teja\VIT\sem4\Project and Seminar\Project\MIRROR_PROJECT\MIRROR\frontend\src\app\pages\signup\signup.page.ts
+  31:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+C:\Users\91951\Desktop\Prabhu Teja\VIT\sem4\Project and Seminar\Project\MIRROR_PROJECT\MIRROR\frontend\src\app\services\connection.service.ts
+  14:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+C:\Users\91951\Desktop\Prabhu Teja\VIT\sem4\Project and Seminar\Project\MIRROR_PROJECT\MIRROR\frontend\src\app\shared\starfield\starfield.component.ts
+  68:15  error  Prefer using the inject() function over constructor parameter injection. Use Angular's migration schematic to automatically refactor: ng generate @angular/core:inject  @angular-eslint/prefer-inject
+
+Γ£û 7 problems (7 errors, 0 warnings)
+

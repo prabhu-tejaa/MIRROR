@@ -1,20 +1,28 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonSpinner } from '@ionic/angular/standalone';
 import { StarfieldService } from '../../shared/starfield/starfield.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-otp',
   templateUrl: './otp.page.html',
   styleUrls: ['./otp.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OtpPage implements OnInit, OnDestroy {
+  private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private navCtrl = inject(NavController);
+  private animationCtrl = inject(AnimationController);
+  private starfieldSvc = inject(StarfieldService);
+  private cdr = inject(ChangeDetectorRef);
+
   @ViewChild('hiddenInput') hiddenInput!: IonInput;
   otpForm!: FormGroup;
   isSubmitted = false;
@@ -24,14 +32,7 @@ export class OtpPage implements OnInit, OnDestroy {
   private timerInterval: any;
   flowContext: string = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private navCtrl: NavController,
-    private animationCtrl: AnimationController,
-    private starfieldSvc: StarfieldService,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor() {
     this.route.queryParams.subscribe(params => {
       this.flowContext = params['flow'] || 'signup';
     });
@@ -39,7 +40,7 @@ export class OtpPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.otpForm = this.fb.group({
-      code: ['', [Validators.required, Validators.pattern('^[0-9]{6}$')]]
+      code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6), Validators.pattern('^[0-9]{6}$')]]
     });
   }
 
@@ -140,7 +141,7 @@ export class OtpPage implements OnInit, OnDestroy {
           this.starfieldSvc.formHeart();
           setTimeout(() => {
             this.starfieldSvc.disperse();
-            this.navCtrl.navigateRoot('/tabs/tab1', { 
+            this.navCtrl.navigateRoot('/tabs/you', { 
               animation: this.getCrossfadeAnimation()
             });
           }, 3000);

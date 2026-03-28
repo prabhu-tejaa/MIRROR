@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { 
   IonHeader, 
   IonToolbar, 
@@ -7,11 +7,17 @@ import {
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { ExploreContainerComponent } from '../explore-container/explore-container.component';
+import { TranslatePipe } from '../shared/pipes/translate.pipe';
+
+import { StarfieldService } from '../shared/starfield/starfield.service';
+import { IonFab, IonFabButton, IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { heart, infinite } from 'ionicons/icons';
 
 @Component({
-  selector: 'app-tab1',
-  templateUrl: 'tab1.page.html',
-  styleUrls: ['tab1.page.scss'],
+  selector: 'app-you',
+  templateUrl: 'you.page.html',
+  styleUrls: ['you.page.scss'],
   standalone: true,
   imports: [
     CommonModule,
@@ -19,12 +25,31 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
     IonToolbar, 
     IonTitle, 
     IonContent, 
-    ExploreContainerComponent
+    IonFab,
+    IonFabButton,
+    IonIcon,
+    ExploreContainerComponent,
+    TranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Tab1Page implements OnInit {
-  constructor(private cdr: ChangeDetectorRef) {}
+export class YouPage implements OnInit {
+  isHeart = false;
+  private cdr = inject(ChangeDetectorRef);
+  private starfieldSvc = inject(StarfieldService);
+
+  constructor() {
+    addIcons({ heart, infinite });
+  }
+  
+  toggleHeart() {
+    this.isHeart = !this.isHeart;
+    if (this.isHeart) {
+      this.starfieldSvc.formHeart();
+    } else {
+      this.starfieldSvc.disperse();
+    }
+  }
 
   async ngOnInit() {
     console.log('Ionic is attempting to shake hands with the Backend...');

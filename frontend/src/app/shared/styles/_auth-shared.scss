@@ -1,3 +1,4 @@
+// Common styles for the premium glassy authentication layout
 
 :host {
   background: transparent !important;
@@ -13,7 +14,7 @@ ion-content.transparent-bg {
   --padding-top: 0;
   --padding-bottom: 0;
   --overflow: hidden;
-  overflow: hidden;
+  height: 100%;
 }
 
 ion-content.transparent-bg::part(background) {
@@ -67,28 +68,31 @@ ion-content.transparent-bg::part(background) {
 
 .glassy-card {
   width: 100%;
-  max-width: 400px;
+  max-width: 380px;
   margin: auto 0;
   background: transparent;
   border: none;
-  border-radius: clamp(16px, 4vw, 20px);
+  border-radius: clamp(12px, 3vw, 20px);
   padding: clamp(1.5rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 2rem);
+  animation: formFadeUp 1s cubic-bezier(0.25, 1, 0.5, 1) 0.3s backwards;
   flex-shrink: 1;
-  overflow-y: auto;
-  max-height: 90vh;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .form-title {
   text-align: center;
   font-weight: 400;
-  font-size: clamp(1.3rem, 5vw, 1.6rem);
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
   letter-spacing: 0.1em;
-  margin-bottom: clamp(0.5rem, 1vh, 1rem);
+  margin-bottom: clamp(1rem, 2.5vh, 1.5rem);
   color: rgba(255, 255, 255, 0.9);
 }
 
 .input-group {
-  margin-bottom: clamp(1.2rem, 3vh, 1.8rem);
+  margin-bottom: clamp(1rem, 2.5vh, 1.5rem);
   position: relative;
 }
 
@@ -122,6 +126,7 @@ ion-content.transparent-bg::part(background) {
   font-size: clamp(0.7rem, 2vw, 0.8rem);
   margin-top: 0.6rem;
   padding-left: 0.5rem;
+  animation: fadeIn 0.3s ease;
 
   span {
     display: block;
@@ -178,28 +183,33 @@ ion-content.transparent-bg::part(background) {
 
 .signup-wrapper {
   text-align: center;
-  margin-top: clamp(1.2rem, 4vh, 2rem);
+  margin-top: clamp(0.5rem, 1.5vh, 1.2rem);
 }
 
-.signup-text {
-  font-size: clamp(0.85rem, 2.8vw, 0.95rem);
-  color: rgba(255, 255, 255, 0.7);
+@media (max-height: 750px) {
+  .branding-header { margin-bottom: 0.5rem; }
+  .splash-title { font-size: clamp(2rem, 8vw, 3rem); }
+  .splash-tagline { opacity: 0.8; }
+  .glassy-card { padding: 1rem; }
+  .form-title { margin-bottom: 0.5rem; }
+  .premium-btn { margin-top: 0.8rem; height: 42px; }
+  .input-group { margin-bottom: 0.8rem; }
 }
 
-.signup-link {
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    color: #b4c8ff;
-    text-shadow: 0 0 10px rgba(180, 200, 255, 0.5);
-  }
+@media (max-height: 600px) {
+  .branding-header { margin-bottom: 0.2rem; }
+  .splash-title { font-size: clamp(1.8rem, 7vw, 2.5rem); }
+  .glassy-card { max-height: 85vh; padding: 0.8rem; }
+  .form-title { font-size: 1.1rem; margin-bottom: 0.4rem; }
 }
 
+@media (max-height: 500px) {
+  .branding-header { display: none; }
+  .login-wrapper { padding: 0.2rem; }
+  .glassy-card { max-height: 98vh; width: 95%; }
+}
+
+// Global Animations
 @keyframes titleGlow {
   0% {
     text-shadow:
@@ -228,5 +238,3 @@ ion-content.transparent-bg::part(background) {
   0% { opacity: 0; }
   100% { opacity: 1; }
 }
-
-.otp-input { text-align: center; letter-spacing: clamp(0.5em, 2vw, 1em); font-size: clamp(1.2rem, 5vw, 1.5rem); font-weight: 600; }

@@ -1,37 +1,39 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonSpinner, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { strictPasswordValidator } from '../../shared/validators/password.validator';
 
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.page.html',
   styleUrls: ['./reset-password.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResetPasswordPage implements OnInit {
+  private fb = inject(FormBuilder);
+  private navCtrl = inject(NavController);
+  private animationCtrl = inject(AnimationController);
+  private cdr = inject(ChangeDetectorRef);
+
   resetForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
   showPassword = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private navCtrl: NavController,
-    private animationCtrl: AnimationController,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor() {
     addIcons({ eye, eyeOff });
   }
 
   ngOnInit() {
     this.resetForm = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), strictPasswordValidator]]
     });
   }
 

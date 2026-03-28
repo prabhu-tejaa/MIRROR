@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
@@ -6,35 +6,37 @@ import { IonContent, IonInput, IonButton, IonIcon, IonSpinner } from '@ionic/ang
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
 import { StarfieldService } from '../../shared/starfield/starfield.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { strictPasswordValidator } from '../../shared/validators/password.validator';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPage implements OnInit {
+  private fb = inject(FormBuilder);
+  private navCtrl = inject(NavController);
+  private animationCtrl = inject(AnimationController);
+  private starfieldSvc = inject(StarfieldService);
+  private cdr = inject(ChangeDetectorRef);
+
   loginForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
   showPassword = false;
 
-  constructor(
-    private fb: FormBuilder, 
-    private navCtrl: NavController,
-    private animationCtrl: AnimationController,
-    private starfieldSvc: StarfieldService,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor() {
     addIcons({ eye, eyeOff });
   }
 
   ngOnInit() {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'), Validators.maxLength(254)]],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), strictPasswordValidator]]
     });
   }
 
@@ -92,7 +94,7 @@ export class LoginPage implements OnInit {
 
         setTimeout(() => {
           this.starfieldSvc.disperse();
-          this.navCtrl.navigateRoot('/tabs/tab1', { 
+          this.navCtrl.navigateRoot('/tabs/you', { 
             animation: this.getCrossfadeAnimation()
           });
         }, 3000);

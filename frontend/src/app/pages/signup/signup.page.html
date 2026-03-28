@@ -1,90 +1,103 @@
 <ion-content [fullscreen]="true" class="transparent-bg">
   <div class="login-wrapper">
 
-<div class="branding-header" style="margin-bottom: clamp(1.5rem, 4vh, 2.5rem);">
+    <div class="branding-header" style="margin-bottom: clamp(1rem, 3vh, 2rem);">
       <div class="title-glow">
-        <h1 class="splash-title" style="font-size: clamp(2rem, 8vw, 3rem);">J O I N</h1>
+        <h1 class="splash-title" style="font-size: clamp(2rem, 8vw, 3rem);">{{ 'SIGNUP.JOIN' | translate }}</h1>
       </div>
-      <p class="splash-tagline">Begin your journey.</p>
+      <p class="splash-tagline">{{ 'SIGNUP.TAGLINE' | translate }}</p>
     </div>
 
-<div class="glassy-card">
-      <h2 class="form-title">Create Account</h2>
+    <div class="glassy-card signup-card">
+      <h2 class="form-title">{{ 'SIGNUP.TITLE' | translate }}</h2>
       
       <form [formGroup]="signupForm" (ngSubmit)="onSignup()">
-        
-        <div class="input-group">
-          <ion-input
-            formControlName="username"
-            type="text"
-            placeholder="Username"
-            class="glassy-input"
-          ></ion-input>
-          @if (isSubmitted && f['username'].errors) {
-            <div class="error-msg">
-              @if (f['username'].errors['required']) { <span>Username required</span> }
-              @if (f['username'].errors['minlength']) { <span>Minimum 3 characters</span> }
-            </div>
-          }
+
+        <!-- Row 1: Username + Email side by side -->
+        <div class="input-row">
+
+          <div class="input-group">
+            <ion-input
+              formControlName="username"
+              type="text"
+              [placeholder]="'SIGNUP.PLACEHOLDER_USERNAME' | translate"
+              class="glassy-input"
+            ></ion-input>
+            @if (isSubmitted && f['username'].errors) {
+              <div class="error-msg">
+                @if (f['username'].errors['required']) { <span>{{ 'SIGNUP.ERROR_USERNAME_REQUIRED' | translate }}</span> }
+                @if (f['username'].errors['minlength']) { <span>{{ 'SIGNUP.ERROR_USERNAME_MINLENGTH' | translate }}</span> }
+                @if (f['username'].errors['maxlength']) { <span>{{ 'SIGNUP.ERROR_USERNAME_MAXLENGTH' | translate }}</span> }
+                @if (f['username'].errors['pattern']) { <span>{{ 'SIGNUP.ERROR_USERNAME_PATTERN' | translate }}</span> }
+              </div>
+            }
+          </div>
+
+          <div class="input-group">
+            <ion-input
+              formControlName="email"
+              type="email"
+              [placeholder]="'SIGNUP.PLACEHOLDER_EMAIL' | translate"
+              class="glassy-input"
+            ></ion-input>
+            @if (isSubmitted && f['email'].errors) {
+              <div class="error-msg">
+                @if (f['email'].errors['required']) { <span>{{ 'SIGNUP.ERROR_EMAIL_REQUIRED' | translate }}</span> }
+                @if (f['email'].errors['email'] || f['email'].errors['pattern']) { <span>{{ 'SIGNUP.ERROR_EMAIL_INVALID' | translate }}</span> }
+                @if (f['email'].errors['maxlength']) { <span>{{ 'SIGNUP.ERROR_EMAIL_MAXLENGTH' | translate }}</span> }
+              </div>
+            }
+          </div>
+
         </div>
 
-        <div class="input-group">
-          <ion-input
-            formControlName="email"
-            type="email"
-            placeholder="Email Address"
-            class="glassy-input"
-          ></ion-input>
-          @if (isSubmitted && f['email'].errors) {
-            <div class="error-msg">
-              @if (f['email'].errors['required']) { <span>Email required</span> }
-              @if (f['email'].errors['email']) { <span>Must be a valid email</span> }
-            </div>
-          }
-        </div>
-
+        <!-- Row 2: Password full width -->
         <div class="input-group">
           <ion-input
             formControlName="password"
             [type]="showPassword ? 'text' : 'password'"
-            placeholder="Password"
+            [placeholder]="'SIGNUP.PLACEHOLDER_PASSWORD' | translate"
             class="glassy-input"
           >
             <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" (click)="showPassword = !showPassword" style="font-size: 1.4rem; margin-right: 0.5rem; cursor: pointer; color: #888888;"></ion-icon>
           </ion-input>
           @if (isSubmitted && f['password'].errors) {
-            <div class="error-msg">
-              @if (f['password'].errors['required']) { <span>Password required</span> }
-              @if (f['password'].errors['minlength']) { <span>Minimum 6 characters</span> }
+            <div class="error-msg password-errors">
+              @if (f['password'].errors['required']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_REQUIRED' | translate }}</span> }
+              @if (f['password'].errors['minlength']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span> }
+              @if (f['password'].errors['maxlength']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_MAXLENGTH' | translate }}</span> }
+              @if (f['password'].errors['missingUpper']) { <span>{{ 'SIGNUP.ERROR_PASS_UPPER' | translate }}</span> }
+              @if (f['password'].errors['missingLower']) { <span>{{ 'SIGNUP.ERROR_PASS_LOWER' | translate }}</span> }
+              @if (f['password'].errors['missingNumeric']) { <span>{{ 'SIGNUP.ERROR_PASS_NUMBER' | translate }}</span> }
+              @if (f['password'].errors['missingSpecial']) { <span>{{ 'SIGNUP.ERROR_PASS_SYMBOL' | translate }}</span> }
             </div>
           }
         </div>
 
-
-        <div class="tos-wrapper input-group" style="padding: 0 0.5rem; margin-bottom: 1.5rem;">
+        <div class="tos-wrapper input-group" style="padding: 0 0.5rem; margin-bottom: 1rem;">
           <div class="tos-container" style="display: flex; align-items: center; justify-content: flex-start; gap: 12px;">
             <ion-checkbox formControlName="agreeTos" class="glassy-checkbox"></ion-checkbox>
             <span class="tos-text" style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.8); line-height: 1.4;">
-              I agree to the <a (click)="openTerms($event)" class="tos-link" style="color: white; font-weight: 600; text-decoration: underline; cursor: pointer; position: relative; z-index: 10;">Terms & Privacy Policy</a>
+              {{ 'SIGNUP.TOS_PREFIX' | translate }}<a (click)="openTerms($event)" class="tos-link" style="color: white; font-weight: 600; text-decoration: underline; cursor: pointer; position: relative; z-index: 10;">{{ 'SIGNUP.TOS_LINK' | translate }}</a>
             </span>
           </div>
           @if (isSubmitted && f['agreeTos'].errors) {
             <div class="error-msg" style="margin-top: 0.5rem;">
-              @if (f['agreeTos'].errors['required']) { <span>You must agree to continue</span> }
+              @if (f['agreeTos'].errors['required']) { <span>{{ 'SIGNUP.ERROR_TOS_REQUIRED' | translate }}</span> }
             </div>
           }
         </div>
 
         <ion-button type="submit" expand="block" class="premium-btn" [disabled]="isLoading">
           @if (!isLoading) {
-            <span>Create Account</span>
+            <span>{{ 'SIGNUP.BUTTON_CREATE' | translate }}</span>
           } @else {
             <ion-spinner name="crescent" color="dark"></ion-spinner>
           }
         </ion-button>
         
         <div class="signup-wrapper">
-          <span class="signup-text">Already have an account? <a (click)="goToLogin()" class="signup-link">Log In</a></span>
+          <span class="signup-text">{{ 'SIGNUP.LOGIN_PREFIX' | translate }}<a (click)="goToLogin()" class="signup-link">{{ 'SIGNUP.LOGIN_LINK' | translate }}</a></span>
         </div>
       </form>
     </div>
