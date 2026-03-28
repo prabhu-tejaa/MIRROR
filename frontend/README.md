@@ -1,4 +1,3 @@
-```markdown
 # MIRЯOЯ — Reflect. Discover. Grow.
 
 ![Version](https://img.shields.io/badge/version-0.0.1-gold?style=for-the-badge)
@@ -6,7 +5,7 @@
 ![Mobile](https://img.shields.io/badge/Ionic-8-3880FF?style=for-the-badge&logo=ionic)
 ![Platform](https://img.shields.io/badge/Android-Support-3DDC84?style=for-the-badge&logo=android)
 
-**MIRЯOЯ** is an AI Powered Memory and Emotional Analytics System. Designed strictly as a single-user personal reflection tool, it solves the problem of transient insights by helping users capture, reflect on, and identify patterns in their daily experiences and emotional journeys. 
+**MIRЯOЯ** is an AI Powered Memory and Emotional Analytics System. Designed strictly as a single user personal reflection tool, it solves the problem of transient insights by helping users capture, reflect on and identify patterns in their daily experiences and emotional journeys. 
 
 The frontend is built with Ionic and Angular, delivering a unified, reactive UI across Web and Android platforms.
 
@@ -16,8 +15,8 @@ The frontend is built with Ionic and Angular, delivering a unified, reactive UI 
 
 ## Key Features
 
-* **Cross-Platform Interface**: Features a unified application architecture that provides a consistent, mobile-first experience across both Web and Android platforms.
-* **Multimodal Data Capture**: Built with a low-friction interface that supports both voice-to-text and direct text input, allowing users to log reflections in their preferred format.
+* **Cross-Platform Interface**: Features a unified application architecture that provides a consistent, mobile first experience across both Web and Android platforms.
+* **Multimodal Data Capture**: Built with a lowfriction interface that supports both voice-to-text and direct text input, allowing users to log reflections in their preferred format.
 * **Secure Authentication System**: Implements robust JWT-based authentication with persistent sessions, balancing security and data privacy with instant user access.
 * **Core UI Architecture**: The presentation layer is categorized into interactive modules including Login, Chat, Visualizer, and Profile management.
 * **Interactive Growth Dashboard**: Includes dedicated UI components to display AI-driven pattern synthesis and historical reflections to the user.
@@ -66,7 +65,7 @@ src/
 
 ```bash
 # Clone the repository
-git clone [https://github.com/prabhu-tejaa/MIRROR.git](https://github.com/prabhu-tejaa/MIRROR.git)
+git clone https://github.com/prabhu-tejaa/MIRROR.git
 
 # Install dependencies
 npm install
@@ -115,7 +114,7 @@ npm run android:live
 ## Developed By
 
 **Prabhu Teja Pamula**
-Register Number: 24EMCA1237
+Registration Number: 24EMCA1237
 [Portfolio](https://prabhu-tejaa.github.io/portfolio/)
 
 **Project Guide:**
@@ -126,4 +125,3 @@ Submitted as part of the Master of Computer Applications project at **Vellore In
 
 ---
 *© 2026 MIRЯOЯ Project. Reflect. Discover. Grow.*
-```
