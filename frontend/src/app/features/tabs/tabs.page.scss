@@ -7,20 +7,21 @@ ion-tab-bar {
   
   // Responsive Positioning
   position: fixed;
-  bottom: clamp(10px, 2vh, 25px);
+  bottom: clamp(1rem, 4vh, 2rem);
+  bottom: calc(clamp(1rem, 4vh, 2rem) + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   
   // Fluid Dimensions
   width: calc(100% - clamp(20px, 4vw, 40px));
   max-width: 500px;
-  height: clamp(60px, 8vh, 80px);
+  height: clamp(65px, 9vh, 85px);
   
   // Premium Styling
-  border-radius: clamp(15px, 2.5vw, 30px);
+  border-radius: clamp(15px, 3vw, 35px);
   padding: 0 10px;
-  padding-bottom: 0; // Handled by bottom clamp
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  padding-bottom: 0; // Positioning handled by bottom calc
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   z-index: 1000;
 }
@@ -45,7 +46,7 @@ ion-tab-button {
   }
 
   ion-icon {
-    font-size: clamp(20px, 3vw, 24px);
+    font-size: clamp(22px, 3.5vw, 26px);
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
@@ -62,6 +63,7 @@ ion-tab-button {
 // Ensure the content doesn't get hidden behind the floating bar
 :host-context(ion-tabs) {
   ion-router-outlet {
-    --padding-bottom: clamp(80px, 12vh, 120px);
+    --padding-bottom: clamp(75px, 12vh, 100px); // Base padding
+    --padding-bottom: calc(clamp(75px, 12vh, 100px) + env(safe-area-inset-bottom, 0px));
   }
 }

@@ -56,7 +56,7 @@ export class LoginPage implements OnInit {
   private getCrossfadeAnimation(): any {
     return (baseEl: any, opts?: any): Animation => {
       const rootTransition = this.animationCtrl.create()
-        .duration(800)
+        .duration(400)
         .easing('ease-in-out');
 
       if (opts.enteringEl) {

@@ -2,7 +2,8 @@
 
 .scroll-fab-container {
   position: fixed;
-  bottom: clamp(1.5rem, 5vh, 2.5rem);
+  bottom: clamp(1.2rem, 4.5vh, 2.22rem); // Base margin for Web/Physical Buttons
+  bottom: calc(clamp(1.2rem, 4.5vh, 2.22rem) + env(safe-area-inset-bottom, 0px)); // Safe area for Notched Devices
   right: clamp(1.5rem, 5vw, 2rem);
   z-index: 1000;
   pointer-events: none;
