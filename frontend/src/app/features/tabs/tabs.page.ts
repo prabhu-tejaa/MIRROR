@@ -2,7 +2,7 @@ import { Component, EnvironmentInjector, inject, ChangeDetectionStrategy } from 
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { triangle, ellipse, square, person, chatbubbles, personCircle } from 'ionicons/icons';
-import { TranslatePipe } from '../shared/pipes/translate.pipe';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-tabs',
