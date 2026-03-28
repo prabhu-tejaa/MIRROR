@@ -38,6 +38,126 @@
 
 // Password errors shown in 2-col mini grid to save vertical space
 
+// Rules List styling
+.rules-list {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.rule-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  .rule-index {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4d8dff;
+    background: rgba(77, 141, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 2px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+.bottom-spacer {
+  height: clamp(40px, 8vh, 80px);
+}
+
+// Modal Premium Styles
+.premium-modal {
+  --background: #000000;
+  --backdrop-opacity: 0.8;
+  
+  // Create a centered card look on all devices
+  --width: 90%;
+  --height: 75vh;
+  --max-width: 600px;
+  --max-height: 800px;
+  --border-radius: 24px;
+  --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.8);
+
+  &::part(content) {
+    background: #000000;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    overflow: hidden;
+  }
+}
+
+.glassy-toolbar {
+  --background: #000000;
+  --color: white;
+  --border-width: 0;
+  padding: 8px 16px;
+  
+  ion-title {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    font-size: 1.1rem;
+  }
+}
+
+.close-btn {
+  --color: rgba(255, 255, 255, 0.6);
+  --background-hover: rgba(255, 255, 255, 0.1);
+  --border-radius: 50%;
+  font-size: 1.5rem;
+}
+
+.glassy-modal-content {
+  --background: #000000;
+  --color: white;
+  --padding-start: 1.5rem;
+  --padding-end: 1.5rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+.glassy-body {
+  h2 {
+    font-weight: 600;
+    font-size: 1.8rem;
+    margin: 1.5rem 0 1rem;
+    background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.7;
+    font-size: 1.05rem;
+  }
+
+  .section-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}
+
 // On narrow mobile collapse to single column
 @media (max-width: 480px) {
   .signup-card {

@@ -98,9 +98,50 @@
           <div class="tos-container" style="display: flex; align-items: center; justify-content: flex-start; gap: 12px;">
             <ion-checkbox formControlName="agreeTos" class="glassy-checkbox"></ion-checkbox>
             <span class="tos-text" style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.8); line-height: 1.4;">
-              {{ 'SIGNUP.TOS_PREFIX' | translate }}<a (click)="openTerms($event)" href="javascript:void(0)" class="signup-link" style="display: inline-block; padding: 2px 4px; position: relative; z-index: 100;">{{ 'SIGNUP.TOS_LINK' | translate }}</a>
+              {{ 'SIGNUP.TOS_PREFIX' | translate }}<a id="open-terms" class="signup-link" style="display: inline-block; padding: 2px 4px; position: relative; z-index: 100;">{{ 'SIGNUP.TOS_LINK' | translate }}</a>
             </span>
           </div>
+
+          <!-- Premium Inline Modal for Terms -->
+          <ion-modal trigger="open-terms" class="premium-modal" #modal>
+            <ng-template>
+              <ion-header class="ion-no-border">
+                <ion-toolbar class="glassy-toolbar">
+                  <ion-title>{{ 'SIGNUP.TOS_LINK' | translate }}</ion-title>
+                  <ion-buttons slot="end">
+                    <ion-button (click)="modal.dismiss()" class="close-btn">
+                      <ion-icon name="close-outline"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content class="ion-padding glassy-modal-content">
+                <div class="modal-body glassy-body">
+                  <div class="section-badge">{{ 'SIGNUP.TOS_LINK' | translate }}</div>
+                  <h2>Welcome to Mirror</h2>
+                  <p>By joining, you agree to our placeholder terms. Ensure you are acting legally and morally on our platform.</p>
+                  
+                  <div class="rules-list">
+                    <div class="rule-item">
+                      <span class="rule-index">01</span>
+                      <p>Respect others: Treat everyone with dignity and kindness.</p>
+                    </div>
+                    <div class="rule-item">
+                      <span class="rule-index">02</span>
+                      <p>No illegal content: Zero tolerance for any unlawful behavior.</p>
+                    </div>
+                    <div class="rule-item">
+                      <span class="rule-index">03</span>
+                      <p>Be excellent to each other: Foster a positive and supportive community.</p>
+                    </div>
+                  </div>
+                  
+                  <div class="bottom-spacer"></div>
+                </div>
+              </ion-content>
+            </ng-template>
+          </ion-modal>
+
           @if (isSubmitted && f['agreeTos'].errors) {
             <div class="error-msg" style="margin-top: 0.5rem;">
               @if (f['agreeTos'].errors['required']) { <span>{{ 'SIGNUP.ERROR_TOS_REQUIRED' | translate }}</span> }
