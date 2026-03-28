@@ -1,4 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { 
+  Component, 
+  Input, 
+  ChangeDetectionStrategy
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 
@@ -8,11 +12,10 @@ import { IonicModule } from '@ionic/angular';
   imports: [CommonModule, IonicModule],
   templateUrl: './no-internet.component.html',
   styleUrls: ['./no-internet.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NoInternetComponent implements OnInit {
+export class NoInternetComponent {
   @Input() isVisible: boolean = false;
 
   constructor() { }
-
-  ngOnInit() { }
 }

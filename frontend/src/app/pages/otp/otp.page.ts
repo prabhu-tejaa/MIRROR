@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -11,7 +11,8 @@ import { StarfieldService } from '../../shared/starfield/starfield.service';
   templateUrl: './otp.page.html',
   styleUrls: ['./otp.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner]
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OtpPage implements OnInit, OnDestroy {
   @ViewChild('hiddenInput') hiddenInput!: IonInput;
@@ -28,7 +29,8 @@ export class OtpPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private animationCtrl: AnimationController,
-    private starfieldSvc: StarfieldService
+    private starfieldSvc: StarfieldService,
+    private cdr: ChangeDetectorRef
   ) {
     this.route.queryParams.subscribe(params => {
       this.flowContext = params['flow'] || 'signup';
@@ -49,6 +51,7 @@ export class OtpPage implements OnInit, OnDestroy {
     this.isLoading = false;
     this.isSubmitted = false;
     this.otpForm.reset();
+    this.cdr.markForCheck();
     
     this.startResendTimer();
   }
@@ -64,6 +67,7 @@ export class OtpPage implements OnInit, OnDestroy {
     if (this.timerInterval) clearInterval(this.timerInterval);
     this.timerInterval = setInterval(() => {
       this.resendTimer--;
+      this.cdr.markForCheck();
       if (this.resendTimer <= 0) {
         clearInterval(this.timerInterval);
       }
@@ -72,8 +76,7 @@ export class OtpPage implements OnInit, OnDestroy {
 
   resendCode() {
     if (this.resendTimer === 0) {
-
-this.startResendTimer();
+      this.startResendTimer();
     }
   }
 
@@ -122,6 +125,7 @@ this.startResendTimer();
     this.isSubmitted = true;
     if (this.otpForm.valid) {
       this.isLoading = true;
+      this.cdr.markForCheck();
       setTimeout(() => {
         const card = document.querySelector('.glassy-card') as HTMLElement;
         const header = document.querySelector('.branding-header') as HTMLElement;
@@ -129,23 +133,21 @@ this.startResendTimer();
         if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
         
         if (this.flowContext === 'reset') {
-          
           this.navCtrl.navigateRoot('/reset-password', {
             animation: this.getCrossfadeAnimation()
           });
         } else {
-          
           this.starfieldSvc.formHeart();
-          
           setTimeout(() => {
             this.starfieldSvc.disperse();
-            
             this.navCtrl.navigateRoot('/tabs/tab1', { 
               animation: this.getCrossfadeAnimation()
             });
           }, 3000);
         }
       }, 1000);
+    } else {
+      this.cdr.markForCheck();
     }
   }
 

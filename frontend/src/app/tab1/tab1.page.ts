@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { 
   IonHeader, 
   IonToolbar, 
@@ -21,14 +21,16 @@ import { ExploreContainerComponent } from '../explore-container/explore-containe
     IonContent, 
     ExploreContainerComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Tab1Page implements OnInit {
-  constructor() {}
+  constructor(private cdr: ChangeDetectorRef) {}
 
   async ngOnInit() {
     console.log('Ionic is attempting to shake hands with the Backend...');
     setTimeout(async () => {
        await this.testBackendConnection();
+       this.cdr.markForCheck();
     }, 1000);
   }
 

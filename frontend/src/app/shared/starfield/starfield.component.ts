@@ -20,7 +20,7 @@ import { StarfieldService } from './starfield.service';
 })
 export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
 
-@Input() starCount = 150;
+  @Input() starCount = 150;
   @Input() speed = 0.05;
   @Input() minSize = 0.2;
   @Input() maxSize = 1.2;
@@ -37,7 +37,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() fadeInDuration = 1500;
   @Input() respectReducedMotion = true;
 
-@ViewChild('canvas', { static: true })
+  @ViewChild('canvas', { static: true })
   private canvasRef!: ElementRef<HTMLCanvasElement>;
 
   private ctx!: CanvasRenderingContext2D;
@@ -72,7 +72,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(private ngZone: NgZone, private starfieldSvc: StarfieldService) {}
 
-ngOnInit(): void {
+  ngOnInit(): void {
     this.sub1 = this.starfieldSvc.formHeart$.subscribe(() => {
       this.targetShape = 'heart';
       const CX = this.width / 2;
@@ -80,12 +80,9 @@ ngOnInit(): void {
       const S = Math.min(this.width, this.height) / 45;
 
       for (let star of this.stars) {
-        
         const t = Math.random() * Math.PI * 2;
-        
         const rScale = 0.6 + Math.random() * 0.5;
-
-const xBase = 16 * Math.pow(Math.sin(t), 3);
+        const xBase = 16 * Math.pow(Math.sin(t), 3);
         const yBase = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
 
         star.targetX = CX + S * xBase * rScale;
@@ -98,7 +95,6 @@ const xBase = 16 * Math.pow(Math.sin(t), 3);
       this.targetShape = 'none';
       for (let star of this.stars) {
         star.isTransitioning = false;
-        
         star.vx += (Math.random() - 0.5) * 0.4;
         star.vy += (Math.random() - 0.5) * 0.4;
       }
@@ -156,7 +152,7 @@ const xBase = 16 * Math.pow(Math.sin(t), 3);
     }
   }
 
-@HostListener('window:mousemove', ['$event'])
+  @HostListener('window:mousemove', ['$event'])
   onMouseMove(e: MouseEvent): void {
     if (!this.parallax) return;
     this.pointerX = (e.clientX / this.width - 0.5) * 2;
@@ -171,9 +167,12 @@ const xBase = 16 * Math.pow(Math.sin(t), 3);
     this.pointerY = (t.clientY / this.height - 0.5) * 2;
   }
 
-private resize(): void {
+  private resize(): void {
     const canvas = this.canvasRef.nativeElement;
     const parent = canvas.parentElement!;
+    const oldWidth = this.width;
+    const oldHeight = this.height;
+    
     this.width = parent.clientWidth;
     this.height = parent.clientHeight;
     
@@ -182,9 +181,22 @@ private resize(): void {
     canvas.style.width = this.width + 'px';
     canvas.style.height = this.height + 'px';
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+
+    // Scale existing stars to fill the new dimensions
+    if (oldWidth > 0 && oldHeight > 0) {
+      const scaleX = this.width / oldWidth;
+      const scaleY = this.height / oldHeight;
+      
+      for (const star of this.stars) {
+        star.x *= scaleX;
+        star.y *= scaleY;
+        if (star.targetX !== undefined) star.targetX *= scaleX;
+        if (star.targetY !== undefined) star.targetY *= scaleY;
+      }
+    }
   }
 
-private initStars(): void {
+  private initStars(): void {
     this.stars = [];
     for (let i = 0; i < this.starCount; i++) {
       this.stars.push(this.createStar(true));
@@ -215,16 +227,15 @@ private initStars(): void {
       x, y, size, baseOpacity: opacity, opacity, color, depth,
       vx: Math.cos(angle) * starSpeed,
       vy: Math.sin(angle) * starSpeed,
-      
       twinkleSpeed: 0.002 + Math.random() * 0.008,
       twinklePhase: Math.random() * Math.PI * 2,
     };
   }
 
-private renderNebulaLayer(): void {
+  private renderNebulaLayer(): void {
     if (!this.nebulaGlow) return;
 
-this.nebulaCanvas = document.createElement('canvas');
+    this.nebulaCanvas = document.createElement('canvas');
     this.nebulaCanvas.width = this.width * this.dpr;
     this.nebulaCanvas.height = this.height * this.dpr;
     const nCtx = this.nebulaCanvas.getContext('2d')!;
@@ -257,7 +268,7 @@ this.nebulaCanvas = document.createElement('canvas');
     }
   }
 
-private scheduleMeteor(): void {
+  private scheduleMeteor(): void {
     const [min, max] = this.shootingStarInterval;
     const delay = min + Math.random() * (max - min);
     this.meteorTimeout = setTimeout(() => {
@@ -288,7 +299,7 @@ private scheduleMeteor(): void {
     });
   }
 
-private animate = (): void => {
+  private animate = (): void => {
     if (this.paused) return;
     this.draw();
     if (!this.reducedMotion) {
@@ -306,19 +317,18 @@ private animate = (): void => {
       globalAlpha = Math.min(1, elapsed / this.fadeInDuration);
     }
 
-ctx.globalAlpha = 1;
+    ctx.globalAlpha = 1;
     ctx.fillStyle = this.backgroundColor;
     ctx.fillRect(0, 0, width, height);
 
-if (this.nebulaGlow && this.nebulaCanvas) {
+    if (this.nebulaGlow && this.nebulaCanvas) {
       ctx.globalAlpha = globalAlpha;
       ctx.drawImage(this.nebulaCanvas, 0, 0, width, height);
     }
 
-const px = this.parallax ? this.pointerX * this.parallaxStrength : 0;
+    const px = this.parallax ? this.pointerX * this.parallaxStrength : 0;
     const py = this.parallax ? this.pointerY * this.parallaxStrength : 0;
 
-ctx.globalAlpha = globalAlpha;
     for (const star of this.stars) {
       const drawX = star.x + px * star.depth;
       const drawY = star.y + py * star.depth;
@@ -333,15 +343,14 @@ ctx.globalAlpha = globalAlpha;
       );
     }
 
-this.drawMeteors(globalAlpha);
-
+    this.drawMeteors(globalAlpha);
     ctx.globalAlpha = 1;
   }
 
   private drawMeteors(globalAlpha: number): void {
     const { ctx } = this;
 
-for (const s of this.sparkles) {
+    for (const s of this.sparkles) {
       ctx.globalAlpha = s.life * globalAlpha * 0.7;
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(s.x - s.size, s.y - s.size, s.size * 2, s.size * 2);
@@ -354,7 +363,7 @@ for (const s of this.sparkles) {
       const tailX = m.x - dirX * m.length;
       const tailY = m.y - dirY * m.length;
 
-const gradient = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+      const gradient = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
       gradient.addColorStop(0, `rgba(255, 255, 255, ${m.life * globalAlpha})`);
       gradient.addColorStop(0.3, `rgba(200, 220, 255, ${m.life * 0.6 * globalAlpha})`);
       gradient.addColorStop(1, 'rgba(180, 160, 255, 0)');
@@ -367,7 +376,7 @@ const gradient = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
       ctx.lineTo(tailX, tailY);
       ctx.stroke();
 
-ctx.globalAlpha = m.life * 0.9 * globalAlpha;
+      ctx.globalAlpha = m.life * 0.9 * globalAlpha;
       ctx.fillStyle = '#ffffff';
       ctx.beginPath();
       ctx.arc(m.x, m.y, m.width * 1.5, 0, Math.PI * 2);
@@ -375,14 +384,13 @@ ctx.globalAlpha = m.life * 0.9 * globalAlpha;
     }
   }
 
-private update(): void {
+  private update(): void {
     const margin = 10;
 
     for (let i = 0; i < this.stars.length; i++) {
       const star = this.stars[i];
       
       if (this.targetShape === 'heart' && star.isTransitioning && star.targetX !== undefined && star.targetY !== undefined) {
-        
         star.x += (star.targetX - star.x) * 0.04;
         star.y += (star.targetY - star.y) * 0.04;
       } else {
@@ -392,7 +400,6 @@ private update(): void {
 
       if (this.twinkle) {
         star.twinklePhase += star.twinkleSpeed;
-        
         star.opacity = star.baseOpacity * (0.8 + 0.2 * Math.sin(star.twinklePhase));
       }
 
@@ -404,13 +411,13 @@ private update(): void {
       }
     }
 
-for (let i = this.meteors.length - 1; i >= 0; i--) {
+    for (let i = this.meteors.length - 1; i >= 0; i--) {
       const m = this.meteors[i];
       m.x += m.vx;
       m.y += m.vy;
       m.life -= m.decay;
 
-if (m.life > 0.2 && this.sparkles.length < 30 && Math.random() > 0.5) {
+      if (m.life > 0.2 && this.sparkles.length < 30 && Math.random() > 0.5) {
         this.sparkles.push({
           x: m.x + (Math.random() - 0.5) * 3,
           y: m.y + (Math.random() - 0.5) * 3,

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { StarfieldComponent } from './shared/starfield/starfield.component';
@@ -17,6 +17,7 @@ import { map } from 'rxjs/operators';
     StarfieldComponent,
     NoInternetComponent
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
   private connectionService = inject(ConnectionService);

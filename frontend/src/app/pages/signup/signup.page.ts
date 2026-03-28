@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation, AlertController } from '@ionic/angular';
@@ -12,7 +12,8 @@ import { eye, eyeOff } from 'ionicons/icons';
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox]
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupPage implements OnInit {
   signupForm!: FormGroup;
@@ -24,7 +25,8 @@ export class SignupPage implements OnInit {
     private fb: FormBuilder,
     private navCtrl: NavController,
     private animationCtrl: AnimationController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({ eye, eyeOff });
   }
@@ -82,13 +84,17 @@ export class SignupPage implements OnInit {
     this.isSubmitted = true;
     if (this.signupForm.valid) {
       this.isLoading = true;
+      this.cdr.markForCheck();
       setTimeout(() => {
         this.isLoading = false;
+        this.cdr.markForCheck();
         this.navCtrl.navigateRoot('/otp', { 
           queryParams: { flow: 'signup' },
           animation: this.getCrossfadeAnimation()
         });
       }, 1500);
+    } else {
+      this.cdr.markForCheck();
     }
   }
 

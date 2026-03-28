@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
-import { IonContent, IonInput, IonButton, IonSpinner, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonInput, IonButton, IonSpinner } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.page.html',
   styleUrls: ['./forgot-password.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner]
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ForgotPasswordPage implements OnInit {
   forgotForm!: FormGroup;
@@ -19,7 +20,8 @@ export class ForgotPasswordPage implements OnInit {
   constructor(
     private fb: FormBuilder,
     private navCtrl: NavController,
-    private animationCtrl: AnimationController
+    private animationCtrl: AnimationController,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -58,13 +60,15 @@ export class ForgotPasswordPage implements OnInit {
     this.isSubmitted = true;
     if (this.forgotForm.valid) {
       this.isLoading = true;
+      this.cdr.markForCheck();
       
       const emailValue = this.forgotForm.value.email;
 
-setTimeout(() => {
+      setTimeout(() => {
         this.isLoading = false;
+        this.cdr.markForCheck();
 
-if (emailValue.toLowerCase() === 'none@mirror.com') {
+        if (emailValue.toLowerCase() === 'none@mirror.com') {
           this.forgotForm.controls['email'].setErrors({ notFound: true });
         } else {
           this.navCtrl.navigateForward('/otp', {
@@ -73,6 +77,8 @@ if (emailValue.toLowerCase() === 'none@mirror.com') {
           });
         }
       }, 1500);
+    } else {
+      this.cdr.markForCheck();
     }
   }
 
