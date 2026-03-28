@@ -1,0 +1,76 @@
+{
+  "FORGOT_PASSWORD": {
+    "HEADER": "R E S E T",
+    "TAGLINE": "Recover your access.",
+    "TITLE": "Forgot Password",
+    "INSTRUCTIONS": "Enter email to receive a reset code.",
+    "PLACEHOLDER_EMAIL": "Account Email",
+    "ERROR_EMAIL_REQUIRED": "Email is required",
+    "ERROR_EMAIL_INVALID": "Must be a valid email format",
+    "ERROR_EMAIL_NOTFOUND": "No active account found for this email.",
+    "BUTTON_SEND": "Send OTP",
+    "BACK_LINK": "Back to Login"
+  },
+  "OTP": {
+    "HEADER": "O T P",
+    "TAGLINE": "Enter your verification code.",
+    "TITLE": "Verify Email",
+    "ERROR_REQUIRED": "Verification code required",
+    "ERROR_PATTERN": "Must be a 6-digit number",
+    "BUTTON_VERIFY_RESET": "Verify & Reset",
+    "BUTTON_VERIFY_ENTER": "Verify & Enter",
+    "DIDNT_RECEIVE": "Didn't receive the code? ",
+    "RESEND_IN": "Resend in {{resendTimer}}s",
+    "RESEND": "Resend",
+    "BACK_LINK": "Back to Login"
+  },
+  "RESET_PASSWORD": {
+    "HEADER": "R E S E T",
+    "TAGLINE": "Secure your access.",
+    "TITLE": "Enter New Password",
+    "PLACEHOLDER_PASSWORD": "New Password",
+    "ERROR_PASSWORD_REQUIRED": "Password required",
+    "ERROR_PASSWORD_MINLENGTH": "Minimum 6 characters",
+    "BUTTON_SAVE": "Save & Login",
+    "BACK_LINK": "Back to Login"
+  },
+  "LOGIN": {
+    "TAGLINE": "Reflect. Discover. Grow.",
+    "TITLE": "Welcome",
+    "PLACEHOLDER_EMAIL": "Email Address",
+    "ERROR_EMAIL_REQUIRED": "Email is required",
+    "ERROR_EMAIL_INVALID": "Must be a valid email",
+    "PLACEHOLDER_PASSWORD": "Password",
+    "ERROR_PASSWORD_REQUIRED": "Password is required",
+    "ERROR_PASSWORD_MINLENGTH": "Password must be at least 6 characters",
+    "BUTTON_SIGNIN": "Sign In",
+    "FORGOT_LINK": "Forgot Password?",
+    "SIGNUP_PREFIX": "Don't have an account? ",
+    "SIGNUP_LINK": "Sign Up"
+  },
+  "SIGNUP": {
+    "JOIN": "J O I N",
+    "TAGLINE": "Begin your journey.",
+    "TITLE": "Create Account",
+    "PLACEHOLDER_USERNAME": "Username",
+    "ERROR_USERNAME_REQUIRED": "Username required",
+    "ERROR_USERNAME_MINLENGTH": "Minimum 3 characters",
+    "PLACEHOLDER_EMAIL": "Email Address",
+    "ERROR_EMAIL_REQUIRED": "Email required",
+    "ERROR_EMAIL_INVALID": "Must be a valid email",
+    "PLACEHOLDER_PASSWORD": "Password",
+    "ERROR_PASSWORD_REQUIRED": "Password required",
+    "ERROR_PASSWORD_MINLENGTH": "Minimum 6 characters",
+    "TOS_PREFIX": "I agree to the ",
+    "TOS_LINK": "Terms & Privacy Policy",
+    "ERROR_TOS_REQUIRED": "You must agree to continue",
+    "BUTTON_CREATE": "Create Account",
+    "LOGIN_PREFIX": "Already have an account? ",
+    "LOGIN_LINK": "Log In"
+  },
+  "TABS": {
+    "YOU": "You",
+    "CHAT": "Chat",
+    "PROFILE": "Profile"
+  }
+}

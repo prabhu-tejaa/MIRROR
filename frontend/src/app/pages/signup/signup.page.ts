@@ -5,6 +5,7 @@ import { NavController, AnimationController, Animation, AlertController } from '
 import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 
 @Component({
@@ -12,7 +13,7 @@ import { eye, eyeOff } from 'ionicons/icons';
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupPage implements OnInit {

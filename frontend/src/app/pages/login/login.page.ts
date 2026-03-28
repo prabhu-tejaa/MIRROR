@@ -6,13 +6,14 @@ import { IonContent, IonInput, IonButton, IonIcon, IonSpinner } from '@ionic/ang
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
 import { StarfieldService } from '../../shared/starfield/starfield.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPage implements OnInit {
