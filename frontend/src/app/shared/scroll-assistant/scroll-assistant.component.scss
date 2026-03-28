@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600&display=swap');
+
+.scroll-fab-container {
+  position: fixed;
+  bottom: clamp(1.2rem, 4.5vh, 2.22rem); // Base margin for Web/Physical Buttons
+  bottom: calc(clamp(1.2rem, 4.5vh, 2.22rem) + env(safe-area-inset-bottom, 0px)); // Safe area for Notched Devices
+  right: clamp(1.5rem, 5vw, 2rem);
+  z-index: 1000;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+
+  &.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+  }
+}
+
+.glassy-fab {
+  width: clamp(48px, 12vw, 56px);
+  height: clamp(48px, 12vw, 56px);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 0 15px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  outline: none;
+
+  ion-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 15px 45px rgba(180, 200, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.4);
+
+    ion-icon {
+      transform: translateY(-2px);
+    }
+  }
+
+  &:active {
+    transform: translateY(0) scale(0.9);
+  }
+}
+
+// Ensure it looks great on small devices
+@media (max-width: 480px) {
+  .scroll-fab-container {
+    bottom: 1.2rem;
+    right: 1.2rem;
+  }
+}

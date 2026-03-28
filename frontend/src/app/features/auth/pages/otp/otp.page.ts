@@ -101,7 +101,7 @@ export class OtpPage implements OnInit, OnDestroy {
   private getCrossfadeAnimation(): any {
     return (baseEl: any, opts?: any): Animation => {
       const rootTransition = this.animationCtrl.create()
-        .duration(800)
+        .duration(400)
         .easing('ease-in-out');
 
       if (opts.enteringEl) {
@@ -138,9 +138,9 @@ export class OtpPage implements OnInit, OnDestroy {
             animation: this.getCrossfadeAnimation()
           });
         } else {
-          this.starfieldSvc.formHeart();
+          this.starfieldSvc.setShape('heart');
           setTimeout(() => {
-            this.starfieldSvc.disperse();
+            this.starfieldSvc.setShape('none');
             this.navCtrl.navigateRoot('/tabs/you', { 
               animation: this.getCrossfadeAnimation()
             });

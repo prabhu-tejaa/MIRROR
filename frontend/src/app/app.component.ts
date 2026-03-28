@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { StarfieldComponent } from './shared/starfield/starfield.component';
 import { NoInternetComponent } from './shared/no-internet/no-internet.component';
+import { ScrollAssistantComponent } from './shared/scroll-assistant/scroll-assistant.component';
 import { ConnectionService } from './core/services/connection.service';
 import { map } from 'rxjs/operators';
 
@@ -15,7 +16,8 @@ import { map } from 'rxjs/operators';
     IonApp, 
     IonRouterOutlet, 
     StarfieldComponent,
-    NoInternetComponent
+    NoInternetComponent,
+    ScrollAssistantComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

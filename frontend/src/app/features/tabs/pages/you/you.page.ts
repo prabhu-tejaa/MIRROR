@@ -3,16 +3,16 @@ import {
   IonHeader, 
   IonToolbar, 
   IonTitle, 
-  IonContent 
+  IonContent,
+  IonIcon 
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
 import { ExploreContainerComponent } from '../../../../explore-container/explore-container.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
-import { StarfieldService } from '../../../../shared/starfield/starfield.service';
-import { IonFab, IonFabButton, IonIcon } from '@ionic/angular/standalone';
+import { StarfieldService, ShapeType } from '../../../../shared/starfield/starfield.service';
 import { addIcons } from 'ionicons';
-import { heart, infinite } from 'ionicons/icons';
+import { heart, infinite, star, ellipseOutline, squareOutline, happyOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-you',
@@ -25,8 +25,6 @@ import { heart, infinite } from 'ionicons/icons';
     IonToolbar, 
     IonTitle, 
     IonContent, 
-    IonFab,
-    IonFabButton,
     IonIcon,
     ExploreContainerComponent,
     TranslatePipe
@@ -34,21 +32,22 @@ import { heart, infinite } from 'ionicons/icons';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class YouPage implements OnInit {
-  isHeart = false;
+  currentShape: ShapeType = 'none';
   private cdr = inject(ChangeDetectorRef);
   private starfieldSvc = inject(StarfieldService);
 
   constructor() {
-    addIcons({ heart, infinite });
+    addIcons({ heart, infinite, star, ellipseOutline, squareOutline, happyOutline });
   }
   
-  toggleHeart() {
-    this.isHeart = !this.isHeart;
-    if (this.isHeart) {
-      this.starfieldSvc.formHeart();
+  setShape(type: ShapeType) {
+    if (this.currentShape === type) {
+      this.currentShape = 'none';
     } else {
-      this.starfieldSvc.disperse();
+      this.currentShape = type;
     }
+    this.starfieldSvc.setShape(this.currentShape);
+    this.cdr.markForCheck();
   }
 
   async ngOnInit() {

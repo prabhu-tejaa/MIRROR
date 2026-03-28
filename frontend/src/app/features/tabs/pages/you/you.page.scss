@@ -1,20 +1,87 @@
-.heart-toggle {
-  --background: rgba(40, 40, 40, 0.6);
-  --background-activated: rgba(60, 60, 60, 0.8);
-  --color: #ffffff;
-  --border-radius: 50%;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  margin-bottom: clamp(90px, 12vh, 120px);
+.shape-palette-container {
+  position: absolute;
+  bottom: calc(max(80px, 12vh) + env(safe-area-inset-bottom));
+  left: 0;
+  right: 0;
+  width: 100%;
+  padding: 0 1rem;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.shape-palette {
+  display: flex;
+  gap: 0.8rem;
+  padding: 0.8rem 1.2rem;
+  background: rgba(40, 44, 52, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  overflow-x: auto;
+  max-width: 90vw;
+  scrollbar-width: none;
+  pointer-events: auto;
   
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.shape-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 54px;
+  gap: 4px;
+  padding: 8px;
+  border-radius: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  span {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+  }
+
+  &.active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+    ion-icon {
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+    }
+  }
+
+  &.scatter {
+    color: #ff9e9e;
+    
+    ion-icon {
+      animation: pulse 2s infinite;
+    }
+  }
+
   &:active {
     transform: scale(0.9);
   }
+}
 
-  ion-icon {
-    font-size: 24px;
-    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.3));
-  }
+@keyframes pulse {
+  0% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0.6; transform: scale(1); }
 }

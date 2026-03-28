@@ -56,7 +56,7 @@ export class LoginPage implements OnInit {
   private getCrossfadeAnimation(): any {
     return (baseEl: any, opts?: any): Animation => {
       const rootTransition = this.animationCtrl.create()
-        .duration(800)
+        .duration(400)
         .easing('ease-in-out');
 
       if (opts.enteringEl) {
@@ -90,10 +90,10 @@ export class LoginPage implements OnInit {
         if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
         if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
 
-        this.starfieldSvc.formHeart();
+        this.starfieldSvc.setShape('heart');
 
         setTimeout(() => {
-          this.starfieldSvc.disperse();
+          this.starfieldSvc.setShape('none');
           this.navCtrl.navigateRoot('/tabs/you', { 
             animation: this.getCrossfadeAnimation()
           });

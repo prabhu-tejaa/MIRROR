@@ -51,7 +51,7 @@
         <div class="signup-wrapper">
           <span class="signup-text">{{ 'OTP.DIDNT_RECEIVE' | translate }}
             @if (resendTimer > 0) {
-              <span class="signup-link" style="opacity: 0.5; cursor: not-allowed; pointer-events: none;">Resend in {{resendTimer}}s</span>
+              <span style="opacity: 0.5; cursor: not-allowed; pointer-events: none;">Resend in {{resendTimer}}s</span>
             } @else {
               <a (click)="resendCode()" class="signup-link">{{ 'OTP.RESEND' | translate }}</a>
             }
