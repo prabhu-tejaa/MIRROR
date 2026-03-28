@@ -93,5 +93,13 @@
     "YOU": "You",
     "CHAT": "Chat",
     "PROFILE": "Profile"
+  },
+  "SHAPES": {
+    "HEART": "Heart",
+    "STAR": "Star",
+    "CIRCLE": "Circle",
+    "SQUARE": "Square",
+    "SMILEY": "Smile",
+    "SCATTER": "Scatter"
   }
 }

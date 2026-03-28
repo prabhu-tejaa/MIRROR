@@ -138,9 +138,9 @@ export class OtpPage implements OnInit, OnDestroy {
             animation: this.getCrossfadeAnimation()
           });
         } else {
-          this.starfieldSvc.formHeart();
+          this.starfieldSvc.setShape('heart');
           setTimeout(() => {
-            this.starfieldSvc.disperse();
+            this.starfieldSvc.setShape('none');
             this.navCtrl.navigateRoot('/tabs/you', { 
               animation: this.getCrossfadeAnimation()
             });

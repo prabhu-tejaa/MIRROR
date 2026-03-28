@@ -1,21 +1,20 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 
+export type ShapeType = 'none' | 'heart' | 'circle' | 'star' | 'square' | 'smiley';
+
 @Injectable({
   providedIn: 'root'
 })
 export class StarfieldService {
-  private formHeartSource = new Subject<void>();
-  formHeart$ = this.formHeartSource.asObservable();
+  private shapeSource = new Subject<ShapeType>();
+  shape$ = this.shapeSource.asObservable();
 
-  private disperseSource = new Subject<void>();
-  disperse$ = this.disperseSource.asObservable();
-
-  formHeart() {
-    this.formHeartSource.next();
+  setShape(type: ShapeType) {
+    this.shapeSource.next(type);
   }
 
   disperse() {
-    this.disperseSource.next();
+    this.shapeSource.next('none');
   }
 }

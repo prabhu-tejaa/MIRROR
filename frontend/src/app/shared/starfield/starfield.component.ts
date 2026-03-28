@@ -1,17 +1,18 @@
 import { Component, Input, OnDestroy, ElementRef, ViewChild, AfterViewInit, OnInit, NgZone, HostListener, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { StarfieldService } from './starfield.service';
+import { ShapeType, StarfieldService } from './starfield.service';
 
 @Component({
   selector: 'app-starfield',
   standalone: true,
+  imports: [CommonModule],
   templateUrl: './starfield.component.html',
   styleUrls: ['./starfield.component.scss'],
 })
 export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngZone = inject(NgZone);
   private starfieldSvc = inject(StarfieldService);
-
 
   @Input() starCount = 100;
   @Input() speed = 0.05;
@@ -48,9 +49,8 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   private paused = false;
   private visibilityHandler = () => this.onVisibilityChange();
 
-  private targetShape: 'none' | 'heart' = 'none';
-  private sub1!: Subscription;
-  private sub2!: Subscription;
+  private targetShape: ShapeType = 'none';
+  private shapeSub!: Subscription;
 
   private pointerX = 0;
   private pointerY = 0;
@@ -63,44 +63,16 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     '#ffffff', '#ffffff', '#ffffff', '#ffffff',
     '#cce5ff', '#b8d4ff', '#ffefc1', '#ffd6a5', '#e8d0ff', '#ffc9de',
   ];
+
   ngOnInit(): void {
-    this.sub1 = this.starfieldSvc.formHeart$.subscribe(() => {
-      this.targetShape = 'heart';
-      const CX = this.width / 2;
-      const CY = this.height / 2;
-      const S = Math.min(this.width, this.height) / 45;
-
-      for (let star of this.stars) {
-        const t = Math.random() * Math.PI * 2;
-        const rScale = 0.6 + Math.random() * 0.5;
-        const xBase = 16 * Math.pow(Math.sin(t), 3);
-        const yBase = 
-          13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-
-        star.startX = star.x;
-        star.startY = star.y;
-        star.targetX = CX + S * xBase * rScale;
-        star.targetY = CY - S * yBase * rScale;
-        star.transitionProgress = 0;
-        star.transitionDelay = Math.random() * 800;
-        star.transitionDuration = 1200 + Math.random() * 1000;
-        star.isTransitioning = true;
-        
-        // Calculate a "curve" direction (perpendicular to the direct path)
-        const dx = star.targetX - star.startX;
-        const dy = star.targetY - star.startY;
-        const dist = Math.hypot(dx, dy);
-        star.curveX = (-dy / dist) * (20 + Math.random() * 40);
-        star.curveY = (dx / dist) * (20 + Math.random() * 40);
-        if (Math.random() > 0.5) {
-          star.curveX *= -1;
-          star.curveY *= -1;
-        }
-      }
+    this.shapeSub = this.starfieldSvc.shape$.subscribe((type: ShapeType) => {
+      this.setTargetShape(type);
     });
+  }
 
-    this.sub2 = this.starfieldSvc.disperse$.subscribe(() => {
-      this.targetShape = 'none';
+  private setTargetShape(type: ShapeType) {
+    this.targetShape = type;
+    if (type === 'none') {
       for (let star of this.stars) {
         star.isTransitioning = false;
         star.transitionProgress = 0;
@@ -108,7 +80,92 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
         star.vy += (Math.random() - 0.5) * 0.4;
         star.color = star.originalColor || star.color;
       }
-    });
+      return;
+    }
+
+    const CX = this.width / 2;
+    const CY = this.height / 2;
+    const S = Math.min(this.width, this.height) / 45;
+
+    for (let i = 0; i < this.stars.length; i++) {
+      const star = this.stars[i];
+      const t = Math.random() * Math.PI * 2;
+      let xBase = 0;
+      let yBase = 0;
+      let rScale = 0.6 + Math.random() * 0.5;
+
+      switch (type) {
+        case 'heart':
+          xBase = 16 * Math.pow(Math.sin(t), 3);
+          yBase = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+          yBase *= -1; // Correct orientation
+          break;
+        case 'circle':
+          xBase = 20 * Math.cos(t);
+          yBase = 20 * Math.sin(t);
+          break;
+        case 'square':
+          const side = Math.floor(Math.random() * 4);
+          const pos = Math.random() * 40 - 20;
+          if (side === 0) { xBase = pos; yBase = -20; }
+          else if (side === 1) { xBase = 20; yBase = pos; }
+          else if (side === 2) { xBase = pos; yBase = 20; }
+          else { xBase = -20; yBase = pos; }
+          rScale = 0.95 + Math.random() * 0.1;
+          break;
+        case 'star':
+          const spikes = 5;
+          const outerRadius = 22;
+          const innerRadius = 10;
+          const rot = Math.PI / 2 * 3;
+          const step = Math.PI / spikes;
+          const pointIndex = Math.floor(Math.random() * (spikes * 2));
+          const pointT = pointIndex * step + rot;
+          const nextT = (pointIndex + 1) * step + rot;
+          const r1 = (pointIndex % 2 === 0) ? outerRadius : innerRadius;
+          const r2 = (pointIndex % 2 === 0) ? innerRadius : outerRadius;
+          const lerp = Math.random();
+          xBase = (r1 * Math.cos(pointT)) + (r2 * Math.cos(nextT) - r1 * Math.cos(pointT)) * lerp;
+          yBase = (r1 * Math.sin(pointT)) + (r2 * Math.sin(nextT) - r1 * Math.sin(pointT)) * lerp;
+          rScale = 0.9 + Math.random() * 0.2;
+          break;
+        case 'smiley':
+          const part = Math.random();
+          if (part < 0.6) {
+            xBase = 20 * Math.cos(t);
+            yBase = 20 * Math.sin(t);
+          } else if (part < 0.7) {
+            xBase = -7 + (Math.random() - 0.5) * 2;
+            yBase = -7 + (Math.random() - 0.5) * 2;
+          } else if (part < 0.8) {
+            xBase = 7 + (Math.random() - 0.5) * 2;
+            yBase = -7 + (Math.random() - 0.5) * 2;
+          } else {
+            const mouthT = Math.PI * 0.2 + Math.random() * Math.PI * 0.6;
+            xBase = 12 * Math.cos(mouthT);
+            yBase = 12 * Math.sin(mouthT);
+          }
+          break;
+      }
+
+      star.startX = star.x;
+      star.startY = star.y;
+      star.targetX = CX + S * xBase * rScale;
+      star.targetY = CY + S * yBase * rScale;
+      star.transitionProgress = 0;
+      star.transitionDelay = Math.random() * 800;
+      star.transitionDuration = 1200 + Math.random() * 1000;
+      star.isTransitioning = true;
+      const dx = star.targetX - star.startX;
+      const dy = star.targetY - star.startY;
+      const dist = Math.hypot(dx, dy);
+      star.curveX = (-dy / dist) * (20 + Math.random() * 40);
+      star.curveY = (dx / dist) * (20 + Math.random() * 40);
+      if (Math.random() > 0.5) {
+        star.curveX *= -1;
+        star.curveY *= -1;
+      }
+    }
   }
 
   ngAfterViewInit(): void {
@@ -141,8 +198,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    if (this.sub1) this.sub1.unsubscribe();
-    if (this.sub2) this.sub2.unsubscribe();
+    if (this.shapeSub) this.shapeSub.unsubscribe();
     cancelAnimationFrame(this.animationId);
     this.resizeObserver?.disconnect();
     clearTimeout(this.meteorTimeout);
@@ -194,7 +250,6 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     canvas.style.height = this.height + 'px';
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
 
-    // Scale existing stars to fill the new dimensions
     if (oldWidth > 0 && oldHeight > 0) {
       const scaleX = this.width / oldWidth;
       const scaleY = this.height / oldHeight;
@@ -319,7 +374,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.paused) return;
     
     const now = performance.now();
-    const dt = Math.min(now - this.lastTime, 100); // Cap dt at 100ms to avoid huge jumps
+    const dt = Math.min(now - this.lastTime, 100); 
     this.lastTime = now;
 
     this.draw();
@@ -357,7 +412,6 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       ctx.globalAlpha = globalAlpha * star.opacity;
       ctx.fillStyle = star.color;
       
-      // Use simpler rect for stars
       ctx.fillRect(
         drawX - star.size,
         drawY - star.size,
@@ -414,32 +468,26 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     for (let i = 0; i < this.stars.length; i++) {
       const star = this.stars[i];
       
-      if (this.targetShape === 'heart' && star.isTransitioning && star.targetX !== undefined && star.targetY !== undefined) {
+      if (this.targetShape !== 'none' && star.isTransitioning && star.targetX !== undefined && star.targetY !== undefined) {
         if (star.transitionDelay > 0) {
           star.transitionDelay -= dt;
-          // While waiting, still drift slightly for life
           star.x += star.vx * (dt / 16);
           star.y += star.vy * (dt / 16);
         } else {
           star.transitionProgress = Math.min(1, (star.transitionProgress || 0) + dt / star.transitionDuration!);
           
-          // Easing: Cubic Out (smooth deceleration)
           const t = star.transitionProgress;
           const ease = 1 - Math.pow(1 - t, 3);
           
-          // Base interpolated position
           const baseX = star.startX! + (star.targetX - star.startX!) * ease;
           const baseY = star.startY! + (star.targetY - star.startY!) * ease;
           
-          // Add "flow" curve using sine wave that disappears as we arrive
           const curveMagnitude = Math.sin(t * Math.PI) * (1 - t);
           star.x = baseX + (star.curveX || 0) * curveMagnitude;
           star.y = baseY + (star.curveY || 0) * curveMagnitude;
 
-          // Maintain original colors (revert pink/red shift)
           star.color = star.originalColor || star.color;
 
-          // Rhythmic pulse once arrived
           if (t >= 1) {
             const pulse = Math.sin(now / 400 + i) * 1.5;
             star.x = star.targetX + (Math.cos(now / 1000 + i * 0.5) * 2);
