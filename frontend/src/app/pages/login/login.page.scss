@@ -111,7 +111,8 @@ ion-content.transparent-bg::part(background) {
   margin: 0;
   font-family: inherit;
   font-size: clamp(0.9rem, 3vw, 1rem);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  will-change: backdrop-filter, transform;
 
   &.ion-focused, &:focus-within {
     --background: rgba(255, 255, 255, 0.12);
@@ -259,12 +260,10 @@ ion-content.transparent-bg::part(background) {
   0% { 
     opacity: 0; 
     transform: translateX(-100px) scale(0.8);
-    filter: blur(10px);
   }
   100% { 
     opacity: 1; 
     transform: translateX(0) scale(1);
-    filter: blur(0);
   }
 }
 
@@ -272,11 +271,9 @@ ion-content.transparent-bg::part(background) {
   0% { 
     opacity: 0; 
     transform: translateX(100px) scale(0.8);
-    filter: blur(10px);
   }
   100% { 
     opacity: 1; 
     transform: translateX(0) scale(1);
-    filter: blur(0);
   }
 }

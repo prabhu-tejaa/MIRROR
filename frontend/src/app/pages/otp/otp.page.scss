@@ -37,9 +37,10 @@ ion-content.transparent-bg {
   font-size: clamp(1.3rem, 5vw, 1.6rem);
   font-weight: 500;
   color: white;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  will-change: backdrop-filter, transform;
   box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
   pointer-events: none; 
   

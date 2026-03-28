@@ -20,7 +20,7 @@ import { StarfieldService } from './starfield.service';
 })
 export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
 
-  @Input() starCount = 150;
+  @Input() starCount = 100;
   @Input() speed = 0.05;
   @Input() minSize = 0.2;
   @Input() maxSize = 1.2;
@@ -335,6 +335,8 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
 
       ctx.globalAlpha = globalAlpha * star.opacity;
       ctx.fillStyle = star.color;
+      
+      // Use simpler rect for stars
       ctx.fillRect(
         drawX - star.size,
         drawY - star.size,
