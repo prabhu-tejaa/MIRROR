@@ -1,14 +1,15 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TranslationService {
+  private http = inject(HttpClient);
   private currentLang = signal<string>('en');
   private translations = signal<Record<string, any>>({});
 
-  constructor(private http: HttpClient) {
+  constructor() {
     this.loadTranslations(this.currentLang());
   }
 
