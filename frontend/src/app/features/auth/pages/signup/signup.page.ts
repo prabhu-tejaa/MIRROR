@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject }
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation, AlertController } from '@ionic/angular';
-import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox } from '@ionic/angular/standalone';
+import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox, IonAlert } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -14,7 +14,7 @@ import { strictPasswordValidator } from '../../../../shared/validators/password.
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox, TranslatePipe],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox, IonAlert, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupPage implements OnInit {
