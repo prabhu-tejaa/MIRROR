@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { StarfieldComponent } from './shared/starfield/starfield.component';
 import { NoInternetComponent } from './shared/no-internet/no-internet.component';
-import { ConnectionService } from './services/connection.service';
+import { ConnectionService } from './core/services/connection.service';
 import { map } from 'rxjs/operators';
 
 @Component({

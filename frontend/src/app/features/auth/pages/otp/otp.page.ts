@@ -4,8 +4,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { ActivatedRoute } from '@angular/router';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonSpinner } from '@ionic/angular/standalone';
-import { StarfieldService } from '../../shared/starfield/starfield.service';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { StarfieldService } from '../../../../shared/starfield/starfield.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-otp',

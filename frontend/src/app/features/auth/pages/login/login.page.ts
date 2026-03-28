@@ -5,9 +5,9 @@ import { NavController, AnimationController, Animation } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
-import { StarfieldService } from '../../shared/starfield/starfield.service';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { strictPasswordValidator } from '../../shared/validators/password.validator';
+import { StarfieldService } from '../../../../shared/starfield/starfield.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
 
 @Component({
   selector: 'app-login',

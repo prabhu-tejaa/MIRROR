@@ -6,10 +6,10 @@ import {
   IonContent 
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { ExploreContainerComponent } from '../explore-container/explore-container.component';
-import { TranslatePipe } from '../shared/pipes/translate.pipe';
+import { ExploreContainerComponent } from '../../../../explore-container/explore-container.component';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
-import { StarfieldService } from '../shared/starfield/starfield.service';
+import { StarfieldService } from '../../../../shared/starfield/starfield.service';
 import { IonFab, IonFabButton, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { heart, infinite } from 'ionicons/icons';

@@ -2,42 +2,33 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject }
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
-import { IonContent, IonInput, IonButton, IonSpinner, IonIcon } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { eye, eyeOff } from 'ionicons/icons';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { strictPasswordValidator } from '../../shared/validators/password.validator';
+import { IonContent, IonInput, IonButton, IonSpinner } from '@ionic/angular/standalone';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
-  selector: 'app-reset-password',
-  templateUrl: './reset-password.page.html',
-  styleUrls: ['./reset-password.page.scss'],
+  selector: 'app-forgot-password',
+  templateUrl: './forgot-password.page.html',
+  styleUrls: ['./forgot-password.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, TranslatePipe],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ResetPasswordPage implements OnInit {
+export class ForgotPasswordPage implements OnInit {
   private fb = inject(FormBuilder);
   private navCtrl = inject(NavController);
   private animationCtrl = inject(AnimationController);
   private cdr = inject(ChangeDetectorRef);
 
-  resetForm!: FormGroup;
+  forgotForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
-  showPassword = false;
-
-  constructor() {
-    addIcons({ eye, eyeOff });
-  }
-
   ngOnInit() {
-    this.resetForm = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), strictPasswordValidator]]
+    this.forgotForm = this.fb.group({
+      email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'), Validators.maxLength(254)]]
     });
   }
 
-  get f() { return this.resetForm.controls; }
+  get f() { return this.forgotForm.controls; }
 
   private getCrossfadeAnimation(): any {
     return (baseEl: any, opts?: any): Animation => {
@@ -65,16 +56,24 @@ export class ResetPasswordPage implements OnInit {
 
   onReset() {
     this.isSubmitted = true;
-    if (this.resetForm.valid) {
+    if (this.forgotForm.valid) {
       this.isLoading = true;
       this.cdr.markForCheck();
+      
+      const emailValue = this.forgotForm.value.email;
+
       setTimeout(() => {
         this.isLoading = false;
         this.cdr.markForCheck();
-        
-        this.navCtrl.navigateRoot('/login', { 
-          animation: this.getCrossfadeAnimation()
-        });
+
+        if (emailValue.toLowerCase() === 'none@mirror.com') {
+          this.forgotForm.controls['email'].setErrors({ notFound: true });
+        } else {
+          this.navCtrl.navigateForward('/otp', {
+            queryParams: { flow: 'reset' },
+            animation: this.getCrossfadeAnimation()
+          });
+        }
       }, 1500);
     } else {
       this.cdr.markForCheck();
@@ -82,7 +81,7 @@ export class ResetPasswordPage implements OnInit {
   }
 
   goToLogin() {
-    this.navCtrl.navigateRoot('/login', { 
+    this.navCtrl.navigateBack('/login', { 
       animation: this.getCrossfadeAnimation() 
     });
   }

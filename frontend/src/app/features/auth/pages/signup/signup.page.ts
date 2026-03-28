@@ -5,8 +5,8 @@ import { NavController, AnimationController, Animation, AlertController } from '
 import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
-import { strictPasswordValidator } from '../../shared/validators/password.validator';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
 
 
 @Component({
