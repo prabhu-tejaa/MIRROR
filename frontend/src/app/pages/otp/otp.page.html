@@ -1,16 +1,14 @@
 <ion-content [fullscreen]="true" class="transparent-bg">
   <div class="login-wrapper">
-    
-    <!-- Premium Branding Header -->
-    <div class="branding-header">
+
+<div class="branding-header">
       <div class="title-glow">
         <h1 class="splash-title" style="font-size: clamp(2.5rem, 10vw, 3.8rem);">O T P</h1>
       </div>
       <p class="splash-tagline">Enter your verification code.</p>
     </div>
 
-    <!-- Glassy Authentication Form -->
-    <div class="glassy-card">
+<div class="glassy-card">
       <h2 class="form-title">Verify Email</h2>
       
       <form [formGroup]="otpForm" (ngSubmit)="onVerify()">
@@ -46,7 +44,7 @@
           @if (!isLoading) {
             <span>{{ flowContext === 'reset' ? 'Verify & Reset' : 'Verify & Enter' }}</span>
           } @else {
-            <ion-spinner name="crescent" color="light"></ion-spinner>
+            <ion-spinner name="crescent" color="dark"></ion-spinner>
           }
         </ion-button>
         

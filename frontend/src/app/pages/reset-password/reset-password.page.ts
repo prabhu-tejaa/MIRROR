@@ -1,58 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonSpinner, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
-
-export function passwordsMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
-  const password = control.get('password');
-  const confirmPassword = control.get('confirmPassword');
-
-  if (!password || !confirmPassword) return null;
-  
-  if (confirmPassword.errors && !confirmPassword.errors['mismatch']) {
-    return null;
-  }
-
-  if (password.value !== confirmPassword.value) {
-    confirmPassword.setErrors({ mismatch: true });
-    return { mismatch: true };
-  } else {
-    confirmPassword.setErrors(null);
-    return null;
-  }
-}
 
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.page.html',
   styleUrls: ['./reset-password.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon]
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ResetPasswordPage implements OnInit {
   resetForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
   showPassword = false;
-  showConfirmPassword = false;
 
   constructor(
     private fb: FormBuilder,
     private navCtrl: NavController,
-    private animationCtrl: AnimationController
+    private animationCtrl: AnimationController,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({ eye, eyeOff });
   }
 
   ngOnInit() {
     this.resetForm = this.fb.group({
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]]
-    }, { 
-      validators: passwordsMatchValidator 
+      password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
@@ -86,13 +65,17 @@ export class ResetPasswordPage implements OnInit {
     this.isSubmitted = true;
     if (this.resetForm.valid) {
       this.isLoading = true;
+      this.cdr.markForCheck();
       setTimeout(() => {
         this.isLoading = false;
-        // Password fully reset! Boot immediately back into Login 
+        this.cdr.markForCheck();
+        
         this.navCtrl.navigateRoot('/login', { 
           animation: this.getCrossfadeAnimation()
         });
       }, 1500);
+    } else {
+      this.cdr.markForCheck();
     }
   }
 

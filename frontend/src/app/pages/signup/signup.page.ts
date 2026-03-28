@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation, AlertController } from '@ionic/angular';
@@ -6,45 +6,27 @@ import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox } fro
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons';
 
-// Custom validator ensuring Passwords Match
-export function passwordsMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
-  const password = control.get('password');
-  const confirmPassword = control.get('confirmPassword');
-
-  if (!password || !confirmPassword) return null;
-  
-  if (confirmPassword.errors && !confirmPassword.errors['mismatch']) {
-    return null;
-  }
-
-  if (password.value !== confirmPassword.value) {
-    confirmPassword.setErrors({ mismatch: true });
-    return { mismatch: true };
-  } else {
-    confirmPassword.setErrors(null);
-    return null;
-  }
-}
 
 @Component({
   selector: 'app-signup',
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox]
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupPage implements OnInit {
   signupForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
   showPassword = false;
-  showConfirmPassword = false;
 
   constructor(
     private fb: FormBuilder,
     private navCtrl: NavController,
     private animationCtrl: AnimationController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({ eye, eyeOff });
   }
@@ -54,10 +36,7 @@ export class SignupPage implements OnInit {
       username: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]],
       agreeTos: [false, [Validators.requiredTrue]]
-    }, { 
-      validators: passwordsMatchValidator 
     });
   }
 
@@ -105,13 +84,17 @@ export class SignupPage implements OnInit {
     this.isSubmitted = true;
     if (this.signupForm.valid) {
       this.isLoading = true;
+      this.cdr.markForCheck();
       setTimeout(() => {
         this.isLoading = false;
+        this.cdr.markForCheck();
         this.navCtrl.navigateRoot('/otp', { 
           queryParams: { flow: 'signup' },
           animation: this.getCrossfadeAnimation()
         });
       }, 1500);
+    } else {
+      this.cdr.markForCheck();
     }
   }
 

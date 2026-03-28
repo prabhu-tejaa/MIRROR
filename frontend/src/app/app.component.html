@@ -1,5 +1,7 @@
 <ion-app>
-  <!-- Global Starfield Background -->
+  
   <app-starfield></app-starfield>
   <ion-router-outlet></ion-router-outlet>
+
+<app-no-internet [isVisible]="(isOffline$ | async) || false"></app-no-internet>
 </ion-app>

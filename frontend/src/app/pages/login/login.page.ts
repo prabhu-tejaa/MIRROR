@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
@@ -12,7 +12,8 @@ import { StarfieldService } from '../../shared/starfield/starfield.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon]
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPage implements OnInit {
   loginForm!: FormGroup;
@@ -24,7 +25,8 @@ export class LoginPage implements OnInit {
     private fb: FormBuilder, 
     private navCtrl: NavController,
     private animationCtrl: AnimationController,
-    private starfieldSvc: StarfieldService
+    private starfieldSvc: StarfieldService,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({ eye, eyeOff });
   }
@@ -37,7 +39,6 @@ export class LoginPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    // Ensuring caching layers from Ionic Router reliably un-hide upon returning from logged-in domains
     const card = document.querySelector('.glassy-card') as HTMLElement;
     const header = document.querySelector('.branding-header') as HTMLElement;
     if (card) { card.style.opacity = '1'; card.style.transition = 'none'; }
@@ -45,6 +46,7 @@ export class LoginPage implements OnInit {
     this.isLoading = false;
     this.isSubmitted = false;
     this.loginForm.reset();
+    this.cdr.markForCheck();
   }
 
   get f() { return this.loginForm.controls; }
@@ -77,28 +79,26 @@ export class LoginPage implements OnInit {
     this.isSubmitted = true;
     if (this.loginForm.valid) {
       this.isLoading = true;
-      
-      // Phase 1: Simulate network verification (1000ms)
+      this.cdr.markForCheck();
+
       setTimeout(() => {
-        // Fade out foreground UI elements smoothly mapping focus exclusively onto Background contexts
         const card = document.querySelector('.glassy-card') as HTMLElement;
         const header = document.querySelector('.branding-header') as HTMLElement;
         
         if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
         if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
-        
-        // Phase 2: Transmit event to Starfield Engine transforming generic distributions into clustered Heart formations
+
         this.starfieldSvc.formHeart();
-        
-        // Phase 3: Hold sequence visualizing Heart structure, orchestrate global Dispersion parameters, and execute unified crossfader dispatch
+
         setTimeout(() => {
           this.starfieldSvc.disperse();
           this.navCtrl.navigateRoot('/tabs/tab1', { 
             animation: this.getCrossfadeAnimation()
           });
         }, 3000);
-
       }, 1000);
+    } else {
+      this.cdr.markForCheck();
     }
   }
 
