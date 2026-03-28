@@ -1,4 +1,4 @@
-import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Network } from '@capacitor/network';
 
@@ -6,9 +6,11 @@ import { Network } from '@capacitor/network';
   providedIn: 'root'
 })
 export class ConnectionService implements OnDestroy {
+  private ngZone = inject(NgZone);
+
   private online$ = new BehaviorSubject<boolean>(true); 
 
-  constructor(private ngZone: NgZone) {
+  constructor() {
     this.initializeNetworkListeners();
   }
 

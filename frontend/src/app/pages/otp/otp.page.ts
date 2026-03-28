@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -15,6 +15,13 @@ import { StarfieldService } from '../../shared/starfield/starfield.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OtpPage implements OnInit, OnDestroy {
+  private fb = inject(FormBuilder);
+  private route = inject(ActivatedRoute);
+  private navCtrl = inject(NavController);
+  private animationCtrl = inject(AnimationController);
+  private starfieldSvc = inject(StarfieldService);
+  private cdr = inject(ChangeDetectorRef);
+
   @ViewChild('hiddenInput') hiddenInput!: IonInput;
   otpForm!: FormGroup;
   isSubmitted = false;
@@ -24,14 +31,7 @@ export class OtpPage implements OnInit, OnDestroy {
   private timerInterval: any;
   flowContext: string = '';
 
-  constructor(
-    private fb: FormBuilder,
-    private route: ActivatedRoute,
-    private navCtrl: NavController,
-    private animationCtrl: AnimationController,
-    private starfieldSvc: StarfieldService,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor() {
     this.route.queryParams.subscribe(params => {
       this.flowContext = params['flow'] || 'signup';
     });
@@ -140,7 +140,7 @@ export class OtpPage implements OnInit, OnDestroy {
           this.starfieldSvc.formHeart();
           setTimeout(() => {
             this.starfieldSvc.disperse();
-            this.navCtrl.navigateRoot('/tabs/tab1', { 
+            this.navCtrl.navigateRoot('/tabs/you', { 
               animation: this.getCrossfadeAnimation()
             });
           }, 3000);

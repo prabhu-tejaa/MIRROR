@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
@@ -13,17 +13,14 @@ import { IonContent, IonInput, IonButton, IonSpinner } from '@ionic/angular/stan
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ForgotPasswordPage implements OnInit {
+  private fb = inject(FormBuilder);
+  private navCtrl = inject(NavController);
+  private animationCtrl = inject(AnimationController);
+  private cdr = inject(ChangeDetectorRef);
+
   forgotForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
-
-  constructor(
-    private fb: FormBuilder,
-    private navCtrl: NavController,
-    private animationCtrl: AnimationController,
-    private cdr: ChangeDetectorRef
-  ) {}
-
   ngOnInit() {
     this.forgotForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
@@ -16,18 +16,18 @@ import { StarfieldService } from '../../shared/starfield/starfield.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPage implements OnInit {
+  private fb = inject(FormBuilder);
+  private navCtrl = inject(NavController);
+  private animationCtrl = inject(AnimationController);
+  private starfieldSvc = inject(StarfieldService);
+  private cdr = inject(ChangeDetectorRef);
+
   loginForm!: FormGroup;
   isSubmitted = false;
   isLoading = false;
   showPassword = false;
 
-  constructor(
-    private fb: FormBuilder, 
-    private navCtrl: NavController,
-    private animationCtrl: AnimationController,
-    private starfieldSvc: StarfieldService,
-    private cdr: ChangeDetectorRef
-  ) {
+  constructor() {
     addIcons({ eye, eyeOff });
   }
 
@@ -92,7 +92,7 @@ export class LoginPage implements OnInit {
 
         setTimeout(() => {
           this.starfieldSvc.disperse();
-          this.navCtrl.navigateRoot('/tabs/tab1', { 
+          this.navCtrl.navigateRoot('/tabs/you', { 
             animation: this.getCrossfadeAnimation()
           });
         }, 3000);

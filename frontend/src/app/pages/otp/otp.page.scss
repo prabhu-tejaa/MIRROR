@@ -1,4 +1,4 @@
-@import '../signup/signup.page.scss';
+@use '../../shared/styles/auth-shared' as *;
 
 :host {
   display: block;

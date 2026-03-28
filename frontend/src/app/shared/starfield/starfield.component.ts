@@ -1,14 +1,4 @@
-import {
-  Component,
-  Input,
-  OnDestroy,
-  ElementRef,
-  ViewChild,
-  AfterViewInit,
-  OnInit,
-  NgZone,
-  HostListener,
-} from '@angular/core';
+import { Component, Input, OnDestroy, ElementRef, ViewChild, AfterViewInit, OnInit, NgZone, HostListener, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { StarfieldService } from './starfield.service';
 
@@ -19,6 +9,9 @@ import { StarfieldService } from './starfield.service';
   styleUrls: ['./starfield.component.scss'],
 })
 export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
+  private ngZone = inject(NgZone);
+  private starfieldSvc = inject(StarfieldService);
+
 
   @Input() starCount = 100;
   @Input() speed = 0.05;
@@ -51,6 +44,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   private resizeObserver!: ResizeObserver;
   private reducedMotion = false;
   private fadeStart = 0;
+  private lastTime = 0;
   private paused = false;
   private visibilityHandler = () => this.onVisibilityChange();
 
@@ -69,9 +63,6 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     '#ffffff', '#ffffff', '#ffffff', '#ffffff',
     '#cce5ff', '#b8d4ff', '#ffefc1', '#ffd6a5', '#e8d0ff', '#ffc9de',
   ];
-
-  constructor(private ngZone: NgZone, private starfieldSvc: StarfieldService) {}
-
   ngOnInit(): void {
     this.sub1 = this.starfieldSvc.formHeart$.subscribe(() => {
       this.targetShape = 'heart';
@@ -83,11 +74,28 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
         const t = Math.random() * Math.PI * 2;
         const rScale = 0.6 + Math.random() * 0.5;
         const xBase = 16 * Math.pow(Math.sin(t), 3);
-        const yBase = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+        const yBase = 
+          13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
 
+        star.startX = star.x;
+        star.startY = star.y;
         star.targetX = CX + S * xBase * rScale;
         star.targetY = CY - S * yBase * rScale;
+        star.transitionProgress = 0;
+        star.transitionDelay = Math.random() * 800;
+        star.transitionDuration = 1200 + Math.random() * 1000;
         star.isTransitioning = true;
+        
+        // Calculate a "curve" direction (perpendicular to the direct path)
+        const dx = star.targetX - star.startX;
+        const dy = star.targetY - star.startY;
+        const dist = Math.hypot(dx, dy);
+        star.curveX = (-dy / dist) * (20 + Math.random() * 40);
+        star.curveY = (dx / dist) * (20 + Math.random() * 40);
+        if (Math.random() > 0.5) {
+          star.curveX *= -1;
+          star.curveY *= -1;
+        }
       }
     });
 
@@ -95,8 +103,10 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       this.targetShape = 'none';
       for (let star of this.stars) {
         star.isTransitioning = false;
+        star.transitionProgress = 0;
         star.vx += (Math.random() - 0.5) * 0.4;
         star.vy += (Math.random() - 0.5) * 0.4;
+        star.color = star.originalColor || star.color;
       }
     });
   }
@@ -126,6 +136,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     document.addEventListener('visibilitychange', this.visibilityHandler);
+    this.lastTime = performance.now();
     this.ngZone.runOutsideAngular(() => this.animate());
   }
 
@@ -145,6 +156,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       clearTimeout(this.meteorTimeout);
     } else {
       this.paused = false;
+      this.lastTime = performance.now();
       this.ngZone.runOutsideAngular(() => this.animate());
       if (this.shootingStars && !this.reducedMotion) {
         this.scheduleMeteor();
@@ -229,6 +241,10 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       vy: Math.sin(angle) * starSpeed,
       twinkleSpeed: 0.002 + Math.random() * 0.008,
       twinklePhase: Math.random() * Math.PI * 2,
+      originalColor: color,
+      transitionProgress: 0,
+      transitionDuration: 0,
+      transitionDelay: 0
     };
   }
 
@@ -301,9 +317,14 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private animate = (): void => {
     if (this.paused) return;
+    
+    const now = performance.now();
+    const dt = Math.min(now - this.lastTime, 100); // Cap dt at 100ms to avoid huge jumps
+    this.lastTime = now;
+
     this.draw();
     if (!this.reducedMotion) {
-      this.update();
+      this.update(dt);
     }
     this.animationId = requestAnimationFrame(this.animate);
   };
@@ -386,18 +407,49 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private update(): void {
+  private update(dt: number): void {
     const margin = 10;
+    const now = performance.now();
 
     for (let i = 0; i < this.stars.length; i++) {
       const star = this.stars[i];
       
       if (this.targetShape === 'heart' && star.isTransitioning && star.targetX !== undefined && star.targetY !== undefined) {
-        star.x += (star.targetX - star.x) * 0.04;
-        star.y += (star.targetY - star.y) * 0.04;
+        if (star.transitionDelay > 0) {
+          star.transitionDelay -= dt;
+          // While waiting, still drift slightly for life
+          star.x += star.vx * (dt / 16);
+          star.y += star.vy * (dt / 16);
+        } else {
+          star.transitionProgress = Math.min(1, (star.transitionProgress || 0) + dt / star.transitionDuration!);
+          
+          // Easing: Cubic Out (smooth deceleration)
+          const t = star.transitionProgress;
+          const ease = 1 - Math.pow(1 - t, 3);
+          
+          // Base interpolated position
+          const baseX = star.startX! + (star.targetX - star.startX!) * ease;
+          const baseY = star.startY! + (star.targetY - star.startY!) * ease;
+          
+          // Add "flow" curve using sine wave that disappears as we arrive
+          const curveMagnitude = Math.sin(t * Math.PI) * (1 - t);
+          star.x = baseX + (star.curveX || 0) * curveMagnitude;
+          star.y = baseY + (star.curveY || 0) * curveMagnitude;
+
+          // Maintain original colors (revert pink/red shift)
+          star.color = star.originalColor || star.color;
+
+          // Rhythmic pulse once arrived
+          if (t >= 1) {
+            const pulse = Math.sin(now / 400 + i) * 1.5;
+            star.x = star.targetX + (Math.cos(now / 1000 + i * 0.5) * 2);
+            star.y = star.targetY + pulse;
+          }
+        }
       } else {
-        star.x += star.vx;
-        star.y += star.vy;
+        star.x += star.vx * (dt / 16);
+        star.y += star.vy * (dt / 16);
+        star.color = star.originalColor || star.color;
       }
 
       if (this.twinkle) {
@@ -415,9 +467,9 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
 
     for (let i = this.meteors.length - 1; i >= 0; i--) {
       const m = this.meteors[i];
-      m.x += m.vx;
-      m.y += m.vy;
-      m.life -= m.decay;
+      m.x += m.vx * (dt / 16);
+      m.y += m.vy * (dt / 16);
+      m.life -= m.decay * (dt / 16);
 
       if (m.life > 0.2 && this.sparkles.length < 30 && Math.random() > 0.5) {
         this.sparkles.push({
@@ -435,7 +487,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     for (let i = this.sparkles.length - 1; i >= 0; i--) {
-      this.sparkles[i].life -= this.sparkles[i].decay;
+      this.sparkles[i].life -= this.sparkles[i].decay * (dt / 16);
       if (this.sparkles[i].life <= 0) {
         this.sparkles.splice(i, 1);
       }
@@ -450,7 +502,13 @@ interface Star {
   vx: number; vy: number;
   twinkleSpeed: number; twinklePhase: number;
   targetX?: number; targetY?: number;
+  startX?: number; startY?: number;
+  curveX?: number; curveY?: number;
+  transitionProgress?: number;
+  transitionDuration?: number;
+  transitionDelay: number;
   isTransitioning?: boolean;
+  originalColor?: string;
 }
 
 interface Meteor {

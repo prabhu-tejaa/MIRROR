@@ -1,0 +1,23 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      You
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">You</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <app-explore-container name="You"></app-explore-container>
+
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button (click)="toggleHeart()" color="medium" class="heart-toggle">
+      <ion-icon [name]="isHeart ? 'infinite' : 'heart'"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
