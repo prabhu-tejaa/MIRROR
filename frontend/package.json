@@ -8,7 +8,7 @@
     "start": "ng serve",
     "build": "node scripts/set-env.js && ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test": "node scripts/set-env.js && ng test",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "android:build": "node scripts/set-env.js && ionic build && npx cap copy android && npx cap open android",
