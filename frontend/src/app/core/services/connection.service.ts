@@ -1,12 +1,14 @@
 import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Network } from '@capacitor/network';
+import { AnalyticsService } from './analytics.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConnectionService implements OnDestroy {
   private ngZone = inject(NgZone);
+  private analyticsSvc = inject(AnalyticsService);
 
   private online$ = new BehaviorSubject<boolean>(true); 
 
@@ -15,12 +17,10 @@ export class ConnectionService implements OnDestroy {
   }
 
   private async initializeNetworkListeners() {
-    
     const status = await Network.getStatus();
     this.updateStatus(status.connected);
 
-await Network.addListener('networkStatusChange', status => {
-      
+    await Network.addListener('networkStatusChange', status => {
       this.ngZone.run(() => {
         this.updateStatus(status.connected);
       });
@@ -30,6 +30,11 @@ await Network.addListener('networkStatusChange', status => {
   private updateStatus(connected: boolean) {
     if (this.online$.value !== connected) {
       this.online$.next(connected);
+      
+      // Log Connectivity Change to Analytics
+      this.analyticsSvc.logEvent('connectivity_change', {
+        is_online: connected
+      });
     }
   }
 

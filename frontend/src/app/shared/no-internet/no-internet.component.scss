@@ -45,24 +45,6 @@
   z-index: 20;
 }
 
-.icon-container {
-  position: relative;
-  width: clamp(80px, 15vw, 120px);
-  height: clamp(80px, 15vw, 120px);
-  margin: 0 auto clamp(1.5rem, 5vh, 2.5rem);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  .offline-icon {
-    font-size: clamp(3rem, 10vw, 5rem);
-    color: #ffffff; 
-    z-index: 2;
-    filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.7));
-    animation: vibratingGlitch 3s infinite linear;
-  }
-}
-
 .offline-title {
   font-family: 'Outfit', sans-serif;
   font-weight: 600;

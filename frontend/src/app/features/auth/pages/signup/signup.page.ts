@@ -7,6 +7,7 @@ import { addIcons } from 'ionicons';
 import { eye, eyeOff, closeOutline } from 'ionicons/icons';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
+import { AnalyticsService } from '../../../../core/services/analytics.service';
 
 
 @Component({
@@ -22,6 +23,7 @@ export class SignupPage implements OnInit {
   private navCtrl = inject(NavController);
   private animationCtrl = inject(AnimationController);
   private cdr = inject(ChangeDetectorRef);
+  private analyticsSvc = inject(AnalyticsService);
 
   signupForm!: FormGroup;
   isSubmitted = false;
@@ -73,6 +75,12 @@ export class SignupPage implements OnInit {
       this.isLoading = true;
       this.cdr.markForCheck();
       setTimeout(() => {
+        // Track User Identity on successful signup
+        const email = this.signupForm.get('email')?.value;
+        if (email) {
+          this.analyticsSvc.setUserId(email);
+        }
+
         this.isLoading = false;
         this.cdr.markForCheck();
         this.navCtrl.navigateRoot('/otp', { 
