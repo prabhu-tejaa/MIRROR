@@ -121,7 +121,7 @@ Registration Number: 24EMCA1237
 Dr. Brijendra Singh
 Associate Professor
 
-Submitted as part of the Master of Computer Applications project at **Vellore Institute of Technology (VIT)**.
+Submitted as part of the Master of Computer Applications project at **Vellore Institute of Technology (VIT)**. 
 
 ---
 *© 2026 MIRЯOЯ Project. Reflect. Discover. Grow.*
