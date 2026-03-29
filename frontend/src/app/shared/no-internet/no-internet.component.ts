@@ -4,12 +4,14 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { wifiOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-no-internet',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonIcon],
   templateUrl: './no-internet.component.html',
   styleUrls: ['./no-internet.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -17,5 +19,7 @@ import { IonicModule } from '@ionic/angular';
 export class NoInternetComponent {
   @Input() isVisible: boolean = false;
 
-  constructor() { }
+  constructor() {
+    addIcons({ 'wifi-outline': wifiOutline });
+  }
 }

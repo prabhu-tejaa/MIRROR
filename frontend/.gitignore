@@ -81,3 +81,11 @@ typescript-errors.txt
 clean_lint.js
 clean_lint.py
 fix_navigation.js
+
+# Firebase & Secrets
+src/environments/environment.ts
+src/environments/environment.prod.ts
+google-services.json
+GoogleService-Info.plist
+**/android/app/google-services.json
+**/ios/App/App/GoogleService-Info.plist
