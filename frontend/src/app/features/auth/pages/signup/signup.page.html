@@ -68,7 +68,7 @@
             [placeholder]="'SIGNUP.PLACEHOLDER_PASSWORD' | translate"
             class="glassy-input"
           >
-            <ion-icon slot="end" [name]="showPassword ? 'eye' : 'eye-off'" (click)="showPassword = !showPassword" style="font-size: 1.4rem; margin-right: 0.5rem; cursor: pointer; color: #888888;"></ion-icon>
+            <ion-icon slot="end" [icon]="showPassword ? eye : eyeOff" (click)="showPassword = !showPassword" style="font-size: 1.4rem; margin-right: 0.5rem; cursor: pointer; color: #888888;"></ion-icon>
           </ion-input>
           @if (isSubmitted && f['password'].errors) {
             <div class="error-msg">
@@ -110,7 +110,7 @@
                   <ion-title>{{ 'SIGNUP.TOS_LINK' | translate }}</ion-title>
                   <ion-buttons slot="end">
                     <ion-button (click)="modal.dismiss()" class="close-btn">
-                      <ion-icon name="close-outline"></ion-icon>
+                      <ion-icon [icon]="closeOutline"></ion-icon>
                     </ion-button>
                   </ion-buttons>
                 </ion-toolbar>
@@ -118,21 +118,21 @@
               <ion-content class="ion-padding glassy-modal-content">
                 <div class="modal-body glassy-body">
                   <div class="section-badge">{{ 'SIGNUP.TOS_LINK' | translate }}</div>
-                  <h2>Welcome to Mirror</h2>
-                  <p>By joining, you agree to our placeholder terms. Ensure you are acting legally and morally on our platform.</p>
+                  <h2>{{ 'SIGNUP.TOS_TITLE' | translate }}</h2>
+                  <p>{{ 'SIGNUP.TOS_SUBTITLE' | translate }}</p>
                   
                   <div class="rules-list">
                     <div class="rule-item">
                       <span class="rule-index">01</span>
-                      <p>Respect others: Treat everyone with dignity and kindness.</p>
+                      <p>{{ 'SIGNUP.RULE_1' | translate }}</p>
                     </div>
                     <div class="rule-item">
                       <span class="rule-index">02</span>
-                      <p>No illegal content: Zero tolerance for any unlawful behavior.</p>
+                      <p>{{ 'SIGNUP.RULE_2' | translate }}</p>
                     </div>
                     <div class="rule-item">
                       <span class="rule-index">03</span>
-                      <p>Be excellent to each other: Foster a positive and supportive community.</p>
+                      <p>{{ 'SIGNUP.RULE_3' | translate }}</p>
                     </div>
                   </div>
                   

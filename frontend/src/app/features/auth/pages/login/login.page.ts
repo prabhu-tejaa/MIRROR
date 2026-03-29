@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -26,23 +26,25 @@ export class LoginPage implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private analyticsSvc = inject(AnalyticsService);
 
-  loginForm!: FormGroup;
-  isSubmitted = false;
-  isLoading = false;
-  showPassword = false;
+  public loginForm!: FormGroup;
+  public isSubmitted: boolean = false;
+  public isLoading: boolean = false;
+  public showPassword: boolean = false;
+  public readonly eye = eye;
+  public readonly eyeOff = eyeOff;
 
   constructor() {
     addIcons({ eye, eyeOff });
   }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'), Validators.maxLength(254)]],
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), strictPasswordValidator]]
     });
   }
 
-  ionViewWillEnter() {
+  public ionViewWillEnter(): void {
     const card = document.querySelector('.glassy-card') as HTMLElement;
     const header = document.querySelector('.branding-header') as HTMLElement;
     if (card) { card.style.opacity = '1'; card.style.transition = 'none'; }
@@ -53,22 +55,24 @@ export class LoginPage implements OnInit {
     this.cdr.markForCheck();
   }
 
-  get f() { return this.loginForm.controls; }
+  public get f(): { [key: string]: AbstractControl } { 
+    return this.loginForm.controls; 
+  }
 
-  private getCrossfadeAnimation(): any {
-    return (baseEl: any, opts?: any): Animation => {
+  private getCrossfadeAnimation(): (baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }) => Animation {
+    return (_baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }): Animation => {
       const rootTransition = this.animationCtrl.create()
         .duration(400)
         .easing('ease-in-out');
 
-      if (opts.enteringEl) {
+      if (opts?.enteringEl) {
         const enteringAnimation = this.animationCtrl.create()
           .addElement(opts.enteringEl)
           .fromTo('opacity', 0, 1);
         rootTransition.addAnimation(enteringAnimation);
       }
 
-      if (opts.leavingEl) {
+      if (opts?.leavingEl) {
         const leavingAnimation = this.animationCtrl.create()
           .addElement(opts.leavingEl)
           .fromTo('opacity', 1, 0);
@@ -79,7 +83,7 @@ export class LoginPage implements OnInit {
     };
   }
 
-  onLogin() {
+  public onLogin(): void {
     this.isSubmitted = true;
     if (this.loginForm.valid) {
       this.isLoading = true;
@@ -87,7 +91,7 @@ export class LoginPage implements OnInit {
 
       setTimeout(() => {
         // Track User Identity on successful login
-        const email = this.loginForm.get('email')?.value;
+        const email = this.loginForm.get('email')?.value as string;
         if (email) {
           this.analyticsSvc.setUserId(email);
         }
@@ -95,8 +99,14 @@ export class LoginPage implements OnInit {
         const card = document.querySelector('.glassy-card') as HTMLElement;
         const header = document.querySelector('.branding-header') as HTMLElement;
         
-        if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
-        if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
+        if (card) { 
+          card.style.transition = 'opacity 1s'; 
+          card.style.opacity = '0'; 
+        }
+        if (header) { 
+          header.style.transition = 'opacity 1s'; 
+          header.style.opacity = '0'; 
+        }
 
         this.starfieldSvc.setShape('heart');
 
@@ -112,13 +122,13 @@ export class LoginPage implements OnInit {
     }
   }
 
-  goToSignup() {
+  public goToSignup(): void {
     this.navCtrl.navigateForward('/signup', { 
       animation: this.getCrossfadeAnimation() 
     });
   }
 
-  goToForgot() {
+  public goToForgot(): void {
     this.navCtrl.navigateForward('/forgot-password', { 
       animation: this.getCrossfadeAnimation() 
     });

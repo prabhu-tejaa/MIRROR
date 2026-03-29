@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 export type ShapeType = 'none' | 'heart' | 'circle' | 'star' | 'square' | 'smiley';
 
@@ -7,14 +7,14 @@ export type ShapeType = 'none' | 'heart' | 'circle' | 'star' | 'square' | 'smile
   providedIn: 'root'
 })
 export class StarfieldService {
-  private shapeSource = new Subject<ShapeType>();
-  shape$ = this.shapeSource.asObservable();
+  private readonly shapeSource: Subject<ShapeType> = new Subject<ShapeType>();
+  public readonly shape$: Observable<ShapeType> = this.shapeSource.asObservable();
 
-  setShape(type: ShapeType) {
+  public setShape(type: ShapeType): void {
     this.shapeSource.next(type);
   }
 
-  disperse() {
+  public disperse(): void {
     this.shapeSource.next('none');
   }
 }

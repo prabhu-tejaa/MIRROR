@@ -1,14 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { NavController, AnimationController, Animation, AlertController } from '@ionic/angular';
-import { IonContent, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons } from '@ionic/angular/standalone';
+import { NavController, AnimationController, Animation, AnimationBuilder } from '@ionic/angular';
+import { IonContent, IonInput, IonButton, IonSpinner, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff, closeOutline } from 'ionicons/icons';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
-
 
 @Component({
   selector: 'app-signup',
@@ -25,16 +24,19 @@ export class SignupPage implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private analyticsSvc = inject(AnalyticsService);
 
-  signupForm!: FormGroup;
-  isSubmitted = false;
-  isLoading = false;
-  showPassword = false;
+  public signupForm!: FormGroup;
+  public isSubmitted: boolean = false;
+  public isLoading: boolean = false;
+  public showPassword: boolean = false;
+  public readonly eye = eye;
+  public readonly eyeOff = eyeOff;
+  public readonly closeOutline = closeOutline;
 
   constructor() {
     addIcons({ eye, eyeOff, closeOutline });
   }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.signupForm = this.fb.group({
       username: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(32), Validators.pattern('^[a-zA-Z0-9_.-]+$')]],
       email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'), Validators.maxLength(254)]],
@@ -43,22 +45,24 @@ export class SignupPage implements OnInit {
     });
   }
 
-  get f() { return this.signupForm.controls; }
+  public get f(): { [key: string]: AbstractControl } { 
+    return this.signupForm.controls; 
+  }
 
-  private getCrossfadeAnimation(): any {
-    return (baseEl: any, opts?: any): Animation => {
+  private getCrossfadeAnimation(): AnimationBuilder {
+    return (_baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }): Animation => {
       const rootTransition = this.animationCtrl.create()
         .duration(400)
         .easing('ease-in-out');
 
-      if (opts.enteringEl) {
+      if (opts?.enteringEl) {
         const enteringAnimation = this.animationCtrl.create()
           .addElement(opts.enteringEl)
           .fromTo('opacity', 0, 1);
         rootTransition.addAnimation(enteringAnimation);
       }
 
-      if (opts.leavingEl) {
+      if (opts?.leavingEl) {
         const leavingAnimation = this.animationCtrl.create()
           .addElement(opts.leavingEl)
           .fromTo('opacity', 1, 0);
@@ -69,14 +73,14 @@ export class SignupPage implements OnInit {
     };
   }
 
-  onSignup() {
+  public onSignup(): void {
     this.isSubmitted = true;
     if (this.signupForm.valid) {
       this.isLoading = true;
       this.cdr.markForCheck();
       setTimeout(() => {
         // Track User Identity on successful signup
-        const email = this.signupForm.get('email')?.value;
+        const email = this.signupForm.get('email')?.value as string;
         if (email) {
           this.analyticsSvc.setUserId(email);
         }
@@ -93,7 +97,7 @@ export class SignupPage implements OnInit {
     }
   }
 
-  goToLogin() {
+  public goToLogin(): void {
     this.navCtrl.navigateBack('/login', { 
       animation: this.getCrossfadeAnimation() 
     });

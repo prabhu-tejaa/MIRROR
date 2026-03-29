@@ -14,6 +14,9 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 })
 export class TabsPage {
   public environmentInjector = inject(EnvironmentInjector);
+  public readonly person = person;
+  public readonly chatbubbles = chatbubbles;
+  public readonly personCircle = personCircle;
 
   constructor() {
     addIcons({ person, chatbubbles, personCircle, triangle, ellipse, square });

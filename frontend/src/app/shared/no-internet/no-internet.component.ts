@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NoInternetComponent {
-  @Input() isVisible: boolean = false;
+  @Input() public isVisible: boolean = false;
 
   constructor() { }
 }

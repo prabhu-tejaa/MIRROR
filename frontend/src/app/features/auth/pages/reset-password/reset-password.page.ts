@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonSpinner, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -22,37 +22,41 @@ export class ResetPasswordPage implements OnInit {
   private animationCtrl = inject(AnimationController);
   private cdr = inject(ChangeDetectorRef);
 
-  resetForm!: FormGroup;
-  isSubmitted = false;
-  isLoading = false;
-  showPassword = false;
+  public resetForm!: FormGroup;
+  public isSubmitted: boolean = false;
+  public isLoading: boolean = false;
+  public showPassword: boolean = false;
+  public readonly eye = eye;
+  public readonly eyeOff = eyeOff;
 
   constructor() {
     addIcons({ eye, eyeOff });
   }
 
-  ngOnInit() {
+  public ngOnInit(): void {
     this.resetForm = this.fb.group({
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), strictPasswordValidator]]
     });
   }
 
-  get f() { return this.resetForm.controls; }
+  public get f(): { [key: string]: AbstractControl } { 
+    return this.resetForm.controls; 
+  }
 
-  private getCrossfadeAnimation(): any {
-    return (baseEl: any, opts?: any): Animation => {
+  private getCrossfadeAnimation(): (baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }) => Animation {
+    return (_baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }): Animation => {
       const rootTransition = this.animationCtrl.create()
         .duration(400)
         .easing('ease-in-out');
 
-      if (opts.enteringEl) {
+      if (opts?.enteringEl) {
         const enteringAnimation = this.animationCtrl.create()
           .addElement(opts.enteringEl)
           .fromTo('opacity', 0, 1);
         rootTransition.addAnimation(enteringAnimation);
       }
 
-      if (opts.leavingEl) {
+      if (opts?.leavingEl) {
         const leavingAnimation = this.animationCtrl.create()
           .addElement(opts.leavingEl)
           .fromTo('opacity', 1, 0);
@@ -63,7 +67,7 @@ export class ResetPasswordPage implements OnInit {
     };
   }
 
-  onReset() {
+  public onReset(): void {
     this.isSubmitted = true;
     if (this.resetForm.valid) {
       this.isLoading = true;
@@ -81,7 +85,7 @@ export class ResetPasswordPage implements OnInit {
     }
   }
 
-  goToLogin() {
+  public goToLogin(): void {
     this.navCtrl.navigateRoot('/login', { 
       animation: this.getCrossfadeAnimation() 
     });

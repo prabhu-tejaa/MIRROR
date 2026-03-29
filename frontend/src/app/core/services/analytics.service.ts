@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, Event } from '@angular/router';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { initializeApp } from 'firebase/app';
 import { initializeAnalytics } from 'firebase/analytics';
@@ -7,12 +7,20 @@ import { environment } from '../../../environments/environment';
 import { Capacitor } from '@capacitor/core';
 import { filter } from 'rxjs/operators';
 
+interface ElementMetadata {
+  text: string;
+  id: string;
+  name: string;
+  analytics_label: string;
+  element_type: string;
+  element_role: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class AnalyticsService {
   private router = inject(Router);
-  private isInitialized = false;
 
   constructor() {
     this.init();
@@ -21,7 +29,7 @@ export class AnalyticsService {
   /**
    * Initialize Firebase Analytics for Web and Native
    */
-  private async init() {
+  private async init(): Promise<void> {
     try {
       // 1. Initialize Firebase JS SDK for Web platform
       if (Capacitor.getPlatform() === 'web') {
@@ -56,7 +64,7 @@ export class AnalyticsService {
   /**
    * Unified method to log events across platforms
    */
-  async logEvent(name: string, params: any = {}) {
+  public async logEvent(name: string, params: Record<string, unknown> = {}): Promise<void> {
     try {
       await FirebaseAnalytics.logEvent({
         name,
@@ -76,7 +84,7 @@ export class AnalyticsService {
   /**
    * Automatically track clicks and form submissions with semantic naming
    */
-  private trackGlobalInteractions() {
+  private trackGlobalInteractions(): void {
     // 1. Click Tracking
     document.addEventListener('click', (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -116,7 +124,7 @@ export class AnalyticsService {
   /**
    * Extract semantic information from an element
    */
-  private getElementMetadata(el: HTMLElement) {
+  private getElementMetadata(el: HTMLElement): ElementMetadata {
     const rawText = el.innerText?.trim() || el.getAttribute('aria-label') || '';
     const text = this.sanitizeText(rawText).substring(0, 40);
     const id = el.id || '';
@@ -138,7 +146,7 @@ export class AnalyticsService {
   /**
    * Generate a readable event name (e.g., login_button_click)
    */
-  private getSemanticEventName(metadata: any): string {
+  private getSemanticEventName(metadata: ElementMetadata): string {
     // 1. Manual override takes priority
     if (metadata.analytics_label) {
       return this.slugify(metadata.analytics_label);
@@ -152,7 +160,7 @@ export class AnalyticsService {
     if (lowerText.includes('share')) return 'share_click';
 
     // 3. Generate name from ID or Name or Text
-    let base = metadata.id || metadata.name || metadata.text;
+    const base = metadata.id || metadata.name || metadata.text;
     if (base) {
       return `${this.slugify(base)}_click`;
     }
@@ -203,10 +211,10 @@ export class AnalyticsService {
   /**
    * Automatically track screen views on route changes
    */
-  private trackPageViews() {
+  private trackPageViews(): void {
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd)
-    ).subscribe(async (event: any) => {
+      filter((event: Event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe(async (event: NavigationEnd) => {
       const screenName = event.urlAfterRedirects || '/';
       
       try {
@@ -230,7 +238,7 @@ export class AnalyticsService {
   /**
    * Track specific user identification
    */
-  async setUserId(userId: string | null) {
+  public async setUserId(userId: string | null): Promise<void> {
     try {
       await FirebaseAnalytics.setUserId({
         userId: userId
@@ -245,7 +253,7 @@ export class AnalyticsService {
   /**
    * Set user properties
    */
-  async setUserProperty(name: string, value: string) {
+  public async setUserProperty(name: string, value: string): Promise<void> {
     try {
       await FirebaseAnalytics.setUserProperty({
         key: name,

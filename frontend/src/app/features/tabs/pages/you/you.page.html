@@ -12,36 +12,79 @@
       <ion-title size="large">{{ 'TABS.YOU' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      {{ 'TABS.YOU' | translate }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ 'TABS.YOU' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
 
   <app-explore-container [name]="'TABS.YOU' | translate"></app-explore-container>
 
   <!-- Shape Palette Bar -->
   <div class="shape-palette-container">
     <div class="shape-palette">
-      <div class="shape-item" [class.active]="currentShape === 'heart'" (click)="setShape('heart')">
-        <ion-icon name="heart"></ion-icon>
-        <span>{{ 'SHAPES.HEART' | translate }}</span>
-      </div>
-      <div class="shape-item" [class.active]="currentShape === 'star'" (click)="setShape('star')">
-        <ion-icon name="star"></ion-icon>
-        <span>{{ 'SHAPES.STAR' | translate }}</span>
-      </div>
-      <div class="shape-item" [class.active]="currentShape === 'circle'" (click)="setShape('circle')">
-        <ion-icon name="ellipse-outline"></ion-icon>
-        <span>{{ 'SHAPES.CIRCLE' | translate }}</span>
-      </div>
-      <div class="shape-item" [class.active]="currentShape === 'square'" (click)="setShape('square')">
-        <ion-icon name="square-outline"></ion-icon>
-        <span>{{ 'SHAPES.SQUARE' | translate }}</span>
-      </div>
-      <div class="shape-item" [class.active]="currentShape === 'smiley'" (click)="setShape('smiley')">
-        <ion-icon name="happy-outline"></ion-icon>
-        <span>{{ 'SHAPES.SMILEY' | translate }}</span>
-      </div>
-      <div class="shape-item scatter" (click)="setShape('none')" *ngIf="currentShape !== 'none'">
-        <ion-icon name="infinite"></ion-icon>
-        <span>{{ 'SHAPES.SCATTER' | translate }}</span>
-      </div>
+      <button 
+        class="shape-btn" 
+        [class.active]="currentShape === 'heart'"
+        (click)="setShape('heart')"
+      >
+        <ion-icon [icon]="heart"></ion-icon>
+        <ion-label>{{ 'SHAPES.HEART' | translate }}</ion-label>
+      </button>
+
+      <button 
+        class="shape-btn" 
+        [class.active]="currentShape === 'star'"
+        (click)="setShape('star')"
+      >
+        <ion-icon [icon]="star"></ion-icon>
+        <ion-label>{{ 'SHAPES.STAR' | translate }}</ion-label>
+      </button>
+
+      <button 
+        class="shape-btn" 
+        [class.active]="currentShape === 'circle'"
+        (click)="setShape('circle')"
+      >
+        <ion-icon [icon]="ellipseOutline"></ion-icon>
+        <ion-label>{{ 'SHAPES.CIRCLE' | translate }}</ion-label>
+      </button>
+
+      <button 
+        class="shape-btn" 
+        [class.active]="currentShape === 'square'"
+        (click)="setShape('square')"
+      >
+        <ion-icon [icon]="squareOutline"></ion-icon>
+        <ion-label>{{ 'SHAPES.SQUARE' | translate }}</ion-label>
+      </button>
+
+      <button 
+        class="shape-btn" 
+        [class.active]="currentShape === 'smiley'"
+        (click)="setShape('smiley')"
+      >
+        <ion-icon [icon]="happyOutline"></ion-icon>
+        <ion-label>{{ 'SHAPES.SMILEY' | translate }}</ion-label>
+      </button>
+
+      <button 
+        class="shape-btn" 
+        [class.active]="currentShape === 'none'"
+        (click)="setShape('none')"
+      >
+        <ion-icon [icon]="infinite"></ion-icon>
+        <ion-label>{{ 'SHAPES.SCATTER' | translate }}</ion-label>
+      </button>
     </div>
   </div>
 </ion-content>

@@ -89,3 +89,30 @@ google-services.json
 GoogleService-Info.plist
 **/android/app/google-services.json
 **/ios/App/App/GoogleService-Info.plist
+
+# --- Project Specific Overrides ---
+
+# Lint reports and temporary results (from your screenshot)
+final_lint.txt
+final_lint_utf8.txt
+final_lint_v2.txt
+lint_report.json
+lint_results.json
+lint.json
+
+# Workspace / OS Specific
+.vscode/
+.history/
+.DS_Store
+Thumbs.db
+
+# Angular/Ionic Build Artifacts
+.angular/
+www/
+dist/
+/android/build/
+/android/app/build/
+/android/.gradle/
+/android/local.properties
+.vercel
+.env*.local

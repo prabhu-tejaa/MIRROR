@@ -10,6 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
+    "lint:fix": "ng lint --fix",
     "android:build": "node scripts/set-env.js && ionic build && npx cap copy android && npx cap open android",
     "android:live": "ionic cap run android -l --external --host=0.0.0.0 --target=5386e850",
     "android:clean": "cd android && gradlew clean && cd .. && ionic cap run android -l --external",
