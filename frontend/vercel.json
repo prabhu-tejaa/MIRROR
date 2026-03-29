@@ -1,5 +1,6 @@
 {
-  "buildCommand": "npm run build",
+  "version": 1,
+  "public": true,
   "outputDirectory": "www",
   "rewrites": [
     {

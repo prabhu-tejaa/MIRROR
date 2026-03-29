@@ -61,7 +61,5 @@ jobs:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-        # Explicitly setting the directory here to match your build
         working-directory: ./frontend
-        # Telling Vercel this is production
         vercel-args: '--prod'
