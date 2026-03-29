@@ -33,7 +33,7 @@ jobs:
 
     - name: Run Tests
       working-directory: frontend
-      run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI --single-run
+      run: npm run test -- --watch=false --no-progress --browsers=ChromeHeadlessCI
 
     - name: Build Production
       working-directory: frontend
