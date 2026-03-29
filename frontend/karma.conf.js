@@ -42,6 +42,14 @@ module.exports = function (config) {
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
         flags: ['--no-sandbox']
+      },
+      Edge: {
+        base: 'Chrome',
+        flags: ['--remote-debugging-port=9222']
+      },
+      EdgeHeadless: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox']
       }
     },
     singleRun: false,
