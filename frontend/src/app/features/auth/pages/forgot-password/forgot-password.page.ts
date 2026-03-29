@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonSpinner } from '@ionic/angular/standalone';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -19,31 +19,34 @@ export class ForgotPasswordPage implements OnInit {
   private animationCtrl = inject(AnimationController);
   private cdr = inject(ChangeDetectorRef);
 
-  forgotForm!: FormGroup;
-  isSubmitted = false;
-  isLoading = false;
-  ngOnInit() {
+  public forgotForm!: FormGroup;
+  public isSubmitted: boolean = false;
+  public isLoading: boolean = false;
+
+  public ngOnInit(): void {
     this.forgotForm = this.fb.group({
       email: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'), Validators.maxLength(254)]]
     });
   }
 
-  get f() { return this.forgotForm.controls; }
+  public get f(): { [key: string]: AbstractControl } { 
+    return this.forgotForm.controls; 
+  }
 
-  private getCrossfadeAnimation(): any {
-    return (baseEl: any, opts?: any): Animation => {
+  private getCrossfadeAnimation(): (baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }) => Animation {
+    return (_baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }): Animation => {
       const rootTransition = this.animationCtrl.create()
         .duration(400)
         .easing('ease-in-out');
 
-      if (opts.enteringEl) {
+      if (opts?.enteringEl) {
         const enteringAnimation = this.animationCtrl.create()
           .addElement(opts.enteringEl)
           .fromTo('opacity', 0, 1);
         rootTransition.addAnimation(enteringAnimation);
       }
 
-      if (opts.leavingEl) {
+      if (opts?.leavingEl) {
         const leavingAnimation = this.animationCtrl.create()
           .addElement(opts.leavingEl)
           .fromTo('opacity', 1, 0);
@@ -54,13 +57,13 @@ export class ForgotPasswordPage implements OnInit {
     };
   }
 
-  onReset() {
+  public onReset(): void {
     this.isSubmitted = true;
     if (this.forgotForm.valid) {
       this.isLoading = true;
       this.cdr.markForCheck();
       
-      const emailValue = this.forgotForm.value.email;
+      const emailValue = this.forgotForm.value.email as string;
 
       setTimeout(() => {
         this.isLoading = false;
@@ -80,7 +83,7 @@ export class ForgotPasswordPage implements OnInit {
     }
   }
 
-  goToLogin() {
+  public goToLogin(): void {
     this.navCtrl.navigateBack('/login', { 
       animation: this.getCrossfadeAnimation() 
     });

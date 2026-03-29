@@ -7,6 +7,7 @@ import { ScrollAssistantComponent } from './shared/scroll-assistant/scroll-assis
 import { ConnectionService } from './core/services/connection.service';
 import { AnalyticsService } from './core/services/analytics.service';
 import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -26,7 +27,11 @@ export class AppComponent {
   private connectionService = inject(ConnectionService);
   private analyticsService = inject(AnalyticsService);
   
-  isOffline$ = this.connectionService.isOnline$.pipe(
+  public isOffline$: Observable<boolean> = this.connectionService.isOnline$.pipe(
     map(online => !online)
   );
+
+  constructor() {
+    // Analytics is initialized in the service constructor
+  }
 }

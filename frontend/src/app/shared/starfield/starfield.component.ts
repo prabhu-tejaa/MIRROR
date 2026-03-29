@@ -3,6 +3,40 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ShapeType, StarfieldService } from './starfield.service';
 
+interface Star {
+  x: number; y: number; size: number;
+  baseOpacity: number; opacity: number;
+  color: string; depth: number;
+  vx: number; vy: number;
+  twinkleSpeed: number; twinklePhase: number;
+  targetX?: number; targetY?: number;
+  startX?: number; startY?: number;
+  curveX?: number; curveY?: number;
+  transitionProgress?: number;
+  transitionDuration?: number;
+  transitionDelay: number;
+  isTransitioning?: boolean;
+  originalColor?: string;
+}
+
+interface Meteor {
+  x: number; y: number;
+  vx: number; vy: number;
+  life: number; decay: number;
+  length: number; width: number;
+}
+
+interface Sparkle {
+  x: number; y: number;
+  size: number; life: number; decay: number;
+}
+
+interface Nebula {
+  x: number; y: number;
+  radius: number; color: string;
+  vx: number; vy: number;
+}
+
 @Component({
   selector: 'app-starfield',
   standalone: true,
@@ -14,22 +48,22 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   private ngZone = inject(NgZone);
   private starfieldSvc = inject(StarfieldService);
 
-  @Input() starCount = 100;
-  @Input() speed = 0.05;
-  @Input() minSize = 0.2;
-  @Input() maxSize = 1.2;
-  @Input() minOpacity = 0.4;
-  @Input() maxOpacity = 1;
-  @Input() twinkle = true;
-  @Input() backgroundColor = '#000000';
-  @Input() shootingStars = false;
-  @Input() shootingStarInterval: [number, number] = [6000, 14000];
-  @Input() nebulaGlow = true;
-  @Input() parallax = false;
-  @Input() parallaxStrength = 12;
-  @Input() colorVariety = true;
-  @Input() fadeInDuration = 1500;
-  @Input() respectReducedMotion = true;
+  @Input() public starCount: number = 100;
+  @Input() public speed: number = 0.05;
+  @Input() public minSize: number = 0.2;
+  @Input() public maxSize: number = 1.2;
+  @Input() public minOpacity: number = 0.4;
+  @Input() public maxOpacity: number = 1;
+  @Input() public twinkle: boolean = true;
+  @Input() public backgroundColor: string = '#000000';
+  @Input() public shootingStars: boolean = false;
+  @Input() public shootingStarInterval: [number, number] = [6000, 14000];
+  @Input() public nebulaGlow: boolean = true;
+  @Input() public parallax: boolean = false;
+  @Input() public parallaxStrength: number = 12;
+  @Input() public colorVariety: boolean = true;
+  @Input() public fadeInDuration: number = 1500;
+  @Input() public respectReducedMotion: boolean = true;
 
   @ViewChild('canvas', { static: true })
   private canvasRef!: ElementRef<HTMLCanvasElement>;
@@ -38,42 +72,41 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   private stars: Star[] = [];
   private meteors: Meteor[] = [];
   private sparkles: Sparkle[] = [];
-  private animationId = 0;
-  private width = 0;
-  private height = 0;
-  private dpr = 1;
+  private animationId: number = 0;
+  private width: number = 0;
+  private height: number = 0;
+  private dpr: number = 1;
   private resizeObserver!: ResizeObserver;
-  private reducedMotion = false;
-  private fadeStart = 0;
-  private lastTime = 0;
-  private paused = false;
-  private visibilityHandler = () => this.onVisibilityChange();
+  private reducedMotion: boolean = false;
+  private fadeStart: number = 0;
+  private lastTime: number = 0;
+  private paused: boolean = false;
+  private visibilityHandler: () => void = () => this.onVisibilityChange();
 
   private targetShape: ShapeType = 'none';
   private shapeSub!: Subscription;
 
-  private pointerX = 0;
-  private pointerY = 0;
+  private pointerX: number = 0;
+  private pointerY: number = 0;
 
-  private nebulae: Nebula[] = [];
   private nebulaCanvas!: HTMLCanvasElement; 
-  private meteorTimeout: any;
+  private meteorTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  private readonly STAR_COLORS = [
+  private readonly starColors: string[] = [
     '#ffffff', '#ffffff', '#ffffff', '#ffffff',
     '#cce5ff', '#b8d4ff', '#ffefc1', '#ffd6a5', '#e8d0ff', '#ffc9de',
   ];
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.shapeSub = this.starfieldSvc.shape$.subscribe((type: ShapeType) => {
       this.setTargetShape(type);
     });
   }
 
-  private setTargetShape(type: ShapeType) {
+  private setTargetShape(type: ShapeType): void {
     this.targetShape = type;
     if (type === 'none') {
-      for (let star of this.stars) {
+      for (const star of this.stars) {
         star.isTransitioning = false;
         star.transitionProgress = 0;
         star.vx += (Math.random() - 0.5) * 0.4;
@@ -168,13 +201,13 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     if (this.respectReducedMotion) {
       this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     }
 
     const canvas = this.canvasRef.nativeElement;
-    this.ctx = canvas.getContext('2d', { alpha: false })!;
+    this.ctx = canvas.getContext('2d', { alpha: false }) as CanvasRenderingContext2D;
     this.dpr = Math.min(window.devicePixelRatio || 1, 2); 
     this.resize();
     this.initStars();
@@ -184,7 +217,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       this.resize();
       this.renderNebulaLayer();
     });
-    this.resizeObserver.observe(canvas.parentElement!);
+    this.resizeObserver.observe(canvas.parentElement as HTMLElement);
 
     this.fadeStart = performance.now();
 
@@ -197,11 +230,15 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     this.ngZone.runOutsideAngular(() => this.animate());
   }
 
-  ngOnDestroy(): void {
-    if (this.shapeSub) this.shapeSub.unsubscribe();
+  public ngOnDestroy(): void {
+    if (this.shapeSub) {
+      this.shapeSub.unsubscribe();
+    }
     cancelAnimationFrame(this.animationId);
     this.resizeObserver?.disconnect();
-    clearTimeout(this.meteorTimeout);
+    if (this.meteorTimeout) {
+      clearTimeout(this.meteorTimeout);
+    }
     document.removeEventListener('visibilitychange', this.visibilityHandler);
   }
 
@@ -209,7 +246,9 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     if (document.hidden) {
       this.paused = true;
       cancelAnimationFrame(this.animationId);
-      clearTimeout(this.meteorTimeout);
+      if (this.meteorTimeout) {
+        clearTimeout(this.meteorTimeout);
+      }
     } else {
       this.paused = false;
       this.lastTime = performance.now();
@@ -221,14 +260,14 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   @HostListener('window:mousemove', ['$event'])
-  onMouseMove(e: MouseEvent): void {
+  public onMouseMove(e: MouseEvent): void {
     if (!this.parallax) return;
     this.pointerX = (e.clientX / this.width - 0.5) * 2;
     this.pointerY = (e.clientY / this.height - 0.5) * 2;
   }
 
   @HostListener('window:touchmove', ['$event'])
-  onTouchMove(e: TouchEvent): void {
+  public onTouchMove(e: TouchEvent): void {
     if (!this.parallax || !e.touches.length) return;
     const t = e.touches[0];
     this.pointerX = (t.clientX / this.width - 0.5) * 2;
@@ -237,7 +276,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private resize(): void {
     const canvas = this.canvasRef.nativeElement;
-    const parent = canvas.parentElement!;
+    const parent = canvas.parentElement as HTMLElement;
     const oldWidth = this.width;
     const oldHeight = this.height;
     
@@ -287,7 +326,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       : this.height / 2 + (Math.random() - 0.5) * this.height * 0.4;
 
     const color = this.colorVariety
-      ? this.STAR_COLORS[Math.floor(Math.random() * this.STAR_COLORS.length)]
+      ? this.starColors[Math.floor(Math.random() * this.starColors.length)]
       : '#ffffff';
 
     return {
@@ -309,27 +348,25 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
     this.nebulaCanvas = document.createElement('canvas');
     this.nebulaCanvas.width = this.width * this.dpr;
     this.nebulaCanvas.height = this.height * this.dpr;
-    const nCtx = this.nebulaCanvas.getContext('2d')!;
+    const nCtx = this.nebulaCanvas.getContext('2d') as CanvasRenderingContext2D;
     nCtx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
 
-    const colors = [
+    const nebulaColors: string[] = [
       'rgba(60, 20, 120, 0.045)',
       'rgba(20, 60, 130, 0.04)',
       'rgba(15, 80, 90, 0.035)',
       'rgba(90, 20, 60, 0.03)',
     ];
 
-    this.nebulae = [];
     for (let i = 0; i < 4; i++) {
-      const n = {
+      const n: Nebula = {
         x: Math.random() * this.width,
         y: Math.random() * this.height,
         radius: 200 + Math.random() * 300,
-        color: colors[i],
+        color: nebulaColors[i],
         vx: (Math.random() - 0.5) * 0.06,
         vy: (Math.random() - 0.5) * 0.06,
       };
-      this.nebulae.push(n);
 
       const gradient = nCtx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.radius);
       gradient.addColorStop(0, n.color);
@@ -373,8 +410,8 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   private animate = (): void => {
     if (this.paused) return;
     
-    const now = performance.now();
-    const dt = Math.min(now - this.lastTime, 100); 
+    const now: number = performance.now();
+    const dt: number = Math.min(now - this.lastTime, 100); 
     this.lastTime = now;
 
     this.draw();
@@ -387,7 +424,7 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   private draw(): void {
     const { ctx, width, height } = this;
 
-    let globalAlpha = 1;
+    let globalAlpha: number = 1;
     if (this.fadeInDuration > 0) {
       const elapsed = performance.now() - this.fadeStart;
       globalAlpha = Math.min(1, elapsed / this.fadeInDuration);
@@ -462,8 +499,8 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private update(dt: number): void {
-    const margin = 10;
-    const now = performance.now();
+    const margin: number = 10;
+    const now: number = performance.now();
 
     for (let i = 0; i < this.stars.length; i++) {
       const star = this.stars[i];
@@ -541,38 +578,4 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     }
   }
-}
-
-interface Star {
-  x: number; y: number; size: number;
-  baseOpacity: number; opacity: number;
-  color: string; depth: number;
-  vx: number; vy: number;
-  twinkleSpeed: number; twinklePhase: number;
-  targetX?: number; targetY?: number;
-  startX?: number; startY?: number;
-  curveX?: number; curveY?: number;
-  transitionProgress?: number;
-  transitionDuration?: number;
-  transitionDelay: number;
-  isTransitioning?: boolean;
-  originalColor?: string;
-}
-
-interface Meteor {
-  x: number; y: number;
-  vx: number; vy: number;
-  life: number; decay: number;
-  length: number; width: number;
-}
-
-interface Sparkle {
-  x: number; y: number;
-  size: number; life: number; decay: number;
-}
-
-interface Nebula {
-  x: number; y: number;
-  radius: number; color: string;
-  vx: number; vy: number;
 }

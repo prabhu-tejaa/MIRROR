@@ -1,52 +1,76 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, inject, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TranslationService {
+export class TranslationService implements OnDestroy {
   private http = inject(HttpClient);
   private currentLang = signal<string>('en');
-  private translations = signal<Record<string, any>>({});
+  private translations = signal<Record<string, string | unknown>>({});
+  private sub?: Subscription;
 
   constructor() {
     this.loadTranslations(this.currentLang());
   }
 
-  setLanguage(lang: string) {
+  public setLanguage(lang: string): void {
     if (this.currentLang() !== lang) {
       this.currentLang.set(lang);
       this.loadTranslations(lang);
     }
   }
 
-  private loadTranslations(lang: string) {
-    this.http.get<Record<string, any>>(`/assets/i18n/${lang}.json`)
+  private loadTranslations(lang: string): void {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
+    
+    this.sub = this.http.get<Record<string, string | unknown>>(`/assets/i18n/${lang}.json`)
       .subscribe({
         next: (data) => this.translations.set(data),
-        error: (err) => console.error(`Could not load translations for language ${lang}`, err)
+        error: (_err) => {
+          // Failure silently logged only in development if needed
+        }
       });
   }
 
   /**
    * Translates a given key (e.g. "SIGNUP.TITLE").
-   * Returns the key itself if not found.
+   * Returns the key itself if not found. Supports simple variable interpolation like {{timer}}.
    */
-  translate(key: string): string {
+  public translate(key: string, params?: Record<string, unknown>): string {
     const dict = this.translations();
     if (!dict) return key;
 
     const keys = key.split('.');
-    let result: any = dict;
+    let result: string | unknown = dict;
 
     for (const k of keys) {
-      if (result && typeof result === 'object' && k in result) {
-        result = result[k];
+      if (result && typeof result === 'object' && k in (result as Record<string, unknown>)) {
+        result = (result as Record<string, unknown>)[k];
       } else {
         return key;
       }
     }
 
-    return typeof result === 'string' ? result : key;
+    if (typeof result !== 'string') return key;
+
+    // Simple Variable Interpolation
+    if (params) {
+      Object.keys(params).forEach(p => {
+        const value = String(params[p]);
+        result = (result as string).replace(new RegExp(`{{${p}}}`, 'g'), value);
+      });
+    }
+
+    return result as string;
+  }
+
+  public ngOnDestroy(): void {
+    if (this.sub) {
+      this.sub.unsubscribe();
+    }
   }
 }

@@ -87,7 +87,12 @@
     "ERROR_TOS_REQUIRED": "You must agree to continue",
     "BUTTON_CREATE": "Create Account",
     "LOGIN_PREFIX": "Already have an account? ",
-    "LOGIN_LINK": "Log In"
+    "LOGIN_LINK": "Log In",
+    "TOS_TITLE": "Welcome to Mirror",
+    "TOS_SUBTITLE": "By joining, you agree to our placeholder terms. Ensure you are acting legally and morally on our platform.",
+    "RULE_1": "Respect others: Treat everyone with dignity and kindness.",
+    "RULE_2": "No illegal content: Zero tolerance for any unlawful behavior.",
+    "RULE_3": "Be excellent to each other: Foster a positive and supportive community."
   },
   "TABS": {
     "YOU": "You",

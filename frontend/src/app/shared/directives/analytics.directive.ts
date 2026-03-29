@@ -8,11 +8,11 @@ import { AnalyticsService } from '../../core/services/analytics.service';
 export class AnalyticsDirective {
   private analyticsService = inject(AnalyticsService);
 
-  @Input('appAnalytics') eventName!: string;
-  @Input() analyticsParams: any = {};
+  @Input('appAnalytics') public eventName!: string;
+  @Input() public analyticsParams: Record<string, unknown> = {};
 
   @HostListener('click', ['$event'])
-  onClick(event: MouseEvent) {
+  public onClick(_event: MouseEvent): void {
     if (this.eventName) {
       this.analyticsService.logEvent(this.eventName, {
         ...this.analyticsParams,
