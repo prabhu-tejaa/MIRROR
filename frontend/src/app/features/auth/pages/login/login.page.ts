@@ -8,6 +8,7 @@ import { eye, eyeOff } from 'ionicons/icons';
 import { StarfieldService } from '../../../../shared/starfield/starfield.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
+import { AnalyticsService } from '../../../../core/services/analytics.service';
 
 @Component({
   selector: 'app-login',
@@ -23,6 +24,7 @@ export class LoginPage implements OnInit {
   private animationCtrl = inject(AnimationController);
   private starfieldSvc = inject(StarfieldService);
   private cdr = inject(ChangeDetectorRef);
+  private analyticsSvc = inject(AnalyticsService);
 
   loginForm!: FormGroup;
   isSubmitted = false;
@@ -84,6 +86,12 @@ export class LoginPage implements OnInit {
       this.cdr.markForCheck();
 
       setTimeout(() => {
+        // Track User Identity on successful login
+        const email = this.loginForm.get('email')?.value;
+        if (email) {
+          this.analyticsSvc.setUserId(email);
+        }
+
         const card = document.querySelector('.glassy-card') as HTMLElement;
         const header = document.querySelector('.branding-header') as HTMLElement;
         
