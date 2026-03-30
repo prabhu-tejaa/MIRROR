@@ -1,15 +1,6 @@
 @use '../../../../shared/styles/auth-shared' as *;
 
-:host {
-  display: block;
-  height: 100vh;
-  overflow: hidden;
-}
-
-ion-content.transparent-bg {
-  --overflow: hidden;
-  overflow: hidden;
-}
+@include auth-page-styles;
 
 .otp-group {
   margin-bottom: clamp(1.5rem, 4vh, 2.5rem);

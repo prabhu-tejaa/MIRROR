@@ -1,6 +1,6 @@
 @use '../../../../shared/styles/auth-shared' as *;
 
-// Signup-specific styles
+@include auth-page-styles;
 
 .tos-container {
   display: flex;
@@ -20,12 +20,10 @@
   margin: 0;
 }
 
-// Wider card for the 2-col layout
 .signup-card {
   max-width: 680px !important;
 }
 
-// Side-by-side row for username + email
 .input-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -36,9 +34,6 @@
   }
 }
 
-// Password errors shown in 2-col mini grid to save vertical space
-
-// Rules List styling
 .rules-list {
   margin-top: 1.5rem;
   display: flex;
@@ -77,12 +72,10 @@
   height: clamp(40px, 8vh, 80px);
 }
 
-// Modal Premium Styles
 .premium-modal {
   --background: #000000;
   --backdrop-opacity: 0.8;
   
-  // Create a centered card look on all devices
   --width: 90%;
   --height: 75vh;
   --max-width: 600px;
@@ -158,7 +151,6 @@
   }
 }
 
-// On narrow mobile collapse to single column
 @media (max-width: 480px) {
   .signup-card {
     max-width: 100% !important;

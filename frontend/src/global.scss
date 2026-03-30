@@ -27,7 +27,6 @@ body, html, ion-app, ion-router-outlet, .ion-page, ion-content {
   background: transparent !important;
 }
 
-/* Premium Glassy Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -79,3 +78,66 @@ body, html, ion-app, ion-router-outlet, .ion-page, ion-content {
     font-weight: 600 !important;
   }
 }
+
+.dev-badge {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 12px);
+  right: 20px;
+  z-index: 9999;
+  padding: 5px 12px;
+  background: rgba(4, 4, 10, 0.5);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 30px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  pointer-events: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  animation: badge-glow 4s infinite ease-in-out;
+}
+
+@keyframes badge-glow {
+  0%, 100% { border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.45); }
+  50% { border-color: rgba(255, 255, 255, 0.3); color: rgba(255, 255, 255, 0.8); }
+}
+
+.branding-header {
+  text-align: center;
+  margin-bottom: clamp(1.5rem, 4vh, 2.5rem);
+  flex-shrink: 0;
+  animation: floatIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.splash-title {
+  font-weight: 600;
+  font-size: clamp(2.5rem, 10vw, 3.8rem);
+  letter-spacing: clamp(0.2rem, 1vw, 0.45em);
+  color: #ffffff;
+  margin: 0;
+  text-shadow:
+    0 0 20px rgba(180, 200, 255, 0.4),
+    0 0 60px rgba(120, 140, 255, 0.2),
+    0 0 100px rgba(100, 120, 255, 0.1);
+  animation: titleGlow 4s ease-in-out infinite alternate;
+}
+
+.splash-tagline {
+  font-weight: 300;
+  font-size: clamp(0.7rem, 2.5vw, 0.95rem);
+  letter-spacing: clamp(0.15em, 0.8vw, 0.3em);
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: clamp(0.5rem, 2vh, 1.2rem);
+}
+
+@keyframes titleGlow {
+  0% { text-shadow: 0 0 20px rgba(180, 200, 255, 0.4), 0 0 60px rgba(120, 140, 255, 0.2); }
+  100% { text-shadow: 0 0 30px rgba(200, 220, 255, 0.6), 0 0 80px rgba(140, 160, 255, 0.35), 0 0 120px rgba(120, 140, 255, 0.2); }
+}
+
+@keyframes floatIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes formFadeUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }

@@ -26,16 +26,11 @@ export class AnalyticsService {
     this.init();
   }
 
-  /**
-   * Initialize Firebase Analytics for Web and Native
-   */
   private async init(): Promise<void> {
     try {
-      // 1. Initialize Firebase JS SDK for Web platform
       if (Capacitor.getPlatform() === 'web') {
         const app = initializeApp(environment.firebaseConfig);
         
-        // Enable Debug Mode for Web without requiring extensions (only in Dev)
         if (!environment.production) {
           initializeAnalytics(app, {
             config: {
@@ -45,10 +40,8 @@ export class AnalyticsService {
         }
       }
 
-      // 2. Start tracking page views
       this.trackPageViews();
 
-      // 3. Start tracking global interactions (clicks, forms)
       this.trackGlobalInteractions();
       
       if (!environment.production) {
@@ -61,9 +54,6 @@ export class AnalyticsService {
     }
   }
 
-  /**
-   * Unified method to log events across platforms
-   */
   public async logEvent(name: string, params: Record<string, unknown> = {}): Promise<void> {
     try {
       await FirebaseAnalytics.logEvent({
@@ -81,15 +71,10 @@ export class AnalyticsService {
     }
   }
 
-  /**
-   * Automatically track clicks and form submissions with semantic naming
-   */
   private trackGlobalInteractions(): void {
-    // 1. Click Tracking
     document.addEventListener('click', (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       
-      // Find the nearest interactive parent
       const interactiveElement = target.closest('button, a, [role="button"], ion-button, ion-item, ion-segment-button, [data-analytics]');
       
       if (interactiveElement) {
@@ -106,7 +91,6 @@ export class AnalyticsService {
       }
     }, true);
 
-    // 2. Form Submission Tracking
     document.addEventListener('submit', (event: SubmitEvent) => {
       const form = event.target as HTMLFormElement;
       const formId = form.id || 'anonymous_form';
@@ -121,9 +105,6 @@ export class AnalyticsService {
     }, true);
   }
 
-  /**
-   * Extract semantic information from an element
-   */
   private getElementMetadata(el: HTMLElement): ElementMetadata {
     const rawText = el.innerText?.trim() || el.getAttribute('aria-label') || '';
     const text = this.sanitizeText(rawText).substring(0, 40);
@@ -143,35 +124,25 @@ export class AnalyticsService {
     };
   }
 
-  /**
-   * Generate a readable event name (e.g., login_button_click)
-   */
   private getSemanticEventName(metadata: ElementMetadata): string {
-    // 1. Manual override takes priority
     if (metadata.analytics_label) {
       return this.slugify(metadata.analytics_label);
     }
 
-    // 2. Map common labels to GA4 recommended events
     const lowerText = metadata.text.toLowerCase();
     if (lowerText.includes('log in') || lowerText.includes('login')) return 'login_click';
     if (lowerText.includes('sign up') || lowerText.includes('register')) return 'sign_up_click';
     if (lowerText.includes('search')) return 'search_click';
     if (lowerText.includes('share')) return 'share_click';
 
-    // 3. Generate name from ID or Name or Text
     const base = metadata.id || metadata.name || metadata.text;
     if (base) {
       return `${this.slugify(base)}_click`;
     }
 
-    // 4. Fallback to generic
     return `${metadata.element_type}_interaction`;
   }
 
-  /**
-   * Generate a readable form event name
-   */
   private getFormEventName(id: string, name: string): string {
     const base = id || name || 'form';
     if (base.toLowerCase().includes('login')) return 'login_submit';
@@ -179,9 +150,6 @@ export class AnalyticsService {
     return `${this.slugify(base)}_submit`;
   }
 
-  /**
-   * Utility to convert text to kebab-case
-   */
   private slugify(text: string): string {
     return text
       .toLowerCase()
@@ -191,15 +159,10 @@ export class AnalyticsService {
       .replace(/^-+|-+$/g, '');
   }
 
-  /**
-   * Helper to scrub potential PII from strings
-   */
   private sanitizeText(text: string): string {
     if (!text) return '';
     
-    // Regex for Email
     const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-    // Regex for Phone/CreditCard/SSN (long digits)
     const digitRegex = /\b\d{8,}\b/g;
 
     return text
@@ -208,9 +171,6 @@ export class AnalyticsService {
       .trim();
   }
 
-  /**
-   * Automatically track screen views on route changes
-   */
   private trackPageViews(): void {
     this.router.events.pipe(
       filter((event: Event): event is NavigationEnd => event instanceof NavigationEnd)
@@ -222,7 +182,6 @@ export class AnalyticsService {
           screenName: screenName
         });
         
-        // Also log a general 'page_view' for broader compatibility
         await this.logEvent('page_view', {
           page_path: screenName,
           page_title: document.title || 'Mirror App'
@@ -235,9 +194,6 @@ export class AnalyticsService {
     });
   }
 
-  /**
-   * Track specific user identification
-   */
   public async setUserId(userId: string | null): Promise<void> {
     try {
       await FirebaseAnalytics.setUserId({
@@ -250,9 +206,6 @@ export class AnalyticsService {
     }
   }
 
-  /**
-   * Set user properties
-   */
   public async setUserProperty(name: string, value: string): Promise<void> {
     try {
       await FirebaseAnalytics.setUserProperty({

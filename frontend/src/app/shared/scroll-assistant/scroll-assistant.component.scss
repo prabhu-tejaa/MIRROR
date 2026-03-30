@@ -2,8 +2,8 @@
 
 .scroll-fab-container {
   position: fixed;
-  bottom: clamp(1.2rem, 4.5vh, 2.22rem); // Base margin for Web/Physical Buttons
-  bottom: calc(clamp(1.2rem, 4.5vh, 2.22rem) + env(safe-area-inset-bottom, 0px)); // Safe area for Notched Devices
+  bottom: clamp(1.2rem, 4.5vh, 2.22rem);
+  bottom: calc(clamp(1.2rem, 4.5vh, 2.22rem) + env(safe-area-inset-bottom, 0px));
   right: clamp(1.5rem, 5vw, 2rem);
   z-index: 1000;
   pointer-events: none;
@@ -59,7 +59,6 @@
   }
 }
 
-// Ensure it looks great on small devices
 @media (max-width: 480px) {
   .scroll-fab-container {
     bottom: 1.2rem;

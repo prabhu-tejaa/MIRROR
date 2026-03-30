@@ -31,7 +31,6 @@ export class ConnectionService implements OnDestroy {
     if (this.online$.value !== connected) {
       this.online$.next(connected);
       
-      // Log Connectivity Change to Analytics
       this.analyticsSvc.logEvent('connectivity_change', {
         is_online: connected
       });

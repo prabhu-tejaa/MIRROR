@@ -128,16 +128,18 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
       let rScale = 0.6 + Math.random() * 0.5;
 
       switch (type) {
-        case 'heart':
+        case 'heart': {
           xBase = 16 * Math.pow(Math.sin(t), 3);
           yBase = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
-          yBase *= -1; // Correct orientation
+          yBase *= -1;
           break;
-        case 'circle':
+        }
+        case 'circle': {
           xBase = 20 * Math.cos(t);
           yBase = 20 * Math.sin(t);
           break;
-        case 'square':
+        }
+        case 'square': {
           const side = Math.floor(Math.random() * 4);
           const pos = Math.random() * 40 - 20;
           if (side === 0) { xBase = pos; yBase = -20; }
@@ -146,7 +148,8 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
           else { xBase = -20; yBase = pos; }
           rScale = 0.95 + Math.random() * 0.1;
           break;
-        case 'star':
+        }
+        case 'star': {
           const spikes = 5;
           const outerRadius = 22;
           const innerRadius = 10;
@@ -162,7 +165,8 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
           yBase = (r1 * Math.sin(pointT)) + (r2 * Math.sin(nextT) - r1 * Math.sin(pointT)) * lerp;
           rScale = 0.9 + Math.random() * 0.2;
           break;
-        case 'smiley':
+        }
+        case 'smiley': {
           const part = Math.random();
           if (part < 0.6) {
             xBase = 20 * Math.cos(t);
@@ -178,6 +182,9 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnDestroy {
             xBase = 12 * Math.cos(mouthT);
             yBase = 12 * Math.sin(mouthT);
           }
+          break;
+        }
+        default:
           break;
       }
 

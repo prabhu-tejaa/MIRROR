@@ -15,6 +15,7 @@ import { StarfieldService, ShapeType } from '../../../../shared/starfield/starfi
 import { addIcons } from 'ionicons';
 import { heart, infinite, star, ellipseOutline, squareOutline, happyOutline } from 'ionicons/icons';
 import { environment } from '../../../../../environments/environment';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 @Component({
   selector: 'app-you',
@@ -51,21 +52,37 @@ export class YouPage implements OnInit {
     addIcons({ heart, infinite, star, ellipseOutline, squareOutline, happyOutline });
   }
   
-  public setShape(type: ShapeType): void {
+  public async setShape(type: ShapeType): Promise<void> {
     if (this.currentShape === type) {
       this.currentShape = 'none';
+      await Haptics.selectionStart();
     } else {
       this.currentShape = type;
+      if (type === 'heart') {
+        await this.triggerHeartbeat();
+      } else if (type !== 'none') {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      }
     }
     this.starfieldSvc.setShape(this.currentShape);
     this.cdr.markForCheck();
   }
 
+  private async triggerHeartbeat(): Promise<void> {
+    await Haptics.impact({ style: ImpactStyle.Medium });
+    
+    setTimeout(async () => {
+      await Haptics.impact({ style: ImpactStyle.Light });
+    }, 120);
+  }
+
   public async ngOnInit(): Promise<void> {
-    setTimeout(async (): Promise<void> => {
-       await this.testBackendConnection();
-       this.cdr.markForCheck();
-    }, 1000);
+    if (!environment.production) {
+      setTimeout(async (): Promise<void> => {
+         await this.testBackendConnection();
+         this.cdr.markForCheck();
+      }, 1000);
+    }
   }
 
   private async testBackendConnection(): Promise<void> {
@@ -84,12 +101,10 @@ export class YouPage implements OnInit {
 
       const data = await response.json() as Record<string, unknown>;
       if (!environment.production) {
-        // eslint-disable-next-line no-console
         console.log('Backend Handshake Success:', data);
       }
     } catch {
       if (!environment.production) {
-        // Silent or development-only error handling
       }
     }
   }

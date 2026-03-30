@@ -1,19 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 
-// Target directory for generated environment files
 const dir = 'src/environments';
 const prodFile = 'environment.prod.ts';
 const devFile = 'environment.ts';
 const prodPath = path.join(__dirname, '..', dir, prodFile);
 const devPath = path.join(__dirname, '..', dir, devFile);
 
-// Check if the directory exists, if not, create it
 if (!fs.existsSync(dir)) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
-// Helper to generate content
 const generateContent = (isProduction) => `export const environment = {
   production: ${isProduction},
   firebaseConfig: {
@@ -28,7 +25,6 @@ const generateContent = (isProduction) => `export const environment = {
 };
 `;
 
-// Write the files
 try {
   fs.writeFileSync(prodPath, generateContent(true));
   console.log(`[SetEnv] Successfully generated ${prodFile}`);

@@ -90,7 +90,6 @@ export class LoginPage implements OnInit {
       this.cdr.markForCheck();
 
       setTimeout(() => {
-        // Track User Identity on successful login
         const email = this.loginForm.get('email')?.value as string;
         if (email) {
           this.analyticsSvc.setUserId(email);

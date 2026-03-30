@@ -13,7 +13,6 @@
       
       <form [formGroup]="signupForm" (ngSubmit)="onSignup()">
 
-        <!-- Row 1: Username + Email side by side -->
         <div class="input-row">
 
           <div class="input-group">
@@ -60,7 +59,6 @@
 
         </div>
 
-        <!-- Row 2: Password full width -->
         <div class="input-group">
           <ion-input
             formControlName="password"
@@ -76,18 +74,15 @@
                 <span>{{ 'SIGNUP.ERROR_PASSWORD_REQUIRED' | translate }}</span> 
               } 
               
-              <!-- Complexity errors shown first and together -->
               @if (f['password'].errors['missingUpper']) { <span>{{ 'SIGNUP.ERROR_PASS_UPPER' | translate }}</span> }
               @if (f['password'].errors['missingLower']) { <span>{{ 'SIGNUP.ERROR_PASS_LOWER' | translate }}</span> }
               @if (f['password'].errors['missingNumeric']) { <span>{{ 'SIGNUP.ERROR_PASS_NUMBER' | translate }}</span> }
               @if (f['password'].errors['missingSpecial']) { <span>{{ 'SIGNUP.ERROR_PASS_SYMBOL' | translate }}</span> }
               
-              <!-- Length errors shown last if no complexity errors are showing, or just as secondary -->
               @if (!f['password'].errors['required'] && !f['password'].errors['missingUpper'] && !f['password'].errors['missingLower'] && !f['password'].errors['missingNumeric'] && !f['password'].errors['missingSpecial']) {
                 @if (f['password'].errors['minlength']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span> }
                 @if (f['password'].errors['maxlength']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_MAXLENGTH' | translate }}</span> }
               } @else if (f['password'].errors['minlength'] && !f['password'].errors['required']) {
-                <!-- Still show length if specifically small, but complexity is prioritized above -->
                 <span style="opacity: 0.8; font-size: 0.75rem;">{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span>
               }
             </div>
@@ -102,7 +97,6 @@
             </span>
           </div>
 
-          <!-- Premium Inline Modal for Terms -->
           <ion-modal trigger="open-terms" class="premium-modal" #modal>
             <ng-template>
               <ion-header class="ion-no-border">

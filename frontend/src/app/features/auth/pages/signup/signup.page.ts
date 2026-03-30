@@ -79,7 +79,6 @@ export class SignupPage implements OnInit {
       this.isLoading = true;
       this.cdr.markForCheck();
       setTimeout(() => {
-        // Track User Identity on successful signup
         const email = this.signupForm.get('email')?.value as string;
         if (email) {
           this.analyticsSvc.setUserId(email);

@@ -12,28 +12,13 @@
       <ion-title size="large">{{ 'TABS.YOU' | translate }}</ion-title>
     </ion-toolbar>
   </ion-header>
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      {{ 'TABS.YOU' | translate }}
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ 'TABS.YOU' | translate }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
 
   <app-explore-container [name]="'TABS.YOU' | translate"></app-explore-container>
 
-  <!-- Shape Palette Bar -->
   <div class="shape-palette-container">
     <div class="shape-palette">
       <button 
-        class="shape-btn" 
+        class="shape-item" 
         [class.active]="currentShape === 'heart'"
         (click)="setShape('heart')"
       >
@@ -42,7 +27,7 @@
       </button>
 
       <button 
-        class="shape-btn" 
+        class="shape-item" 
         [class.active]="currentShape === 'star'"
         (click)="setShape('star')"
       >
@@ -51,7 +36,7 @@
       </button>
 
       <button 
-        class="shape-btn" 
+        class="shape-item" 
         [class.active]="currentShape === 'circle'"
         (click)="setShape('circle')"
       >
@@ -60,7 +45,7 @@
       </button>
 
       <button 
-        class="shape-btn" 
+        class="shape-item" 
         [class.active]="currentShape === 'square'"
         (click)="setShape('square')"
       >
@@ -69,7 +54,7 @@
       </button>
 
       <button 
-        class="shape-btn" 
+        class="shape-item" 
         [class.active]="currentShape === 'smiley'"
         (click)="setShape('smiley')"
       >
@@ -78,7 +63,7 @@
       </button>
 
       <button 
-        class="shape-btn" 
+        class="shape-item scatter" 
         [class.active]="currentShape === 'none'"
         (click)="setShape('none')"
       >

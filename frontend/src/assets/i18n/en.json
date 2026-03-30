@@ -106,5 +106,8 @@
     "SQUARE": "Square",
     "SMILEY": "Smile",
     "SCATTER": "Scatter"
+  },
+  "GLOBAL": {
+    "UNDER_DEVELOPMENT": "P R E V I E W"
   }
 }

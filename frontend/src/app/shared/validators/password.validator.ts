@@ -3,7 +3,7 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
 export function strictPasswordValidator(control: AbstractControl): ValidationErrors | null {
   const value: string = control.value || '';
 
-  if (!value) return null; // required validator handles empty
+  if (!value) return null;
 
   const errors: ValidationErrors = {};
 

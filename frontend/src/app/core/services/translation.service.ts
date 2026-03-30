@@ -31,15 +31,10 @@ export class TranslationService implements OnDestroy {
       .subscribe({
         next: (data) => this.translations.set(data),
         error: (_err) => {
-          // Failure silently logged only in development if needed
         }
       });
   }
 
-  /**
-   * Translates a given key (e.g. "SIGNUP.TITLE").
-   * Returns the key itself if not found. Supports simple variable interpolation like {{timer}}.
-   */
   public translate(key: string, params?: Record<string, unknown>): string {
     const dict = this.translations();
     if (!dict) return key;
@@ -57,7 +52,6 @@ export class TranslationService implements OnDestroy {
 
     if (typeof result !== 'string') return key;
 
-    // Simple Variable Interpolation
     if (params) {
       Object.keys(params).forEach(p => {
         const value = String(params[p]);

@@ -1,6 +1,6 @@
 @use '../../../../shared/styles/auth-shared' as *;
 
-// Login-specific styles
+@include auth-page-styles;
 
 .title-left {
   display: inline-block;

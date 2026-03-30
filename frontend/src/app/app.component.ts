@@ -9,6 +9,8 @@ import { AnalyticsService } from './core/services/analytics.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
+import { TranslatePipe } from './shared/pipes/translate.pipe';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -19,7 +21,8 @@ import { Observable } from 'rxjs';
     IonRouterOutlet, 
     StarfieldComponent,
     NoInternetComponent,
-    ScrollAssistantComponent
+    ScrollAssistantComponent,
+    TranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -32,6 +35,5 @@ export class AppComponent {
   );
 
   constructor() {
-    // Analytics is initialized in the service constructor
   }
 }
