@@ -14,7 +14,7 @@ import { arrowUpOutline } from 'ionicons/icons';
 })
 export class ScrollAssistantComponent {
   private cdr = inject(ChangeDetectorRef);
-  private readonly threshold: number = 400; // Only trigger if scrolled way down
+  private readonly threshold: number = 400;
   
   public isVisible: boolean = false;
   public readonly arrowUpOutline = arrowUpOutline;
