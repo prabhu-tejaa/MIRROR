@@ -108,6 +108,7 @@
     "SCATTER": "Scatter"
   },
   "GLOBAL": {
-    "UNDER_DEVELOPMENT": "P R E V I E W"
+    "UNDER_DEVELOPMENT": "P R E V I E W",
+    "PREVIEW_TOOLTIP": "Development in progress..."
   }
 }
