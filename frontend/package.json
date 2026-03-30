@@ -9,7 +9,7 @@
     "build": "node scripts/set-env.js && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "node scripts/set-env.js && ng test",
-      "test:edge": "set \"CHROME_BIN=C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" && npm run test -- --browsers=Edge",
+    "test:edge": "set \"CHROME_BIN=C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" && npm run test -- --browsers=Edge",
     "test:edge-headless": "set \"CHROME_BIN=C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" && npm run test -- --watch=false --browsers=EdgeHeadless",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
