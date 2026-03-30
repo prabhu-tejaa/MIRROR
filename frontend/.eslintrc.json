@@ -67,7 +67,19 @@
             "leadingUnderscore": "forbid"
           }
         ],
-        "@typescript-eslint/no-explicit-any": "warn"
+        "@typescript-eslint/no-explicit-any": "warn",
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "Line",
+            "message": "Direct Line Comments are forbidden. Keep code clean and self-documenting."
+          },
+          {
+            "selector": "Block",
+            "message": "Block Comments are forbidden. Keep code clean and self-documenting."
+          }
+        ],
+        "no-inline-comments": "error"
       }
     },
     {

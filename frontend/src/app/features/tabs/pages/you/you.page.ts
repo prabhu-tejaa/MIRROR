@@ -98,14 +98,9 @@ export class YouPage implements OnInit {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-
-      const data = await response.json() as Record<string, unknown>;
-      if (!environment.production) {
-        console.log('Backend Handshake Success:', data);
-      }
+      
+      await response.json();
     } catch {
-      if (!environment.production) {
-      }
     }
   }
 }

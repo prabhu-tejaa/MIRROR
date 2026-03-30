@@ -125,6 +125,23 @@
     }
   }
 
+  .forgot-wrapper {
+    text-align: center;
+    margin-top: clamp(1rem, 3vh, 1.5rem);
+  }
+
+  .forgot-link {
+    font-size: clamp(0.75rem, 2.5vw, 0.85rem);
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: white;
+    }
+  }
+
   .error-msg {
     color: #ff6b6b;
     font-size: clamp(0.7rem, 2vw, 0.8rem);
