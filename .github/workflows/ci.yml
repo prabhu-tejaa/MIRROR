@@ -69,6 +69,7 @@ jobs:
       run: |
         npx cap sync android
         cd android
+        chmod +x gradlew
         ./gradlew assembleDebug
 
     - name: Create Release and Upload APK
