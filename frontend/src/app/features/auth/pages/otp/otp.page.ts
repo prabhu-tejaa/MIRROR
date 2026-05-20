@@ -25,13 +25,13 @@ export class OtpPage implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
 
   @ViewChildren('otpInput') public otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
-  
+
   public otpForm!: FormGroup;
   public isSubmitted: boolean = false;
   public isLoading: boolean = false;
   public resendTimer: number = 30;
   public flowContext: string = '';
-  
+
   public otpDigits: string[] = ['', '', '', '', '', ''];
   public focusedIndex: number = -1;
   public revealingIndex: number = -1;
@@ -60,10 +60,10 @@ export class OtpPage implements OnInit, OnDestroy {
     this.isLoading = false;
     this.isSubmitted = false;
     this.otpForm.reset();
-    
+
     this.otpDigits = ['', '', '', '', '', ''];
     this.cdr.markForCheck();
-    
+
     this.startResendTimer();
 
     setTimeout(() => {
@@ -84,7 +84,6 @@ export class OtpPage implements OnInit, OnDestroy {
     this.focusedIndex = index;
     const inputElements = this.otpInputs.toArray();
     if (inputElements[index]) {
-      // Auto-select text so typing overwrites the old digit
       inputElements[index].nativeElement.select();
     }
   }
@@ -227,8 +226,8 @@ export class OtpPage implements OnInit, OnDestroy {
     }
   }
 
-  public get f(): { [key: string]: AbstractControl } { 
-    return this.otpForm.controls; 
+  public get f(): { [key: string]: AbstractControl } {
+    return this.otpForm.controls;
   }
 
   public get currentLength(): number {
@@ -276,7 +275,7 @@ export class OtpPage implements OnInit, OnDestroy {
         const header = document.querySelector('.branding-header') as HTMLElement;
         if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
         if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
-        
+
         if (this.flowContext === 'reset') {
           this.navCtrl.navigateRoot('/reset-password', {
             animation: this.getCrossfadeAnimation()
@@ -285,7 +284,7 @@ export class OtpPage implements OnInit, OnDestroy {
           this.starfieldSvc.setShape('heart');
           setTimeout(() => {
             this.starfieldSvc.setShape('none');
-            this.navCtrl.navigateRoot('/tabs/you', { 
+            this.navCtrl.navigateRoot('/tabs/you', {
               animation: this.getCrossfadeAnimation()
             });
           }, 3000);
@@ -297,8 +296,8 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   public goToLogin(): void {
-    this.navCtrl.navigateRoot('/login', { 
-      animation: this.getCrossfadeAnimation() 
+    this.navCtrl.navigateRoot('/login', {
+      animation: this.getCrossfadeAnimation()
     });
   }
 }
