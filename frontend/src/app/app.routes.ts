@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
   {
@@ -8,26 +10,32 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/pages/login/login.page').then((m) => m.LoginPage),
   },
   {
     path: '',
+    canActivate: [authGuard],
     loadChildren: () => import('./features/tabs/tabs.routes').then((m) => m.routes),
   },
   {
     path: 'signup',
+    canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/pages/signup/signup.page').then(m => m.SignupPage)
   },
   {
     path: 'otp',
+    canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/pages/otp/otp.page').then(m => m.OtpPage)
   },
   {
     path: 'forgot-password',
+    canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/pages/forgot-password/forgot-password.page').then(m => m.ForgotPasswordPage)
   },
   {
     path: 'reset-password',
+    canActivate: [guestGuard],
     loadComponent: () => import('./features/auth/pages/reset-password/reset-password.page').then(m => m.ResetPasswordPage)
   },
   {

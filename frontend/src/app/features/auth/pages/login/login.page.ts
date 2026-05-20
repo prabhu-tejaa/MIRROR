@@ -9,6 +9,7 @@ import { StarfieldService } from '../../../../shared/starfield/starfield.service
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -25,6 +26,7 @@ export class LoginPage implements OnInit {
   private starfieldSvc = inject(StarfieldService);
   private cdr = inject(ChangeDetectorRef);
   private analyticsSvc = inject(AnalyticsService);
+  private authSvc = inject(AuthService);
 
   public loginForm!: FormGroup;
   public isSubmitted: boolean = false;
@@ -55,8 +57,8 @@ export class LoginPage implements OnInit {
     this.cdr.markForCheck();
   }
 
-  public get f(): { [key: string]: AbstractControl } { 
-    return this.loginForm.controls; 
+  public get f(): { [key: string]: AbstractControl } {
+    return this.loginForm.controls;
   }
 
   private getCrossfadeAnimation(): (baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }) => Animation {
@@ -93,25 +95,26 @@ export class LoginPage implements OnInit {
         const email = this.loginForm.get('email')?.value as string;
         if (email) {
           this.analyticsSvc.setUserId(email);
+          this.authSvc.login(email);
         }
 
         const card = document.querySelector('.glassy-card') as HTMLElement;
         const header = document.querySelector('.branding-header') as HTMLElement;
-        
-        if (card) { 
-          card.style.transition = 'opacity 1s'; 
-          card.style.opacity = '0'; 
+
+        if (card) {
+          card.style.transition = 'opacity 1s';
+          card.style.opacity = '0';
         }
-        if (header) { 
-          header.style.transition = 'opacity 1s'; 
-          header.style.opacity = '0'; 
+        if (header) {
+          header.style.transition = 'opacity 1s';
+          header.style.opacity = '0';
         }
 
         this.starfieldSvc.setShape('heart');
 
         setTimeout(() => {
           this.starfieldSvc.setShape('none');
-          this.navCtrl.navigateRoot('/tabs/you', { 
+          this.navCtrl.navigateRoot('/tabs/you', {
             animation: this.getCrossfadeAnimation()
           });
         }, 3000);
@@ -122,14 +125,14 @@ export class LoginPage implements OnInit {
   }
 
   public goToSignup(): void {
-    this.navCtrl.navigateForward('/signup', { 
-      animation: this.getCrossfadeAnimation() 
+    this.navCtrl.navigateForward('/signup', {
+      animation: this.getCrossfadeAnimation()
     });
   }
 
   public goToForgot(): void {
-    this.navCtrl.navigateForward('/forgot-password', { 
-      animation: this.getCrossfadeAnimation() 
+    this.navCtrl.navigateForward('/forgot-password', {
+      animation: this.getCrossfadeAnimation()
     });
   }
 }

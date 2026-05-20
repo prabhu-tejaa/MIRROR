@@ -1,5 +1,3 @@
-
-
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap');
 
 @import "@ionic/angular/css/core.css";
@@ -21,7 +19,12 @@ html {
   scroll-behavior: smooth;
 }
 
-body, html, ion-app, ion-router-outlet, .ion-page, ion-content {
+body,
+html,
+ion-app,
+ion-router-outlet,
+.ion-page,
+ion-content {
   --ion-background-color: transparent !important;
   --background: transparent !important;
   background: transparent !important;
@@ -52,7 +55,7 @@ body, html, ion-app, ion-router-outlet, .ion-page, ion-content {
 .premium-alert {
   --background: rgba(0, 0, 0, 0.95);
   --backdrop-opacity: 0.7;
-  
+
   .alert-wrapper {
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
     border-radius: 16px !important;
@@ -60,22 +63,62 @@ body, html, ion-app, ion-router-outlet, .ion-page, ion-content {
     backdrop-filter: blur(12px) !important;
     -webkit-backdrop-filter: blur(12px) !important;
   }
-  
+
   .alert-title {
     color: white !important;
     font-weight: 600 !important;
   }
-  
+
   .alert-message {
     color: rgba(255, 255, 255, 0.8) !important;
     font-size: 0.95rem !important;
     line-height: 1.5 !important;
     margin-top: 10px !important;
   }
-  
+
   .alert-button {
     color: #b4c8ff !important;
     font-weight: 600 !important;
+  }
+}
+
+.mirror-alert {
+  --background: rgba(12, 10, 22, 0.97);
+  --backdrop-opacity: 0.75;
+
+  .alert-wrapper {
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 20px !important;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+  }
+
+  .alert-title {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+  }
+
+  .alert-message {
+    color: rgba(255, 255, 255, 0.65) !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .alert-button-group {
+    padding: 8px 16px 16px !important;
+    gap: 8px !important;
+  }
+
+  .alert-cancel-btn {
+    color: rgba(255, 255, 255, 0.6) !important;
+    font-weight: 500 !important;
+  }
+
+  .alert-logout-btn {
+    color: #f87171 !important;
+    font-weight: 700 !important;
   }
 }
 
@@ -101,7 +144,8 @@ body, html, ion-app, ion-router-outlet, .ion-page, ion-content {
   animation: badge-glow 4s infinite ease-in-out;
   transition: all 0.3s ease;
 
-  &:hover, &:active {
+  &:hover,
+  &:active {
     background: rgba(15, 15, 30, 0.8);
     border-color: rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.9);
@@ -154,8 +198,17 @@ body, html, ion-app, ion-router-outlet, .ion-page, ion-content {
 }
 
 @keyframes badge-glow {
-  0%, 100% { border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.45); }
-  50% { border-color: rgba(255, 255, 255, 0.3); color: rgba(255, 255, 255, 0.8); }
+
+  0%,
+  100% {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  50% {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+  }
 }
 
 .branding-header {
@@ -187,10 +240,43 @@ body, html, ion-app, ion-router-outlet, .ion-page, ion-content {
 }
 
 @keyframes titleGlow {
-  0% { text-shadow: 0 0 20px rgba(180, 200, 255, 0.4), 0 0 60px rgba(120, 140, 255, 0.2); }
-  100% { text-shadow: 0 0 30px rgba(200, 220, 255, 0.6), 0 0 80px rgba(140, 160, 255, 0.35), 0 0 120px rgba(120, 140, 255, 0.2); }
+  0% {
+    text-shadow: 0 0 20px rgba(180, 200, 255, 0.4), 0 0 60px rgba(120, 140, 255, 0.2);
+  }
+
+  100% {
+    text-shadow: 0 0 30px rgba(200, 220, 255, 0.6), 0 0 80px rgba(140, 160, 255, 0.35), 0 0 120px rgba(120, 140, 255, 0.2);
+  }
 }
 
-@keyframes floatIn { 0% { opacity: 0; } 100% { opacity: 1; } }
-@keyframes formFadeUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-@keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes floatIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes formFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}

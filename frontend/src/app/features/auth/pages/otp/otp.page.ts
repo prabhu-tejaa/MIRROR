@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
-import { IonContent, IonInput, IonButton, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonSpinner } from '@ionic/angular/standalone';
 import { StarfieldService } from '../../../../shared/starfield/starfield.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { Subscription } from 'rxjs';
@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './otp.page.html',
   styleUrls: ['./otp.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, TranslatePipe],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonButton, IonSpinner, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OtpPage implements OnInit, OnDestroy {
@@ -24,7 +24,7 @@ export class OtpPage implements OnInit, OnDestroy {
   private starfieldSvc = inject(StarfieldService);
   private cdr = inject(ChangeDetectorRef);
 
-  @ViewChild('hiddenInput') private hiddenInput!: IonInput;
+  @ViewChildren('otpInput') public otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
   
   public otpForm!: FormGroup;
   public isSubmitted: boolean = false;
@@ -32,6 +32,11 @@ export class OtpPage implements OnInit, OnDestroy {
   public resendTimer: number = 30;
   public flowContext: string = '';
   
+  public otpDigits: string[] = ['', '', '', '', '', ''];
+  public focusedIndex: number = -1;
+  public revealingIndex: number = -1;
+  private revealTimeout: ReturnType<typeof setTimeout> | null = null;
+
   private timerInterval: ReturnType<typeof setInterval> | null = null;
   private routeSub!: Subscription;
 
@@ -55,15 +60,140 @@ export class OtpPage implements OnInit, OnDestroy {
     this.isLoading = false;
     this.isSubmitted = false;
     this.otpForm.reset();
+    
+    this.otpDigits = ['', '', '', '', '', ''];
     this.cdr.markForCheck();
     
     this.startResendTimer();
+
+    setTimeout(() => {
+      this.focusBox(0);
+    }, 400);
   }
 
-  public focusInput(): void {
-    if (this.hiddenInput) {
-      this.hiddenInput.setFocus();
+  public focusInput(event?: Event): void {
+    if (event && event.target !== event.currentTarget) {
+      return;
     }
+    const firstEmptyIndex = this.otpDigits.findIndex(d => !d);
+    const targetIndex = firstEmptyIndex !== -1 ? firstEmptyIndex : 5;
+    this.focusBox(targetIndex);
+  }
+
+  public onFocus(index: number): void {
+    this.focusedIndex = index;
+    const inputElements = this.otpInputs.toArray();
+    if (inputElements[index]) {
+      // Auto-select text so typing overwrites the old digit
+      inputElements[index].nativeElement.select();
+    }
+  }
+
+  public onBlur(): void {
+    setTimeout(() => {
+      if (this.focusedIndex === -1) {
+        this.cdr.markForCheck();
+      }
+    }, 50);
+  }
+
+  public onInput(event: Event, index: number): void {
+    const input = event.target as HTMLInputElement;
+    let val = input.value;
+
+    val = val.replace(/[^0-9]/g, '');
+
+    if (val.length > 1) {
+      val = val.charAt(val.length - 1);
+    }
+
+    this.otpDigits[index] = val;
+    input.value = val;
+
+    this.updateFormControlValue();
+
+    if (val) {
+      this.revealDigit(index);
+    }
+
+    if (val && index < 5) {
+      this.focusBox(index + 1);
+    }
+    this.cdr.markForCheck();
+  }
+
+  private revealDigit(index: number): void {
+    if (this.revealTimeout) {
+      clearTimeout(this.revealTimeout);
+    }
+    this.revealingIndex = index;
+    this.cdr.markForCheck();
+
+    this.revealTimeout = setTimeout(() => {
+      this.revealingIndex = -1;
+      this.cdr.markForCheck();
+    }, 300);
+  }
+
+  public getDisplayDigit(index: number): string {
+    const digit = this.otpDigits[index];
+    if (!digit) return '';
+    if (this.revealingIndex === index) return digit;
+    return '•';
+  }
+
+  public onKeydown(event: KeyboardEvent, index: number): void {
+    if (event.key === 'Backspace') {
+      if (!this.otpDigits[index] && index > 0) {
+        this.otpDigits[index - 1] = '';
+        this.updateFormControlValue();
+        this.focusBox(index - 1);
+        event.preventDefault();
+      } else {
+        this.otpDigits[index] = '';
+        this.updateFormControlValue();
+      }
+      this.cdr.markForCheck();
+    } else if (event.key === 'ArrowLeft' && index > 0) {
+      this.focusBox(index - 1);
+      event.preventDefault();
+    } else if (event.key === 'ArrowRight' && index < 5) {
+      this.focusBox(index + 1);
+      event.preventDefault();
+    }
+  }
+
+  public onPaste(event: ClipboardEvent): void {
+    event.preventDefault();
+    const pastedData = event.clipboardData?.getData('text') || '';
+    const numericData = pastedData.replace(/[^0-9]/g, '').slice(0, 6);
+
+    for (let i = 0; i < 6; i++) {
+      this.otpDigits[i] = numericData[i] || '';
+    }
+
+    this.updateFormControlValue();
+
+    this.revealingIndex = -1;
+    if (this.revealTimeout) clearTimeout(this.revealTimeout);
+
+    const nextFocusIndex = Math.min(numericData.length, 5);
+    this.focusBox(nextFocusIndex);
+    this.cdr.markForCheck();
+  }
+
+  private focusBox(index: number): void {
+    const inputElements = this.otpInputs.toArray();
+    if (inputElements[index]) {
+      inputElements[index].nativeElement.focus();
+      this.focusedIndex = index;
+    }
+  }
+
+  private updateFormControlValue(): void {
+    const combinedCode = this.otpDigits.join('');
+    this.otpForm.get('code')?.setValue(combinedCode);
+    this.otpForm.get('code')?.markAsDirty();
   }
 
   public startResendTimer(): void {

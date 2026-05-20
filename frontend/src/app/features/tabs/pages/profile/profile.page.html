@@ -1,8 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      {{ 'TABS.PROFILE' | translate }}
-    </ion-title>
+    <ion-title>{{ 'TABS.PROFILE' | translate }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -13,5 +11,36 @@
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container [name]="'TABS.PROFILE' | translate"></app-explore-container>
+  <div class="profile-page-inner">
+    <div class="profile-hero">
+      <div class="avatar-ring">
+        <ion-icon [icon]="'person-circle-outline'" class="avatar-icon"></ion-icon>
+      </div>
+      <p class="user-email">{{ userId() }}</p>
+    </div>
+
+    <ion-list class="profile-list" lines="none">
+      <div class="list-section-label">Account</div>
+
+      <ion-item class="profile-item" button detail="false">
+        <ion-icon slot="start" name="mail-outline" class="item-icon"></ion-icon>
+        <ion-label>Email</ion-label>
+        <ion-note slot="end">{{ userId() }}</ion-note>
+      </ion-item>
+
+      <ion-item class="profile-item" button detail="false">
+        <ion-icon slot="start" name="shield-checkmark-outline" class="item-icon"></ion-icon>
+        <ion-label>Privacy &amp; Security</ion-label>
+        <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+      </ion-item>
+    </ion-list>
+
+    <div class="logout-container">
+      <button class="logout-btn" id="logout-btn" (click)="onLogout()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Log Out</span>
+      </button>
+    </div>
+  </div>
+
 </ion-content>
