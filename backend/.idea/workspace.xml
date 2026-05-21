@@ -5,23 +5,49 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d6a50946-7581-4625-af40-1dec5107bcc2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/memory-service/src/test/resources/application-test.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/controller/AuthController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/dto/AuthResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/dto/LoginRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/dto/RegisterRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/model/RefreshToken.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/model/Role.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/model/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/repository/RefreshTokenRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/repository/UserRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/security/JwtUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/auth-service/src/main/java/com/mirror/authservice/service/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api-gateway/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/api-gateway/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/discovery-server/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/discovery-server/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/memory-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/memory-service/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/memory-service/src/test/java/com/mirror/memoryservice/MemoryServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/memory-service/src/test/java/com/mirror/memoryservice/MemoryServiceApplicationTests.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/main/resources/application.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/main/resources/application.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth-service/src/test/java/com/mirror/authservice/AuthServiceApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/auth-service/src/test/java/com/mirror/authservice/AuthServiceApplicationTests.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CopilotChats">
+    <option name="panelChat">
+      <chat>
+        <option name="activeSessionId" value="34ef0d18-aaec-4d0f-b5a9-9d90da55e79d" />
+        <option name="sessions">
+          <session>
+            <option name="chatType" value="PANEL" />
+            <option name="id" value="34ef0d18-aaec-4d0f-b5a9-9d90da55e79d" />
+            <option name="modeId" value="Ask" />
+            <option name="modelType" value="builtin_family" />
+            <option name="modelValue" value="auto" />
+            <option name="targetType" value="LOCAL" />
+          </session>
+        </option>
+        <option name="type" value="PANEL" />
+      </chat>
+    </option>
+  </component>
   <component name="CopilotPersistence">
     <persistenceIdMap>
+      <entry key="_C:/Users/91951/Desktop/Prabhu Teja/VIT/sem4/Project and Seminar/Project/MIRROR_PROJECT/MIRROR/backend" value="3E1QoNYQcdcSIDXPfgdD0dAqWuh" />
       <entry key="_C:/Users/91951/Desktop/Prabhu Teja/VIT/sem4/Project_Seminar/MIRROR_PROJECT/MIRROR/backend" value="3BJOv5dr00hw92sZnXgVRYFIrLm" />
     </persistenceIdMap>
   </component>
@@ -68,16 +94,22 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Maven.auth-service [clean].executor": "Run",
+    "Maven.auth-service [compile].executor": "Run",
+    "Maven.auth-service [install].executor": "Run",
     "Maven.memory-service [clean].executor": "Run",
     "Maven.memory-service [install].executor": "Run",
     "Maven.memory-service [test].executor": "Run",
     "Maven.mirror-parent [clean].executor": "Run",
     "Maven.mirror-parent [install].executor": "Run",
+    "Maven.mirror-parent [validate].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "Spring Boot.ApiGatewayApplication.executor": "Run",
+    "Spring Boot.AuthServiceApplication.executor": "Run",
     "Spring Boot.DiscoveryServerApplication.executor": "Run",
     "Spring Boot.MemoryServiceApplication.executor": "Run",
     "git-widget-placeholder": "main",
@@ -89,7 +121,21 @@
     ]
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Spring Boot.AuthServiceApplication">
+    <configuration name="AuthServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+      <option name="ALTERNATIVE_JRE_PATH" value="$USER_HOME$/.jdks/ms-21.0.10" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <envs>
+        <env name="DB_URL" value="jdbc:postgresql://ep-round-glade-aodsuors-pooler.c-2.ap-southeast-1.aws.neon.tech/neondb?sslmode=require" />
+        <env name="DB_USERNAME" value="neondb_owner" />
+        <env name="DB_PASSWORD" value="npg_UcZRdV28Htpj" />
+      </envs>
+      <module name="auth-service" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.mirror.authservice.AuthServiceApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="MemoryServiceApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <envs>
         <env name="DB_URL" value="jdbc:postgresql://localhost:5432/mirror_memory" />
@@ -102,11 +148,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Spring Boot.MemoryServiceApplication" />
+      <item itemvalue="Spring Boot.AuthServiceApplication" />
+    </list>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.32098.37" />
       </set>
     </attachedChunks>
   </component>

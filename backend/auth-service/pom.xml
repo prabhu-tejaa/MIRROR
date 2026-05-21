@@ -16,6 +16,10 @@
     <name>auth-service</name>
     <description>auth-service</description>
 
+    <properties>
+        <postgresql.version>42.7.3</postgresql.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -42,6 +46,7 @@
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
         </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -106,7 +111,8 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.30</version> </path>
+                            <version>1.18.30</version>
+                        </path>
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
