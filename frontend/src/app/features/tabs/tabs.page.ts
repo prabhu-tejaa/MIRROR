@@ -13,7 +13,7 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TabsPage {
-  public environmentInjector = inject(EnvironmentInjector);
+  private environmentInjector = inject(EnvironmentInjector);
   public readonly person = person;
   public readonly chatbubbles = chatbubbles;
   public readonly personCircle = personCircle;

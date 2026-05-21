@@ -4,10 +4,12 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractContro
 import { NavController, AnimationController, Animation, AnimationBuilder } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonSpinner, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { eye, eyeOff, closeOutline } from 'ionicons/icons';
+import { eye, eyeOff, closeOutline, alertCircleOutline } from 'ionicons/icons';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { TranslationService } from '../../../../core/services/translation.service';
 
 @Component({
   selector: 'app-signup',
@@ -23,17 +25,21 @@ export class SignupPage implements OnInit {
   private animationCtrl = inject(AnimationController);
   private cdr = inject(ChangeDetectorRef);
   private analyticsSvc = inject(AnalyticsService);
+  private authSvc = inject(AuthService);
+  private translationSvc = inject(TranslationService);
 
   public signupForm!: FormGroup;
   public isSubmitted: boolean = false;
   public isLoading: boolean = false;
   public showPassword: boolean = false;
+  public errorMessage: string = '';
   public readonly eye = eye;
   public readonly eyeOff = eyeOff;
   public readonly closeOutline = closeOutline;
+  public readonly alertCircleOutline = alertCircleOutline;
 
   constructor() {
-    addIcons({ eye, eyeOff, closeOutline });
+    addIcons({ eye, eyeOff, closeOutline, alertCircleOutline });
   }
 
   public ngOnInit(): void {
@@ -75,22 +81,31 @@ export class SignupPage implements OnInit {
 
   public onSignup(): void {
     this.isSubmitted = true;
+    this.errorMessage = '';
+    this.cdr.markForCheck();
+
     if (this.signupForm.valid) {
       this.isLoading = true;
       this.cdr.markForCheck();
-      setTimeout(() => {
-        const email = this.signupForm.get('email')?.value as string;
-        if (email) {
-          this.analyticsSvc.setUserId(email);
-        }
 
-        this.isLoading = false;
-        this.cdr.markForCheck();
-        this.navCtrl.navigateRoot('/otp', { 
-          queryParams: { flow: 'signup', email: email },
-          animation: this.getCrossfadeAnimation()
-        });
-      }, 1500);
+      const { username, email, password } = this.signupForm.value;
+
+      this.authSvc.signup({ username, email, password }).subscribe({
+        next: (_response) => {
+          this.analyticsSvc.setUserId(email);
+          this.isLoading = false;
+          this.cdr.markForCheck();
+          this.navCtrl.navigateRoot('/otp', { 
+            queryParams: { flow: 'signup', email: email },
+            animation: this.getCrossfadeAnimation()
+          });
+        },
+        error: (err: Error) => {
+          this.isLoading = false;
+          this.errorMessage = err.message || this.translationSvc.translate('SIGNUP.ERROR_DEFAULT');
+          this.cdr.markForCheck();
+        }
+      });
     } else {
       this.cdr.markForCheck();
     }

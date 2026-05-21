@@ -10,7 +10,8 @@
     "ERROR_EMAIL_MAXLENGTH": "Email must be under 254 characters",
     "ERROR_EMAIL_NOTFOUND": "No active account found for this email.",
     "BUTTON_SEND": "Send OTP",
-    "BACK_LINK": "Back to Login"
+    "BACK_LINK": "Back to Login",
+    "ERROR_DEFAULT": "Failed to send OTP. Please try again."
   },
   "OTP": {
     "HEADER": "O T P",
@@ -23,7 +24,8 @@
     "DIDNT_RECEIVE": "Didn't receive the code? ",
     "RESEND_IN": "Resend in {{resendTimer}}s",
     "RESEND": "Resend",
-    "BACK_LINK": "Back to Login"
+    "BACK_LINK": "Back to Login",
+    "ERROR_DEFAULT": "OTP verification failed. Please try again."
   },
   "RESET_PASSWORD": {
     "HEADER": "R E S E T",
@@ -38,7 +40,8 @@
     "ERROR_PASS_NUMBER": "At least 1 number",
     "ERROR_PASS_SYMBOL": "At least 1 symbol (@$!%*?&)",
     "BUTTON_SAVE": "Save & Login",
-    "BACK_LINK": "Back to Login"
+    "BACK_LINK": "Back to Login",
+    "ERROR_DEFAULT": "Failed to reset password. Please try again."
   },
   "LOGIN": {
     "TAGLINE": "Reflect. Discover. Grow.",
@@ -59,7 +62,8 @@
     "BUTTON_SIGNIN": "Sign In",
     "FORGOT_LINK": "Forgot Password?",
     "SIGNUP_PREFIX": "Don't have an account? ",
-    "SIGNUP_LINK": "Sign Up"
+    "SIGNUP_LINK": "Sign Up",
+    "ERROR_DEFAULT": "Login failed. Please check your credentials."
   },
   "SIGNUP": {
     "JOIN": "J O I N",
@@ -88,6 +92,7 @@
     "BUTTON_CREATE": "Create Account",
     "LOGIN_PREFIX": "Already have an account? ",
     "LOGIN_LINK": "Log In",
+    "ERROR_DEFAULT": "Registration failed. Please try again.",
     "TOS_TITLE": "Welcome to Mirror",
     "TOS_SUBTITLE": "By joining, you agree to our placeholder terms. Ensure you are acting legally and morally on our platform.",
     "RULE_1": "Respect others: Treat everyone with dignity and kindness.",
@@ -110,5 +115,32 @@
   "GLOBAL": {
     "UNDER_DEVELOPMENT": "P R E V I E W",
     "PREVIEW_TOOLTIP": "Development in progress..."
+  },
+  "STORAGE": {
+    "ACCESS_TOKEN": "mirror_access_token",
+    "REFRESH_TOKEN": "mirror_refresh_token",
+    "USERNAME": "mirror_username"
+  },
+  "API": {
+    "SIGNUP": "/api/auth/signup",
+    "LOGIN": "/api/auth/login",
+    "OTP_REQUEST": "/api/auth/otp/request",
+    "OTP_VERIFY": "/api/auth/otp/verify",
+    "FORGOT_PASSWORD_REQUEST": "/api/auth/forgot-password/request",
+    "FORGOT_PASSWORD_VERIFY": "/api/auth/forgot-password/verify",
+    "FORGOT_PASSWORD_RESET": "/api/auth/forgot-password/reset",
+    "REFRESH": "/api/auth/refresh",
+    "LOGOUT": "/api/auth/logout"
+  },
+  "CONFIG": {
+    "API_PREFIX": "/api/",
+    "API_URL": "http://localhost:8060"
+  },
+  "ERRORS": {
+    "UNEXPECTED": "An unexpected error occurred. Please try again."
+  },
+  "TYPES": {
+    "STRING": "string",
+    "OBJECT": "object"
   }
 }

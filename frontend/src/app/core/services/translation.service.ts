@@ -22,6 +22,21 @@ export class TranslationService implements OnDestroy {
     }
   }
 
+  public initTranslations(lang: string = 'en'): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.http.get<Record<string, string | unknown>>(`/assets/i18n/${lang}.json`)
+        .subscribe({
+          next: (data) => {
+            this.translations.set(data);
+            resolve(true);
+          },
+          error: (_err) => {
+            resolve(false);
+          }
+        });
+    });
+  }
+
   private loadTranslations(lang: string): void {
     if (this.sub) {
       this.sub.unsubscribe();

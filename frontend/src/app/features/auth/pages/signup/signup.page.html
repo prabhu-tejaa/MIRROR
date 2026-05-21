@@ -13,6 +13,13 @@
 
       <form [formGroup]="signupForm" (ngSubmit)="onSignup()">
 
+        @if (errorMessage) {
+          <div class="general-error-banner">
+            <ion-icon [icon]="alertCircleOutline" class="error-icon"></ion-icon>
+            <span class="error-text">{{ errorMessage }}</span>
+          </div>
+        }
+
         <div class="input-row">
 
           <div class="input-group">

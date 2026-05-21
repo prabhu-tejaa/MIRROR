@@ -13,6 +13,7 @@ if (!fs.existsSync(dir)) {
 
 const generateContent = (isProduction) => `export const environment = {
   production: ${isProduction},
+  apiUrl: "${process.env.API_URL || ''}",
   firebaseConfig: {
     apiKey: "${process.env.FIREBASE_API_KEY || ''}",
     authDomain: "${process.env.FIREBASE_AUTH_DOMAIN || ''}",

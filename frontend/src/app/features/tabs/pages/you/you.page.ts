@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { 
   IonHeader, 
   IonToolbar, 
@@ -34,7 +34,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class YouPage implements OnInit {
+export class YouPage {
   private cdr = inject(ChangeDetectorRef);
   private starfieldSvc = inject(StarfieldService);
 
@@ -73,8 +73,5 @@ export class YouPage implements OnInit {
     setTimeout(async () => {
       await Haptics.impact({ style: ImpactStyle.Light });
     }, 120);
-  }
-
-  public ngOnInit(): void {
   }
 }

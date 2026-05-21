@@ -4,12 +4,13 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractContro
 import { NavController, AnimationController, Animation } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonIcon, IonSpinner } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { eye, eyeOff } from 'ionicons/icons';
+import { eye, eyeOff, alertCircleOutline } from 'ionicons/icons';
 import { StarfieldService } from '../../../../shared/starfield/starfield.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { TranslationService } from '../../../../core/services/translation.service';
 
 @Component({
   selector: 'app-login',
@@ -27,16 +28,19 @@ export class LoginPage implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private analyticsSvc = inject(AnalyticsService);
   private authSvc = inject(AuthService);
+  private translationSvc = inject(TranslationService);
 
   public loginForm!: FormGroup;
   public isSubmitted: boolean = false;
   public isLoading: boolean = false;
   public showPassword: boolean = false;
+  public errorMessage: string = '';
   public readonly eye = eye;
   public readonly eyeOff = eyeOff;
+  public readonly alertCircleOutline = alertCircleOutline;
 
   constructor() {
-    addIcons({ eye, eyeOff });
+    addIcons({ eye, eyeOff, alertCircleOutline });
   }
 
   public ngOnInit(): void {
@@ -53,6 +57,7 @@ export class LoginPage implements OnInit {
     if (header) { header.style.opacity = '1'; header.style.transition = 'none'; }
     this.isLoading = false;
     this.isSubmitted = false;
+    this.errorMessage = '';
     this.loginForm.reset();
     this.cdr.markForCheck();
   }
@@ -87,38 +92,48 @@ export class LoginPage implements OnInit {
 
   public onLogin(): void {
     this.isSubmitted = true;
+    this.errorMessage = '';
+    this.cdr.markForCheck();
+
     if (this.loginForm.valid) {
       this.isLoading = true;
       this.cdr.markForCheck();
 
-      setTimeout(() => {
-        const email = this.loginForm.get('email')?.value as string;
-        if (email) {
+      const { email, password } = this.loginForm.value;
+
+      this.authSvc.loginUser({ email, password }).subscribe({
+        next: () => {
           this.analyticsSvc.setUserId(email);
-          this.authSvc.login(email);
+          this.isLoading = false;
+          this.cdr.markForCheck();
+
+          const card = document.querySelector('.glassy-card') as HTMLElement;
+          const header = document.querySelector('.branding-header') as HTMLElement;
+
+          if (card) {
+            card.style.transition = 'opacity 1s';
+            card.style.opacity = '0';
+          }
+          if (header) {
+            header.style.transition = 'opacity 1s';
+            header.style.opacity = '0';
+          }
+
+          this.starfieldSvc.setShape('heart');
+
+          setTimeout(() => {
+            this.starfieldSvc.setShape('none');
+            this.navCtrl.navigateRoot('/tabs/you', {
+              animation: this.getCrossfadeAnimation()
+            });
+          }, 3000);
+        },
+        error: (err: Error) => {
+          this.isLoading = false;
+          this.errorMessage = err.message || this.translationSvc.translate('LOGIN.ERROR_DEFAULT');
+          this.cdr.markForCheck();
         }
-
-        const card = document.querySelector('.glassy-card') as HTMLElement;
-        const header = document.querySelector('.branding-header') as HTMLElement;
-
-        if (card) {
-          card.style.transition = 'opacity 1s';
-          card.style.opacity = '0';
-        }
-        if (header) {
-          header.style.transition = 'opacity 1s';
-          header.style.opacity = '0';
-        }
-
-        this.starfieldSvc.setShape('heart');
-
-        setTimeout(() => {
-          this.starfieldSvc.setShape('none');
-          this.navCtrl.navigateRoot('/tabs/you', {
-            animation: this.getCrossfadeAnimation()
-          });
-        }, 3000);
-      }, 1000);
+      });
     } else {
       this.cdr.markForCheck();
     }

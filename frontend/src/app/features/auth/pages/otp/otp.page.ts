@@ -3,18 +3,21 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
-import { IonContent, IonButton, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonSpinner, IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { alertCircleOutline } from 'ionicons/icons';
 import { StarfieldService } from '../../../../shared/starfield/starfield.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
+import { TranslationService } from '../../../../core/services/translation.service';
 
 @Component({
   selector: 'app-otp',
   templateUrl: './otp.page.html',
   styleUrls: ['./otp.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonButton, IonSpinner, TranslatePipe],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonButton, IonSpinner, IonIcon, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OtpPage implements OnInit, OnDestroy {
@@ -25,25 +28,30 @@ export class OtpPage implements OnInit, OnDestroy {
   private starfieldSvc = inject(StarfieldService);
   private cdr = inject(ChangeDetectorRef);
   private authSvc = inject(AuthService);
+  private translationSvc = inject(TranslationService);
 
-  @ViewChildren('otpInput') public otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
+  @ViewChildren('otpInput') private otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
   public otpForm!: FormGroup;
   public isSubmitted: boolean = false;
   public isLoading: boolean = false;
   public resendTimer: number = 30;
   public flowContext: string = '';
-  public email: string = '';
+  private email: string = '';
+  public errorMessage: string = '';
 
   public otpDigits: string[] = ['', '', '', '', '', ''];
   public focusedIndex: number = -1;
-  public revealingIndex: number = -1;
+  private revealingIndex: number = -1;
   private revealTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  public readonly alertCircleOutline = alertCircleOutline;
 
   private timerInterval: ReturnType<typeof setInterval> | null = null;
   private routeSub!: Subscription;
 
   constructor() {
+    addIcons({ alertCircleOutline });
     this.routeSub = this.route.queryParams.subscribe((params: Params) => {
       this.flowContext = (params['flow'] as string) || 'signup';
       this.email = (params['email'] as string) || '';
@@ -199,7 +207,7 @@ export class OtpPage implements OnInit, OnDestroy {
     this.otpForm.get('code')?.markAsDirty();
   }
 
-  public startResendTimer(): void {
+  private startResendTimer(): void {
     this.resendTimer = 30;
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
@@ -217,7 +225,23 @@ export class OtpPage implements OnInit, OnDestroy {
 
   public resendCode(): void {
     if (this.resendTimer === 0) {
-      this.startResendTimer();
+      this.errorMessage = '';
+      this.cdr.markForCheck();
+
+      const request$ = this.flowContext === 'reset'
+        ? this.authSvc.requestForgotPasswordOtp(this.email)
+        : this.authSvc.requestOtp(this.email);
+
+      request$.subscribe({
+        next: () => {
+          this.startResendTimer();
+          this.cdr.markForCheck();
+        },
+        error: (err: Error) => {
+          this.errorMessage = err.message || this.translationSvc.translate('OTP.ERROR_DEFAULT');
+          this.cdr.markForCheck();
+        }
+      });
     }
   }
 
@@ -232,17 +256,6 @@ export class OtpPage implements OnInit, OnDestroy {
 
   public get f(): { [key: string]: AbstractControl } {
     return this.otpForm.controls;
-  }
-
-  public get currentLength(): number {
-    const val = this.otpForm.get('code')?.value as string;
-    return val ? val.toString().length : 0;
-  }
-
-  public getDigit(index: number): string {
-    const val = this.otpForm.get('code')?.value as string;
-    if (!val) return '';
-    return val.toString()[index] || '';
   }
 
   private getCrossfadeAnimation(): (baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }) => Animation {
@@ -271,30 +284,63 @@ export class OtpPage implements OnInit, OnDestroy {
 
   public onVerify(): void {
     this.isSubmitted = true;
+    this.errorMessage = '';
+    this.cdr.markForCheck();
+
     if (this.otpForm.valid) {
       this.isLoading = true;
       this.cdr.markForCheck();
-      setTimeout(() => {
-        const card = document.querySelector('.glassy-card') as HTMLElement;
-        const header = document.querySelector('.branding-header') as HTMLElement;
-        if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
-        if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
 
-        if (this.flowContext === 'reset') {
-          this.navCtrl.navigateRoot('/reset-password', {
-            animation: this.getCrossfadeAnimation()
-          });
-        } else {
-          this.authSvc.login(this.email || 'new_user@mirror.com');
-          this.starfieldSvc.setShape('heart');
-          setTimeout(() => {
-            this.starfieldSvc.setShape('none');
-            this.navCtrl.navigateRoot('/tabs/you', {
+      const code = this.otpForm.get('code')?.value as string;
+
+      if (this.flowContext === 'reset') {
+        this.authSvc.verifyForgotPasswordOtp(this.email, code).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.cdr.markForCheck();
+
+            const card = document.querySelector('.glassy-card') as HTMLElement;
+            const header = document.querySelector('.branding-header') as HTMLElement;
+            if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
+            if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
+
+            this.navCtrl.navigateRoot('/reset-password', {
+              queryParams: { email: this.email, code: code },
               animation: this.getCrossfadeAnimation()
             });
-          }, 3000);
-        }
-      }, 1000);
+          },
+          error: (err: Error) => {
+            this.isLoading = false;
+            this.errorMessage = err.message || this.translationSvc.translate('OTP.ERROR_DEFAULT');
+            this.cdr.markForCheck();
+          }
+        });
+      } else {
+        this.authSvc.verifyOtp(this.email, code).subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.cdr.markForCheck();
+
+            const card = document.querySelector('.glassy-card') as HTMLElement;
+            const header = document.querySelector('.branding-header') as HTMLElement;
+            if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
+            if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
+
+            this.starfieldSvc.setShape('heart');
+            setTimeout(() => {
+              this.starfieldSvc.setShape('none');
+              this.navCtrl.navigateRoot('/tabs/you', {
+                animation: this.getCrossfadeAnimation()
+              });
+            }, 3000);
+          },
+          error: (err: Error) => {
+            this.isLoading = false;
+            this.errorMessage = err.message || this.translationSvc.translate('OTP.ERROR_DEFAULT');
+            this.cdr.markForCheck();
+          }
+        });
+      }
     } else {
       this.cdr.markForCheck();
     }
