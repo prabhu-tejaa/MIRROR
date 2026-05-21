@@ -18,7 +18,6 @@ public class AuthService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public User registerUser(String username, String email, String rawPassword) {
-        // 1. Validation Rule: Check if the email or username is already taken
         if (userRepository.existsByEmail(email)) {
             throw new RuntimeException("Email is already registered!");
         }
@@ -26,10 +25,8 @@ public class AuthService {
             throw new RuntimeException("Username is already taken!");
         }
 
-        // 2. Security Rule: Hash the raw plain-text password safely
         String encryptedPassword = passwordEncoder.encode(rawPassword);
 
-        // 3. Create the new User object using the Builder pattern
         User newUser = User.builder()
                 .username(username)
                 .email(email)
@@ -37,23 +34,18 @@ public class AuthService {
                 .role(Role.ROLE_USER)
                 .build();
 
-        // 4. Save the user to Neon Tech via the repository and return it
         return userRepository.save(newUser);
     }
 
     public User loginUser(String email, String rawPassword) {
-        // 1. Find the user by email. If not found, throw an error.
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid email or password!"));
 
-        // 2. Security Check: Is the account currently locked?
         if (user.getLockedUntil() != null && user.getLockedUntil().isAfter(LocalDateTime.now())) {
             throw new RuntimeException("Account is locked. Try again later.");
         }
 
-        // 3. Verify the password matches the hashed version in the DB
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
-            // Wrong password: Track the failure and lock if necessary
             user.setFailedAttempts(user.getFailedAttempts() + 1);
             if (user.getFailedAttempts() >= 5) {
                 user.setLockedUntil(LocalDateTime.now().plusMinutes(15));
@@ -62,7 +54,6 @@ public class AuthService {
             throw new RuntimeException("Invalid email or password!");
         }
 
-        // 4. Success: Reset failed attempts tracker on successful login
         user.setFailedAttempts(0);
         user.setLockedUntil(null);
         return userRepository.save(user);
