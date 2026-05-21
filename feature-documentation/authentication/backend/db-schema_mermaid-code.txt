@@ -1,0 +1,32 @@
+erDiagram
+    users {
+        UUID id PK "Primary Key (Unique)"
+        VARCHAR username UK "Unique login handle (Indexed)"
+        VARCHAR email UK "Unique email (Indexed)"
+        VARCHAR password_hash "Bcrypt/Argon2"
+        VARCHAR role "Role (USER/ADMIN/etc.)"
+        BOOLEAN is_verified "Email verification status"
+        TIMESTAMP created_at "Account creation"
+        TIMESTAMP updated_at "Last modification timestamp"
+        INT failed_attempts "Brute force tracker"
+        TIMESTAMP locked_until "Lockout timestamp"
+    }
+
+    refresh_tokens {
+        UUID id PK "Primary Key"
+        UUID user_id FK "Reference to users.id"
+        VARCHAR token UK "High-entropy session token"
+        TIMESTAMP expires_at "Token TTL (Indexed for cleanup)"
+        TIMESTAMP created_at "Token creation time"
+    }
+
+    otp_tokens {
+        UUID id PK "Primary Key"
+        UUID user_id FK "Reference to users.id"
+        VARCHAR otp_code "6-digit numerical string"
+        TIMESTAMP expires_at "Expiration time (created_at + 5 mins)"
+        BOOLEAN is_used "Default: false (Prevents replay attacks)"
+    }
+
+    users ||--o{ refresh_tokens : "has-a"
+    users ||--o{ otp_tokens : "generates"
