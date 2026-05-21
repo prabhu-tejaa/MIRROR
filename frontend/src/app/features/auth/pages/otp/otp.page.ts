@@ -7,6 +7,7 @@ import { IonContent, IonButton, IonSpinner } from '@ionic/angular/standalone';
 import { StarfieldService } from '../../../../shared/starfield/starfield.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-otp',
@@ -23,6 +24,7 @@ export class OtpPage implements OnInit, OnDestroy {
   private animationCtrl = inject(AnimationController);
   private starfieldSvc = inject(StarfieldService);
   private cdr = inject(ChangeDetectorRef);
+  private authSvc = inject(AuthService);
 
   @ViewChildren('otpInput') public otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
@@ -31,6 +33,7 @@ export class OtpPage implements OnInit, OnDestroy {
   public isLoading: boolean = false;
   public resendTimer: number = 30;
   public flowContext: string = '';
+  public email: string = '';
 
   public otpDigits: string[] = ['', '', '', '', '', ''];
   public focusedIndex: number = -1;
@@ -43,6 +46,7 @@ export class OtpPage implements OnInit, OnDestroy {
   constructor() {
     this.routeSub = this.route.queryParams.subscribe((params: Params) => {
       this.flowContext = (params['flow'] as string) || 'signup';
+      this.email = (params['email'] as string) || '';
     });
   }
 
@@ -281,6 +285,7 @@ export class OtpPage implements OnInit, OnDestroy {
             animation: this.getCrossfadeAnimation()
           });
         } else {
+          this.authSvc.login(this.email || 'new_user@mirror.com');
           this.starfieldSvc.setShape('heart');
           setTimeout(() => {
             this.starfieldSvc.setShape('none');

@@ -87,7 +87,7 @@ export class SignupPage implements OnInit {
         this.isLoading = false;
         this.cdr.markForCheck();
         this.navCtrl.navigateRoot('/otp', { 
-          queryParams: { flow: 'signup' },
+          queryParams: { flow: 'signup', email: email },
           animation: this.getCrossfadeAnimation()
         });
       }, 1500);
