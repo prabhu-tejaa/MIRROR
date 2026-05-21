@@ -15,6 +15,7 @@ spring:
               - "http://192.168.1.101:8100"
               - "http://localhost"
               - "capacitor://localhost"
+              - "https://projectmirror.tech"
             allowedMethods:
               - GET
               - POST
@@ -22,7 +23,7 @@ spring:
               - DELETE
               - OPTIONS
             allowedHeaders: "*"
-            allowCredentials: false
+            allowCredentials: true
 
       routes:
         - id: auth-service-route
@@ -47,8 +48,8 @@ eureka:
     instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
   client:
     registry-fetch-interval-seconds: 5
-    service-url:
-      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+  service-url:
+    defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
 
 ---
 spring:
@@ -57,6 +58,20 @@ spring:
       on-profile: prod
   cloud:
     gateway:
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "https://projectmirror.tech"
+              - "http://localhost:8100"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowedHeaders: "*"
+            allowCredentials: true
       routes:
         - id: auth-service-route
           uri: ${AUTH_SERVICE_URL}
