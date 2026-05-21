@@ -11,14 +11,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
     private final JwtUtil jwtUtil;
 
-    @PostMapping("/register")
+    @PostMapping("/signup")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
             User registeredUser = authService.registerUser(
@@ -35,14 +35,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            // 1. Authenticate the user credentials
             User user = authService.loginUser(request.email(), request.password());
 
-            // 2. Generate the tokens
             String accessToken = jwtUtil.generateAccessToken(user);
-            String refreshToken = "mock-refresh-token-placeholder"; // We will hook up the DB table next
+            String refreshToken = "mock-refresh-token-placeholder";
 
-            // 3. Return the payload response
             return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken, user.getUsername()));
         } catch (Exception e) {
             return ResponseEntity.status(401).body(e.getMessage());

@@ -1,3 +1,6 @@
+server:
+  port: 8060
+
 spring:
   application:
     name: api-gateway
@@ -22,16 +25,27 @@ spring:
             allowCredentials: false
 
       routes:
+        - id: auth-service-route
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+
         - id: memory-service-route
           uri: lb://memory-service
           predicates:
             - Path=/api/memory/**
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health
+
 eureka:
   instance:
     prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:8080
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
   client:
     registry-fetch-interval-seconds: 5
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}

@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles; // Add this import
 
 @SpringBootTest
-@ActiveProfiles("test") // Add this annotation
+@ActiveProfiles("test")
 class MemoryServiceApplicationTests {
 
     @Test
