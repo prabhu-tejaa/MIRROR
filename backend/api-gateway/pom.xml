@@ -10,6 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <groupId>com.mirror</groupId>
     <artifactId>api-gateway</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>api-gateway</name>
@@ -53,5 +54,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
