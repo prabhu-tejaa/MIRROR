@@ -138,7 +138,7 @@ jobs:
         make_latest: true
         allowUpdates: true
 
-  # ────────────────────────────────────────────────────────
+ # ────────────────────────────────────────────────────────
   # JOB 4: SPRING BOOT MICROSERVICES TO AZURE APP SERVICE
   # ────────────────────────────────────────────────────────
   deploy-backend:
@@ -154,6 +154,10 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: 'maven'
+
+    - name: Grant Execute Permission to Maven Wrapper
+      run: chmod +x mvnw
+      working-directory: backend
 
     - name: Build with Maven
       run: ./mvnw clean package -DskipTests
