@@ -14,7 +14,6 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { StarfieldService, ShapeType } from '../../../../shared/starfield/starfield.service';
 import { addIcons } from 'ionicons';
 import { heart, infinite, star, ellipseOutline, squareOutline, happyOutline } from 'ionicons/icons';
-import { environment } from '../../../../../environments/environment';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 @Component({
@@ -76,31 +75,6 @@ export class YouPage implements OnInit {
     }, 120);
   }
 
-  public async ngOnInit(): Promise<void> {
-    if (!environment.production) {
-      setTimeout(async (): Promise<void> => {
-         await this.testBackendConnection();
-         this.cdr.markForCheck();
-      }, 1000);
-    }
-  }
-
-  private async testBackendConnection(): Promise<void> {
-    try {
-      const response = await fetch('http://192.168.1.101:8080/actuator/health', {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      await response.json();
-    } catch {
-    }
+  public ngOnInit(): void {
   }
 }
