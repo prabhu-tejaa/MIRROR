@@ -22,7 +22,7 @@ public class JwtUtil {
 
     public String generateAccessToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("role", user.getRole().name()); // Embed the safe Enum role inside the token
+        claims.put("role", user.getRole().name());
         claims.put("email", user.getEmail());
 
         return Jwts.builder()

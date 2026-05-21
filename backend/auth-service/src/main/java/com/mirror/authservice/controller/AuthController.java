@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -43,12 +42,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            User user = authService.loginUser(request.email(), request.password());
-
-            String accessToken = jwtUtil.generateAccessToken(user);
-            String refreshToken = "mock-refresh-token-placeholder";
-
-            return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken, user.getUsername()));
+            AuthResponse response = authService.loginUserAndIssueTokens(request.email(), request.password());
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(401).body(e.getMessage());
         }
@@ -63,21 +58,118 @@ public class AuthController {
 
         String code = otpService.generateOtp(email);
 
-        emailService.sendOtpEmail(email, code, user.getUsername());
+        emailService.sendOtpEmail(email, code, user.getUsername(), "VERIFY");
 
         return ResponseEntity.ok("OTP sent to your email.");
     }
 
     @PostMapping("/otp/verify")
     public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
-        User user = userRepository.findByEmail(request.get("email")).orElseThrow();
-        boolean isValid = otpService.verifyOtp(user, request.get("code"));
+        try {
+            String email = request.get("email");
+            String code = request.get("code");
 
-        if (isValid) {
-            user.setVerified(true);
-            userRepository.save(user);
-            return ResponseEntity.ok("OTP verified successfully.");
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            boolean isValid = otpService.verifyOtp(user, code);
+
+            if (isValid) {
+                user.setVerified(true);
+                userRepository.save(user);
+
+                AuthResponse response = authService.issueTokensForVerifiedUser(user);
+                return ResponseEntity.ok(response);
+            }
+
+            return ResponseEntity.status(401).body("Invalid or expired OTP.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
-        return ResponseEntity.status(401).body("Invalid or expired OTP.");
+    }
+
+    @PostMapping("/forgot-password/request")
+    public ResponseEntity<?> requestForgotPasswordOtp(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("No account found with this email address."));
+
+            String code = otpService.generateOtp(email);
+
+            emailService.sendOtpEmail(email, code, user.getUsername(), "RESET");
+
+            return ResponseEntity.ok("Password reset OTP sent to your email.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/forgot-password/verify")
+    public ResponseEntity<?> verifyForgotPasswordOtp(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            String code = request.get("code");
+
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            boolean isValid = otpService.verifyOtp(user, code);
+
+            if (isValid) {
+                return ResponseEntity.ok("OTP verified successfully. You may now reset your password.");
+            }
+
+            return ResponseEntity.status(401).body("Invalid or expired OTP.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/forgot-password/reset")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            String newPassword = request.get("password");
+
+            if (newPassword == null || newPassword.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Password cannot be empty.");
+            }
+
+            authService.resetPassword(email, newPassword);
+
+            return ResponseEntity.ok("Password reset successfully. Please proceed to login.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
+        try {
+            String refreshToken = request.get("refreshToken");
+            if (refreshToken == null || refreshToken.isEmpty()) {
+                return ResponseEntity.badRequest().body("Refresh token missing.");
+            }
+
+            AuthResponse response = authService.refreshAccessToken(refreshToken);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@RequestBody Map<String, String> request) {
+        try {
+            String refreshToken = request.get("refreshToken");
+            if (refreshToken != null && !refreshToken.isEmpty()) {
+                authService.logout(refreshToken);
+            }
+            return ResponseEntity.ok("Logged out successfully.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
