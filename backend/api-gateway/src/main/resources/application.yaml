@@ -55,12 +55,6 @@ spring:
   config:
     activate:
       on-profile: prod
-
-eureka:
-  client:
-    enabled: false
-
-spring:
   cloud:
     gateway:
       routes:
@@ -68,3 +62,7 @@ spring:
           uri: ${AUTH_SERVICE_URL}
           predicates:
             - Path=/api/auth/**
+
+eureka:
+  client:
+    enabled: false
