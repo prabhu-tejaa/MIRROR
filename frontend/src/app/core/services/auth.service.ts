@@ -23,6 +23,10 @@ export class AuthService {
     return this.translationSvc.translate('STORAGE.USERNAME');
   }
 
+  private get emailKey(): string {
+    return this.translationSvc.translate('STORAGE.EMAIL');
+  }
+
   private readonly authSignal = signal<boolean>(
     !!localStorage.getItem(this.translationSvc.translate('STORAGE.ACCESS_TOKEN'))
   );
@@ -77,6 +81,9 @@ export class AuthService {
     localStorage.setItem(this.accessTokenKey, response.accessToken);
     localStorage.setItem(this.refreshTokenKey, response.refreshToken);
     localStorage.setItem(this.usernameKey, response.username);
+    if (response.email) {
+      localStorage.setItem(this.emailKey, response.email);
+    }
     this.authSignal.set(true);
   }
 
@@ -84,6 +91,7 @@ export class AuthService {
     localStorage.removeItem(this.accessTokenKey);
     localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem(this.usernameKey);
+    localStorage.removeItem(this.emailKey);
     this.authSignal.set(false);
   }
 
@@ -101,6 +109,10 @@ export class AuthService {
 
   public getUserId(): string | null {
     return localStorage.getItem(this.usernameKey);
+  }
+
+  public getEmail(): string | null {
+    return localStorage.getItem(this.emailKey);
   }
 
   public getAccessToken(): string | null {

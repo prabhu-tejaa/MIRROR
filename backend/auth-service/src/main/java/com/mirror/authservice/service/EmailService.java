@@ -28,7 +28,7 @@ public class EmailService {
                     "We received a request to reset your password. Use the verification code below to proceed:\n\n" +
                     "Your Reset Code is: " + otp + "\n" +
                     "This code will expire in 5 minutes.\n\n" +
-                    "If you did not request this, please ignore this email or contact support if you have concerns.\n\n" +
+                    "If you did not request this, please ignore this email.\n\n" +
                     "Best regards,\n" +
                     "The Mirror Security Team";
         } else {

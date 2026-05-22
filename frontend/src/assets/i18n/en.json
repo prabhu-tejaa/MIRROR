@@ -17,12 +17,13 @@
     "HEADER": "O T P",
     "TAGLINE": "Enter your verification code.",
     "TITLE": "Verify Email",
+    "INSTRUCTION": "We sent a verification code to",
     "ERROR_REQUIRED": "Verification code required",
     "ERROR_PATTERN": "Must be a 6-digit number",
     "BUTTON_VERIFY_RESET": "Verify & Reset",
     "BUTTON_VERIFY_ENTER": "Verify & Enter",
     "DIDNT_RECEIVE": "Didn't receive the code? ",
-    "RESEND_IN": "Resend in {{resendTimer}}s",
+    "RESEND_IN": "Resend in {{resendTimer}}",
     "RESEND": "Resend",
     "BACK_LINK": "Back to Login",
     "ERROR_DEFAULT": "OTP verification failed. Please try again."
@@ -116,10 +117,23 @@
     "UNDER_DEVELOPMENT": "P R E V I E W",
     "PREVIEW_TOOLTIP": "Development in progress..."
   },
+  "PROFILE": {
+    "ACCOUNT": "Account",
+    "EMAIL": "Email",
+    "ABOUT": "About",
+    "LOGOUT": "Log Out",
+    "LOGOUT_ALERT_HEADER": "Log Out",
+    "LOGOUT_ALERT_MESSAGE": "Are you sure you want to log out?",
+    "LOGOUT_ALERT_CANCEL": "Cancel",
+    "ABOUT_ALERT_HEADER": "About Mirror",
+    "ABOUT_ALERT_MESSAGE": "Developed by Prabhu Teja Pamula (24EMCA1237) under the guidance of esteemed Dr. Brijendra Singh. Special credits to Vellore Institute of Technology, the open source community and our incredible users for using our platform.",
+    "ABOUT_ALERT_CLOSE": "Awesome"
+  },
   "STORAGE": {
     "ACCESS_TOKEN": "mirror_access_token",
     "REFRESH_TOKEN": "mirror_refresh_token",
-    "USERNAME": "mirror_username"
+    "USERNAME": "mirror_username",
+    "EMAIL": "mirror_email"
   },
   "API": {
     "SIGNUP": "/api/auth/signup",
@@ -152,6 +166,18 @@
     "ACCESS_TOKEN": "mock_jwt_access_token_xyz",
     "REFRESH_TOKEN": "mock_refresh_token_abc",
     "REFRESHED_ACCESS_TOKEN": "mock_jwt_access_token_xyz_refreshed",
-    "DEFAULT_USERNAME": "mockuser"
+    "DEFAULT_USERNAME": "mockuser",
+    "TRIGGER_ERROR_EMAIL": "error@mirror.com",
+    "TRIGGER_ERROR_OTP": "000000",
+    "DEFAULT_EMAIL": "gdag@hdjs.com",
+    "EMAIL_SEPARATOR": "@",
+    "STATUS_UNAUTHORIZED": "Unauthorized",
+    "STATUS_BAD_REQUEST": "Bad Request",
+    "STATUS_NOT_FOUND": "Not Found",
+    "ERROR_INVALID_CREDENTIALS": "Invalid email or password. Please try again.",
+    "ERROR_EMAIL_EXISTS": "An account with this email address already exists.",
+    "ERROR_INCORRECT_OTP": "Incorrect verification code. Please request a new one.",
+    "ERROR_EMAIL_NOT_FOUND": "No account registered with this email address.",
+    "ERROR_OTP_VERIFICATION_FAILED": "Incorrect OTP code. Verification failed."
   }
 }

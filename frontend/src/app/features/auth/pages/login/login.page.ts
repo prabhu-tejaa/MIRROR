@@ -104,7 +104,7 @@ export class LoginPage implements OnInit {
       this.authSvc.loginUser({ email, password }).subscribe({
         next: () => {
           this.analyticsSvc.setUserId(email);
-          this.isLoading = false;
+          // Keep isLoading true so the button remains in its loading state while the card fades out
           this.cdr.markForCheck();
 
           const card = document.querySelector('.glassy-card') as HTMLElement;
@@ -123,6 +123,8 @@ export class LoginPage implements OnInit {
 
           setTimeout(() => {
             this.starfieldSvc.setShape('none');
+            this.isLoading = false;
+            this.cdr.markForCheck();
             this.navCtrl.navigateRoot('/tabs/you', {
               animation: this.getCrossfadeAnimation()
             });

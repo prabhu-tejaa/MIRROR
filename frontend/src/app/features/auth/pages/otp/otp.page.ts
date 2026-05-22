@@ -35,7 +35,7 @@ export class OtpPage implements OnInit, OnDestroy {
   public otpForm!: FormGroup;
   public isSubmitted: boolean = false;
   public isLoading: boolean = false;
-  public resendTimer: number = 30;
+  public resendTimer: number = 300;
   public flowContext: string = '';
   private email: string = '';
   public errorMessage: string = '';
@@ -56,6 +56,28 @@ export class OtpPage implements OnInit, OnDestroy {
       this.flowContext = (params['flow'] as string) || 'signup';
       this.email = (params['email'] as string) || '';
     });
+  }
+
+  public getMaskedEmail(): string {
+    if (!this.email) {
+      return '';
+    }
+    const parts = this.email.split('@');
+    if (parts.length !== 2) {
+      return this.email;
+    }
+    const [username, domain] = parts;
+    if (username.length <= 2) {
+      return `${username.charAt(0)}*@${domain}`;
+    }
+    const maskedUsername = username.charAt(0) + '*'.repeat(username.length - 2) + username.slice(-1);
+    return `${maskedUsername}@${domain}`;
+  }
+
+  public getFormattedTimer(): string {
+    const minutes = Math.floor(this.resendTimer / 60);
+    const seconds = this.resendTimer % 60;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   }
 
   public ngOnInit(): void {
@@ -208,7 +230,7 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   private startResendTimer(): void {
-    this.resendTimer = 30;
+    this.resendTimer = 300;
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }

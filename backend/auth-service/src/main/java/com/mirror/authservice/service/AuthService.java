@@ -92,6 +92,7 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(randomRefreshToken)
                 .username(user.getUsername())
+                .email(user.getEmail())
                 .build();
     }
 
@@ -126,6 +127,7 @@ public class AuthService {
                 .accessToken(newAccessToken)
                 .refreshToken(refreshTokenStr)
                 .username(user.getUsername())
+                .email(user.getEmail())
                 .build();
     }
 

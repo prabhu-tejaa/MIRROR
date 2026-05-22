@@ -30,22 +30,36 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   const mockRefreshToken = translationSvc.translate('MOCK_RESPONSES.REFRESH_TOKEN');
   const mockRefreshedAccessToken = translationSvc.translate('MOCK_RESPONSES.REFRESHED_ACCESS_TOKEN');
 
+  const triggerErrorEmail = translationSvc.translate('MOCK_RESPONSES.TRIGGER_ERROR_EMAIL');
+  const triggerErrorOtp = translationSvc.translate('MOCK_RESPONSES.TRIGGER_ERROR_OTP');
+  const defaultEmail = translationSvc.translate('MOCK_RESPONSES.DEFAULT_EMAIL');
+  const emailSeparator = translationSvc.translate('MOCK_RESPONSES.EMAIL_SEPARATOR');
+  const statusUnauthorized = translationSvc.translate('MOCK_RESPONSES.STATUS_UNAUTHORIZED');
+  const statusBadRequest = translationSvc.translate('MOCK_RESPONSES.STATUS_BAD_REQUEST');
+  const statusNotFound = translationSvc.translate('MOCK_RESPONSES.STATUS_NOT_FOUND');
+  const errorInvalidCredentials = translationSvc.translate('MOCK_RESPONSES.ERROR_INVALID_CREDENTIALS');
+  const errorEmailExists = translationSvc.translate('MOCK_RESPONSES.ERROR_EMAIL_EXISTS');
+  const errorIncorrectOtp = translationSvc.translate('MOCK_RESPONSES.ERROR_INCORRECT_OTP');
+  const errorEmailNotFound = translationSvc.translate('MOCK_RESPONSES.ERROR_EMAIL_NOT_FOUND');
+  const errorOtpVerificationFailed = translationSvc.translate('MOCK_RESPONSES.ERROR_OTP_VERIFICATION_FAILED');
+
   if (url.includes(loginPath)) {
     const body = req.body as { email?: string; code?: string } | null;
     
     // Test Trigger: error@mirror.com will simulate an invalid credentials error
-    if (body && body.email === 'error@mirror.com') {
+    if (body && body.email === triggerErrorEmail) {
       return throwError(() => new HttpErrorResponse({
         status: 401,
-        statusText: 'Unauthorized',
-        error: 'Invalid email or password. Please try again.'
+        statusText: statusUnauthorized,
+        error: errorInvalidCredentials
       })).pipe(delay(800));
     }
 
     const mockResponse = {
       accessToken: mockAccessToken,
       refreshToken: mockRefreshToken,
-      username: body && body.email ? body.email.split('@')[0] : defaultUsername
+      username: body && body.email ? body.email.split(emailSeparator)[0] : defaultUsername,
+      email: body && body.email ? body.email : defaultEmail
     };
     return of(new HttpResponse({ status: 200, body: mockResponse })).pipe(delay(500));
   }
@@ -54,11 +68,11 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     const body = req.body as { email?: string; code?: string } | null;
 
     // Test Trigger: error@mirror.com will simulate an email already taken error
-    if (body && body.email === 'error@mirror.com') {
+    if (body && body.email === triggerErrorEmail) {
       return throwError(() => new HttpErrorResponse({
         status: 400,
-        statusText: 'Bad Request',
-        error: 'An account with this email address already exists.'
+        statusText: statusBadRequest,
+        error: errorEmailExists
       })).pipe(delay(800));
     }
 
@@ -75,18 +89,19 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     const body = req.body as { email?: string; code?: string } | null;
 
     // Test Trigger: Entering '000000' as the OTP code will simulate an invalid OTP error
-    if (body && body.code === '000000') {
+    if (body && body.code === triggerErrorOtp) {
       return throwError(() => new HttpErrorResponse({
         status: 400,
-        statusText: 'Bad Request',
-        error: 'Incorrect verification code. Please request a new one.'
+        statusText: statusBadRequest,
+        error: errorIncorrectOtp
       })).pipe(delay(800));
     }
 
     const mockResponse = {
       accessToken: mockAccessToken,
       refreshToken: mockRefreshToken,
-      username: defaultUsername
+      username: defaultUsername,
+      email: body && body.email ? body.email : defaultEmail
     };
     return of(new HttpResponse({ status: 200, body: mockResponse })).pipe(delay(500));
   }
@@ -95,11 +110,11 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     const body = req.body as { email?: string; code?: string } | null;
 
     // Test Trigger: error@mirror.com will simulate a "user not found" error
-    if (body && body.email === 'error@mirror.com') {
+    if (body && body.email === triggerErrorEmail) {
       return throwError(() => new HttpErrorResponse({
         status: 404,
-        statusText: 'Not Found',
-        error: 'No account registered with this email address.'
+        statusText: statusNotFound,
+        error: errorEmailNotFound
       })).pipe(delay(800));
     }
 
@@ -111,11 +126,11 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     const body = req.body as { email?: string; code?: string } | null;
 
     // Test Trigger: Entering '000000' will simulate a failed OTP verification error
-    if (body && body.code === '000000') {
+    if (body && body.code === triggerErrorOtp) {
       return throwError(() => new HttpErrorResponse({
         status: 400,
-        statusText: 'Bad Request',
-        error: 'Incorrect OTP code. Verification failed.'
+        statusText: statusBadRequest,
+        error: errorOtpVerificationFailed
       })).pipe(delay(800));
     }
 
@@ -132,7 +147,8 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     const mockResponse = {
       accessToken: mockRefreshedAccessToken,
       refreshToken: mockRefreshToken,
-      username: defaultUsername
+      username: defaultUsername,
+      email: defaultEmail
     };
     return of(new HttpResponse({ status: 200, body: mockResponse })).pipe(delay(500));
   }
