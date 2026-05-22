@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
@@ -29,6 +29,7 @@ export class LoginPage implements OnInit {
   private analyticsSvc = inject(AnalyticsService);
   private authSvc = inject(AuthService);
   private translationSvc = inject(TranslationService);
+  private el = inject(ElementRef);
 
   public loginForm!: FormGroup;
   public isSubmitted: boolean = false;
@@ -51,8 +52,8 @@ export class LoginPage implements OnInit {
   }
 
   public ionViewWillEnter(): void {
-    const card = document.querySelector('.glassy-card') as HTMLElement;
-    const header = document.querySelector('.branding-header') as HTMLElement;
+    const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
+    const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
     if (card) { card.style.opacity = '1'; card.style.transition = 'none'; }
     if (header) { header.style.opacity = '1'; header.style.transition = 'none'; }
     this.isLoading = false;
@@ -107,8 +108,8 @@ export class LoginPage implements OnInit {
           // Keep isLoading true so the button remains in its loading state while the card fades out
           this.cdr.markForCheck();
 
-          const card = document.querySelector('.glassy-card') as HTMLElement;
-          const header = document.querySelector('.branding-header') as HTMLElement;
+          const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
+          const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
 
           if (card) {
             card.style.transition = 'opacity 1s';

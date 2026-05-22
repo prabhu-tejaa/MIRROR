@@ -29,6 +29,7 @@ export class OtpPage implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private authSvc = inject(AuthService);
   private translationSvc = inject(TranslationService);
+  private el = inject(ElementRef);
 
   @ViewChildren('otpInput') private otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
@@ -87,8 +88,8 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   public ionViewWillEnter(): void {
-    const card = document.querySelector('.glassy-card') as HTMLElement;
-    const header = document.querySelector('.branding-header') as HTMLElement;
+    const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
+    const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
     if (card) { card.style.opacity = '1'; card.style.transition = 'none'; }
     if (header) { header.style.opacity = '1'; header.style.transition = 'none'; }
     this.isLoading = false;
@@ -321,8 +322,8 @@ export class OtpPage implements OnInit, OnDestroy {
             this.isLoading = false;
             this.cdr.markForCheck();
 
-            const card = document.querySelector('.glassy-card') as HTMLElement;
-            const header = document.querySelector('.branding-header') as HTMLElement;
+            const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
+            const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
             if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
             if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
 
@@ -343,18 +344,16 @@ export class OtpPage implements OnInit, OnDestroy {
             this.isLoading = false;
             this.cdr.markForCheck();
 
-            const card = document.querySelector('.glassy-card') as HTMLElement;
-            const header = document.querySelector('.branding-header') as HTMLElement;
+            const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
+            const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
             if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
             if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
 
-            this.starfieldSvc.setShape('heart');
             setTimeout(() => {
-              this.starfieldSvc.setShape('none');
-              this.navCtrl.navigateRoot('/tabs/chat', {
+              this.navCtrl.navigateRoot('/login', {
                 animation: this.getCrossfadeAnimation()
               });
-            }, 3000);
+            }, 1000);
           },
           error: (err: Error) => {
             this.isLoading = false;

@@ -48,9 +48,7 @@ export class AuthService {
   }
 
   public verifyOtp(email: string, code: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.apiSvc.AUTH.OTP_VERIFY, { email, code }).pipe(
-      tap((res) => this.saveSession(res))
-    );
+    return this.http.post<AuthResponse>(this.apiSvc.AUTH.OTP_VERIFY, { email, code });
   }
 
   public requestForgotPasswordOtp(email: string): Observable<string> {
