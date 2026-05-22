@@ -125,7 +125,7 @@ export class LoginPage implements OnInit {
             this.starfieldSvc.setShape('none');
             this.isLoading = false;
             this.cdr.markForCheck();
-            this.navCtrl.navigateRoot('/tabs/you', {
+            this.navCtrl.navigateRoot('/tabs/chat', {
               animation: this.getCrossfadeAnimation()
             });
           }, 3000);

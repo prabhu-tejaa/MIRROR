@@ -351,7 +351,7 @@ export class OtpPage implements OnInit, OnDestroy {
             this.starfieldSvc.setShape('heart');
             setTimeout(() => {
               this.starfieldSvc.setShape('none');
-              this.navCtrl.navigateRoot('/tabs/you', {
+              this.navCtrl.navigateRoot('/tabs/chat', {
                 animation: this.getCrossfadeAnimation()
               });
             }, 3000);

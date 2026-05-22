@@ -105,8 +105,40 @@
   }
 }
 
+/* ── Desktop: 1024px+ — vertical right side panel ── */
+@media (min-width: 1024px) {
+  .shape-palette-container {
+    position: fixed;
+    bottom: auto;
+    top: 50%;
+    left: auto;
+    right: 24px;
+    transform: translateY(-50%);
+    width: auto;
+    padding: 0;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .shape-palette {
+    flex-direction: column;
+    border-radius: 24px;
+    overflow-x: visible;
+    overflow-y: auto;
+    max-width: none;
+    max-height: 80vh;
+  }
+
+  .shape-item {
+    min-width: 64px;
+    width: 64px;
+    height: 64px;
+  }
+}
+
 @keyframes pulse {
   0% { opacity: 0.6; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.1); }
   100% { opacity: 0.6; transform: scale(1); }
 }
+

@@ -1,16 +1,22 @@
 <ion-tabs>
-  <ion-tab-bar slot="bottom">
-    <ion-tab-button tab="you" href="/tabs/you" layout="icon-top">
+  <ion-tab-bar slot="bottom" [class.sidebar-expanded]="sidebarExpanded">
+
+    <!-- Desktop-only collapse toggle button -->
+    <button class="sidebar-toggle-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+      <ion-icon [name]="sidebarExpanded ? 'chevron-back-outline' : 'chevron-forward-outline'"></ion-icon>
+    </button>
+
+    <ion-tab-button tab="you" href="/tabs/you" [layout]="isDesktop ? 'icon-start' : 'icon-top'">
       <ion-icon aria-hidden="true" [icon]="person"></ion-icon>
       <ion-label>{{ 'TABS.YOU' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="chat" href="/tabs/chat" layout="icon-top">
+    <ion-tab-button tab="chat" href="/tabs/chat" [layout]="isDesktop ? 'icon-start' : 'icon-top'">
       <ion-icon aria-hidden="true" [icon]="chatbubbles"></ion-icon>
       <ion-label>{{ 'TABS.CHAT' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="profile" href="/tabs/profile" layout="icon-top">
+    <ion-tab-button tab="profile" href="/tabs/profile" [layout]="isDesktop ? 'icon-start' : 'icon-top'" class="profile-tab-btn">
       <ion-icon aria-hidden="true" [icon]="personCircle"></ion-icon>
       <ion-label>{{ 'TABS.PROFILE' | translate }}</ion-label>
     </ion-tab-button>
