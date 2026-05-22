@@ -64,6 +64,8 @@ spring:
             allowedOrigins:
               - "https://projectmirror.tech"
               - "http://localhost:8100"
+              - "https://localhost"       # <--- ADDED FOR ANDROID EMULATOR/DEVICE WEBVIEW
+              - "capacitor://localhost"   # <--- ADDED FOR NATIVE CAPACITOR CORS HANDSHAKES
             allowedMethods:
               - GET
               - POST
