@@ -1,8 +1,5 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { 
-  IonHeader, 
-  IonToolbar, 
-  IonTitle, 
   IonContent,
   IonIcon,
   IonLabel 
@@ -15,6 +12,7 @@ import { StarfieldService, ShapeType } from '../../../../shared/starfield/starfi
 import { addIcons } from 'ionicons';
 import { heart, infinite, star, ellipseOutline, squareOutline, happyOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { HasRoleDirective } from '../../../../shared/directives/has-role.directive';
 
 @Component({
   selector: 'app-you',
@@ -23,14 +21,12 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
   standalone: true,
   imports: [
     CommonModule,
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
     IonContent, 
     IonIcon,
     IonLabel,
     ExploreContainerComponent,
-    TranslatePipe
+    TranslatePipe,
+    HasRoleDirective
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

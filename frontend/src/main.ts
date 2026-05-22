@@ -3,6 +3,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { mockInterceptor } from './app/core/interceptors/mock.interceptor';
 import { apiInterceptor } from './app/core/interceptors/api.interceptor';
 import { errorInterceptor } from './app/core/interceptors/error.interceptor';
 import { TranslationService } from './app/core/services/translation.service';
@@ -15,7 +16,7 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(withInterceptors([apiInterceptor, errorInterceptor])),
+    provideHttpClient(withInterceptors([errorInterceptor, mockInterceptor, apiInterceptor])),
     {
       provide: APP_INITIALIZER,
       useFactory: () => {

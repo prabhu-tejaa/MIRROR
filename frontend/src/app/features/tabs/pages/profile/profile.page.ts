@@ -1,14 +1,13 @@
 import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import {
-  IonHeader, IonToolbar, IonTitle, IonContent,
+  IonContent,
   IonList, IonItem, IonLabel, IonIcon, IonNote,
   AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { logOutOutline, personCircleOutline, mailOutline, shieldCheckmarkOutline, chevronForwardOutline } from 'ionicons/icons';
 import { AuthService } from '../../../../core/services/auth.service';
-import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-profile',
@@ -16,9 +15,8 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
   styleUrls: ['profile.page.scss'],
   standalone: true,
   imports: [
-    IonHeader, IonToolbar, IonTitle, IonContent,
-    IonList, IonItem, IonLabel, IonIcon, IonNote,
-    TranslatePipe
+    IonContent,
+    IonList, IonItem, IonLabel, IonIcon, IonNote
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

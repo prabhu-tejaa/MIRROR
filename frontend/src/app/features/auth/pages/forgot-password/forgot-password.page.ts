@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject }
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
-import { IonContent, IonInput, IonButton, IonSpinner, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonInput, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { alertCircleOutline } from 'ionicons/icons';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -14,7 +14,7 @@ import { TranslationService } from '../../../../core/services/translation.servic
   templateUrl: './forgot-password.page.html',
   styleUrls: ['./forgot-password.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, TranslatePipe],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ForgotPasswordPage implements OnInit {

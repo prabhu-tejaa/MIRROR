@@ -15,12 +15,7 @@
       
       <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
         
-        @if (errorMessage) {
-          <div class="general-error-banner" style="margin-bottom: 1.5rem;">
-            <ion-icon [icon]="alertCircleOutline" class="error-icon"></ion-icon>
-            <span class="error-text">{{ errorMessage }}</span>
-          </div>
-        }
+
 
         <div class="input-group">
           <ion-input
@@ -60,7 +55,11 @@
           @if (!isLoading) {
             <span>{{ 'LOGIN.BUTTON_SIGNIN' | translate }}</span>
           } @else {
-            <ion-spinner name="crescent" color="dark"></ion-spinner>
+            <div class="loading-dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
           }
         </ion-button>
         

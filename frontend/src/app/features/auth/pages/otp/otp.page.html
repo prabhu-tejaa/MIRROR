@@ -13,12 +13,7 @@
       
       <form [formGroup]="otpForm" (ngSubmit)="onVerify()">
         
-        @if (errorMessage) {
-          <div class="general-error-banner" style="margin-bottom: 1.5rem;">
-            <ion-icon [icon]="alertCircleOutline" class="error-icon"></ion-icon>
-            <span class="error-text">{{ errorMessage }}</span>
-          </div>
-        }
+
 
         <div class="input-group otp-group">
           <div class="otp-boxes-container" (click)="focusInput($event)">
@@ -52,7 +47,11 @@
           @if (!isLoading) {
             <span>{{ flowContext === 'reset' ? ('OTP.BUTTON_VERIFY_RESET' | translate) : ('OTP.BUTTON_VERIFY_ENTER' | translate) }}</span>
           } @else {
-            <ion-spinner name="crescent" color="dark"></ion-spinner>
+            <div class="loading-dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
           }
         </ion-button>
         

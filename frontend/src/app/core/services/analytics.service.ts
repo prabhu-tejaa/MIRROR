@@ -26,9 +26,19 @@ export class AnalyticsService {
     this.init();
   }
 
+  private isFirebaseConfigured(): boolean {
+    if (environment.mock) {
+      return false;
+    }
+    if (Capacitor.getPlatform() === 'web') {
+      return !!(environment.firebaseConfig && environment.firebaseConfig.projectId);
+    }
+    return true;
+  }
+
   private async init(): Promise<void> {
     try {
-      if (Capacitor.getPlatform() === 'web') {
+      if (this.isFirebaseConfigured() && Capacitor.getPlatform() === 'web') {
         const app = initializeApp(environment.firebaseConfig);
         
         if (!environment.production) {
@@ -38,6 +48,8 @@ export class AnalyticsService {
             }
           });
         }
+      } else if (!environment.production && Capacitor.getPlatform() === 'web') {
+        console.log('Analytics initialized in Mock mode (Firebase config missing)');
       }
 
       this.trackPageViews();
@@ -45,7 +57,7 @@ export class AnalyticsService {
       this.trackGlobalInteractions();
       
       if (!environment.production) {
-        console.log('Analytics initialized successfully');
+        console.log('Analytics service started');
       }
     } catch (e) {
       if (!environment.production) {
@@ -56,6 +68,12 @@ export class AnalyticsService {
 
   public async logEvent(name: string, params: Record<string, unknown> = {}): Promise<void> {
     try {
+      if (!this.isFirebaseConfigured()) {
+        if (!environment.production) {
+          console.log(`[Analytics Mock] Event: ${name}`, params);
+        }
+        return;
+      }
       await FirebaseAnalytics.logEvent({
         name,
         params
@@ -178,6 +196,14 @@ export class AnalyticsService {
       const screenName = event.urlAfterRedirects || '/';
       
       try {
+        if (!this.isFirebaseConfigured()) {
+          await this.logEvent('page_view', {
+            page_path: screenName,
+            page_title: document.title || 'Mirror App'
+          });
+          return;
+        }
+
         await FirebaseAnalytics.setCurrentScreen({
           screenName: screenName
         });
@@ -196,6 +222,12 @@ export class AnalyticsService {
 
   public async setUserId(userId: string | null): Promise<void> {
     try {
+      if (!this.isFirebaseConfigured()) {
+        if (!environment.production) {
+          console.log(`[Analytics Mock] User ID set to: ${userId}`);
+        }
+        return;
+      }
       await FirebaseAnalytics.setUserId({
         userId: userId
       });
@@ -208,6 +240,12 @@ export class AnalyticsService {
 
   public async setUserProperty(name: string, value: string): Promise<void> {
     try {
+      if (!this.isFirebaseConfigured()) {
+        if (!environment.production) {
+          console.log(`[Analytics Mock] User Property: ${name} = ${value}`);
+        }
+        return;
+      }
       await FirebaseAnalytics.setUserProperty({
         key: name,
         value

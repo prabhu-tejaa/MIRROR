@@ -13,12 +13,7 @@
 
       <form [formGroup]="signupForm" (ngSubmit)="onSignup()">
 
-        @if (errorMessage) {
-          <div class="general-error-banner">
-            <ion-icon [icon]="alertCircleOutline" class="error-icon"></ion-icon>
-            <span class="error-text">{{ errorMessage }}</span>
-          </div>
-        }
+
 
         <div class="input-row">
 
@@ -150,7 +145,11 @@
           @if (!isLoading) {
           <span>{{ 'SIGNUP.BUTTON_CREATE' | translate }}</span>
           } @else {
-          <ion-spinner name="crescent" color="dark"></ion-spinner>
+          <div class="loading-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
           }
         </ion-button>
 

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { NavController, AnimationController, Animation } from '@ionic/angular';
-import { IonContent, IonButton, IonSpinner, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { alertCircleOutline } from 'ionicons/icons';
 import { StarfieldService } from '../../../../shared/starfield/starfield.service';
@@ -17,7 +17,7 @@ import { TranslationService } from '../../../../core/services/translation.servic
   templateUrl: './otp.page.html',
   styleUrls: ['./otp.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonButton, IonSpinner, IonIcon, TranslatePipe],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonButton, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OtpPage implements OnInit, OnDestroy {

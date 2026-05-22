@@ -129,6 +129,54 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(180, 200, 255, 0.4);
     }
+
+    &[disabled], &.button-disabled {
+      --background: rgba(255, 255, 255, 0.6) !important;
+      --background-disabled: rgba(255, 255, 255, 0.6) !important;
+      --color-disabled: #000000 !important;
+      opacity: 0.95 !important;
+      cursor: not-allowed;
+      pointer-events: none;
+      transform: none !important;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .loading-dots {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(6px, 1.5vw, 8px);
+      height: 100%;
+      width: 100%;
+
+      .dot {
+        width: clamp(7px, 1.5vw, 9px);
+        height: clamp(7px, 1.5vw, 9px);
+        background: #000000;
+        border-radius: 50%;
+        animation: premium-bounce 1.2s infinite ease-in-out;
+
+        &:nth-child(1) {
+          animation-delay: -0.3s;
+        }
+        &:nth-child(2) {
+          animation-delay: -0.15s;
+        }
+      }
+    }
+  }
+
+  @keyframes premium-bounce {
+    0%, 100% {
+      transform: scale(0.6);
+      opacity: 0.45;
+      filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.15));
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 1;
+      filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.3));
+    }
   }
 
   .signup-wrapper {

@@ -142,5 +142,16 @@
   "TYPES": {
     "STRING": "string",
     "OBJECT": "object"
+  },
+  "MOCK_RESPONSES": {
+    "SIGNUP_SUCCESS": "User registered successfully with ID: mock-123",
+    "OTP_REQUEST_SUCCESS": "OTP sent to your email.",
+    "OTP_VERIFY_SUCCESS": "OTP verified successfully. You may now reset your password.",
+    "PASSWORD_RESET_SUCCESS": "Password reset successfully. Please proceed to login.",
+    "LOGOUT_SUCCESS": "Logged out successfully.",
+    "ACCESS_TOKEN": "mock_jwt_access_token_xyz",
+    "REFRESH_TOKEN": "mock_refresh_token_abc",
+    "REFRESHED_ACCESS_TOKEN": "mock_jwt_access_token_xyz_refreshed",
+    "DEFAULT_USERNAME": "mockuser"
   }
 }

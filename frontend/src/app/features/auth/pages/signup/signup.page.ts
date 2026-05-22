@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject }
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController, Animation, AnimationBuilder } from '@ionic/angular';
-import { IonContent, IonInput, IonButton, IonSpinner, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonInput, IonButton, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff, closeOutline, alertCircleOutline } from 'ionicons/icons';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -16,7 +16,7 @@ import { TranslationService } from '../../../../core/services/translation.servic
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonSpinner, IonIcon, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, TranslatePipe],
+  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonIcon, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupPage implements OnInit {

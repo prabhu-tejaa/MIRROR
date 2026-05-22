@@ -1,0 +1,72 @@
+import { inject, Injectable } from '@angular/core';
+import { ToastController } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { alertCircleOutline, checkmarkCircleOutline, informationCircleOutline } from 'ionicons/icons';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ToastService {
+  private toastCtrl = inject(ToastController);
+
+  constructor() {
+    // Register icons so they can be rendered dynamically in Ionic standalone components
+    addIcons({
+      'alert-circle-outline': alertCircleOutline,
+      'checkmark-circle-outline': checkmarkCircleOutline,
+      'information-circle-outline': informationCircleOutline
+    });
+  }
+
+  public async showError(message: string): Promise<void> {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 4000,
+      position: 'top',
+      icon: 'alert-circle-outline',
+      cssClass: 'premium-toast error-toast',
+      buttons: [
+        {
+          text: '✕',
+          role: 'cancel'
+        }
+      ]
+    });
+    await toast.present();
+  }
+
+  public async showSuccess(message: string): Promise<void> {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      position: 'top',
+      icon: 'checkmark-circle-outline',
+      cssClass: 'premium-toast success-toast',
+      buttons: [
+        {
+          text: '✕',
+          role: 'cancel'
+        }
+      ]
+    });
+    await toast.present();
+  }
+
+  public async showInfo(message: string): Promise<void> {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 3000,
+      position: 'top',
+      icon: 'information-circle-outline',
+      cssClass: 'premium-toast info-toast',
+      buttons: [
+        {
+          text: '✕',
+          role: 'cancel'
+        }
+      ]
+    });
+    await toast.present();
+  }
+}
+

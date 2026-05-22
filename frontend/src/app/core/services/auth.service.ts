@@ -90,19 +90,20 @@ export class AuthService {
 
   public logout(): void {
     const token = localStorage.getItem(this.refreshTokenKey);
+    this.clearSession();
     if (token) {
       this.logoutSession(token).subscribe({
         next: () => {},
-        error: () => {
-          this.clearSession();
-        }
+        error: () => {}
       });
-    } else {
-      this.clearSession();
     }
   }
 
   public getUserId(): string | null {
     return localStorage.getItem(this.usernameKey);
+  }
+
+  public getAccessToken(): string | null {
+    return localStorage.getItem(this.accessTokenKey);
   }
 }

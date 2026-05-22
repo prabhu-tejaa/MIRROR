@@ -13,6 +13,7 @@ if (!fs.existsSync(dir)) {
 
 const generateContent = (isProduction) => `export const environment = {
   production: ${isProduction},
+  mock: ${process.env.MOCK === 'true' || (!isProduction && process.env.MOCK !== 'false')},
   apiUrl: "${process.env.API_URL || ''}",
   firebaseConfig: {
     apiKey: "${process.env.FIREBASE_API_KEY || ''}",

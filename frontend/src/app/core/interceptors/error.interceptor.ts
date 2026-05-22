@@ -2,9 +2,11 @@ import { inject } from '@angular/core';
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 import { TranslationService } from '../services/translation.service';
+import { ToastService } from '../services/toast.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const translationSvc = inject(TranslationService);
+  const toastSvc = inject(ToastService);
   const defaultErrorMessage = translationSvc.translate('ERRORS.UNEXPECTED');
 
   return next(req).pipe(
@@ -23,6 +25,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       } else if (error.message) {
         errorMessage = error.message;
       }
+
+      // Show beautiful premium toast notification
+      toastSvc.showError(errorMessage);
 
       return throwError(() => new Error(errorMessage));
     })
