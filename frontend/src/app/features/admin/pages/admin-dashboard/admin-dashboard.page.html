@@ -1,22 +1,78 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="admin-container">
-    <ion-icon name="shield-checkmark-outline" class="admin-icon"></ion-icon>
-    <h1>Admin Area</h1>
-    <p>Welcome to the admin dashboard.</p>
+  <!-- Custom Space-themed Header -->
+  <div class="dashboard-nav">
+    <button class="back-circle-btn" (click)="goBack()" title="Back to Profile">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
 
-    <ion-chip color="success" class="live-users-chip">
-      <span class="status-dot"></span>
-      <ion-label>{{ onlineUsersCount$ | async }} Online</ion-label>
-    </ion-chip>
+    <!-- Glowing Live Presence Badge -->
+    <div class="live-presence-pill">
+      <span class="presence-dot"></span>
+      <span class="presence-label">{{ (onlineUsersCount$ | async) ?? 0 }} Online</span>
+    </div>
+  </div>
+
+  <div class="dashboard-layout-container">
+    <!-- Service Flows Grid -->
+    <div class="services-grid">
+      
+      <!-- API Gateway Card -->
+      <div class="service-card active" routerLink="/admin/api-gateway">
+        <div class="card-top">
+          <div class="icon-box gateway-icon">
+            <ion-icon name="pulse-outline"></ion-icon>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <h3>API Gateway</h3>
+          <p>Orchestrate active routing maps, monitor latency telemetry, check registry status, and view live traffic logs.</p>
+        </div>
+        
+        <div class="card-footer">
+          <span class="action-text">Stream Logs & Telemetry</span>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Auth Service Card -->
+      <div class="service-card active" routerLink="/admin/auth-service">
+        <div class="card-top">
+          <div class="icon-box">
+            <ion-icon name="people-circle-outline"></ion-icon>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <h3>Auth Service</h3>
+          <p>Orchestrate user accounts, access roles, security credentials, timeline activities, and account verifications.</p>
+        </div>
+        
+        <div class="card-footer">
+          <span class="action-text">Configure Core</span>
+          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
+        </div>
+      </div>
+
+      <!-- Memory Service Card -->
+      <div class="service-card disabled">
+        <div class="card-top">
+          <div class="icon-box">
+            <ion-icon name="server-outline"></ion-icon>
+          </div>
+        </div>
+        
+        <div class="card-body">
+          <h3>Memory Service</h3>
+          <p>Monitor user memory archives, post interactions, timeline logs, and comment moderation analytics.</p>
+        </div>
+        
+        <div class="card-footer">
+          <span class="action-text">Locked Flow</span>
+          <ion-icon name="lock-closed-outline" class="arrow-icon"></ion-icon>
+        </div>
+      </div>
+
+    </div>
   </div>
 </ion-content>

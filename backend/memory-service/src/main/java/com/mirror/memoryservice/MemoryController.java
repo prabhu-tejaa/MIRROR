@@ -25,4 +25,14 @@ public class MemoryController {
     public List<Memory> getAll() {
         return repository.findAll();
     }
+
+    @GetMapping("/keepalive")
+    public String keepAlive() {
+        try {
+            long count = repository.count();
+            return "Memory service is awake. Active records: " + count;
+        } catch (Exception e) {
+            return "Memory service database error: " + e.getMessage();
+        }
+    }
 }

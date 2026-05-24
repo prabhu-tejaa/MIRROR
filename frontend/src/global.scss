@@ -461,3 +461,44 @@ ion-content::part(scroll) {
     }
   }
 }
+
+/* Premium Solid Black Dialog Box Override */
+.glassy-modal {
+  --background: #000000 !important;
+  --backdrop-opacity: 0.8 !important;
+  
+  --width: 100% !important;
+  --max-width: 600px !important;
+  --height: 90% !important;
+  --max-height: 720px !important;
+  --border-radius: 20px !important;
+  
+  &::part(content) {
+    background: #000000 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95) !important;
+    border-radius: 20px !important;
+    overflow: hidden;
+  }
+}
+
+/* Global Text Truncation & Clamp Utilities */
+.text-truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.line-clamp-2 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+.line-clamp-3 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}

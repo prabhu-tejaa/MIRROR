@@ -172,4 +172,24 @@ public class AuthController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/keepalive")
+    public ResponseEntity<?> keepAlive() {
+        try {
+            long count = userRepository.count();
+            return ResponseEntity.ok(Map.of(
+                "status", "awake",
+                "service", "auth-service",
+                "db_status", "healthy",
+                "user_count", count
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of(
+                "status", "awake",
+                "service", "auth-service",
+                "db_status", "unhealthy",
+                "error", e.getMessage()
+            ));
+        }
+    }
 }

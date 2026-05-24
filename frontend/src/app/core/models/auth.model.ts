@@ -15,3 +15,25 @@ export interface AuthResponse {
   username: string;
   email: string;
 }
+
+export interface AdminUserResponse {
+  id: string;
+  username: string;
+  email: string;
+  role: string;
+  isVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+  failedAttempts: number;
+  lockedUntil: string | null;
+}
+
+export interface AdminUserUpdateRequest {
+  username?: string;
+  email?: string;
+  role?: string;
+  isVerified?: boolean;
+  password?: string;
+  failedAttempts?: number;
+  lockedUntil?: string | null;
+}

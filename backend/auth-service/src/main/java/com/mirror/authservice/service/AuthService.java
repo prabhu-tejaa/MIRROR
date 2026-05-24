@@ -135,4 +135,68 @@ public class AuthService {
     public void logout(String refreshTokenStr) {
         refreshTokenRepository.deleteByToken(refreshTokenStr);
     }
+
+
+    public java.util.List<com.mirror.authservice.dto.UserResponse> getAllUsers() {
+        return userRepository.findAll().stream().map(this::mapToUserResponse).toList();
+    }
+
+    public com.mirror.authservice.dto.UserResponse getUserById(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return mapToUserResponse(user);
+    }
+
+    @Transactional
+    public com.mirror.authservice.dto.UserResponse updateUser(UUID id, com.mirror.authservice.dto.UserUpdateRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (request.getUsername() != null && !request.getUsername().isEmpty()) {
+            user.setUsername(request.getUsername());
+        }
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+            user.setEmail(request.getEmail());
+        }
+        if (request.getRole() != null) {
+            user.setRole(request.getRole());
+        }
+        if (request.getIsVerified() != null) {
+            user.setVerified(request.getIsVerified());
+        }
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
+            user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        }
+        if (request.getFailedAttempts() != null) {
+            user.setFailedAttempts(request.getFailedAttempts());
+            if (request.getFailedAttempts() == 0) {
+                user.setLockedUntil(null);
+            }
+        }
+
+        User updatedUser = userRepository.save(user);
+        return mapToUserResponse(updatedUser);
+    }
+
+    @Transactional
+    public void deleteUser(UUID id) {
+        if (!userRepository.existsById(id)) {
+            throw new RuntimeException("User not found");
+        }
+        userRepository.deleteById(id);
+    }
+
+    private com.mirror.authservice.dto.UserResponse mapToUserResponse(User user) {
+        return com.mirror.authservice.dto.UserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .isVerified(user.isVerified())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .failedAttempts(user.getFailedAttempts())
+                .lockedUntil(user.getLockedUntil())
+                .build();
+    }
 }

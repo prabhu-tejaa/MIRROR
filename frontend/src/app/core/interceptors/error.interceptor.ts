@@ -26,7 +26,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = error.message;
       }
 
-      toastSvc.showError(errorMessage);
+      const isCustomHandled = req.url.includes('/admin/users') || req.url.includes('/gateway/admin') || req.url.includes('/gateway/public');
+      if (!isCustomHandled) {
+        toastSvc.showError(errorMessage);
+      }
 
       return throwError(() => new Error(errorMessage));
     })

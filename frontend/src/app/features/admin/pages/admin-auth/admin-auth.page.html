@@ -1,0 +1,222 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Auth Service Users</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="loadUsers()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="glass-container">
+    <div class="header-section">
+      <div class="title-with-icon">
+        <ion-icon name="people-outline" class="title-icon"></ion-icon>
+        <h2>User Management</h2>
+      </div>
+      <p>Manage user accounts, roles, verification statuses, and credentials.</p>
+    </div>
+
+    <!-- Telemetry & Analytics Dashboard row -->
+    <div class="telemetry-grid">
+      <div class="telemetry-card">
+        <div class="card-icon-wrapper blue">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <span class="value">
+            <ng-container *ngIf="!isLoading; else spinnerTemplate">
+              {{ users.length }}
+            </ng-container>
+          </span>
+          <span class="label">Total Accounts</span>
+        </div>
+      </div>
+
+      <div class="telemetry-card">
+        <div class="card-icon-wrapper green">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <span class="value">
+            <ng-container *ngIf="!isLoading; else spinnerTemplate">
+              {{ getVerifiedCount() }}
+            </ng-container>
+          </span>
+          <span class="label">Verified Profiles</span>
+        </div>
+      </div>
+
+      <div class="telemetry-card">
+        <div class="card-icon-wrapper red">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <span class="value">
+            <ng-container *ngIf="!isLoading; else spinnerTemplate">
+              {{ getLockedCount() }}
+            </ng-container>
+          </span>
+          <span class="label">Locked Out</span>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #spinnerTemplate>
+      <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
+    </ng-template>
+
+    <!-- Search and Filters -->
+    <div class="search-filter-bar">
+      <ion-searchbar 
+        [(ngModel)]="searchQuery" 
+        (ionInput)="applyFilters()" 
+        placeholder="Search by username or email..." 
+        class="glass-searchbar">
+      </ion-searchbar>
+      
+      <ion-item class="glass-select-item" lines="none">
+        <ion-select [(ngModel)]="roleFilter" (ionChange)="applyFilters()" label="Role Filter" placeholder="All" interface="popover">
+          <ion-select-option value="ALL">All Roles</ion-select-option>
+          <ion-select-option value="USER">User</ion-select-option>
+          <ion-select-option value="ADMIN">Admin</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Fetching user directory...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && filteredUsers.length === 0" class="empty-state">
+      <ion-icon name="people-outline" class="empty-icon"></ion-icon>
+      <h3>No Users Found</h3>
+      <p>Try adjusting your search terms or filters.</p>
+    </div>
+
+    <!-- User Cards / Table View -->
+    <div *ngIf="!isLoading && filteredUsers.length > 0" class="user-list-container">
+      
+      <!-- Responsive Table for Tablet/Desktop -->
+      <div class="desktop-table-wrapper">
+        <table class="user-table">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Joined</th>
+              <th class="actions-header">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of filteredUsers">
+              <td class="username-cell">
+                <div class="avatar-circle">
+                  {{ user.username.charAt(0).toUpperCase() }}
+                </div>
+                <span class="user-name-text">{{ user.username }}</span>
+              </td>
+              <td>{{ user.email }}</td>
+              <td>
+                <span class="role-badge" [ngClass]="user.role.toLowerCase()">
+                  {{ user.role }}
+                </span>
+              </td>
+              <td>
+                <div class="status-stack">
+                  <span class="status-badge" [class.verified]="user.isVerified">
+                    <span class="status-dot-indicator"></span>
+                    {{ user.isVerified ? 'Verified' : 'Pending' }}
+                  </span>
+                  <span *ngIf="isUserLocked(user)" class="status-badge locked-badge">
+                    <ion-icon name="lock-closed-outline" class="badge-lock-icon"></ion-icon>
+                    Locked
+                  </span>
+                </div>
+              </td>
+              <td>{{ user.createdAt | date:'mediumDate' }}</td>
+              <td class="actions-cell">
+                <ion-button *ngIf="isUserLocked(user)" fill="clear" color="warning" class="action-btn unlock-btn" (click)="unlockUser(user)" title="Unlock User">
+                  <ion-icon name="key-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" color="primary" class="action-btn" (click)="editUser(user)" title="Edit User">
+                  <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+                <ion-button fill="clear" color="danger" class="action-btn" (click)="deleteUser(user)" title="Delete User">
+                  <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile List View -->
+      <div class="mobile-list-wrapper">
+        <div *ngFor="let user of filteredUsers" class="user-mobile-card">
+          <div class="card-header">
+            <div class="user-info">
+              <div class="avatar-circle">
+                {{ user.username.charAt(0).toUpperCase() }}
+              </div>
+              <div class="user-details">
+                <h3>{{ user.username }}</h3>
+                <p>{{ user.email }}</p>
+              </div>
+            </div>
+            <div class="card-actions">
+              <ion-button *ngIf="isUserLocked(user)" fill="clear" color="warning" class="unlock-btn" (click)="unlockUser(user)" title="Unlock User">
+                <ion-icon name="key-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="primary" (click)="editUser(user)">
+                <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+              <ion-button fill="clear" color="danger" (click)="deleteUser(user)">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+          
+          <div class="card-details">
+            <div class="detail-row">
+              <span class="label">Role:</span>
+              <span class="role-badge" [ngClass]="user.role.toLowerCase()">
+                {{ user.role }}
+              </span>
+            </div>
+            <div class="detail-row">
+              <span class="label">Status:</span>
+              <div class="status-stack flex-end">
+                <span class="status-badge" [class.verified]="user.isVerified">
+                  <span class="status-dot-indicator"></span>
+                  {{ user.isVerified ? 'Verified' : 'Pending' }}
+                </span>
+                <span *ngIf="isUserLocked(user)" class="status-badge locked-badge">
+                  <ion-icon name="lock-closed-outline" class="badge-lock-icon"></ion-icon>
+                  Locked
+                </span>
+              </div>
+            </div>
+            <div class="detail-row">
+              <span class="label">Joined:</span>
+              <span class="date-val">{{ user.createdAt | date:'mediumDate' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</ion-content>

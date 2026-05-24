@@ -17,7 +17,8 @@ export class ApiService {
       FORGOT_PASSWORD_VERIFY: this.translationSvc.translate('API.FORGOT_PASSWORD_VERIFY'),
       FORGOT_PASSWORD_RESET: this.translationSvc.translate('API.FORGOT_PASSWORD_RESET'),
       REFRESH: this.translationSvc.translate('API.REFRESH'),
-      LOGOUT: this.translationSvc.translate('API.LOGOUT')
+      LOGOUT: this.translationSvc.translate('API.LOGOUT'),
+      ADMIN_USERS: this.translationSvc.translate('API.ADMIN_USERS')
     } as const;
   }
 }

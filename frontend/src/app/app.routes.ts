@@ -45,6 +45,20 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/pages/admin-dashboard/admin-dashboard.page').then(m => m.AdminDashboardPage)
   },
   {
+    path: 'admin/auth-service',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () => import('./features/admin/pages/admin-auth/admin-auth.page').then(m => m.AdminAuthPage)
+  },
+  {
+    path: 'admin/api-gateway',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () => import('./features/admin/pages/admin-gateway/admin-gateway.page').then(m => m.AdminGatewayPage)
+  },
+  {
+    path: 'status',
+    loadComponent: () => import('./features/status/system-status.page').then(m => m.SystemStatusPage)
+  },
+  {
     path: '**',
     redirectTo: 'login',
     pathMatch: 'full'

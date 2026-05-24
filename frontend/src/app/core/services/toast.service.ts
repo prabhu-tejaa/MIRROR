@@ -8,6 +8,7 @@ import { alertCircleOutline, checkmarkCircleOutline, informationCircleOutline } 
 })
 export class ToastService {
   private toastCtrl = inject(ToastController);
+  private activeToast: HTMLIonToastElement | null = null;
 
   constructor() {
     addIcons({
@@ -17,7 +18,19 @@ export class ToastService {
     });
   }
 
+  private async dismissActiveToast(): Promise<void> {
+    if (this.activeToast) {
+      try {
+        await this.activeToast.dismiss();
+      } catch {
+      }
+      this.activeToast = null;
+    }
+  }
+
   public async showError(message: string): Promise<void> {
+    await this.dismissActiveToast();
+
     const toast = await this.toastCtrl.create({
       message,
       duration: 4000,
@@ -31,10 +44,20 @@ export class ToastService {
         }
       ]
     });
+
+    this.activeToast = toast;
+    toast.onDidDismiss().then(() => {
+      if (this.activeToast === toast) {
+        this.activeToast = null;
+      }
+    });
+
     await toast.present();
   }
 
   public async showSuccess(message: string): Promise<void> {
+    await this.dismissActiveToast();
+
     const toast = await this.toastCtrl.create({
       message,
       duration: 3000,
@@ -48,10 +71,20 @@ export class ToastService {
         }
       ]
     });
+
+    this.activeToast = toast;
+    toast.onDidDismiss().then(() => {
+      if (this.activeToast === toast) {
+        this.activeToast = null;
+      }
+    });
+
     await toast.present();
   }
 
   public async showInfo(message: string): Promise<void> {
+    await this.dismissActiveToast();
+
     const toast = await this.toastCtrl.create({
       message,
       duration: 3000,
@@ -65,6 +98,14 @@ export class ToastService {
         }
       ]
     });
+
+    this.activeToast = toast;
+    toast.onDidDismiss().then(() => {
+      if (this.activeToast === toast) {
+        this.activeToast = null;
+      }
+    });
+
     await toast.present();
   }
 }
