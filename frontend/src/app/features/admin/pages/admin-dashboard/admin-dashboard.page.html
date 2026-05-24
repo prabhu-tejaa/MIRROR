@@ -1,0 +1,22 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="admin-container">
+    <ion-icon name="shield-checkmark-outline" class="admin-icon"></ion-icon>
+    <h1>Admin Area</h1>
+    <p>Welcome to the admin dashboard.</p>
+
+    <ion-chip color="success" class="live-users-chip">
+      <span class="status-dot"></span>
+      <ion-label>{{ onlineUsersCount$ | async }} Online</ion-label>
+    </ion-chip>
+  </div>
+</ion-content>

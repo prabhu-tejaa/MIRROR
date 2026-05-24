@@ -10,7 +10,6 @@ export class ToastService {
   private toastCtrl = inject(ToastController);
 
   constructor() {
-    // Register icons so they can be rendered dynamically in Ionic standalone components
     addIcons({
       'alert-circle-outline': alertCircleOutline,
       'checkmark-circle-outline': checkmarkCircleOutline,

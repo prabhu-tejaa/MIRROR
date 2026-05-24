@@ -26,7 +26,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = error.message;
       }
 
-      // Show beautiful premium toast notification
       toastSvc.showError(errorMessage);
 
       return throwError(() => new Error(errorMessage));

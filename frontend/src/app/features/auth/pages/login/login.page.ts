@@ -11,6 +11,7 @@ import { strictPasswordValidator } from '../../../../shared/validators/password.
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -36,6 +37,7 @@ export class LoginPage implements OnInit {
   public isLoading: boolean = false;
   public showPassword: boolean = false;
   public errorMessage: string = '';
+  private loginSub?: Subscription;
   public readonly eye = eye;
   public readonly eyeOff = eyeOff;
   public readonly alertCircleOutline = alertCircleOutline;
@@ -61,6 +63,13 @@ export class LoginPage implements OnInit {
     this.errorMessage = '';
     this.loginForm.reset();
     this.cdr.markForCheck();
+  }
+
+  public ionViewWillLeave(): void {
+    if (this.loginSub) {
+      this.loginSub.unsubscribe();
+      this.loginSub = undefined;
+    }
   }
 
   public get f(): { [key: string]: AbstractControl } {
@@ -100,12 +109,15 @@ export class LoginPage implements OnInit {
       this.isLoading = true;
       this.cdr.markForCheck();
 
+      if (this.loginSub) {
+        this.loginSub.unsubscribe();
+      }
+
       const { email, password } = this.loginForm.value;
 
-      this.authSvc.loginUser({ email, password }).subscribe({
+      this.loginSub = this.authSvc.loginUser({ email, password }).subscribe({
         next: () => {
           this.analyticsSvc.setUserId(email);
-          // Keep isLoading true so the button remains in its loading state while the card fades out
           this.cdr.markForCheck();
 
           const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;

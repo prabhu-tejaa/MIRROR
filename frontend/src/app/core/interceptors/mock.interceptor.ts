@@ -8,7 +8,6 @@ import { TranslationService } from '../services/translation.service';
 export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   const translationSvc = inject(TranslationService);
 
-  // If mock mode is disabled, forward to the next interceptor
   if (!environment.mock) {
     return next(req);
   }
@@ -46,7 +45,6 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   if (url.includes(loginPath)) {
     const body = req.body as { email?: string; code?: string } | null;
     
-    // Test Trigger: error@mirror.com will simulate an invalid credentials error
     if (body && body.email === triggerErrorEmail) {
       return throwError(() => new HttpErrorResponse({
         status: 401,
@@ -67,7 +65,6 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   if (url.includes(signupPath)) {
     const body = req.body as { email?: string; code?: string } | null;
 
-    // Test Trigger: error@mirror.com will simulate an email already taken error
     if (body && body.email === triggerErrorEmail) {
       return throwError(() => new HttpErrorResponse({
         status: 400,
@@ -88,7 +85,6 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   if (url.includes(otpVerifyPath)) {
     const body = req.body as { email?: string; code?: string } | null;
 
-    // Test Trigger: Entering '000000' as the OTP code will simulate an invalid OTP error
     if (body && body.code === triggerErrorOtp) {
       return throwError(() => new HttpErrorResponse({
         status: 400,
@@ -109,7 +105,6 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   if (url.includes(forgotPasswordRequestPath)) {
     const body = req.body as { email?: string; code?: string } | null;
 
-    // Test Trigger: error@mirror.com will simulate a "user not found" error
     if (body && body.email === triggerErrorEmail) {
       return throwError(() => new HttpErrorResponse({
         status: 404,
@@ -125,7 +120,6 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   if (url.includes(forgotPasswordVerifyPath)) {
     const body = req.body as { email?: string; code?: string } | null;
 
-    // Test Trigger: Entering '000000' will simulate a failed OTP verification error
     if (body && body.code === triggerErrorOtp) {
       return throwError(() => new HttpErrorResponse({
         status: 400,

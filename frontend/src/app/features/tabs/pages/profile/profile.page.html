@@ -17,6 +17,12 @@
           <ion-note slot="end">{{ userEmail() }}</ion-note>
         </ion-item>
 
+        <ion-item *ngIf="isAdmin()" class="profile-item" button detail="false" (click)="navigateToAdmin()">
+          <ion-icon slot="start" name="shield-checkmark-outline" class="item-icon admin-color"></ion-icon>
+          <ion-label>{{ 'PROFILE.ADMIN_VIEW' | translate }}</ion-label>
+          <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+        </ion-item>
+
         <ion-item class="profile-item" button detail="false" (click)="onShowAbout()">
           <ion-icon slot="start" name="information-circle-outline" class="item-icon"></ion-icon>
           <ion-label>{{ 'PROFILE.ABOUT' | translate }}</ion-label>

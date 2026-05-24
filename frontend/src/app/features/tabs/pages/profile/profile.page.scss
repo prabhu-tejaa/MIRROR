@@ -93,15 +93,20 @@ ion-content {
   ion-note {
     font-size: 13px;
     color: rgba(255, 255, 255, 0.7) !important;
-    max-width: 200px;
+    max-width: 55%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: right;
   }
 
   .chevron-icon {
     font-size: 16px;
     color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  .admin-color {
+    color: #8b5cf6 !important;
   }
 }
 

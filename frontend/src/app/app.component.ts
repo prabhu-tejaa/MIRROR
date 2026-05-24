@@ -6,6 +6,8 @@ import { NoInternetComponent } from './shared/no-internet/no-internet.component'
 import { ScrollAssistantComponent } from './shared/scroll-assistant/scroll-assistant.component';
 import { ConnectionService } from './core/services/connection.service';
 import { AnalyticsService } from './core/services/analytics.service';
+import { HttpCancelService } from './core/services/http-cancel.service';
+import { PresenceService } from './core/services/presence.service';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
@@ -29,6 +31,8 @@ import { TranslatePipe } from './shared/pipes/translate.pipe';
 export class AppComponent {
   private connectionService = inject(ConnectionService);
   private analyticsService = inject(AnalyticsService);
+  private httpCancelService = inject(HttpCancelService);
+  private presenceService = inject(PresenceService);
   
   public isOffline$: Observable<boolean> = this.connectionService.isOnline$.pipe(
     map(online => !online)

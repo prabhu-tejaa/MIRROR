@@ -6,6 +6,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { mockInterceptor } from './app/core/interceptors/mock.interceptor';
 import { apiInterceptor } from './app/core/interceptors/api.interceptor';
 import { errorInterceptor } from './app/core/interceptors/error.interceptor';
+import { cancelInterceptor } from './app/core/interceptors/cancel.interceptor';
 import { TranslationService } from './app/core/services/translation.service';
 
 import { routes } from './app/app.routes';
@@ -19,7 +20,7 @@ bootstrapApplication(AppComponent, {
       scrollAssist: true
     }),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(withInterceptors([errorInterceptor, mockInterceptor, apiInterceptor])),
+    provideHttpClient(withInterceptors([cancelInterceptor, errorInterceptor, mockInterceptor, apiInterceptor])),
     {
       provide: APP_INITIALIZER,
       useFactory: () => {

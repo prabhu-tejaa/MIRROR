@@ -121,13 +121,15 @@
     "ACCOUNT": "Account",
     "EMAIL": "Email",
     "ABOUT": "About",
+    "ADMIN_VIEW": "Admin View",
     "LOGOUT": "Log Out",
     "LOGOUT_ALERT_HEADER": "Log Out",
     "LOGOUT_ALERT_MESSAGE": "Are you sure you want to log out?",
     "LOGOUT_ALERT_CANCEL": "Cancel",
     "ABOUT_ALERT_HEADER": "About Mirror",
     "ABOUT_ALERT_MESSAGE": "Developed by Prabhu Teja Pamula (24EMCA1237) under the guidance of esteemed Dr. Brijendra Singh. Special credits to Vellore Institute of Technology, the open source community and our incredible users for using our platform.",
-    "ABOUT_ALERT_CLOSE": "Awesome"
+    "ABOUT_ALERT_CLOSE": "Close",
+    "ABOUT_ALERT_AWESOME": "Awesome!"
   },
   "STORAGE": {
     "ACCESS_TOKEN": "mirror_access_token",

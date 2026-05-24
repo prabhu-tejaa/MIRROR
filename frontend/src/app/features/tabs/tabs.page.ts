@@ -20,7 +20,6 @@ export class TabsPage {
   public readonly chatbubbles = chatbubbles;
   public readonly personCircle = personCircle;
 
-  /** Sidebar expanded state. True = wide with labels, False = slim icons only. */
   public sidebarExpanded = window.innerWidth >= 1280;
   public isDesktop = window.innerWidth >= 1024;
 

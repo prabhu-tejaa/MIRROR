@@ -14,7 +14,6 @@ export class HasRoleDirective {
   private roles: string | string[] = [];
 
   constructor() {
-    // Re-evaluate authorization automatically when user roles change
     effect(() => {
       this.updateView();
     });
