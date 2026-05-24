@@ -4,12 +4,14 @@ import { AuthService } from './auth.service';
 import { environment } from '../../../environments/environment';
 import { initializeApp, getApps } from 'firebase/app';
 import { getDatabase, ref, onValue, set, onDisconnect } from 'firebase/database';
+import { RoleService } from './role.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PresenceService {
   private authService = inject(AuthService);
+  private roleService = inject(RoleService);
   
   private onlineUsersSubject = new BehaviorSubject<number>(0);
   public onlineUsersCount$: Observable<number> = this.onlineUsersSubject.asObservable();
@@ -26,7 +28,9 @@ export class PresenceService {
       
       if (isAuthenticated && userId) {
         this.currentUserId = userId;
-        this.startPresence(userId);
+        if (!this.roleService.hasRole('ADMIN')) {
+          this.startPresence(userId);
+        }
       } else {
         this.stopPresence();
         this.currentUserId = null;
@@ -46,10 +50,7 @@ export class PresenceService {
       this.isFirebaseInitialized = true;
       
       this.listenToOnlineUsers();
-    } catch (e) {
-      if (!environment.production) {
-        console.error('Failed to initialize Firebase for PresenceService', e);
-      }
+    } catch {
     }
   }
 
@@ -68,10 +69,7 @@ export class PresenceService {
           lastChanged: new Date().toISOString()
         });
       });
-    } catch (e) {
-      if (!environment.production) {
-        console.error('Failed to start presence tracking', e);
-      }
+    } catch {
     }
   }
 
@@ -84,10 +82,7 @@ export class PresenceService {
       const db = getDatabase();
       const userStatusRef = ref(db, `/status/${this.currentUserId}`);
       set(userStatusRef, null);
-    } catch (e) {
-      if (!environment.production) {
-        console.error('Failed to stop presence tracking', e);
-      }
+    } catch {
     }
   }
 
@@ -107,10 +102,7 @@ export class PresenceService {
           this.onlineUsersSubject.next(0);
         }
       });
-    } catch (e) {
-      if (!environment.production) {
-        console.error('Failed to listen to online users count', e);
-      }
+    } catch {
     }
   }
 }

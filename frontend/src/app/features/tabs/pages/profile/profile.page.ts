@@ -95,7 +95,7 @@ export class ProfilePage {
     const count = 200;
     const defaults = { origin: { x: 0.5, y: 0.65 } };
     
-    const fire = (particleRatio: number, opts: any) => { 
+    const fire = (particleRatio: number, opts: Record<string, unknown>) => { 
       confetti(Object.assign({}, defaults, opts, { particleCount: Math.floor(count * particleRatio) })); 
     };
     

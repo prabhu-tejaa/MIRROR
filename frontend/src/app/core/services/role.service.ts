@@ -41,7 +41,7 @@ export class RoleService {
       const parts = token.split('.');
       if (parts.length === 3) {
         const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-        
+
         const roles = payload.roles || payload.role || payload.authorities || [];
         if (Array.isArray(roles)) {
           return roles.map((r) => String(r).toUpperCase());
@@ -49,8 +49,7 @@ export class RoleService {
           return [roles.toUpperCase()];
         }
       }
-    } catch (e) {
-      console.error('[RoleService] Error extracting roles from JWT token:', e);
+    } catch {
     }
 
     return ['USER'];
