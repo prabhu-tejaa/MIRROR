@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NavController, AlertController } from '@ionic/angular';
 import {
   IonContent,
-  IonList, IonItem, IonLabel, IonIcon, IonNote, IonFooter
+  IonList, IonItem, IonLabel, IonIcon, IonNote, IonFooter, IonButton
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { logOutOutline, personCircleOutline, mailOutline, shieldCheckmarkOutline, chevronForwardOutline, informationCircleOutline } from 'ionicons/icons';
@@ -18,10 +18,11 @@ import confetti from 'canvas-confetti';
   templateUrl: 'profile.page.html',
   styleUrls: ['profile.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonButton,
     CommonModule,
     IonContent, IonFooter,
     IonList, IonItem, IonLabel, IonIcon, IonNote,
+    IonButton,
     TranslatePipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush

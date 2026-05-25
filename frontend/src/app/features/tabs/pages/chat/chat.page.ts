@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -55,7 +55,7 @@ export class ChatPage {
     }
   ]);
 
-  // Web Speech API references
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private recognition: any = null;
 
   public readonly suggestionChips = [
@@ -85,9 +85,10 @@ export class ChatPage {
   }
 
   private initSpeechRecognition() {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      this.recognition = new SpeechRecognition();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognitionCtor) {
+      this.recognition = new SpeechRecognitionCtor();
       this.recognition.continuous = false;
       this.recognition.interimResults = false;
       this.recognition.lang = 'en-US';
@@ -96,13 +97,15 @@ export class ChatPage {
         this.isRecording.set(true);
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
         if (transcript) {
-          this.chatInput.update(curr => curr ? `${curr} ${transcript}` : transcript);
+          this.chatInput.update((curr: string) => curr ? `${curr} ${transcript}` : transcript);
         }
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.recognition.onerror = (event: any) => {
         // eslint-disable-next-line no-console
         console.error('Speech recognition error:', event.error);
@@ -138,7 +141,7 @@ export class ChatPage {
     } else {
       try {
         this.recognition.start();
-      } catch (e) {
+      } catch {
         // Fallback in case of quick start/stop errors
         this.isRecording.set(false);
       }
