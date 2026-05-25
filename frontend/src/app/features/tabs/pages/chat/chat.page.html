@@ -1,5 +1,100 @@
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="chat-content-container" [class]="activeStyle()">
 
+  <!-- Ambient background elements for Aurora/Cyberpunk themes -->
+  <div class="ambient-glows">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+  </div>
 
-  <app-explore-container [name]="'TABS.CHAT' | translate"></app-explore-container>
+  <div class="chat-wrapper">
+
+    <!-- Premium Header -->
+    <header class="chat-header">
+      <div class="header-main">
+        <ion-icon name="sparkles-outline" class="logo-icon"></ion-icon>
+        <div class="header-text">
+          <h1>MIRROR AI</h1>
+        </div>
+      </div>
+
+      <!-- Style switcher -->
+      <div class="style-pill-selector">
+        <button [class.active]="activeStyle() === 'cyberpunk'" (click)="selectStyle('cyberpunk')"
+          aria-label="Cyberpunk mode">
+          <ion-icon name="flash-outline"></ion-icon>
+          <span>CYBER</span>
+        </button>
+        <button [class.active]="activeStyle() === 'aurora'" (click)="selectStyle('aurora')" aria-label="Aurora mode">
+          <ion-icon name="color-palette-outline"></ion-icon>
+          <span>AURORA</span>
+        </button>
+        <!-- OLED button removed -->
+      </div>
+    </header>
+
+    <!-- Message Stream -->
+    <div class="message-stream" #streamScroll>
+      <div *ngFor="let msg of messages()" class="message-wrapper" [class.user-message]="msg.sender === 'user'"
+        [class.mirror-message]="msg.sender === 'mirror'">
+
+        <div class="avatar" *ngIf="msg.sender === 'mirror'">
+          <ion-icon name="sparkles-outline"></ion-icon>
+        </div>
+
+        <div class="message-bubble" [class.typing-bubble]="msg.isTyping">
+          <ng-container *ngIf="!msg.isTyping; else typingIndicator">
+            <p class="msg-text">{{ msg.text }}</p>
+            <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
+          </ng-container>
+
+          <ng-template #typingIndicator>
+            <div class="typing-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <!-- Suggestions panel removed per user preference -->
+
+    <!-- Active Recording Overlay Simulator (within layout) -->
+    <div class="voice-active-overlay" *ngIf="isRecording()">
+      <div class="waveform">
+        <div class="bar bar-1"></div>
+        <div class="bar bar-2"></div>
+        <div class="bar bar-3"></div>
+        <div class="bar bar-4"></div>
+        <div class="bar bar-5"></div>
+        <div class="bar bar-6"></div>
+        <div class="bar bar-7"></div>
+        <div class="bar bar-8"></div>
+      </div>
+      <p class="voice-transcription-status">LISTENING AND TRANSCRIBING...</p>
+    </div>
+
+    <!-- Entry Control Capsule -->
+    <div class="entry-capsule-container">
+      <div class="entry-capsule">
+        <button class="voice-btn" [class.recording]="isRecording()" (click)="toggleRecording()"
+          [aria-label]="isRecording() ? 'Stop voice input' : 'Start voice input'">
+          <ion-icon [name]="'mic-outline'" class="mic-icon"></ion-icon>
+          <span class="record-ring" *ngIf="isRecording()"></span>
+        </button>
+
+        <input type="text" placeholder="Speak or type a command..." [ngModel]="chatInput()"
+          (ngModelChange)="chatInput.set($event)" (keypress)="handleKeyPress($event)" #textInput
+          aria-label="Chat input message" />
+
+        <button class="send-btn" [class.disabled]="!chatInput().trim()" [disabled]="!chatInput().trim()"
+          (click)="triggerSend()" aria-label="Send message">
+          <ion-icon name="send-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
 </ion-content>

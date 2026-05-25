@@ -7,8 +7,8 @@ ion-tab-bar {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 
   width: 100%;
-  height: 60px;
-  height: calc(60px + env(safe-area-inset-bottom, 0px));
+  // Fall back to a beautiful 44px height on Web, but use the exact safe area height on Android
+  height: max(44px, env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
 
   z-index: 1000;
@@ -31,14 +31,15 @@ ion-tab-button {
   }
 
   ion-icon {
-    font-size: 24px;
+    font-size: 20px; // Scaled down for sleek proportion
   }
 
   ion-label {
-    font-weight: 500;
-    font-size: 10px;
+    font-weight: 600;
+    font-size: 9px; // Ultra-sleek micro text
     text-transform: uppercase;
-    margin-top: 2px;
+    margin-top: 1px;
+    letter-spacing: 0.3px;
   }
 }
 
