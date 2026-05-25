@@ -43,10 +43,15 @@ export class RoleService {
         const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
 
         const roles = payload.roles || payload.role || payload.authorities || [];
+        const normalizeRole = (r: unknown): string => {
+          const str = String(r).toUpperCase();
+          return str.startsWith('ROLE_') ? str.substring(5) : str;
+        };
+
         if (Array.isArray(roles)) {
-          return roles.map((r) => String(r).toUpperCase());
+          return roles.map(normalizeRole);
         } else if (typeof roles === 'string') {
-          return [roles.toUpperCase()];
+          return [normalizeRole(roles)];
         }
       }
     } catch {
