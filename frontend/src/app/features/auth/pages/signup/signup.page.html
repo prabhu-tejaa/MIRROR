@@ -109,22 +109,32 @@
               </ion-header>
               <ion-content class="ion-padding glassy-modal-content">
                 <div class="modal-body glassy-body">
-                  <div class="section-badge">{{ 'SIGNUP.TOS_LINK' | translate }}</div>
-                  <h2>{{ 'SIGNUP.TOS_TITLE' | translate }}</h2>
-                  <p>{{ 'SIGNUP.TOS_SUBTITLE' | translate }}</p>
+                  <div class="tos-header-badge">
+                    <ion-icon [icon]="shieldCheckmarkOutline" class="tos-badge-icon"></ion-icon>
+                    <span>SECURE &amp; VERIFIED ACADEMIC SANDBOX</span>
+                  </div>
+                  <p [innerHTML]="'SIGNUP.TOS_SUBTITLE' | translate"></p>
 
                   <div class="rules-list">
                     <div class="rule-item">
                       <span class="rule-index">01</span>
-                      <p>{{ 'SIGNUP.RULE_1' | translate }}</p>
+                      <p [innerHTML]="'SIGNUP.RULE_1' | translate"></p>
                     </div>
                     <div class="rule-item">
                       <span class="rule-index">02</span>
-                      <p>{{ 'SIGNUP.RULE_2' | translate }}</p>
+                      <p [innerHTML]="'SIGNUP.RULE_2' | translate"></p>
                     </div>
                     <div class="rule-item">
                       <span class="rule-index">03</span>
-                      <p>{{ 'SIGNUP.RULE_3' | translate }}</p>
+                      <p [innerHTML]="'SIGNUP.RULE_3' | translate"></p>
+                    </div>
+                    <div class="rule-item">
+                      <span class="rule-index">04</span>
+                      <p [innerHTML]="'SIGNUP.RULE_4' | translate"></p>
+                    </div>
+                    <div class="rule-item">
+                      <span class="rule-index">05</span>
+                      <p [innerHTML]="'SIGNUP.RULE_5' | translate"></p>
                     </div>
                   </div>
 

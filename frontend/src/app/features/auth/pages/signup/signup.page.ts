@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractContro
 import { NavController, AnimationController, Animation, AnimationBuilder } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { eye, eyeOff, closeOutline, alertCircleOutline } from 'ionicons/icons';
+import { eye, eyeOff, closeOutline, alertCircleOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
@@ -37,9 +37,10 @@ export class SignupPage implements OnInit {
   public readonly eyeOff = eyeOff;
   public readonly closeOutline = closeOutline;
   public readonly alertCircleOutline = alertCircleOutline;
+  public readonly shieldCheckmarkOutline = shieldCheckmarkOutline;
 
   constructor() {
-    addIcons({ eye, eyeOff, closeOutline, alertCircleOutline });
+    addIcons({ eye, eyeOff, closeOutline, alertCircleOutline, shieldCheckmarkOutline });
   }
 
   public ngOnInit(): void {

@@ -94,11 +94,13 @@
     "LOGIN_PREFIX": "Already have an account? ",
     "LOGIN_LINK": "Log In",
     "ERROR_DEFAULT": "Registration failed. Please try again.",
-    "TOS_TITLE": "Welcome to Mirror",
-    "TOS_SUBTITLE": "By joining, you agree to our placeholder terms. Ensure you are acting legally and morally on our platform.",
-    "RULE_1": "Respect others: Treat everyone with dignity and kindness.",
-    "RULE_2": "No illegal content: Zero tolerance for any unlawful behavior.",
-    "RULE_3": "Be excellent to each other: Foster a positive and supportive community."
+    "TOS_TITLE": "Terms of Service & Privacy Policy",
+    "TOS_SUBTITLE": "Welcome to MIRЯOЯ.<br>This academic research project is hosted on <a href=\"https://projectmirror.tech/\" target=\"_blank\" class=\"terms-link\">https://projectmirror.tech/</a> until March 26, 2027.<br>Thereafter, the application will remain accessible via Vercel (<a href=\"https://mirror-cchucligf-prabhu-tejaas-projects.vercel.app\" target=\"_blank\" class=\"terms-link\">https://mirror-cchucligf-prabhu-tejaas-projects.vercel.app</a>) and the official Android build release (<a href=\"https://github.com/prabhu-tejaa/MIRROR/releases/tag/mirror\" target=\"_blank\" class=\"terms-link\">https://github.com/prabhu-tejaa/MIRROR/releases/tag/mirror</a>).",
+    "RULE_1": "Strict Personal & Non Clinical Scope:<br>MIRROR is designed solely as a private, single user reflection tool to track your emotional journey and behavioral cycles. It does not support multi user collaboration or external integrations and does not provide clinical diagnosis, medical therapy or professional psychological consultation.",
+    "RULE_2": "Memory Ownership & Cognitive Privacy:<br>All voice recordings, transcribed text and emotional metadata remain your exclusive property. Your personal history is stored securely using stateless JWT authentication, Spring Boot microservices and high dimensional pgvector semantic databases to prevent unauthorized external access.",
+    "RULE_3": "AI Pattern Synthesis & RAG Mechanisms:<br>You acknowledge that MIRROR utilizes Retrieval Augmented Generation (RAG) and Large Language Models (LLMs) to calculate semantic similarity and mirror past insights. These automated pattern analyses are for self educational use only; the accuracy of AI correlations cannot be guaranteed.",
+    "RULE_4": "Educational, Free Tier Sandbox:<br>This platform is strictly an academic research prototype developed as an MCA Final Semester project to evaluate AI engineering methodologies. The ecosystem is hosted entirely on free tier subscriptions (Frontend on Vercel, Backend APIs on Azure, and Database on Neon Tech). Due to free subscription limitations, service availability is subject to sleep states, cold starts and resource quotas.",
+    "RULE_5": "Limited Lifespan & Zero Liability:<br>This prototype has an active sandbox lifespan of 1 Year (Expiring March 26, 2027). You explicitly agree that the platform is provided 'AS-IS' and 'AS-AVAILABLE' with no warranties. You forfeit all rights to raise legal claims, lawsuits or demands for damages of any kind against the developer (Prabhu Teja Pamula), the project guide (Dr. Brijendra Singh) or Vellore Institute of Technology (VIT)."
   },
   "TABS": {
     "YOU": "You",
