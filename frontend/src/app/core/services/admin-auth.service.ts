@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AdminUserResponse, AdminUserUpdateRequest } from '../models/auth.model';
+import { AdminUserResponse, AdminUserUpdateRequest, AdminCreateUserRequest } from '../models/auth.model';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -147,6 +147,46 @@ export class AdminAuthService {
           return of({ ...updatedUser });
         }
         return throwError(() => error);
+      })
+    );
+  }
+
+  public createUser(request: AdminCreateUserRequest): Observable<AdminUserResponse> {
+    if (this.isUsingMockFallback) {
+      const newUser: AdminUserResponse = {
+        id: crypto.randomUUID(),
+        username: request.username,
+        email: request.email,
+        role: request.role,
+        isVerified: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        failedAttempts: 0,
+        lockedUntil: null
+      };
+      this.mockUsers.push(newUser);
+      return of({ ...newUser });
+    }
+
+    return this.http.post<AdminUserResponse>(this.apiSvc.AUTH.ADMIN_USERS, request).pipe(
+      catchError((error) => {
+        /* eslint-disable no-console */
+        console.warn('Backend create failed. Creating in local mock data playground instead.', error);
+        /* eslint-enable no-console */
+        this.isUsingMockFallback = true;
+        const newUser: AdminUserResponse = {
+          id: crypto.randomUUID(),
+          username: request.username,
+          email: request.email,
+          role: request.role,
+          isVerified: true,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          failedAttempts: 0,
+          lockedUntil: null
+        };
+        this.mockUsers.push(newUser);
+        return of({ ...newUser });
       })
     );
   }

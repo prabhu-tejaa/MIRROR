@@ -17,9 +17,15 @@
 <ion-content [fullscreen]="true" class="ion-padding">
   <div class="glass-container">
     <div class="header-section">
-      <div class="title-with-icon">
-        <ion-icon name="people-outline" class="title-icon"></ion-icon>
-        <h2>User Management</h2>
+      <div class="header-top-row">
+        <div class="title-with-icon">
+          <ion-icon name="people-outline" class="title-icon"></ion-icon>
+          <h2>User Management</h2>
+        </div>
+        <ion-button class="add-user-btn" (click)="addUser()">
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+          Add User
+        </ion-button>
       </div>
       <p>Manage user accounts, roles, verification statuses, and credentials.</p>
     </div>
@@ -93,7 +99,7 @@
 
     <!-- Loading State -->
     <div *ngIf="isLoading" class="loading-state">
-      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <ion-spinner name="crescent"></ion-spinner>
       <p>Fetching user directory...</p>
     </div>
 

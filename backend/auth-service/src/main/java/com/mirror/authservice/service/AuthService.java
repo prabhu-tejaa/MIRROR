@@ -43,6 +43,28 @@ public class AuthService {
         return userRepository.save(newUser);
     }
 
+    public com.mirror.authservice.dto.UserResponse adminCreateUser(String username, String email, String rawPassword, Role role) {
+        if (userRepository.existsByEmail(email)) {
+            throw new RuntimeException("Email is already registered!");
+        }
+        if (userRepository.existsByUsername(username)) {
+            throw new RuntimeException("Username is already taken!");
+        }
+
+        String encryptedPassword = passwordEncoder.encode(rawPassword);
+
+        User newUser = User.builder()
+                .username(username)
+                .email(email)
+                .passwordHash(encryptedPassword)
+                .role(role != null ? role : Role.ROLE_USER)
+                .isVerified(true)
+                .build();
+
+        User savedUser = userRepository.save(newUser);
+        return mapToUserResponse(savedUser);
+    }
+
     public User loginUser(String email, String rawPassword) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Invalid email or password!"));

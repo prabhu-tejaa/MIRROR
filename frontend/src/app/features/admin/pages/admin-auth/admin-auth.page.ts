@@ -6,9 +6,11 @@ import { AdminAuthService } from '../../../../core/services/admin-auth.service';
 import { AdminUserResponse } from '../../../../core/models/auth.model';
 import { ToastService } from '../../../../core/services/toast.service';
 import { UserEditModalComponent } from './user-edit-modal/user-edit-modal.component';
+import { UserCreateModalComponent } from './user-create-modal/user-create-modal.component';
+import { TranslationService } from '../../../../core/services/translation.service';
 
 import { addIcons } from 'ionicons';
-import { arrowBackOutline, refreshOutline, peopleOutline, checkmarkCircleOutline, warningOutline, createOutline, trashOutline, lockClosedOutline, keyOutline } from 'ionicons/icons';
+import { arrowBackOutline, refreshOutline, peopleOutline, checkmarkCircleOutline, warningOutline, createOutline, trashOutline, lockClosedOutline, keyOutline, personAddOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-auth',
@@ -22,6 +24,7 @@ export class AdminAuthPage implements OnInit {
   private adminAuthSvc = inject(AdminAuthService);
   private toastSvc = inject(ToastService);
   private modalCtrl = inject(ModalController);
+  private translationSvc = inject(TranslationService);
 
   public users: AdminUserResponse[] = [];
   public filteredUsers: AdminUserResponse[] = [];
@@ -30,11 +33,13 @@ export class AdminAuthPage implements OnInit {
   public isLoading = true;
 
   constructor() {
-    addIcons({ arrowBackOutline, refreshOutline, peopleOutline, checkmarkCircleOutline, warningOutline, createOutline, trashOutline, lockClosedOutline, keyOutline });
+    addIcons({ arrowBackOutline, refreshOutline, peopleOutline, checkmarkCircleOutline, warningOutline, createOutline, trashOutline, lockClosedOutline, keyOutline, personAddOutline });
   }
 
   public ngOnInit() {
-    this.loadUsers();
+    this.translationSvc.initTranslations('en').then(() => {
+      this.loadUsers();
+    });
   }
 
   public isUserLocked(user: AdminUserResponse): boolean {
@@ -123,6 +128,20 @@ export class AdminAuthPage implements OnInit {
           this.toastSvc.showError('Failed to delete user');
         }
       });
+    }
+  }
+
+  public async addUser() {
+    const modal = await this.modalCtrl.create({
+      component: UserCreateModalComponent,
+      cssClass: 'glassy-modal'
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    if (data && data.created) {
+      this.loadUsers();
     }
   }
 }

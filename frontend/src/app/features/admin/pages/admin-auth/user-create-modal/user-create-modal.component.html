@@ -1,0 +1,119 @@
+<ion-header class="glassy-modal-header">
+  <ion-toolbar>
+    <ion-title>Create New User</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss(false)">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding glassy-modal-content">
+  <div class="modal-form-wrapper">
+    <div class="user-overview">
+      <div class="modal-avatar create-avatar">
+        <ion-icon name="person-add-outline"></ion-icon>
+      </div>
+      <div class="user-meta">
+        <h3>New User Account</h3>
+        <p class="user-id-sub">This user will be created as pre-verified (no OTP needed)</p>
+      </div>
+    </div>
+
+    <form (ngSubmit)="create()" #createUserForm="ngForm" class="modal-form">
+      <!-- Username Field -->
+      <div class="form-group">
+        <label for="create-username" class="field-label">Username</label>
+        <div class="input-wrapper">
+          <ion-icon name="person-outline" class="input-icon"></ion-icon>
+          <input 
+            type="text" 
+            id="create-username" 
+            name="username" 
+            [(ngModel)]="createForm.username" 
+            required 
+            placeholder="Enter username"
+            class="glass-input"
+          />
+        </div>
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="create-email" class="field-label">Email Address</label>
+        <div class="input-wrapper">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <input 
+            type="email" 
+            id="create-email" 
+            name="email" 
+            [(ngModel)]="createForm.email" 
+            required 
+            placeholder="e.g. admin@mirror.com"
+            class="glass-input"
+          />
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="create-password" class="field-label">Password</label>
+        <div class="input-wrapper">
+          <ion-icon name="key-outline" class="input-icon"></ion-icon>
+          <input 
+            type="password" 
+            id="create-password" 
+            name="password" 
+            [(ngModel)]="createForm.password" 
+            required 
+            placeholder="Set a password (min 6 chars)"
+            class="glass-input"
+          />
+        </div>
+      </div>
+
+      <!-- Role Dropdown Selection -->
+      <div class="form-group">
+        <label for="create-role" class="field-label">Access Role</label>
+        <div class="input-wrapper select-wrapper">
+          <ion-icon name="shield-outline" class="input-icon"></ion-icon>
+          <select 
+            id="create-role" 
+            name="role" 
+            [(ngModel)]="createForm.role" 
+            class="glass-select">
+            <option value="ROLE_USER">User (Standard Access)</option>
+            <option value="ROLE_ADMIN">Admin (Privileged Access)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Info Note -->
+      <div class="create-info-note">
+        <ion-icon name="shield-outline" class="note-icon"></ion-icon>
+        <p>This user will be created with <strong>verified status</strong> — they can login immediately without email OTP verification.</p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="modal-actions">
+        <ion-button 
+          type="button" 
+          fill="clear" 
+          class="cancel-btn" 
+          (click)="dismiss(false)"
+          [disabled]="isSubmitting">
+          Cancel
+        </ion-button>
+        
+        <ion-button 
+          type="submit" 
+          class="save-btn create-btn" 
+          [disabled]="isSubmitting || !createUserForm.valid">
+          <ion-spinner name="crescent" *ngIf="isSubmitting" slot="start"></ion-spinner>
+          Create User
+        </ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>

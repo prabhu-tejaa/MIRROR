@@ -1,5 +1,6 @@
 package com.mirror.authservice.controller;
 
+import com.mirror.authservice.dto.AdminCreateUserRequest;
 import com.mirror.authservice.dto.UserResponse;
 import com.mirror.authservice.dto.UserUpdateRequest;
 import com.mirror.authservice.service.AuthService;
@@ -30,6 +31,22 @@ public class AdminController {
         return ResponseEntity.ok(authService.getUserById(id));
     }
 
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createUser(@RequestBody AdminCreateUserRequest request) {
+        try {
+            UserResponse created = authService.adminCreateUser(
+                    request.username(),
+                    request.email(),
+                    request.password(),
+                    request.role()
+            );
+            return ResponseEntity.ok(created);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @RequestBody UserUpdateRequest request) {
@@ -43,3 +60,4 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 }
+

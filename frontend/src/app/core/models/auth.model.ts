@@ -37,3 +37,11 @@ export interface AdminUserUpdateRequest {
   failedAttempts?: number;
   lockedUntil?: string | null;
 }
+
+export interface AdminCreateUserRequest {
+  username: string;
+  email: string;
+  password: string;
+  role: string;
+}
+

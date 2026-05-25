@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { AdminGatewayService, ServiceHealth } from '../../core/services/admin-gateway.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { addIcons } from 'ionicons';
 import { 
   checkmarkCircleOutline, 
@@ -433,6 +434,7 @@ import {
 })
 export class SystemStatusPage implements OnInit, OnDestroy {
   private gatewaySvc = inject(AdminGatewayService);
+  private translationSvc = inject(TranslationService);
 
   public services: ServiceHealth[] = [];
   public isLoading = true;
@@ -446,8 +448,10 @@ export class SystemStatusPage implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
-    this.loadHealth();
-    this.startPolling();
+    this.translationSvc.initTranslations('en').then(() => {
+      this.loadHealth();
+      this.startPolling();
+    });
   }
 
   public ngOnDestroy() {
