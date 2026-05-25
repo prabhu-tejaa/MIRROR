@@ -1,13 +1,21 @@
 ion-content {
   --padding-bottom: env(safe-area-inset-bottom, 16px);
   height: 100%;
+
+  &::part(scroll) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
 }
 
 /* ── Page wrapper — single column on all screen sizes ── */
 .profile-page-inner {
   display: flex;
   flex-direction: column;
+  height: 100%;
   min-height: 100%;
+  width: 100%;
   max-width: 640px;
   margin: 0 auto;
   box-sizing: border-box;
@@ -19,7 +27,7 @@ ion-content {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 24px 20px 16px;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) 20px 16px;
   gap: 12px;
 
   .avatar-icon {
@@ -110,9 +118,17 @@ ion-content {
   }
 }
 
+ion-footer {
+  background: transparent !important;
+  --background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
 .logout-container {
-  margin-top: auto;
-  padding: 24px 16px;
+  padding: 4px 16px 16px;
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 .logout-btn {
@@ -155,7 +171,7 @@ ion-content {
   }
 
   .profile-hero {
-    padding: 28px 28px 16px;
+    padding: calc(env(safe-area-inset-top, 0px) + 28px) 28px 16px;
     gap: 14px;
 
     .avatar-icon {
@@ -184,7 +200,7 @@ ion-content {
   }
 
   .profile-hero {
-    padding: 32px 32px 20px;
+    padding: calc(env(safe-area-inset-top, 0px) + 32px) 32px 20px;
 
     .avatar-icon {
       font-size: 48px;

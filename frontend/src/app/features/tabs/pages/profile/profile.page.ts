@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NavController, AlertController } from '@ionic/angular';
 import {
   IonContent,
-  IonList, IonItem, IonLabel, IonIcon, IonNote
+  IonList, IonItem, IonLabel, IonIcon, IonNote, IonFooter
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { logOutOutline, personCircleOutline, mailOutline, shieldCheckmarkOutline, chevronForwardOutline, informationCircleOutline } from 'ionicons/icons';
@@ -20,7 +20,7 @@ import confetti from 'canvas-confetti';
   standalone: true,
   imports: [
     CommonModule,
-    IonContent,
+    IonContent, IonFooter,
     IonList, IonItem, IonLabel, IonIcon, IonNote,
     TranslatePipe
   ],
@@ -94,11 +94,11 @@ export class ProfilePage {
   private fireConfetti(): void {
     const count = 200;
     const defaults = { origin: { x: 0.5, y: 0.65 } };
-    
-    const fire = (particleRatio: number, opts: Record<string, unknown>) => { 
-      confetti(Object.assign({}, defaults, opts, { particleCount: Math.floor(count * particleRatio) })); 
+
+    const fire = (particleRatio: number, opts: Record<string, unknown>) => {
+      confetti(Object.assign({}, defaults, opts, { particleCount: Math.floor(count * particleRatio) }));
     };
-    
+
     fire(0.25, { spread: 26, startVelocity: 55 });
     fire(0.2, { spread: 60 });
     fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });

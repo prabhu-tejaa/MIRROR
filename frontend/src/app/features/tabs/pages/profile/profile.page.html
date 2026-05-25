@@ -29,14 +29,16 @@
           <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon"></ion-icon>
         </ion-item>
       </ion-list>
-
-      <div class="logout-container">
-        <button class="logout-btn" id="logout-btn" (click)="onLogout()">
-          <ion-icon name="log-out-outline"></ion-icon>
-          <span>{{ 'PROFILE.LOGOUT' | translate }}</span>
-        </button>
-      </div>
     </div>
   </div>
 
 </ion-content>
+
+<ion-footer class="ion-no-border">
+  <div class="logout-container">
+    <button class="logout-btn" id="logout-btn" (click)="onLogout()">
+      <ion-icon name="log-out-outline"></ion-icon>
+      <span>{{ 'PROFILE.LOGOUT' | translate }}</span>
+    </button>
+  </div>
+</ion-footer>
