@@ -1,14 +1,21 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, ViewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonContent, IonIcon
+  IonContent, IonIcon, NavController, AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   micOutline,
   sendOutline,
-  sparklesOutline,
+  journalOutline,
+  contrastOutline,
+  apertureOutline,
+  prismOutline,
+  waterOutline,
+  infiniteOutline,
+  eyeOutline,
+  fingerPrint,
   chatbubbleEllipsesOutline,
   refreshOutline,
   colorPaletteOutline,
@@ -19,6 +26,7 @@ import {
   codeSlashOutline,
   pulseOutline
 } from 'ionicons/icons';
+import { AuthService } from '../../../../core/services/auth.service';
 
 interface Message {
   id: string;
@@ -42,18 +50,38 @@ interface Message {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ChatPage {
+  private authSvc = inject(AuthService);
+  private alertCtrl = inject(AlertController);
+  private navCtrl = inject(NavController);
+
+  public readonly isGuest = computed(() => this.authSvc.getEmail() === 'guest@mirror.com');
+
+  private get guestChatCount(): number {
+    const val = localStorage.getItem('mirror_guest_chat_count');
+    return val ? parseInt(val, 10) : 0;
+  }
+
+  private incrementGuestChatCount(): void {
+    const current = this.guestChatCount;
+    localStorage.setItem('mirror_guest_chat_count', (current + 1).toString());
+  }
+
   // Styles can be 'cyberpunk' | 'aurora'
-  public readonly activeStyle = signal<'cyberpunk' | 'aurora'>('cyberpunk');
+  public readonly activeStyle = signal<'cyberpunk' | 'aurora'>('aurora');
   public readonly chatInput = signal<string>('');
   public readonly isRecording = signal<boolean>(false);
+  public readonly isWaitingForResponse = signal<boolean>(false);
   public readonly messages = signal<Message[]>([
     {
       id: 'welcome',
       sender: 'mirror',
-      text: 'Hello there, traveler of the digital realms. I am MIRROR, your synchronized companion. Speak or type your request, and let us build something sublime.',
+      text: 'I am your reflection companion, designed to help you capture your daily wins, track your emotional patterns and preserve key life lessons before they fade. How are you feeling today? Share a moment, a win or a pain, and let\'s begin reflecting.',
       timestamp: new Date()
     }
   ]);
+
+  @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
+  @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLInputElement>;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private recognition: any = null;
@@ -66,10 +94,25 @@ export class ChatPage {
   ];
 
   constructor() {
+    effect(() => {
+      // Trigger effect when messages signal changes
+      const msgs = this.messages();
+      if (msgs.length > 0) {
+        setTimeout(() => this.scrollToBottom(), 100);
+      }
+    });
+
     addIcons({
       micOutline,
       sendOutline,
-      sparklesOutline,
+      journalOutline,
+      contrastOutline,
+      apertureOutline,
+      prismOutline,
+      waterOutline,
+      infiniteOutline,
+      eyeOutline,
+      fingerPrint,
       chatbubbleEllipsesOutline,
       refreshOutline,
       colorPaletteOutline,
@@ -118,6 +161,28 @@ export class ChatPage {
     }
   }
 
+  private scrollToBottom() {
+    if (this.streamScroll?.nativeElement) {
+      const el = this.streamScroll.nativeElement;
+      el.scrollTo({
+        top: el.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }
+
+  public ionViewDidEnter() {
+    this.focusInput();
+  }
+
+  private focusInput() {
+    setTimeout(() => {
+      if (this.textInput?.nativeElement) {
+        this.textInput.nativeElement.focus();
+      }
+    }, 150);
+  }
+
   public toggleRecording() {
     if (!this.recognition) {
       // Graceful fallback for browsers without speech recognition support
@@ -153,13 +218,24 @@ export class ChatPage {
   }
 
   public useChip(chipText: string) {
+    if (this.isWaitingForResponse()) {
+      return;
+    }
+    if (this.isGuest() && this.guestChatCount >= 2) {
+      this.showSignupPopup();
+      return;
+    }
     this.sendMessage(chipText);
   }
 
   public handleKeyPress(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       const input = this.chatInput().trim();
-      if (input) {
+      if (input && !this.isWaitingForResponse()) {
+        if (this.isGuest() && this.guestChatCount >= 2) {
+          this.showSignupPopup();
+          return;
+        }
         this.sendMessage(input);
       }
     }
@@ -167,12 +243,38 @@ export class ChatPage {
 
   public triggerSend() {
     const input = this.chatInput().trim();
-    if (input) {
+    if (input && !this.isWaitingForResponse()) {
+      if (this.isGuest() && this.guestChatCount >= 2) {
+        this.showSignupPopup();
+        return;
+      }
       this.sendMessage(input);
     }
   }
 
+  private async showSignupPopup() {
+    const alert = await this.alertCtrl.create({
+      header: 'Limit Reached',
+      message: 'Please sign up to access all the features and unlock unlimited synchronization.',
+      cssClass: 'mirror-alert',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'alert-cancel-btn'
+        }
+      ]
+    });
+    await alert.present();
+  }
+
   private sendMessage(text: string) {
+    if (this.isGuest()) {
+      this.incrementGuestChatCount();
+    }
+
+    this.isWaitingForResponse.set(true);
+
     // Add user message
     const userMsg: Message = {
       id: Math.random().toString(36).substring(7),
@@ -183,6 +285,7 @@ export class ChatPage {
 
     this.messages.update(prev => [...prev, userMsg]);
     this.chatInput.set('');
+    this.focusInput();
 
     // Trigger AI response simulation
     this.simulateMirrorResponse(text);
@@ -215,6 +318,8 @@ export class ChatPage {
       };
 
       this.messages.update(prev => [...prev, mirrorReply]);
+      this.isWaitingForResponse.set(false);
+      this.focusInput();
     }, 1500 + Math.random() * 1000);
   }
 
@@ -259,13 +364,6 @@ MIRROR Core`;
       return "The philosophy of MIRROR centers on pure digital convergence. It operates on the premise that your coding workflows, interface design, and backing microservices should exist as a single, beautifully synchronized entity. Like a physical mirror reflects your form, MIRROR projects a harmonious reflection of elegant software engineering and high-end aesthetic fidelity.";
     }
 
-    const standardReplies = [
-      "Fascinating request. I have parsed your query through the MIRROR semantic core. Let me know how you'd like to integrate this into your workflow.",
-      "I hear you loud and clear. That request is well within my synthesis capability. Let's make it look premium!",
-      "An excellent proposal. We should write a plan or directly execute it to maintain absolute workflow momentum. What are your thoughts?",
-      "MIRROR semantic model initialized. Your voice transcription has been fully mapped to active session context. Ready for the next sync!"
-    ];
-
-    return standardReplies[Math.floor(Math.random() * standardReplies.length)];
+    return "Thank you! This feature is currently under development.";
   }
 }

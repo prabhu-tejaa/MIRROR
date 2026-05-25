@@ -147,6 +147,11 @@ ion-content::part(scroll) {
     color: #f87171 !important;
     font-weight: 700 !important;
   }
+
+  .alert-action-btn {
+    color: #a5f3fc !important; /* cyan-200 neon */
+    font-weight: 700 !important;
+  }
 }
 
 .dev-badge {

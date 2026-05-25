@@ -4,6 +4,7 @@
 
 .chat-content-container {
   --background: #0d0b18;
+  --overflow: hidden;
   color: #ffffff;
   font-family: 'Outfit', sans-serif;
   position: relative;
@@ -186,10 +187,17 @@
   gap: 16px;
   margin-bottom: 16px;
 
-  // Custom scrollbar layout
+  /* Hide scrollbar for Chrome, Safari and Opera */
   &::-webkit-scrollbar {
-    width: 4px;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
   }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .message-wrapper {
@@ -211,15 +219,21 @@
     width: 34px;
     height: 34px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent !important;
+    border: none !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #b4c8ff;
-    font-size: 16px;
+    color: #ffffff !important;
+    font-size: 28px;
     flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    box-shadow: none !important;
+
+    ion-icon {
+      transition: transform 1.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+                  color 1.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+                  opacity 1.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
   }
 
   .message-bubble {
@@ -306,7 +320,7 @@
 
     .bar {
       width: 3px;
-      background: #ff0055;
+      background: rgba(255, 255, 255, 0.85); /* Calm silver/white bars for a clean visual */
       border-radius: 3px;
       animation: wavePulse 1.2s infinite ease-in-out;
 
@@ -356,7 +370,7 @@
     font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 1.2px;
-    color: #ff0055;
+    color: rgba(255, 255, 255, 0.85); /* Pure, soft white text */
     margin: 0;
     text-transform: uppercase;
     animation: statusPulse 1.5s infinite ease-in-out;
@@ -368,11 +382,14 @@
 // ----------------------------------------------------
 
 .entry-capsule-container {
+  position: relative;
   z-index: 20;
   margin-bottom: 6px; // Anchor directly and tightly above bottom tab bar without double safe area offsets
 }
 
 .entry-capsule {
+  position: relative;
+  z-index: 5;
   background: rgba(18, 16, 32, 0.65);
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
@@ -415,10 +432,12 @@
     }
 
     &.recording {
-      background: #ff0055 !important;
-      border-color: #ff0055 !important;
+      background: rgba(255, 255, 255, 0.12) !important; /* Frosty translucent neutral white */
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-color: rgba(255, 255, 255, 0.28) !important; /* Sleek, semi-transparent white glass border */
       color: #ffffff !important;
-      box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.12), inset 0 0 8px rgba(255, 255, 255, 0.15);
 
       .record-ring {
         position: absolute;
@@ -427,7 +446,7 @@
         right: -4px;
         bottom: -4px;
         border-radius: 50%;
-        border: 2px solid #ff0055;
+        border: 2px solid rgba(255, 255, 255, 0.25); /* Gentle glassy white pulsing ring */
         opacity: 0;
         animation: recordPulseRing 1.5s infinite ease-out;
       }
@@ -487,6 +506,81 @@
 }
 
 // ----------------------------------------------------
+// Dual-Layer Dome-Shaped Ambient Glow (Matches Drawn Outline)
+// ----------------------------------------------------
+.bottom-ambient-glow {
+  position: absolute;
+  bottom: -20px;                     /* Hardcoded to user's exact perfect offset */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 104%;
+  height: 125px;                     /* Bigger vertical size */
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, 
+    rgba(49, 46, 129, 0.45) 0%,      /* Midnight Indigo (Deep calming stability) */
+    rgba(99, 102, 241, 0.28) 35%,     /* Twilight Lavender (Promotes introspective daydreaming/Theta waves) */
+    rgba(71, 85, 105, 0.18) 55%,     /* Calm Slate (Cool, comforting optical anchor) */
+    transparent 76%
+  );
+  filter: blur(28px);               /* Balanced blur for elegant visibility and softness */
+  pointer-events: none;
+  z-index: 1;
+  animation: bottomGlowBreathPrimary 30s infinite linear; /* Extremely slow, meditative color morphing */
+  opacity: 0.90;
+}
+
+.bottom-ambient-glow-secondary {
+  position: absolute;
+  bottom: -30px;                     /* Hardcoded secondary offset */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 98%;
+  height: 100px;                    /* Bigger vertical size */
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, 
+    rgba(99, 102, 241, 0.32) 0%,      /* Twilight Lavender */
+    rgba(49, 46, 129, 0.22) 40%,      /* Midnight Indigo */
+    rgba(71, 85, 105, 0.14) 60%,      /* Calm Slate */
+    transparent 82%
+  );
+  filter: blur(34px);               /* Soft cross-fade bleed */
+  pointer-events: none;
+  z-index: 1;
+  animation: bottomGlowBreathSecondary 40s infinite linear; /* Slow, calming cross-fade */
+  opacity: 0.80;
+}
+
+@keyframes bottomGlowBreathPrimary {
+  0% {
+    transform: translateX(-50%);
+    filter: blur(28px) hue-rotate(-40deg); /* Morphs towards deep ocean teal and cyan */
+  }
+  50% {
+    transform: translateX(-50%);
+    filter: blur(28px) hue-rotate(60deg);  /* Morphs towards twilight purple and amethyst violet */
+  }
+  100% {
+    transform: translateX(-50%);
+    filter: blur(28px) hue-rotate(-40deg); /* Smoothly returns */
+  }
+}
+
+@keyframes bottomGlowBreathSecondary {
+  0% {
+    transform: translateX(-50%);
+    filter: blur(34px) hue-rotate(60deg);   /* Offset starts at purple */
+  }
+  50% {
+    transform: translateX(-50%);
+    filter: blur(34px) hue-rotate(-40deg);  /* Cross-fades to teal */
+  }
+  100% {
+    transform: translateX(-50%);
+    filter: blur(34px) hue-rotate(60deg);
+  }
+}
+
+// ----------------------------------------------------
 // THEME SPECIFIC STYLE IMPLEMENTATIONS
 // ----------------------------------------------------
 
@@ -530,39 +624,46 @@
     }
 
     .message-bubble {
-      background: rgba(255, 0, 119, 0.08);
-      border: 1px solid rgba(255, 0, 119, 0.2);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       color: #ffffff;
-      box-shadow: 0 0 15px rgba(255, 0, 119, 0.05);
+      box-shadow: none;
     }
   }
 
   .message-wrapper.user-message {
     .message-bubble {
-      background: rgba(0, 243, 255, 0.1);
-      border: 1px solid rgba(0, 243, 255, 0.25);
-      color: #ffffff;
-      box-shadow: 0 0 15px rgba(0, 243, 255, 0.05);
+      background: rgba(255, 255, 255, 0.35); /* translucent white only background */
+      backdrop-filter: blur(8px); /* premium glassy blur showing background stars */
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #000000 !important; /* solid black words for text */
+      box-shadow: none;
+
+      .msg-time {
+        color: #000000 !important; /* solid black timestamp */
+        opacity: 0.65 !important;
+      }
     }
   }
 
   .entry-capsule {
     background: rgba(11, 7, 24, 0.85);
-    border-color: rgba(0, 243, 255, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 243, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25); /* white border */
+    box-shadow: 0 8px 32px rgba(255, 255, 255, 0.04);
 
     &:focus-within {
-      border-color: #00f3ff;
-      box-shadow: 0 8px 36px rgba(0, 243, 255, 0.15);
+      border-color: #ffffff; /* focus white border */
+      box-shadow: 0 8px 36px rgba(255, 255, 255, 0.12);
     }
 
     .send-btn {
-      background: #00f3ff;
-      color: #050308;
-      box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+      background: #ffffff; /* white reply button */
+      color: #0d0b18; /* dark contrast icon */
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
 
       &:hover:not(.disabled) {
-        box-shadow: 0 0 18px #00f3ff;
+        box-shadow: 0 0 18px #ffffff;
       }
     }
   }
@@ -610,35 +711,47 @@
     }
 
     .message-bubble {
-      background: linear-gradient(135deg, rgba(136, 0, 255, 0.12) 0%, rgba(0, 255, 213, 0.06) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.09);
+      background: transparent !important;
+      border: none !important;
       color: rgba(255, 255, 255, 0.95);
+      box-shadow: none !important;
+      padding-left: 0 !important; /* Align text beautifully since there is no bubble edge */
     }
   }
 
   .message-wrapper.user-message {
     .message-bubble {
-      background: linear-gradient(135deg, rgba(0, 255, 213, 0.18) 0%, rgba(136, 0, 255, 0.09) 100%);
-      border: 1px solid rgba(0, 255, 213, 0.2);
-      color: #ffffff;
+      background: rgba(255, 255, 255, 0.35); /* translucent white background */
+      backdrop-filter: blur(8px); /* premium glassy blur showing background stars */
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #000000 !important; /* solid black words for text */
+      box-shadow: none;
+
+      .msg-time {
+        color: #000000 !important; /* solid black timestamp */
+        opacity: 0.65 !important;
+      }
     }
   }
 
   .entry-capsule {
     background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.25); /* white border */
+    box-shadow: 0 8px 32px rgba(255, 255, 255, 0.04);
 
     &:focus-within {
-      border-color: rgba(0, 255, 213, 0.4);
+      border-color: #ffffff; /* focus white border */
+      box-shadow: 0 8px 36px rgba(255, 255, 255, 0.12);
     }
 
     .send-btn {
-      background: linear-gradient(135deg, #00ffd5 0%, #8800ff 100%);
-      color: #ffffff;
-      box-shadow: 0 4px 15px rgba(0, 255, 213, 0.2);
+      background: #ffffff; /* white reply button */
+      color: #0d0b18; /* dark contrast arrow icon */
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
 
       &:hover:not(.disabled) {
-        box-shadow: 0 4px 20px rgba(0, 255, 213, 0.4);
+        box-shadow: 0 0 18px #ffffff;
       }
     }
   }
@@ -764,5 +877,170 @@
 
   100% {
     transform: translate(-30px, 20px) scale(0.95);
+  }
+}
+
+// ----------------------------------------------------
+// Biometric Scanner Loading Animation for Fingerprint
+// ----------------------------------------------------
+@keyframes fingerprintVibe {
+  0% {
+    transform: rotate(0deg) scale(0.95);
+    opacity: 0.35;
+    color: #ffffff; /* starts seamlessly at static white */
+  }
+  20% {
+    color: #c084fc; /* premium soft lavender purple */
+  }
+  40% {
+    color: #fda4af; /* premium soft warm rose pink */
+  }
+  50% {
+    transform: rotate(180deg) scale(1.06);
+    opacity: 0.9;
+  }
+  60% {
+    color: #38bdf8; /* premium soft sky blue */
+  }
+  80% {
+    color: #34d399; /* premium soft emerald mint green */
+  }
+  100% {
+    transform: rotate(360deg) scale(0.95);
+    opacity: 0.35;
+    color: #ffffff; /* ends seamlessly back at static white */
+  }
+}
+
+.loading-fingerprint {
+  animation: fingerprintVibe 6s infinite linear;
+  transform-origin: center center;
+}
+
+
+
+// ----------------------------------------------------
+// Premium Top Minimalist Theme Selector
+// ----------------------------------------------------
+.top-theme-selector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 4px;
+  border-radius: 40px;
+  margin: 0 auto 16px auto;
+  width: fit-content;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+  button {
+    background: transparent;
+    border: 1px solid transparent;
+    color: rgba(255, 255, 255, 0.45);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    outline: none;
+
+    ion-icon {
+      font-size: 15px;
+    }
+
+    &:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.08);
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// ----------------------------------------------------
+// Developer Glow Position Tuner Console
+// ----------------------------------------------------
+.developer-glow-controller {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  .controller-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .controller-icon {
+      font-size: 16px;
+      color: #38bdf8;
+    }
+
+    .controller-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .offset-badge {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      font-family: monospace;
+      color: #38bdf8;
+    }
+  }
+
+  .slider-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .slider-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.45);
+      min-width: 45px;
+      text-align: center;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      accent-color: #38bdf8;
+      background: rgba(255, 255, 255, 0.08);
+      height: 6px;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
   }
 }

@@ -90,6 +90,7 @@ export class AuthService {
     localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem(this.usernameKey);
     localStorage.removeItem(this.emailKey);
+    localStorage.removeItem('mirror_guest_chat_count');
     this.authSignal.set(false);
   }
 

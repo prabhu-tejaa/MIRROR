@@ -1,36 +1,6 @@
-<ion-content [fullscreen]="true" class="chat-content-container" [class]="activeStyle()">
-
-  <!-- Ambient background elements for Aurora/Cyberpunk themes -->
-  <div class="ambient-glows">
-    <div class="glow-orb orb-1"></div>
-    <div class="glow-orb orb-2"></div>
-  </div>
+<ion-content [fullscreen]="true" [scrollY]="false" class="chat-content-container" [class]="activeStyle()">
 
   <div class="chat-wrapper">
-
-    <!-- Premium Header -->
-    <header class="chat-header">
-      <div class="header-main">
-        <ion-icon name="sparkles-outline" class="logo-icon"></ion-icon>
-        <div class="header-text">
-          <h1>MIRROR AI</h1>
-        </div>
-      </div>
-
-      <!-- Style switcher -->
-      <div class="style-pill-selector">
-        <button [class.active]="activeStyle() === 'cyberpunk'" (click)="selectStyle('cyberpunk')"
-          aria-label="Cyberpunk mode">
-          <ion-icon name="flash-outline"></ion-icon>
-          <span>CYBER</span>
-        </button>
-        <button [class.active]="activeStyle() === 'aurora'" (click)="selectStyle('aurora')" aria-label="Aurora mode">
-          <ion-icon name="color-palette-outline"></ion-icon>
-          <span>AURORA</span>
-        </button>
-        <!-- OLED button removed -->
-      </div>
-    </header>
 
     <!-- Message Stream -->
     <div class="message-stream" #streamScroll>
@@ -38,7 +8,7 @@
         [class.mirror-message]="msg.sender === 'mirror'">
 
         <div class="avatar" *ngIf="msg.sender === 'mirror'">
-          <ion-icon name="sparkles-outline"></ion-icon>
+          <ion-icon name="finger-print" [class.loading-fingerprint]="msg.isTyping"></ion-icon>
         </div>
 
         <div class="message-bubble" [class.typing-bubble]="msg.isTyping">
@@ -77,18 +47,20 @@
 
     <!-- Entry Control Capsule -->
     <div class="entry-capsule-container">
+      <div class="bottom-ambient-glow"></div>
+      <div class="bottom-ambient-glow-secondary"></div>
       <div class="entry-capsule">
-        <button class="voice-btn" [class.recording]="isRecording()" (click)="toggleRecording()"
+        <button class="voice-btn" [class.recording]="isRecording()" [class.disabled]="isWaitingForResponse()" [disabled]="isWaitingForResponse()" (click)="toggleRecording()"
           [aria-label]="isRecording() ? 'Stop voice input' : 'Start voice input'">
           <ion-icon [name]="'mic-outline'" class="mic-icon"></ion-icon>
           <span class="record-ring" *ngIf="isRecording()"></span>
         </button>
 
-        <input type="text" placeholder="Speak or type a command..." [ngModel]="chatInput()"
+        <input type="text" placeholder="Speak or type..." [ngModel]="chatInput()"
           (ngModelChange)="chatInput.set($event)" (keypress)="handleKeyPress($event)" #textInput
           aria-label="Chat input message" />
 
-        <button class="send-btn" [class.disabled]="!chatInput().trim()" [disabled]="!chatInput().trim()"
+        <button class="send-btn" [class.disabled]="!chatInput().trim() || isWaitingForResponse()" [disabled]="!chatInput().trim() || isWaitingForResponse()"
           (click)="triggerSend()" aria-label="Send message">
           <ion-icon name="send-outline"></ion-icon>
         </button>

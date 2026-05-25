@@ -8,7 +8,8 @@ import { ConnectionService } from './core/services/connection.service';
 import { AnalyticsService } from './core/services/analytics.service';
 import { HttpCancelService } from './core/services/http-cancel.service';
 import { PresenceService } from './core/services/presence.service';
-import { map } from 'rxjs/operators';
+import { Router, NavigationEnd } from '@angular/router';
+import { map, filter, startWith } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 import { TranslatePipe } from './shared/pipes/translate.pipe';
@@ -33,9 +34,16 @@ export class AppComponent {
   private analyticsService = inject(AnalyticsService);
   private httpCancelService = inject(HttpCancelService);
   private presenceService = inject(PresenceService);
+  private router = inject(Router);
   
   public isOffline$: Observable<boolean> = this.connectionService.isOnline$.pipe(
     map(online => !online)
+  );
+
+  public showDevBadge$: Observable<boolean> = this.router.events.pipe(
+    filter(event => event instanceof NavigationEnd),
+    map(() => !this.router.url.includes('/tabs')),
+    startWith(!window.location.pathname.includes('/tabs'))
   );
 
   constructor() {

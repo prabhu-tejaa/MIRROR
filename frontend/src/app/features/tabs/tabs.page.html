@@ -7,17 +7,17 @@
     </button>
 
     <ion-tab-button tab="you" href="/tabs/you" [layout]="isDesktop ? 'icon-start' : 'icon-top'">
-      <ion-icon aria-hidden="true" [icon]="person"></ion-icon>
+      <ion-icon aria-hidden="true" [icon]="isActive('you') ? heart : heartOutline"></ion-icon>
       <ion-label>{{ 'TABS.YOU' | translate }}</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="chat" href="/tabs/chat" [layout]="isDesktop ? 'icon-start' : 'icon-top'">
-      <ion-icon aria-hidden="true" [icon]="chatbubbles"></ion-icon>
+      <ion-icon aria-hidden="true" [icon]="isActive('chat') ? chatbubbles : chatbubblesOutline"></ion-icon>
       <ion-label>{{ 'TABS.CHAT' | translate }}</ion-label>
     </ion-tab-button>
 
     <ion-tab-button tab="profile" href="/tabs/profile" [layout]="isDesktop ? 'icon-start' : 'icon-top'" class="profile-tab-btn">
-      <ion-icon aria-hidden="true" [icon]="personCircle"></ion-icon>
+      <ion-icon aria-hidden="true" [icon]="isActive('profile') ? personCircle : personCircleOutline"></ion-icon>
       <ion-label>{{ 'TABS.PROFILE' | translate }}</ion-label>
     </ion-tab-button>
   </ion-tab-bar>

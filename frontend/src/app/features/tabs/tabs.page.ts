@@ -1,7 +1,9 @@
 import { Component, EnvironmentInjector, inject, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
-import { triangle, ellipse, square, person, chatbubbles, personCircle, menuOutline, chevronBackOutline, chevronForwardOutline } from 'ionicons/icons';
+import { triangle, ellipse, square, person, chatbubbles, personCircle, menuOutline, chevronBackOutline, chevronForwardOutline, heart, heartOutline, chatbubblesOutline, personCircleOutline } from 'ionicons/icons';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 
 @Component({
@@ -15,16 +17,45 @@ import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 export class TabsPage {
   private environmentInjector = inject(EnvironmentInjector);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   public readonly person = person;
   public readonly chatbubbles = chatbubbles;
   public readonly personCircle = personCircle;
+  public readonly heart = heart;
+  
+  public readonly heartOutline = heartOutline;
+  public readonly chatbubblesOutline = chatbubblesOutline;
+  public readonly personCircleOutline = personCircleOutline;
 
   public sidebarExpanded = window.innerWidth >= 1280;
   public isDesktop = window.innerWidth >= 1024;
+  public currentUrl = '';
 
   constructor() {
-    addIcons({ person, chatbubbles, personCircle, triangle, ellipse, square, menuOutline, chevronBackOutline, chevronForwardOutline });
+    addIcons({ 
+      person, 
+      chatbubbles, 
+      personCircle, 
+      triangle, 
+      ellipse, 
+      square, 
+      menuOutline, 
+      chevronBackOutline, 
+      chevronForwardOutline, 
+      heart, 
+      heartOutline, 
+      chatbubblesOutline, 
+      personCircleOutline 
+    });
+
+    this.currentUrl = this.router.url;
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.currentUrl = event.urlAfterRedirects || event.url;
+      this.cdr.markForCheck();
+    });
   }
 
   @HostListener('window:resize')
@@ -42,4 +73,9 @@ export class TabsPage {
     this.sidebarExpanded = !this.sidebarExpanded;
     this.cdr.markForCheck();
   }
+
+  public isActive(tab: string): boolean {
+    return this.currentUrl.includes('/tabs/' + tab);
+  }
 }
+
