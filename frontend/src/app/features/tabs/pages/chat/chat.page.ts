@@ -87,6 +87,7 @@ export class ChatPage {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private recognition: any = null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private speechTimeout: any = null;
 
   public readonly suggestionChips = [
@@ -153,7 +154,12 @@ export class ChatPage {
         this.clearSpeechTimeout();
         this.speechTimeout = setTimeout(() => {
           if (this.isRecording()) {
-            this.recognition.stop();
+            try {
+              this.recognition.stop();
+            } catch (e) {
+              // eslint-disable-next-line no-console
+              console.error('Speech recognition stop error in safety timeout:', e);
+            }
           }
         }, 4000);
       };
@@ -168,7 +174,12 @@ export class ChatPage {
         this.clearSpeechTimeout();
         this.speechTimeout = setTimeout(() => {
           if (this.isRecording()) {
-            this.recognition.stop();
+            try {
+              this.recognition.stop();
+            } catch (e) {
+              // eslint-disable-next-line no-console
+              console.error('Speech recognition stop error in speechend timeout:', e);
+            }
           }
         }, 2000);
       };
@@ -240,11 +251,19 @@ export class ChatPage {
     if (this.isRecording()) {
       this.clearSpeechTimeout();
       this.isRecording.set(false);
-      this.recognition.stop();
+      try {
+        this.recognition.stop();
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Error stopping speech recognition:', e);
+      }
     } else {
       try {
+        this.isRecording.set(true);
         this.recognition.start();
-      } catch {
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error('Error starting speech recognition:', e);
         this.isRecording.set(false);
       }
     }
