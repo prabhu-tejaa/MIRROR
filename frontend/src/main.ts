@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, inject } from '@angular/core';
+import { APP_INITIALIZER, inject, isDevMode } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
@@ -11,6 +11,24 @@ import { TranslationService } from './app/core/services/translation.service';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
+import { environment } from './environments/environment'; // Ensure this path matches your project structure
+
+// Run the console configuration before bootstrapping the app
+if (environment.production) {
+  console.clear();
+
+  const titleStyles = 'color: red; font-size: 40px; font-weight: bold; -webkit-text-stroke: 1px black;';
+  const textStyles = 'color: #333; font-size: 16px; font-weight: bold;';
+
+  console.log('%cSecurity Warning!', titleStyles);
+  console.log(
+    '%cThis area is reserved for authorized developers only. Executing unauthorized commands here violates security policies and can compromise your data security.',
+    textStyles
+  );
+
+  // Disable subsequent standard logs so user logs are hidden
+  window.console.log = () => {};
+}
 
 bootstrapApplication(AppComponent, {
   providers: [
