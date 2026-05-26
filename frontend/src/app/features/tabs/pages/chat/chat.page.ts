@@ -67,7 +67,6 @@ export class ChatPage {
     localStorage.setItem('mirror_guest_chat_count', (current + 1).toString());
   }
 
-  // Styles can be 'cyberpunk' | 'aurora'
   public readonly activeStyle = signal<'cyberpunk' | 'aurora'>('aurora');
   public readonly chatInput = signal<string>('');
   public readonly isRecording = signal<boolean>(false);
@@ -240,13 +239,12 @@ export class ChatPage {
 
     if (this.isRecording()) {
       this.clearSpeechTimeout();
-      this.isRecording.set(false); // Instant UI feedback to turn off the glowing mic icon!
-      this.recognition.stop(); // Stop listening and trigger processing of spoken text
+      this.isRecording.set(false);
+      this.recognition.stop();
     } else {
       try {
         this.recognition.start();
       } catch {
-        // Fallback in case of quick start/stop errors
         this.isRecording.set(false);
       }
     }
@@ -324,7 +322,10 @@ export class ChatPage {
 
     this.messages.update(prev => [...prev, userMsg]);
     this.chatInput.set('');
-    this.focusInput();
+    
+    if (this.textInput?.nativeElement) {
+      this.textInput.nativeElement.blur();
+    }
 
     // Trigger AI response simulation
     this.simulateMirrorResponse(text);
@@ -358,7 +359,6 @@ export class ChatPage {
 
       this.messages.update(prev => [...prev, mirrorReply]);
       this.isWaitingForResponse.set(false);
-      this.focusInput();
     }, 1500 + Math.random() * 1000);
   }
 

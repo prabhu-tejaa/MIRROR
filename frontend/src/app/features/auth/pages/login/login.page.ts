@@ -42,6 +42,9 @@ export class LoginPage implements OnInit {
   public readonly eyeOff = eyeOff;
   public readonly alertCircleOutline = alertCircleOutline;
 
+  public showHeartUsername: boolean = false;
+  public username: string = '';
+
   constructor() {
     addIcons({ eye, eyeOff, alertCircleOutline });
   }
@@ -61,6 +64,8 @@ export class LoginPage implements OnInit {
     this.isLoading = false;
     this.isSubmitted = false;
     this.errorMessage = '';
+    this.showHeartUsername = false;
+    this.username = '';
     this.loginForm.reset();
     this.cdr.markForCheck();
   }
@@ -116,8 +121,10 @@ export class LoginPage implements OnInit {
       const { email, password } = this.loginForm.value;
 
       this.loginSub = this.authSvc.loginUser({ email, password }).subscribe({
-        next: () => {
+        next: (res) => {
           this.analyticsSvc.setUserId(email);
+          this.username = res.username || this.authSvc.getUserId() || '';
+          this.showHeartUsername = true;
           this.cdr.markForCheck();
 
           const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
@@ -137,6 +144,7 @@ export class LoginPage implements OnInit {
           setTimeout(() => {
             this.starfieldSvc.setShape('none');
             this.isLoading = false;
+            this.showHeartUsername = false;
             this.cdr.markForCheck();
             this.navCtrl.navigateRoot('/tabs/chat', {
               animation: this.getCrossfadeAnimation()
