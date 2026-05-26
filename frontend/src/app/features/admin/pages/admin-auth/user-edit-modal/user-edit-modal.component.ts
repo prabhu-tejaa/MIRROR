@@ -1,7 +1,17 @@
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
+import { 
+  IonHeader, 
+  IonToolbar, 
+  IonTitle, 
+  IonButtons, 
+  IonButton, 
+  IonIcon, 
+  IonContent, 
+  IonToggle 
+} from '@ionic/angular/standalone';
 import { AdminAuthService } from '../../../../../core/services/admin-auth.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { AdminUserResponse, AdminUserUpdateRequest } from '../../../../../core/models/auth.model';
@@ -14,7 +24,18 @@ import { closeOutline, personOutline, mailOutline, shieldOutline, keyOutline } f
   templateUrl: './user-edit-modal.component.html',
   styleUrls: ['./user-edit-modal.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [
+    CommonModule, 
+    FormsModule,
+    IonHeader, 
+    IonToolbar, 
+    IonTitle, 
+    IonButtons, 
+    IonButton, 
+    IonIcon, 
+    IonContent, 
+    IonToggle
+  ]
 })
 export class UserEditModalComponent implements OnInit {
   @Input() public user!: AdminUserResponse;

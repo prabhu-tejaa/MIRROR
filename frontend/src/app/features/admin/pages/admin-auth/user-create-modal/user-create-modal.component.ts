@@ -1,7 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
+import { 
+  IonHeader, 
+  IonToolbar, 
+  IonTitle, 
+  IonButtons, 
+  IonButton, 
+  IonIcon, 
+  IonContent 
+} from '@ionic/angular/standalone';
 import { AdminAuthService } from '../../../../../core/services/admin-auth.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { AdminCreateUserRequest } from '../../../../../core/models/auth.model';
@@ -14,7 +23,17 @@ import { closeOutline, personOutline, mailOutline, shieldOutline, keyOutline, pe
   templateUrl: './user-create-modal.component.html',
   styleUrls: ['./user-create-modal.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [
+    CommonModule, 
+    FormsModule,
+    IonHeader, 
+    IonToolbar, 
+    IonTitle, 
+    IonButtons, 
+    IonButton, 
+    IonIcon, 
+    IonContent
+  ]
 })
 export class UserCreateModalComponent {
   private modalCtrl = inject(ModalController);
