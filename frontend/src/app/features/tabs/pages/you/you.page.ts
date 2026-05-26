@@ -5,7 +5,6 @@ import {
   IonLabel 
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
-import { ExploreContainerComponent } from '../../../../explore-container/explore-container.component';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 
 import { StarfieldService, ShapeType } from '../../../../shared/starfield/starfield.service';
@@ -24,7 +23,6 @@ import { HasRoleDirective } from '../../../../shared/directives/has-role.directi
     IonContent, 
     IonIcon,
     IonLabel,
-    ExploreContainerComponent,
     TranslatePipe,
     HasRoleDirective
   ],

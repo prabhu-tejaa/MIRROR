@@ -38,8 +38,12 @@ export class PresenceService {
     });
   }
 
+  private isFirebaseConfigured(): boolean {
+    return !!(environment.firebaseConfig && environment.firebaseConfig.projectId && environment.firebaseConfig.databaseURL);
+  }
+
   private initFirebase() {
-    if (environment.mock) {
+    if (environment.mock || !this.isFirebaseConfigured()) {
       return;
     }
     
