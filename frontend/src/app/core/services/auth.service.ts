@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Router, NavigationStart } from '@angular/router';
+import { Observable, tap, filter } from 'rxjs';
 import { RegisterRequest, LoginRequest, AuthResponse } from '../models/auth.model';
 import { ApiService } from './api.service';
 import { TranslationService } from './translation.service';
@@ -25,6 +25,7 @@ export class AuthService {
 
   constructor() {
     this.setupStorageListener();
+    this.setupVisibilityAndRouteListeners();
     this.startSessionValidationTimer();
   }
 
@@ -45,11 +46,31 @@ export class AuthService {
     });
   }
 
+  private setupVisibilityAndRouteListeners(): void {
+    // 1. Immediately validate session when app gains focus or phone is unlocked (visibility change)
+    window.addEventListener('focus', () => {
+      this.checkSessionValidity();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        this.checkSessionValidity();
+      }
+    });
+
+    // 2. Immediately validate session on navigation start (intercept screen changes)
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationStart)
+    ).subscribe(() => {
+      this.checkSessionValidity();
+    });
+  }
+
   private startSessionValidationTimer(): void {
-    // Validate session every 8 seconds
+    // Validate session every 4 seconds
     setInterval(() => {
       this.checkSessionValidity();
-    }, 8000);
+    }, 4000);
   }
 
   private checkSessionValidity(): void {

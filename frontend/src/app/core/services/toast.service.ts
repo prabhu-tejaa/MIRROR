@@ -37,6 +37,7 @@ export class ToastService {
       position: 'top',
       icon: 'alert-circle-outline',
       cssClass: 'premium-toast error-toast',
+      animated: false,
       buttons: [
         {
           text: '✕',
@@ -64,6 +65,7 @@ export class ToastService {
       position: 'top',
       icon: 'checkmark-circle-outline',
       cssClass: 'premium-toast success-toast',
+      animated: false,
       buttons: [
         {
           text: '✕',
@@ -91,6 +93,7 @@ export class ToastService {
       position: 'top',
       icon: 'information-circle-outline',
       cssClass: 'premium-toast info-toast',
+      animated: false,
       buttons: [
         {
           text: '✕',

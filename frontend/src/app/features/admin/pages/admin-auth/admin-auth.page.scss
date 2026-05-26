@@ -142,7 +142,8 @@ ion-toolbar {
   color: rgba(255, 255, 255, 0.6);
   
   ion-spinner {
-    --color: #8b5cf6;
+    color: #ffffff !important;
+    --color: #ffffff !important;
     width: 48px;
     height: 48px;
     margin-bottom: 16px;
@@ -538,7 +539,8 @@ ion-toolbar {
 }
 
 .card-spinner {
-  --color: #8b5cf6;
+  color: #ffffff !important;
+  --color: #ffffff !important;
   width: 22px;
   height: 22px;
   margin: 0;

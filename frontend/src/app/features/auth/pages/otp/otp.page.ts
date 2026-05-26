@@ -319,9 +319,6 @@ export class OtpPage implements OnInit, OnDestroy {
       if (this.flowContext === 'reset') {
         this.authSvc.verifyForgotPasswordOtp(this.email, code).subscribe({
           next: () => {
-            this.isLoading = false;
-            this.cdr.markForCheck();
-
             const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
             const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
             if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
@@ -341,15 +338,14 @@ export class OtpPage implements OnInit, OnDestroy {
       } else {
         this.authSvc.verifyOtp(this.email, code).subscribe({
           next: () => {
-            this.isLoading = false;
-            this.cdr.markForCheck();
-
             const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
             const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
             if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
             if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
 
             setTimeout(() => {
+              this.isLoading = false;
+              this.cdr.markForCheck();
               this.navCtrl.navigateRoot('/login', {
                 animation: this.getCrossfadeAnimation()
               });

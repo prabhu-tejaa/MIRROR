@@ -126,8 +126,15 @@
           type="submit" 
           class="save-btn" 
           [disabled]="isSubmitting || !userForm.valid">
-          <ion-spinner name="crescent" *ngIf="isSubmitting" slot="start"></ion-spinner>
-          Save Changes
+          @if (!isSubmitting) {
+            <span>Save Changes</span>
+          } @else {
+            <div class="loading-dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+          }
         </ion-button>
       </div>
     </form>

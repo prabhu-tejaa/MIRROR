@@ -21,7 +21,7 @@
     "ERROR_REQUIRED": "Verification code required",
     "ERROR_PATTERN": "Must be a 6-digit number",
     "BUTTON_VERIFY_RESET": "Verify & Reset",
-    "BUTTON_VERIFY_ENTER": "Verify & Enter",
+    "BUTTON_VERIFY_ENTER": "Verify",
     "DIDNT_RECEIVE": "Didn't receive the code? ",
     "RESEND_IN": "Resend in {{resendTimer}}",
     "RESEND": "Resend",
