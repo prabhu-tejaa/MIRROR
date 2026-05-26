@@ -8,4 +8,5 @@ import java.util.UUID;
 
 public interface OtpTokenRepository extends JpaRepository<OtpToken, UUID> {
     Optional<OtpToken> findTopByUserAndUsedFalseOrderByExpiresAtDesc(User user);
+    void deleteByUser(User user);
 }

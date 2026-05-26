@@ -1,7 +1,20 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ModalController } from '@ionic/angular';
+import { 
+  IonHeader, 
+  IonToolbar, 
+  IonButtons, 
+  IonButton, 
+  IonIcon, 
+  IonTitle, 
+  IonContent, 
+  IonSearchbar, 
+  IonSpinner,
+  ModalController,
+  IonSelect,
+  IonSelectOption
+} from '@ionic/angular/standalone';
 import { AdminAuthService } from '../../../../core/services/admin-auth.service';
 import { AdminUserResponse } from '../../../../core/models/auth.model';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -17,7 +30,21 @@ import { arrowBackOutline, refreshOutline, peopleOutline, checkmarkCircleOutline
   templateUrl: './admin-auth.page.html',
   styleUrls: ['./admin-auth.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [
+    CommonModule, 
+    FormsModule,
+    IonHeader, 
+    IonToolbar, 
+    IonButtons, 
+    IonButton, 
+    IonIcon, 
+    IonTitle, 
+    IonContent, 
+    IonSearchbar, 
+    IonSpinner,
+    IonSelect,
+    IonSelectOption
+  ]
 })
 export class AdminAuthPage implements OnInit {
   private location = inject(Location);

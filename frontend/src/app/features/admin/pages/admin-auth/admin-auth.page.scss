@@ -117,42 +117,45 @@ ion-toolbar {
 }
 
 .glass-select {
-  background: rgba(255, 255, 255, 0.06);
+  --background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.05);
+  --color: #ffffff;
   color: #ffffff;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   font-size: 14px;
   font-family: 'Outfit', sans-serif;
   font-weight: 500;
-  padding: 10px 36px 10px 14px;
-  width: 100%;
-  cursor: pointer;
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  /* Custom dropdown arrow */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.5)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
+  
+  /* Shrink to size of text content */
+  width: fit-content !important;
+  max-width: 100%;
+  
+  --padding-start: 16px;
+  --padding-end: 12px;
+  min-height: 40px;
+  height: 40px;
+  background-image: none !important;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.25);
     background-color: rgba(255, 255, 255, 0.09);
+    --background: rgba(255, 255, 255, 0.09);
   }
 
-  &:focus {
-    border-color: rgba(139, 92, 246, 0.5);
-    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
+  &::part(icon) {
+    color: rgba(255, 255, 255, 0.5) !important;
+    font-size: 12px;
+    margin-left: 8px;
   }
 
-  option {
-    background: #1a1a2e;
-    color: #ffffff;
+  &::part(placeholder),
+  &::part(text) {
+    flex: 0 0 auto !important;
   }
 
   @media (min-width: 768px) {
-    width: 180px;
+    width: fit-content !important;
   }
 }
 

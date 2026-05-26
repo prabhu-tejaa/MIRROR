@@ -597,5 +597,8 @@ ion-content::part(scroll) {
   }
 }
 
-
-
+.role-select-popover {
+  --width: 110px !important;
+  --min-width: 110px !important;
+  --max-width: 120px !important;
+}

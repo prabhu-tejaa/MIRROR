@@ -1,7 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ModalController } from '@ionic/angular';
 import { 
   IonHeader, 
   IonToolbar, 
@@ -9,7 +8,8 @@ import {
   IonButtons, 
   IonButton, 
   IonIcon, 
-  IonContent 
+  IonContent,
+  ModalController 
 } from '@ionic/angular/standalone';
 import { AdminAuthService } from '../../../../../core/services/admin-auth.service';
 import { ToastService } from '../../../../../core/services/toast.service';

@@ -88,11 +88,11 @@
         class="glass-searchbar">
       </ion-searchbar>
       
-      <select class="glass-select" [(ngModel)]="roleFilter" (change)="applyFilters()">
-        <option value="ALL">All Roles</option>
-        <option value="USER">User</option>
-        <option value="ADMIN">Admin</option>
-      </select>
+      <ion-select class="glass-select" [(ngModel)]="roleFilter" (ionChange)="applyFilters()" label="" [interface]="'popover'" [interfaceOptions]="{ cssClass: 'role-select-popover' }">
+        <ion-select-option value="ALL">All Roles</ion-select-option>
+        <ion-select-option value="USER">User</ion-select-option>
+        <ion-select-option value="ADMIN">Admin</ion-select-option>
+      </ion-select>
     </div>
 
     <!-- Loading State -->

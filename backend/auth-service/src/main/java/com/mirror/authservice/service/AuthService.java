@@ -6,6 +6,7 @@ import com.mirror.authservice.model.Role;
 import com.mirror.authservice.model.User;
 import com.mirror.authservice.repository.UserRepository;
 import com.mirror.authservice.repository.RefreshTokenRepository;
+import com.mirror.authservice.repository.OtpTokenRepository;
 import com.mirror.authservice.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final OtpTokenRepository otpTokenRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
@@ -215,10 +217,10 @@ public class AuthService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Must delete refresh tokens first — they have a FK to the user.
-        // Users who have logged in at least once will have an active token,
-        // and deleting the user directly causes a DB constraint violation (500).
+        // Must delete refresh tokens & OTP tokens first — they have a FK to the user.
+        // Failing to clear these children violates foreign key constraints and prevents deletion (500).
         refreshTokenRepository.deleteByUser(user);
+        otpTokenRepository.deleteByUser(user);
 
         userRepository.delete(user);
     }
