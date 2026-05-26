@@ -94,11 +94,22 @@ export class SignupPage implements OnInit {
       this.authSvc.signup({ username, email, password }).subscribe({
         next: (_response) => {
           this.analyticsSvc.setUserId(email);
-          this.isLoading = false;
-          this.cdr.markForCheck();
-          this.navCtrl.navigateRoot('/otp', { 
-            queryParams: { flow: 'signup', email: email },
-            animation: this.getCrossfadeAnimation()
+          
+          // Request OTP verification code for the registered user
+          this.authSvc.requestOtp(email).subscribe({
+            next: () => {
+              this.isLoading = false;
+              this.cdr.markForCheck();
+              this.navCtrl.navigateRoot('/otp', { 
+                queryParams: { flow: 'signup', email: email },
+                animation: this.getCrossfadeAnimation()
+              });
+            },
+            error: (err: Error) => {
+              this.isLoading = false;
+              this.errorMessage = err.message || this.translationSvc.translate('SIGNUP.ERROR_DEFAULT');
+              this.cdr.markForCheck();
+            }
           });
         },
         error: (err: Error) => {
