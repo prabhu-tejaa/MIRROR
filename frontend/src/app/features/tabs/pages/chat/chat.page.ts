@@ -24,7 +24,8 @@ import {
   moonOutline,
   happyOutline,
   codeSlashOutline,
-  pulseOutline
+  pulseOutline,
+  stopCircleOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -71,6 +72,8 @@ export class ChatPage {
   public readonly chatInput = signal<string>('');
   public readonly isRecording = signal<boolean>(false);
   public readonly isWaitingForResponse = signal<boolean>(false);
+
+
   public readonly messages = signal<Message[]>([
     {
       id: 'welcome',
@@ -85,6 +88,7 @@ export class ChatPage {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private recognition: any = null;
+  private speechTimeout: any = null;
 
   public readonly suggestionChips = [
     { label: 'Tell a Joke', icon: 'happy-outline', text: 'Tell me a funny, geeky programming joke!' },
@@ -121,10 +125,18 @@ export class ChatPage {
       moonOutline,
       happyOutline,
       codeSlashOutline,
-      pulseOutline
+      pulseOutline,
+      stopCircleOutline
     });
 
     this.initSpeechRecognition();
+  }
+
+  private clearSpeechTimeout() {
+    if (this.speechTimeout) {
+      clearTimeout(this.speechTimeout);
+      this.speechTimeout = null;
+    }
   }
 
   private initSpeechRecognition() {
@@ -138,10 +150,33 @@ export class ChatPage {
 
       this.recognition.onstart = () => {
         this.isRecording.set(true);
+        // Initial safety timeout: stop if they don't say anything for 4 seconds
+        this.clearSpeechTimeout();
+        this.speechTimeout = setTimeout(() => {
+          if (this.isRecording()) {
+            this.recognition.stop();
+          }
+        }, 4000);
+      };
+
+      this.recognition.onspeechstart = () => {
+        // User started speaking! Clear the safety timeout so they aren't cut off
+        this.clearSpeechTimeout();
+      };
+
+      this.recognition.onspeechend = () => {
+        // User stopped speaking! Start a short 2-second fallback timeout to cleanup if the engine hangs
+        this.clearSpeechTimeout();
+        this.speechTimeout = setTimeout(() => {
+          if (this.isRecording()) {
+            this.recognition.stop();
+          }
+        }, 2000);
       };
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.recognition.onresult = (event: any) => {
+        this.clearSpeechTimeout();
         const transcript = event.results[0][0].transcript;
         if (transcript) {
           this.chatInput.update((curr: string) => curr ? `${curr} ${transcript}` : transcript);
@@ -150,12 +185,14 @@ export class ChatPage {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.recognition.onerror = (event: any) => {
+        this.clearSpeechTimeout();
         // eslint-disable-next-line no-console
         console.error('Speech recognition error:', event.error);
         this.isRecording.set(false);
       };
 
       this.recognition.onend = () => {
+        this.clearSpeechTimeout();
         this.isRecording.set(false);
       };
     }
@@ -202,7 +239,9 @@ export class ChatPage {
     }
 
     if (this.isRecording()) {
-      this.recognition.stop();
+      this.clearSpeechTimeout();
+      this.isRecording.set(false); // Instant UI feedback to turn off the glowing mic icon!
+      this.recognition.stop(); // Stop listening and trigger processing of spoken text
     } else {
       try {
         this.recognition.start();

@@ -196,8 +196,10 @@
   }
 
   /* Hide scrollbar for IE, Edge and Firefox */
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .message-wrapper {
@@ -231,8 +233,8 @@
 
     ion-icon {
       transition: transform 1.2s cubic-bezier(0.25, 0.8, 0.25, 1),
-                  color 1.2s cubic-bezier(0.25, 0.8, 0.25, 1),
-                  opacity 1.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        color 1.2s cubic-bezier(0.25, 0.8, 0.25, 1),
+        opacity 1.2s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
   }
 
@@ -300,12 +302,12 @@
 // ----------------------------------------------------
 
 .voice-active-overlay {
-  background: rgba(18, 10, 32, 0.35);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
   border-radius: 20px;
-  padding: 16px 20px;
+  padding: 16px 8px;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -320,7 +322,8 @@
 
     .bar {
       width: 3px;
-      background: rgba(255, 255, 255, 0.85); /* Calm silver/white bars for a clean visual */
+      background: rgba(255, 255, 255, 0.85);
+      /* Calm silver/white bars for a clean visual */
       border-radius: 3px;
       animation: wavePulse 1.2s infinite ease-in-out;
 
@@ -366,14 +369,28 @@
     }
   }
 
+  .voice-status-container {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
   .voice-transcription-status {
     font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 1.2px;
-    color: rgba(255, 255, 255, 0.85); /* Pure, soft white text */
+    color: rgba(255, 255, 255, 0.9);
     margin: 0;
     text-transform: uppercase;
     animation: statusPulse 1.5s infinite ease-in-out;
+  }
+
+  .voice-transcription-substatus {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.45);
+    margin: 0;
   }
 }
 
@@ -432,12 +449,14 @@
     }
 
     &.recording {
-      background: rgba(255, 255, 255, 0.12) !important; /* Frosty translucent neutral white */
+      background: rgba(239, 68, 68, 0.15) !important;
+      /* Frosty translucent warning/recording red */
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border-color: rgba(255, 255, 255, 0.28) !important; /* Sleek, semi-transparent white glass border */
-      color: #ffffff !important;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.12), inset 0 0 8px rgba(255, 255, 255, 0.15);
+      border-color: rgba(239, 68, 68, 0.45) !important;
+      /* Premium red glass border */
+      color: #ff453a !important;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.25), inset 0 0 8px rgba(239, 68, 68, 0.2);
 
       .record-ring {
         position: absolute;
@@ -446,7 +465,8 @@
         right: -4px;
         bottom: -4px;
         border-radius: 50%;
-        border: 2px solid rgba(255, 255, 255, 0.25); /* Gentle glassy white pulsing ring */
+        border: 2px solid rgba(239, 68, 68, 0.4);
+        /* Gentle glassy red pulsing ring */
         opacity: 0;
         animation: recordPulseRing 1.5s infinite ease-out;
       }
@@ -510,70 +530,111 @@
 // ----------------------------------------------------
 .bottom-ambient-glow {
   position: absolute;
-  bottom: -20px;                     /* Hardcoded to user's exact perfect offset */
+  bottom: -100px;
+  /* Mobile loved bottom offset */
   left: 50%;
   transform: translateX(-50%);
-  width: 104%;
-  height: 125px;                     /* Bigger vertical size */
+  width: 160%;
+  /* Mobile loved width */
+  height: 213px;
+  /* Mobile loved height */
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, 
-    rgba(49, 46, 129, 0.45) 0%,      /* Midnight Indigo (Deep calming stability) */
-    rgba(99, 102, 241, 0.28) 35%,     /* Twilight Lavender (Promotes introspective daydreaming/Theta waves) */
-    rgba(71, 85, 105, 0.18) 55%,     /* Calm Slate (Cool, comforting optical anchor) */
-    transparent 76%
-  );
-  filter: blur(28px);               /* Balanced blur for elegant visibility and softness */
+  background: radial-gradient(ellipse at center,
+      rgba(49, 46, 129, 0.45) 0%,
+      /* Midnight Indigo (Deep calming stability) */
+      rgba(99, 102, 241, 0.28) 35%,
+      /* Twilight Lavender (Promotes introspective daydreaming/Theta waves) */
+      rgba(71, 85, 105, 0.18) 55%,
+      /* Calm Slate (Cool, comforting optical anchor) */
+      transparent 76%);
+  filter: blur(28px);
+  /* Balanced blur for elegant visibility and softness */
   pointer-events: none;
   z-index: 1;
-  animation: bottomGlowBreathPrimary 30s infinite linear; /* Extremely slow, meditative color morphing */
-  opacity: 0.90;
+  animation: bottomGlowBreathPrimary 30s infinite linear;
+  /* Extremely slow, meditative color morphing */
+  opacity: 0.90;   
+
+  @media (min-width: 768px) {
+    width: 160%;
+    /* Desktop loved width */
+    height: 211px;
+    /* Desktop loved height */
+    bottom: -100px;
+    /* Desktop loved bottom */
+  }
 }
 
 .bottom-ambient-glow-secondary {
   position: absolute;
-  bottom: -30px;                     /* Hardcoded secondary offset */
+  bottom: -110px;
+  /* Proportional mobile secondary bottom offset */
   left: 50%;
   transform: translateX(-50%);
-  width: 98%;
-  height: 100px;                    /* Bigger vertical size */
+  width: 154%;
+  /* Proportional mobile secondary width */
+  height: 188px;
+  /* Proportional mobile secondary height */
   border-radius: 50%;
-  background: radial-gradient(ellipse at center, 
-    rgba(99, 102, 241, 0.32) 0%,      /* Twilight Lavender */
-    rgba(49, 46, 129, 0.22) 40%,      /* Midnight Indigo */
-    rgba(71, 85, 105, 0.14) 60%,      /* Calm Slate */
-    transparent 82%
-  );
-  filter: blur(34px);               /* Soft cross-fade bleed */
+  background: radial-gradient(ellipse at center,
+      rgba(99, 102, 241, 0.32) 0%,
+      /* Twilight Lavender */
+      rgba(49, 46, 129, 0.22) 40%,
+      /* Midnight Indigo */
+      rgba(71, 85, 105, 0.14) 60%,
+      /* Calm Slate */
+      transparent 82%);
+  filter: blur(34px);
+  /* Soft cross-fade bleed */
   pointer-events: none;
   z-index: 1;
-  animation: bottomGlowBreathSecondary 40s infinite linear; /* Slow, calming cross-fade */
+  animation: bottomGlowBreathSecondary 40s infinite linear;
+  /* Slow, calming cross-fade */
   opacity: 0.80;
+
+  @media (min-width: 768px) {
+    width: 126%;
+    /* Proportional desktop secondary width */
+    height: 186px;
+    /* Proportional desktop secondary height */
+    bottom: -110px;
+    /* Proportional desktop secondary bottom offset */
+  }
 }
 
 @keyframes bottomGlowBreathPrimary {
   0% {
     transform: translateX(-50%);
-    filter: blur(28px) hue-rotate(-40deg); /* Morphs towards deep ocean teal and cyan */
+    filter: blur(28px) hue-rotate(-40deg);
+    /* Morphs towards deep ocean teal and cyan */
   }
+
   50% {
     transform: translateX(-50%);
-    filter: blur(28px) hue-rotate(60deg);  /* Morphs towards twilight purple and amethyst violet */
+    filter: blur(28px) hue-rotate(60deg);
+    /* Morphs towards twilight purple and amethyst violet */
   }
+
   100% {
     transform: translateX(-50%);
-    filter: blur(28px) hue-rotate(-40deg); /* Smoothly returns */
+    filter: blur(28px) hue-rotate(-40deg);
+    /* Smoothly returns */
   }
 }
 
 @keyframes bottomGlowBreathSecondary {
   0% {
     transform: translateX(-50%);
-    filter: blur(34px) hue-rotate(60deg);   /* Offset starts at purple */
+    filter: blur(34px) hue-rotate(60deg);
+    /* Offset starts at purple */
   }
+
   50% {
     transform: translateX(-50%);
-    filter: blur(34px) hue-rotate(-40deg);  /* Cross-fades to teal */
+    filter: blur(34px) hue-rotate(-40deg);
+    /* Cross-fades to teal */
   }
+
   100% {
     transform: translateX(-50%);
     filter: blur(34px) hue-rotate(60deg);
@@ -633,15 +694,19 @@
 
   .message-wrapper.user-message {
     .message-bubble {
-      background: rgba(255, 255, 255, 0.35); /* translucent white only background */
-      backdrop-filter: blur(8px); /* premium glassy blur showing background stars */
+      background: rgba(255, 255, 255, 0.35);
+      /* translucent white only background */
+      backdrop-filter: blur(8px);
+      /* premium glassy blur showing background stars */
       -webkit-backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #000000 !important; /* solid black words for text */
+      color: #000000 !important;
+      /* solid black words for text */
       box-shadow: none;
 
       .msg-time {
-        color: #000000 !important; /* solid black timestamp */
+        color: #000000 !important;
+        /* solid black timestamp */
         opacity: 0.65 !important;
       }
     }
@@ -649,17 +714,21 @@
 
   .entry-capsule {
     background: rgba(11, 7, 24, 0.85);
-    border-color: rgba(255, 255, 255, 0.25); /* white border */
+    border-color: rgba(255, 255, 255, 0.25);
+    /* white border */
     box-shadow: 0 8px 32px rgba(255, 255, 255, 0.04);
 
     &:focus-within {
-      border-color: #ffffff; /* focus white border */
+      border-color: #ffffff;
+      /* focus white border */
       box-shadow: 0 8px 36px rgba(255, 255, 255, 0.12);
     }
 
     .send-btn {
-      background: #ffffff; /* white reply button */
-      color: #0d0b18; /* dark contrast icon */
+      background: #ffffff;
+      /* white reply button */
+      color: #0d0b18;
+      /* dark contrast icon */
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
 
       &:hover:not(.disabled) {
@@ -715,21 +784,26 @@
       border: none !important;
       color: rgba(255, 255, 255, 0.95);
       box-shadow: none !important;
-      padding-left: 0 !important; /* Align text beautifully since there is no bubble edge */
+      padding-left: 0 !important;
+      /* Align text beautifully since there is no bubble edge */
     }
   }
 
   .message-wrapper.user-message {
     .message-bubble {
-      background: rgba(255, 255, 255, 0.35); /* translucent white background */
-      backdrop-filter: blur(8px); /* premium glassy blur showing background stars */
+      background: rgba(255, 255, 255, 0.35);
+      /* translucent white background */
+      backdrop-filter: blur(8px);
+      /* premium glassy blur showing background stars */
       -webkit-backdrop-filter: blur(8px);
       border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #000000 !important; /* solid black words for text */
+      color: #000000 !important;
+      /* solid black words for text */
       box-shadow: none;
 
       .msg-time {
-        color: #000000 !important; /* solid black timestamp */
+        color: #000000 !important;
+        /* solid black timestamp */
         opacity: 0.65 !important;
       }
     }
@@ -737,17 +811,21 @@
 
   .entry-capsule {
     background: rgba(255, 255, 255, 0.03);
-    border-color: rgba(255, 255, 255, 0.25); /* white border */
+    border-color: rgba(255, 255, 255, 0.25);
+    /* white border */
     box-shadow: 0 8px 32px rgba(255, 255, 255, 0.04);
 
     &:focus-within {
-      border-color: #ffffff; /* focus white border */
+      border-color: #ffffff;
+      /* focus white border */
       box-shadow: 0 8px 36px rgba(255, 255, 255, 0.12);
     }
 
     .send-btn {
-      background: #ffffff; /* white reply button */
-      color: #0d0b18; /* dark contrast arrow icon */
+      background: #ffffff;
+      /* white reply button */
+      color: #0d0b18;
+      /* dark contrast arrow icon */
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.25);
 
       &:hover:not(.disabled) {
@@ -887,28 +965,40 @@
   0% {
     transform: rotate(0deg) scale(0.95);
     opacity: 0.35;
-    color: #ffffff; /* starts seamlessly at static white */
+    color: #ffffff;
+    /* starts seamlessly at static white */
   }
+
   20% {
-    color: #c084fc; /* premium soft lavender purple */
+    color: #c084fc;
+    /* premium soft lavender purple */
   }
+
   40% {
-    color: #fda4af; /* premium soft warm rose pink */
+    color: #fda4af;
+    /* premium soft warm rose pink */
   }
+
   50% {
     transform: rotate(180deg) scale(1.06);
     opacity: 0.9;
   }
+
   60% {
-    color: #38bdf8; /* premium soft sky blue */
+    color: #38bdf8;
+    /* premium soft sky blue */
   }
+
   80% {
-    color: #34d399; /* premium soft emerald mint green */
+    color: #34d399;
+    /* premium soft emerald mint green */
   }
+
   100% {
     transform: rotate(360deg) scale(0.95);
     opacity: 0.35;
-    color: #ffffff; /* ends seamlessly back at static white */
+    color: #ffffff;
+    /* ends seamlessly back at static white */
   }
 }
 
