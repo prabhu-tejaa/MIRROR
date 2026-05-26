@@ -11,7 +11,6 @@ describe('ResetPasswordPage', () => {
   let component: ResetPasswordPage;
   let fixture: ComponentFixture<ResetPasswordPage>;
 
-  // Create your spy objects
   const navCtrlSpy = jasmine.createSpyObj('NavController', ['navigateRoot']);
   const authSvcSpy = jasmine.createSpyObj('AuthService', ['resetPassword']);
   const translationSvcSpy = jasmine.createSpyObj('TranslationService', ['translate']);
@@ -19,7 +18,7 @@ describe('ResetPasswordPage', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        ResetPasswordPage, // Component is standalone
+        ResetPasswordPage,
         ReactiveFormsModule
       ],
       providers: [
@@ -29,7 +28,6 @@ describe('ResetPasswordPage', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            // This emits the required email param to prevent the early return
             queryParams: of({ email: 'test@example.com' }) 
           }
         }
@@ -41,12 +39,11 @@ describe('ResetPasswordPage', () => {
     fixture = TestBed.createComponent(ResetPasswordPage);
     component = fixture.componentInstance;
     
-    // Triggers constructor and ngOnInit()
     fixture.detectChanges(); 
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
-    expect(component.resetForm).toBeDefined(); // Form should now exist
+    expect(component.resetForm).toBeDefined();
   });
 });
