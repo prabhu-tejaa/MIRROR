@@ -142,3 +142,65 @@
   100% { opacity: 0.6; transform: scale(1); }
 }
 
+.heart-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(4px, 1.5vw, 12px);
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: none;
+  width: auto;
+
+  .letter {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(4.5rem, 13vw, 8.5rem);
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: #ffffff;
+    text-transform: uppercase;
+    text-shadow: 
+      0 0 20px rgba(255, 255, 255, 0.12),
+      0 0 45px rgba(255, 255, 255, 0.05);
+    line-height: 1;
+    user-select: none;
+  }
+
+  .heart-o {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    animation: heartBeatPulse 1.8s infinite ease-in-out;
+
+    ion-icon {
+      font-size: clamp(5.0rem, 14vw, 9.0rem); /* slightly larger for absolute center dominance */
+      color: #ff3366; /* Gorgeous warm crimson rose */
+    }
+  }
+}
+
+@keyframes heartBeatPulse {
+  0% {
+    transform: scale(0.95);
+  }
+  12% {
+    transform: scale(1.24); /* Quick sharp Systole Beat 1 */
+  }
+  24% {
+    transform: scale(1.02); /* Slight relaxation drop */
+  }
+  36% {
+    transform: scale(1.15); /* Secondary Diastole Beat 2 */
+  }
+  50% {
+    transform: scale(0.95); /* Full relaxation / Diastolic Pause */
+  }
+  100% {
+    transform: scale(0.95); /* Resting phase before next lub-dub */
+  }
+}
+
