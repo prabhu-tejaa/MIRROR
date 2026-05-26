@@ -1,46 +1,42 @@
-import { inject } from '@angular/core';
 import { HttpInterceptorFn, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { TranslationService } from '../services/translation.service';
 
 export const mockInterceptor: HttpInterceptorFn = (req, next) => {
-  const translationSvc = inject(TranslationService);
-
   if (!environment.mock) {
     return next(req);
   }
 
   const url = req.url;
 
-  const signupPath = translationSvc.translate('API.SIGNUP');
-  const loginPath = translationSvc.translate('API.LOGIN');
-  const otpRequestPath = translationSvc.translate('API.OTP_REQUEST');
-  const otpVerifyPath = translationSvc.translate('API.OTP_VERIFY');
-  const forgotPasswordRequestPath = translationSvc.translate('API.FORGOT_PASSWORD_REQUEST');
-  const forgotPasswordVerifyPath = translationSvc.translate('API.FORGOT_PASSWORD_VERIFY');
-  const forgotPasswordResetPath = translationSvc.translate('API.FORGOT_PASSWORD_RESET');
-  const refreshPath = translationSvc.translate('API.REFRESH');
-  const logoutPath = translationSvc.translate('API.LOGOUT');
+  const signupPath = '/api/auth/signup';
+  const loginPath = '/api/auth/login';
+  const otpRequestPath = '/api/auth/otp/request';
+  const otpVerifyPath = '/api/auth/otp/verify';
+  const forgotPasswordRequestPath = '/api/auth/forgot-password/request';
+  const forgotPasswordVerifyPath = '/api/auth/forgot-password/verify';
+  const forgotPasswordResetPath = '/api/auth/forgot-password/reset';
+  const refreshPath = '/api/auth/refresh';
+  const logoutPath = '/api/auth/logout';
 
-  const defaultUsername = translationSvc.translate('MOCK_RESPONSES.DEFAULT_USERNAME');
-  const mockAccessToken = translationSvc.translate('MOCK_RESPONSES.ACCESS_TOKEN');
-  const mockRefreshToken = translationSvc.translate('MOCK_RESPONSES.REFRESH_TOKEN');
-  const mockRefreshedAccessToken = translationSvc.translate('MOCK_RESPONSES.REFRESHED_ACCESS_TOKEN');
+  const defaultUsername = 'mockuser';
+  const mockAccessToken = 'mock_jwt_access_token_xyz';
+  const mockRefreshToken = 'mock_refresh_token_abc';
+  const mockRefreshedAccessToken = 'mock_jwt_access_token_xyz_refreshed';
 
-  const triggerErrorEmail = translationSvc.translate('MOCK_RESPONSES.TRIGGER_ERROR_EMAIL');
-  const triggerErrorOtp = translationSvc.translate('MOCK_RESPONSES.TRIGGER_ERROR_OTP');
-  const defaultEmail = translationSvc.translate('MOCK_RESPONSES.DEFAULT_EMAIL');
-  const emailSeparator = translationSvc.translate('MOCK_RESPONSES.EMAIL_SEPARATOR');
-  const statusUnauthorized = translationSvc.translate('MOCK_RESPONSES.STATUS_UNAUTHORIZED');
-  const statusBadRequest = translationSvc.translate('MOCK_RESPONSES.STATUS_BAD_REQUEST');
-  const statusNotFound = translationSvc.translate('MOCK_RESPONSES.STATUS_NOT_FOUND');
-  const errorInvalidCredentials = translationSvc.translate('MOCK_RESPONSES.ERROR_INVALID_CREDENTIALS');
-  const errorEmailExists = translationSvc.translate('MOCK_RESPONSES.ERROR_EMAIL_EXISTS');
-  const errorIncorrectOtp = translationSvc.translate('MOCK_RESPONSES.ERROR_INCORRECT_OTP');
-  const errorEmailNotFound = translationSvc.translate('MOCK_RESPONSES.ERROR_EMAIL_NOT_FOUND');
-  const errorOtpVerificationFailed = translationSvc.translate('MOCK_RESPONSES.ERROR_OTP_VERIFICATION_FAILED');
+  const triggerErrorEmail = 'error@mirror.com';
+  const triggerErrorOtp = '000000';
+  const defaultEmail = 'gdag@hdjs.com';
+  const emailSeparator = '@';
+  const statusUnauthorized = 'Unauthorized';
+  const statusBadRequest = 'Bad Request';
+  const statusNotFound = 'Not Found';
+  const errorInvalidCredentials = 'Invalid email or password. Please try again.';
+  const errorEmailExists = 'An account with this email address already exists.';
+  const errorIncorrectOtp = 'Incorrect verification code. Please request a new one.';
+  const errorEmailNotFound = 'No account registered with this email address.';
+  const errorOtpVerificationFailed = 'Incorrect OTP code. Verification failed.';
 
   if (url.includes(loginPath)) {
     const body = req.body as { email?: string; code?: string } | null;
@@ -73,12 +69,12 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
       })).pipe(delay(800));
     }
 
-    const message = translationSvc.translate('MOCK_RESPONSES.SIGNUP_SUCCESS');
+    const message = 'User registered successfully with ID: mock-123';
     return of(new HttpResponse({ status: 200, body: message })).pipe(delay(500));
   }
 
   if (url.includes(otpRequestPath)) {
-    const message = translationSvc.translate('MOCK_RESPONSES.OTP_REQUEST_SUCCESS');
+    const message = 'OTP sent to your email.';
     return of(new HttpResponse({ status: 200, body: message })).pipe(delay(500));
   }
 
@@ -113,7 +109,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
       })).pipe(delay(800));
     }
 
-    const message = translationSvc.translate('MOCK_RESPONSES.OTP_REQUEST_SUCCESS');
+    const message = 'OTP sent to your email.';
     return of(new HttpResponse({ status: 200, body: message })).pipe(delay(500));
   }
 
@@ -128,12 +124,12 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
       })).pipe(delay(800));
     }
 
-    const message = translationSvc.translate('MOCK_RESPONSES.OTP_VERIFY_SUCCESS');
+    const message = 'OTP verified successfully. You may now reset your password.';
     return of(new HttpResponse({ status: 200, body: message })).pipe(delay(500));
   }
 
   if (url.includes(forgotPasswordResetPath)) {
-    const message = translationSvc.translate('MOCK_RESPONSES.PASSWORD_RESET_SUCCESS');
+    const message = 'Password reset successfully. Please proceed to login.';
     return of(new HttpResponse({ status: 200, body: message })).pipe(delay(500));
   }
 
@@ -148,7 +144,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   if (url.includes(logoutPath)) {
-    const message = translationSvc.translate('MOCK_RESPONSES.LOGOUT_SUCCESS');
+    const message = 'Logged out successfully.';
     return of(new HttpResponse({ status: 200, body: message })).pipe(delay(300));
   }
 

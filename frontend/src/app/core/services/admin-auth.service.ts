@@ -154,7 +154,7 @@ export class AdminAuthService {
   public createUser(request: AdminCreateUserRequest): Observable<AdminUserResponse> {
     if (this.isUsingMockFallback) {
       const newUser: AdminUserResponse = {
-        id: crypto.randomUUID(),
+        id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36),
         username: request.username,
         email: request.email,
         role: request.role,
@@ -175,7 +175,7 @@ export class AdminAuthService {
         /* eslint-enable no-console */
         this.isUsingMockFallback = true;
         const newUser: AdminUserResponse = {
-          id: crypto.randomUUID(),
+          id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36),
           username: request.username,
           email: request.email,
           role: request.role,

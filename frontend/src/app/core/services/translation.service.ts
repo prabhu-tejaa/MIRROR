@@ -12,7 +12,6 @@ export class TranslationService implements OnDestroy {
   private sub?: Subscription;
 
   constructor() {
-    this.loadTranslations(this.currentLang());
   }
 
   public setLanguage(lang: string): void {
@@ -24,7 +23,7 @@ export class TranslationService implements OnDestroy {
 
   public initTranslations(lang: string = 'en'): Promise<boolean> {
     return new Promise((resolve) => {
-      this.http.get<Record<string, string | unknown>>(`/assets/i18n/${lang}.json`)
+      this.http.get<Record<string, string | unknown>>(`assets/i18n/${lang}.json`)
         .subscribe({
           next: (data) => {
             this.translations.set(data);
@@ -42,7 +41,7 @@ export class TranslationService implements OnDestroy {
       this.sub.unsubscribe();
     }
     
-    this.sub = this.http.get<Record<string, string | unknown>>(`/assets/i18n/${lang}.json`)
+    this.sub = this.http.get<Record<string, string | unknown>>(`assets/i18n/${lang}.json`)
       .subscribe({
         next: (data) => this.translations.set(data),
         error: (_err) => {

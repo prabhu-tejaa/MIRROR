@@ -13,13 +13,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       let errorMessage = defaultErrorMessage;
 
-      const typeString = translationSvc.translate('TYPES.STRING');
-      const typeObject = translationSvc.translate('TYPES.OBJECT');
-
       if (error.error) {
-        if (typeof error.error === typeString) {
+        if (typeof error.error === 'string') {
           errorMessage = error.error;
-        } else if (typeof error.error === typeObject && error.error.message) {
+        } else if (typeof error.error === 'object' && error.error.message) {
           errorMessage = error.error.message;
         }
       } else if (error.message) {

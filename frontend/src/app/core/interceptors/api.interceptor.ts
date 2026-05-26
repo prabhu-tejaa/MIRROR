@@ -1,14 +1,11 @@
-import { inject } from '@angular/core';
 import { HttpInterceptorFn } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { TranslationService } from '../services/translation.service';
 
 export const apiInterceptor: HttpInterceptorFn = (req, next) => {
-  const translationSvc = inject(TranslationService);
-  const actualPrefix = translationSvc.translate('CONFIG.API_PREFIX');
+  const actualPrefix = '/api/';
 
   if (req.url.startsWith(actualPrefix)) {
-    const baseUrl = environment.apiUrl || translationSvc.translate('CONFIG.API_URL');
+    const baseUrl = environment.apiUrl || 'http://localhost:8060';
     const apiReq = req.clone({
       url: `${baseUrl}${req.url}`
     });

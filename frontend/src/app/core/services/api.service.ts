@@ -1,25 +1,22 @@
-import { Injectable, inject } from '@angular/core';
-import { TranslationService } from './translation.service';
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private translationSvc = inject(TranslationService);
-
   public get AUTH() {
     return {
-      SIGNUP: this.translationSvc.translate('API.SIGNUP'),
-      LOGIN: this.translationSvc.translate('API.LOGIN'),
-      OTP_REQUEST: this.translationSvc.translate('API.OTP_REQUEST'),
-      OTP_VERIFY: this.translationSvc.translate('API.OTP_VERIFY'),
-      FORGOT_PASSWORD_REQUEST: this.translationSvc.translate('API.FORGOT_PASSWORD_REQUEST'),
-      FORGOT_PASSWORD_VERIFY: this.translationSvc.translate('API.FORGOT_PASSWORD_VERIFY'),
-      FORGOT_PASSWORD_RESET: this.translationSvc.translate('API.FORGOT_PASSWORD_RESET'),
-      REFRESH: this.translationSvc.translate('API.REFRESH'),
-      LOGOUT: this.translationSvc.translate('API.LOGOUT'),
-      ADMIN_USERS: this.translationSvc.translate('API.ADMIN_USERS'),
-      VALIDATE: this.translationSvc.translate('API.VALIDATE')
+      SIGNUP: '/api/auth/signup',
+      LOGIN: '/api/auth/login',
+      OTP_REQUEST: '/api/auth/otp/request',
+      OTP_VERIFY: '/api/auth/otp/verify',
+      FORGOT_PASSWORD_REQUEST: '/api/auth/forgot-password/request',
+      FORGOT_PASSWORD_VERIFY: '/api/auth/forgot-password/verify',
+      FORGOT_PASSWORD_RESET: '/api/auth/forgot-password/reset',
+      REFRESH: '/api/auth/refresh',
+      LOGOUT: '/api/auth/logout',
+      ADMIN_USERS: '/api/auth/admin/users',
+      VALIDATE: '/api/auth/validate'
     } as const;
   }
 }
