@@ -149,7 +149,8 @@
     "FORGOT_PASSWORD_RESET": "/api/auth/forgot-password/reset",
     "REFRESH": "/api/auth/refresh",
     "LOGOUT": "/api/auth/logout",
-    "ADMIN_USERS": "/api/auth/admin/users"
+    "ADMIN_USERS": "/api/auth/admin/users",
+    "VALIDATE": "/api/auth/validate"
   },
   "CONFIG": {
     "API_PREFIX": "/api/",

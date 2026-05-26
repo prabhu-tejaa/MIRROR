@@ -1,15 +1,80 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { RegisterRequest, LoginRequest, AuthResponse } from '../models/auth.model';
 import { ApiService } from './api.service';
 import { TranslationService } from './translation.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
   private apiSvc = inject(ApiService);
   private translationSvc = inject(TranslationService);
+  private router = inject(Router);
+
+  private getSessionInstanceId(): string {
+    let id = sessionStorage.getItem('mirror_session_instance_id');
+    if (!id) {
+      id = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      sessionStorage.setItem('mirror_session_instance_id', id);
+    }
+    return id;
+  }
+
+  constructor() {
+    this.setupStorageListener();
+    this.startSessionValidationTimer();
+  }
+
+  private setupStorageListener(): void {
+    window.addEventListener('storage', (event) => {
+      if (event.key && event.key.startsWith('mirror_active_session_')) {
+        const email = this.getEmail();
+        if (email && event.key === 'mirror_active_session_' + email) {
+          const activeSessionId = event.newValue;
+          if (activeSessionId && activeSessionId !== this.getSessionInstanceId()) {
+            this.logout();
+          }
+        }
+      }
+      if (event.key === this.accessTokenKey && !event.newValue) {
+        this.clearSession();
+      }
+    });
+  }
+
+  private startSessionValidationTimer(): void {
+    // Validate session every 8 seconds
+    setInterval(() => {
+      this.checkSessionValidity();
+    }, 8000);
+  }
+
+  private checkSessionValidity(): void {
+    const email = this.getEmail();
+    if (!email || !this.isAuthenticated()) {
+      return;
+    }
+
+    // 1. Same Browser Tab/Instance check
+    const activeSessionId = localStorage.getItem('mirror_active_session_' + email);
+    if (activeSessionId && activeSessionId !== this.getSessionInstanceId()) {
+      this.logout();
+      return;
+    }
+
+    // 2. Real Backend Endpoint validation (only if not in mock mode)
+    const refreshToken = localStorage.getItem(this.refreshTokenKey);
+    if (!environment.mock && refreshToken) {
+      this.http.post<{ valid: boolean }>(this.apiSvc.AUTH.VALIDATE, { refreshToken }).subscribe({
+        error: () => {
+          this.logout();
+        }
+      });
+    }
+  }
 
   private get accessTokenKey(): string {
     return this.translationSvc.translate('STORAGE.ACCESS_TOKEN');
@@ -81,17 +146,23 @@ export class AuthService {
     localStorage.setItem(this.usernameKey, response.username);
     if (response.email) {
       localStorage.setItem(this.emailKey, response.email);
+      localStorage.setItem('mirror_active_session_' + response.email, this.getSessionInstanceId());
     }
     this.authSignal.set(true);
   }
 
   private clearSession(): void {
+    const email = this.getEmail();
+    if (email) {
+      localStorage.removeItem('mirror_active_session_' + email);
+    }
     localStorage.removeItem(this.accessTokenKey);
     localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem(this.usernameKey);
     localStorage.removeItem(this.emailKey);
     localStorage.removeItem('mirror_guest_chat_count');
     this.authSignal.set(false);
+    this.router.navigate(['/login']);
   }
 
 

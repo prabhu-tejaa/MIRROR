@@ -99,6 +99,9 @@ public class AuthService {
     }
 
     private AuthResponse generateSessionTokens(User user) {
+        // Delete all previous refresh tokens to ensure only one active session exists
+        refreshTokenRepository.deleteByUser(user);
+
         String accessToken = jwtUtil.generateAccessToken(user);
         String randomRefreshToken = UUID.randomUUID().toString();
 
@@ -156,6 +159,13 @@ public class AuthService {
     @Transactional
     public void logout(String refreshTokenStr) {
         refreshTokenRepository.deleteByToken(refreshTokenStr);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isSessionValid(String refreshTokenStr) {
+        return refreshTokenRepository.findByToken(refreshTokenStr)
+                .map(token -> token.getExpiresAt().isAfter(LocalDateTime.now()))
+                .orElse(false);
     }
 
 

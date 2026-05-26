@@ -173,6 +173,23 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/validate")
+    public ResponseEntity<?> validateSession(@RequestBody Map<String, String> request) {
+        try {
+            String refreshToken = request.get("refreshToken");
+            if (refreshToken == null || refreshToken.isEmpty()) {
+                return ResponseEntity.status(401).body(Map.of("valid", false, "message", "Session token missing."));
+            }
+            boolean isValid = authService.isSessionValid(refreshToken);
+            if (isValid) {
+                return ResponseEntity.ok(Map.of("valid", true));
+            }
+            return ResponseEntity.status(401).body(Map.of("valid", false, "message", "Session has been invalidated or logged out."));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(Map.of("valid", false, "message", e.getMessage()));
+        }
+    }
+
     @GetMapping("/keepalive")
     public ResponseEntity<?> keepAlive() {
         try {
