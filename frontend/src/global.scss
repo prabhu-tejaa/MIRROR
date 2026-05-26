@@ -551,6 +551,27 @@ ion-content::part(scroll) {
   100% { background-position: 0% 50%; }
 }
 
+/* ==========================================
+   GLOBAL SPINNER VISIBILITY FIX
+   Ionic dark.system.css can override --color on ion-spinner
+   which makes white spinners invisible on dark backgrounds.
+   Force all admin/loading-state spinners to be white.
+   ========================================== */
+.loading-state ion-spinner,
+.gateway-section-loader ion-spinner,
+.terminal-loader .term-spinner {
+  --color: #ffffff !important;
+  color: #ffffff !important;
+
+  svg circle,
+  svg ellipse,
+  svg line,
+  svg path {
+    stroke: #ffffff !important;
+    fill: none !important;
+  }
+}
+
 .heart-username-overlay {
   position: fixed;
   top: 50%;

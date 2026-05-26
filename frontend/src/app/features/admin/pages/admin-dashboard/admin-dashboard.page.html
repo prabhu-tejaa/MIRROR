@@ -5,10 +5,13 @@
       <ion-icon name="arrow-back-outline"></ion-icon>
     </button>
 
-    <!-- Glowing Live Presence Badge -->
-    <div class="live-presence-pill">
-      <span class="presence-dot"></span>
-      <span class="presence-label">{{ (onlineUsersCount$ | async) ?? 0 }} Online</span>
+    <!-- Right side: PREVIEW label + Live Presence pill inline -->
+    <div class="nav-right-group">
+      <span class="nav-preview-badge">PREVIEW</span>
+      <div class="live-presence-pill">
+        <span class="presence-dot"></span>
+        <span class="presence-label">{{ (onlineUsersCount$ | async) ?? 0 }} Online</span>
+      </div>
     </div>
   </div>
 

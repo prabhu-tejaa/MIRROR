@@ -1,18 +1,17 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router, NavigationEnd } from '@angular/router';
+import { Observable } from 'rxjs';
+import { map, filter, startWith } from 'rxjs/operators';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { StarfieldComponent } from './shared/starfield/starfield.component';
 import { NoInternetComponent } from './shared/no-internet/no-internet.component';
 import { ScrollAssistantComponent } from './shared/scroll-assistant/scroll-assistant.component';
+import { TranslatePipe } from './shared/pipes/translate.pipe';
 import { ConnectionService } from './core/services/connection.service';
 import { AnalyticsService } from './core/services/analytics.service';
 import { HttpCancelService } from './core/services/http-cancel.service';
 import { PresenceService } from './core/services/presence.service';
-import { Router, NavigationEnd } from '@angular/router';
-import { map, filter, startWith } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-
-import { TranslatePipe } from './shared/pipes/translate.pipe';
 
 @Component({
   selector: 'app-root',
@@ -20,8 +19,8 @@ import { TranslatePipe } from './shared/pipes/translate.pipe';
   standalone: true,
   imports: [
     CommonModule,
-    IonApp, 
-    IonRouterOutlet, 
+    IonApp,
+    IonRouterOutlet,
     StarfieldComponent,
     NoInternetComponent,
     ScrollAssistantComponent,
@@ -42,8 +41,8 @@ export class AppComponent {
 
   public showDevBadge$: Observable<boolean> = this.router.events.pipe(
     filter(event => event instanceof NavigationEnd),
-    map(() => !this.router.url.includes('/tabs')),
-    startWith(!window.location.pathname.includes('/tabs'))
+    map(() => !this.router.url.includes('/tabs') && !this.router.url.includes('/admin')),
+    startWith(!window.location.pathname.includes('/tabs') && !window.location.pathname.includes('/admin'))
   );
 
   constructor() {

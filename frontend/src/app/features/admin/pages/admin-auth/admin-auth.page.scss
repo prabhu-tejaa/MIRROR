@@ -116,18 +116,43 @@ ion-toolbar {
   }
 }
 
-.glass-select-item {
-  --background: rgba(255, 255, 255, 0.05) !important;
-  --color: #ffffff !important;
+.glass-select {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 14px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  padding: 10px 36px 10px 14px;
   width: 100%;
-  --padding-start: 12px;
-  --padding-end: 12px;
-  
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  /* Custom dropdown arrow */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.5)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background-color: rgba(255, 255, 255, 0.09);
+  }
+
+  &:focus {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.15);
+  }
+
+  option {
+    background: #1a1a2e;
+    color: #ffffff;
+  }
+
   @media (min-width: 768px) {
-    width: 200px;
+    width: 180px;
   }
 }
 
@@ -147,6 +172,20 @@ ion-toolbar {
     width: 48px;
     height: 48px;
     margin-bottom: 16px;
+
+    /* Force SVG paths/circles to be white regardless of Ionic theme overrides */
+    &::part(ellipse),
+    &::part(circle) {
+      stroke: #ffffff !important;
+    }
+
+    svg circle,
+    svg ellipse,
+    svg line,
+    svg path {
+      stroke: #ffffff !important;
+      fill: none !important;
+    }
   }
 
   .empty-icon {

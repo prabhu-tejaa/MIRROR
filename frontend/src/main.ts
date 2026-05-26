@@ -1,4 +1,4 @@
-import { APP_INITIALIZER, inject, isDevMode } from '@angular/core';
+import { APP_INITIALIZER, inject } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
@@ -11,10 +11,35 @@ import { TranslationService } from './app/core/services/translation.service';
 
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { environment } from './environments/environment'; // Ensure this path matches your project structure
+import { environment } from './environments/environment';
+
+// Pre-register all icons used globally across admin + app views
+// This prevents Ionicons 'could not load icon' warnings in production builds
+// where components may render before their constructor addIcons() call resolves
+import { addIcons } from 'ionicons';
+import {
+  lockClosedOutline, arrowBackOutline, refreshOutline, peopleOutline,
+  checkmarkCircleOutline, warningOutline, createOutline, trashOutline,
+  keyOutline, personAddOutline, shieldCheckmarkOutline, peopleCircleOutline,
+  serverOutline, pulseOutline, gitNetworkOutline, banOutline, shieldOutline,
+  terminalOutline, closeOutline, personOutline, mailOutline,
+  eyeOutline, eyeOffOutline, homeOutline, chatbubbleEllipsesOutline,
+  logOutOutline, settingsOutline, heartOutline, micOutline, sendOutline
+} from 'ionicons/icons';
+
+addIcons({
+  lockClosedOutline, arrowBackOutline, refreshOutline, peopleOutline,
+  checkmarkCircleOutline, warningOutline, createOutline, trashOutline,
+  keyOutline, personAddOutline, shieldCheckmarkOutline, peopleCircleOutline,
+  serverOutline, pulseOutline, gitNetworkOutline, banOutline, shieldOutline,
+  terminalOutline, closeOutline, personOutline, mailOutline,
+  eyeOutline, eyeOffOutline, homeOutline, chatbubbleEllipsesOutline,
+  logOutOutline, settingsOutline, heartOutline, micOutline, sendOutline
+});
 
 // Run the console configuration before bootstrapping the app
 if (environment.production) {
+  /* eslint-disable no-console */
   console.clear();
 
   const titleStyles = 'color: red; font-size: 40px; font-weight: bold; -webkit-text-stroke: 1px black;';
@@ -25,6 +50,7 @@ if (environment.production) {
     '%cThis area is reserved for authorized developers only. Executing unauthorized commands here violates security policies and can compromise your data security.',
     textStyles
   );
+  /* eslint-enable no-console */
 
   // Disable subsequent standard logs so user logs are hidden
   window.console.log = () => {};

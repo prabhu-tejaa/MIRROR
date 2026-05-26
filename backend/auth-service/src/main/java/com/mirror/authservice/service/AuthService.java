@@ -212,10 +212,15 @@ public class AuthService {
 
     @Transactional
     public void deleteUser(UUID id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found");
-        }
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Must delete refresh tokens first — they have a FK to the user.
+        // Users who have logged in at least once will have an active token,
+        // and deleting the user directly causes a DB constraint violation (500).
+        refreshTokenRepository.deleteByUser(user);
+
+        userRepository.delete(user);
     }
 
     private com.mirror.authservice.dto.UserResponse mapToUserResponse(User user) {

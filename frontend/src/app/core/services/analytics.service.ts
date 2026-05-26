@@ -31,7 +31,10 @@ export class AnalyticsService {
       return false;
     }
     if (Capacitor.getPlatform() === 'web') {
-      return !!(environment.firebaseConfig && environment.firebaseConfig.projectId);
+      return !!(environment.firebaseConfig
+        && environment.firebaseConfig.projectId
+        && environment.firebaseConfig.apiKey
+        && environment.firebaseConfig.databaseURL);
     }
     return true;
   }

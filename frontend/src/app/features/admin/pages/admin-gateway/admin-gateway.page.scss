@@ -765,10 +765,19 @@ ion-toolbar {
 
 .card-spinner {
   --color: #8b5cf6;
+  color: #8b5cf6;
   width: 22px;
   height: 22px;
   margin: 0;
   display: block;
+
+  svg circle,
+  svg ellipse,
+  svg line,
+  svg path {
+    stroke: #8b5cf6 !important;
+    fill: none !important;
+  }
 }
 
 .gateway-section-loader {
@@ -784,8 +793,17 @@ ion-toolbar {
   
   ion-spinner {
     --color: #8b5cf6;
+    color: #8b5cf6;
     width: 24px;
     height: 24px;
+
+    svg circle,
+    svg ellipse,
+    svg line,
+    svg path {
+      stroke: #8b5cf6 !important;
+      fill: none !important;
+    }
   }
 }
 
@@ -800,8 +818,17 @@ ion-toolbar {
   
   .term-spinner {
     --color: #34d399;
+    color: #34d399;
     width: 20px;
     height: 20px;
+
+    svg circle,
+    svg ellipse,
+    svg line,
+    svg path {
+      stroke: #34d399 !important;
+      fill: none !important;
+    }
   }
   
   .term-text {
