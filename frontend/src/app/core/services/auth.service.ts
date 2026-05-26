@@ -47,7 +47,6 @@ export class AuthService {
   }
 
   private setupVisibilityAndRouteListeners(): void {
-    // 1. Immediately validate session when app gains focus or phone is unlocked (visibility change)
     window.addEventListener('focus', () => {
       this.checkSessionValidity();
     });
@@ -58,7 +57,6 @@ export class AuthService {
       }
     });
 
-    // 2. Immediately validate session on navigation start (intercept screen changes)
     this.router.events.pipe(
       filter(event => event instanceof NavigationStart)
     ).subscribe(() => {
@@ -67,7 +65,6 @@ export class AuthService {
   }
 
   private startSessionValidationTimer(): void {
-    // Validate session every 4 seconds
     setInterval(() => {
       this.checkSessionValidity();
     }, 4000);
@@ -79,14 +76,12 @@ export class AuthService {
       return;
     }
 
-    // 1. Same Browser Tab/Instance check
     const activeSessionId = localStorage.getItem('mirror_active_session_' + email);
     if (activeSessionId && activeSessionId !== this.getSessionInstanceId()) {
       this.logout();
       return;
     }
 
-    // 2. Real Backend Endpoint validation (only if not in mock mode)
     const refreshToken = localStorage.getItem(this.refreshTokenKey);
     if (!environment.mock && refreshToken) {
       this.http.post<{ valid: boolean }>(this.apiSvc.AUTH.VALIDATE, { refreshToken }).subscribe({

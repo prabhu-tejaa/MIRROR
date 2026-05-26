@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, no-console */
 import { Component, ChangeDetectionStrategy, signal, computed, inject, ViewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -85,9 +86,7 @@ export class ChatPage {
   @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLInputElement>;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private recognition: any = null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private speechTimeout: any = null;
 
   public readonly suggestionChips = [
@@ -99,7 +98,6 @@ export class ChatPage {
 
   constructor() {
     effect(() => {
-      // Trigger effect when messages signal changes
       const msgs = this.messages();
       if (msgs.length > 0) {
         setTimeout(() => this.scrollToBottom(), 100);
@@ -140,7 +138,6 @@ export class ChatPage {
   }
 
   private initSpeechRecognition() {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognitionCtor) {
       this.recognition = new SpeechRecognitionCtor();
@@ -150,14 +147,12 @@ export class ChatPage {
 
       this.recognition.onstart = () => {
         this.isRecording.set(true);
-        // Initial safety timeout: stop if they don't say anything for 4 seconds
         this.clearSpeechTimeout();
         this.speechTimeout = setTimeout(() => {
           if (this.isRecording()) {
             try {
               this.recognition.stop();
             } catch (e) {
-              // eslint-disable-next-line no-console
               console.error('Speech recognition stop error in safety timeout:', e);
             }
           }
@@ -165,26 +160,22 @@ export class ChatPage {
       };
 
       this.recognition.onspeechstart = () => {
-        // User started speaking! Clear the safety timeout so they aren't cut off
         this.clearSpeechTimeout();
       };
 
       this.recognition.onspeechend = () => {
-        // User stopped speaking! Start a short 2-second fallback timeout to cleanup if the engine hangs
         this.clearSpeechTimeout();
         this.speechTimeout = setTimeout(() => {
           if (this.isRecording()) {
             try {
               this.recognition.stop();
             } catch (e) {
-              // eslint-disable-next-line no-console
               console.error('Speech recognition stop error in speechend timeout:', e);
             }
           }
         }, 2000);
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.recognition.onresult = (event: any) => {
         this.clearSpeechTimeout();
         const transcript = event.results[0][0].transcript;
@@ -193,10 +184,8 @@ export class ChatPage {
         }
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.recognition.onerror = (event: any) => {
         this.clearSpeechTimeout();
-        // eslint-disable-next-line no-console
         console.error('Speech recognition error:', event.error);
         this.isRecording.set(false);
       };
@@ -232,12 +221,10 @@ export class ChatPage {
 
   public toggleRecording() {
     if (!this.recognition) {
-      // Graceful fallback for browsers without speech recognition support
       if (this.isRecording()) {
         this.isRecording.set(false);
       } else {
         this.isRecording.set(true);
-        // Simulate a voice transcription after 3.5 seconds
         setTimeout(() => {
           if (this.isRecording()) {
             this.chatInput.update(curr => curr ? `${curr} [Simulated premium voice input stream]` : 'Synthesized audio stream captured successfully.');
@@ -254,7 +241,6 @@ export class ChatPage {
       try {
         this.recognition.stop();
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.error('Error stopping speech recognition:', e);
       }
     } else {
@@ -262,7 +248,6 @@ export class ChatPage {
         this.isRecording.set(true);
         this.recognition.start();
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.error('Error starting speech recognition:', e);
         this.isRecording.set(false);
       }
@@ -339,7 +324,6 @@ export class ChatPage {
 
     this.isWaitingForResponse.set(true);
 
-    // Add user message
     const userMsg: Message = {
       id: Math.random().toString(36).substring(7),
       sender: 'user',
@@ -354,7 +338,6 @@ export class ChatPage {
       this.textInput.nativeElement.blur();
     }
 
-    // Trigger AI response simulation
     this.simulateMirrorResponse(text);
   }
 
@@ -368,12 +351,9 @@ export class ChatPage {
       isTyping: true
     };
 
-    // Add typing indicator
     this.messages.update(prev => [...prev, typingMsg]);
 
-    // Delay for realism (typing simulation)
     setTimeout(() => {
-      // Remove typing indicator and add final response
       this.messages.update(prev => prev.filter(m => m.id !== typingId));
 
       const replyText = this.generateAIResponse(prompt);

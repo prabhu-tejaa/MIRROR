@@ -52,7 +52,6 @@ ion-content {
   box-shadow: 0 0 10px rgba(180, 200, 255, 0.3);
 }
 
-/* Ensure Ionic content scrollbars match the premium global web scrollbar styles */
 ion-content::part(scroll) {
   scroll-behavior: smooth !important;
 
@@ -354,7 +353,6 @@ ion-content::part(scroll) {
   --width: 100% !important;
   --max-width: 100% !important;
 
-  /* Dynamic vertical stacking of successive active toasts to prevent overlapping */
   transition: top 0.35s ease-out !important;
 
   @for $i from 1 through 12 {
@@ -368,7 +366,6 @@ ion-content::part(scroll) {
     }
   }
   
-  /* On desktop viewports, position top-right and slide in from the right edge */
   @media (min-width: 768px) {
     position: fixed !important;
     top: 32px !important;
@@ -379,7 +376,6 @@ ion-content::part(scroll) {
     animation: slideInRight 0.4s ease-out forwards !important;
   }
   
-  /* On mobile viewports, position top-right and slide in from the right edge */
   @media (max-width: 767px) {
     position: fixed !important;
     top: 16px !important;
@@ -482,7 +478,6 @@ ion-content::part(scroll) {
   }
 }
 
-/* Premium Solid Black Dialog Box Override */
 .glassy-modal {
   --background: #000000 !important;
   --backdrop-opacity: 0.8 !important;
@@ -502,7 +497,6 @@ ion-content::part(scroll) {
   }
 }
 
-/* Global Text Truncation & Clamp Utilities */
 .text-truncate {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
@@ -523,9 +517,6 @@ ion-content::part(scroll) {
   overflow: hidden !important;
 }
 
-/* ==========================================
-   AESTHETIC HEART USERNAME STYLE (LIQUID CHROME)
-   ========================================== */
 .user-name {
   display: inline-block;
   filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
@@ -551,12 +542,6 @@ ion-content::part(scroll) {
   100% { background-position: 0% 50%; }
 }
 
-/* ==========================================
-   GLOBAL SPINNER VISIBILITY FIX
-   Ionic dark.system.css can override --color on ion-spinner
-   which makes white spinners invisible on dark backgrounds.
-   Force all admin/loading-state spinners to be white.
-   ========================================== */
 .loading-state ion-spinner,
 .gateway-section-loader ion-spinner,
 .terminal-loader .term-spinner {
@@ -613,4 +598,4 @@ ion-content::part(scroll) {
 }
 
 
-
+

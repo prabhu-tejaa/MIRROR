@@ -95,7 +95,6 @@ export class SignupPage implements OnInit {
         next: (_response) => {
           this.analyticsSvc.setUserId(email);
           
-          // Request OTP verification code for the registered user
           this.authSvc.requestOtp(email).subscribe({
             next: () => {
               this.isLoading = false;

@@ -13,30 +13,6 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 
-// Pre-register all icons used globally across admin + app views
-// This prevents Ionicons 'could not load icon' warnings in production builds
-// where components may render before their constructor addIcons() call resolves
-import { addIcons } from 'ionicons';
-import {
-  lockClosedOutline, arrowBackOutline, refreshOutline, peopleOutline,
-  checkmarkCircleOutline, warningOutline, createOutline, trashOutline,
-  keyOutline, personAddOutline, shieldCheckmarkOutline, peopleCircleOutline,
-  serverOutline, pulseOutline, gitNetworkOutline, banOutline, shieldOutline,
-  terminalOutline, closeOutline, personOutline, mailOutline,
-  eyeOutline, eyeOffOutline, homeOutline, chatbubbleEllipsesOutline,
-  logOutOutline, settingsOutline, heartOutline, micOutline, sendOutline
-} from 'ionicons/icons';
-
-addIcons({
-  lockClosedOutline, arrowBackOutline, refreshOutline, peopleOutline,
-  checkmarkCircleOutline, warningOutline, createOutline, trashOutline,
-  keyOutline, personAddOutline, shieldCheckmarkOutline, peopleCircleOutline,
-  serverOutline, pulseOutline, gitNetworkOutline, banOutline, shieldOutline,
-  terminalOutline, closeOutline, personOutline, mailOutline,
-  eyeOutline, eyeOffOutline, homeOutline, chatbubbleEllipsesOutline,
-  logOutOutline, settingsOutline, heartOutline, micOutline, sendOutline
-});
-
 // Run the console configuration before bootstrapping the app
 if (environment.production) {
   /* eslint-disable no-console */

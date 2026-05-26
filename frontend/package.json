@@ -1,8 +1,8 @@
 {
-  "name": "Mirror",
-  "version": "0.0.1",
+  "name": "MIRЯOЯ",
+  "version": "1.0.0",
   "author": "Prabhu Teja Pamula",
-  "homepage": "https://prabhu-tejaa.github.io/portfolio/",
+  "homepage": "https://projectmirror.tech",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -75,5 +75,5 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.9.0"
   },
-  "description": "An Ionic project"
+  "description": "An AI Powered Memory and Emotional Analytics System"
 }
