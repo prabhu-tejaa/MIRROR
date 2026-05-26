@@ -12,6 +12,7 @@ import { addIcons } from 'ionicons';
 import { heart, infinite, star, ellipseOutline, squareOutline, happyOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { HasRoleDirective } from '../../../../shared/directives/has-role.directive';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-you',
@@ -31,8 +32,10 @@ import { HasRoleDirective } from '../../../../shared/directives/has-role.directi
 export class YouPage {
   private cdr = inject(ChangeDetectorRef);
   private starfieldSvc = inject(StarfieldService);
+  private authSvc = inject(AuthService);
 
   public currentShape: ShapeType = 'none';
+  public username = '';
 
   public readonly heart = heart;
   public readonly infinite = infinite;
@@ -43,6 +46,7 @@ export class YouPage {
 
   constructor() {
     addIcons({ heart, infinite, star, ellipseOutline, squareOutline, happyOutline });
+    this.username = this.authSvc.getUserId() || '';
   }
   
   public async setShape(type: ShapeType): Promise<void> {

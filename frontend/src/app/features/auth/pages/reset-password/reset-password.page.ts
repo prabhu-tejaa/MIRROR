@@ -47,6 +47,10 @@ export class ResetPasswordPage implements OnInit {
   }
 
   public ngOnInit(): void {
+    if (!this.email) {
+      this.navCtrl.navigateRoot('/forgot-password');
+      return;
+    }
     this.resetForm = this.fb.group({
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), strictPasswordValidator]]
     });

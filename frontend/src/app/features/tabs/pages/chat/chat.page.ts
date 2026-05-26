@@ -318,6 +318,14 @@ export class ChatPage {
           text: 'Cancel',
           role: 'cancel',
           cssClass: 'alert-cancel-btn'
+        },
+        {
+          text: 'Sign Up',
+          cssClass: 'alert-signup-btn',
+          handler: () => {
+            this.authSvc.logout();
+            this.navCtrl.navigateRoot('/signup', { animated: true });
+          }
         }
       ]
     });

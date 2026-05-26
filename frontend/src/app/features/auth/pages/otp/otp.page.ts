@@ -324,10 +324,14 @@ export class OtpPage implements OnInit, OnDestroy {
             if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
             if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
 
-            this.navCtrl.navigateRoot('/reset-password', {
-              queryParams: { email: this.email, code: code },
-              animation: this.getCrossfadeAnimation()
-            });
+            setTimeout(() => {
+              this.isLoading = false;
+              this.cdr.markForCheck();
+              this.navCtrl.navigateRoot('/reset-password', {
+                queryParams: { email: this.email, code: code },
+                animation: this.getCrossfadeAnimation()
+              });
+            }, 1000);
           },
           error: (err: Error) => {
             this.isLoading = false;

@@ -98,23 +98,23 @@ export class AuthService {
   }
 
   private get accessTokenKey(): string {
-    return this.translationSvc.translate('STORAGE.ACCESS_TOKEN');
+    return 'mirror_access_token';
   }
 
   private get refreshTokenKey(): string {
-    return this.translationSvc.translate('STORAGE.REFRESH_TOKEN');
+    return 'mirror_refresh_token';
   }
 
   private get usernameKey(): string {
-    return this.translationSvc.translate('STORAGE.USERNAME');
+    return 'mirror_username';
   }
 
   private get emailKey(): string {
-    return this.translationSvc.translate('STORAGE.EMAIL');
+    return 'mirror_email';
   }
 
   private readonly authSignal = signal<boolean>(
-    !!localStorage.getItem(this.translationSvc.translate('STORAGE.ACCESS_TOKEN'))
+    !!localStorage.getItem('mirror_access_token')
   );
 
   public readonly isAuthenticated = computed(() => this.authSignal());

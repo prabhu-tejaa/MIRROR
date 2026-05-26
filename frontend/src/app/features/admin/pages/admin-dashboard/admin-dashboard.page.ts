@@ -4,7 +4,7 @@ import { IonicModule, NavController } from '@ionic/angular';
 import { RouterLink } from '@angular/router';
 import { PresenceService } from '../../../../core/services/presence.service';
 import { addIcons } from 'ionicons';
-import { shieldCheckmarkOutline, arrowBackOutline, peopleOutline, peopleCircleOutline, serverOutline, pulseOutline } from 'ionicons/icons';
+import { shieldCheckmarkOutline, arrowBackOutline, peopleOutline, peopleCircleOutline, serverOutline, pulseOutline, lockClosedOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -20,7 +20,7 @@ export class AdminDashboardPage {
   public onlineUsersCount$ = this.presenceService.onlineUsersCount$;
 
   constructor() {
-    addIcons({ shieldCheckmarkOutline, arrowBackOutline, peopleOutline, peopleCircleOutline, serverOutline, pulseOutline });
+    addIcons({ shieldCheckmarkOutline, arrowBackOutline, peopleOutline, peopleCircleOutline, serverOutline, pulseOutline, lockClosedOutline });
   }
 
   public goBack(): void {

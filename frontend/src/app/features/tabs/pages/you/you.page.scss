@@ -170,6 +170,7 @@
   }
 
   .heart-o {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -179,6 +180,24 @@
     ion-icon {
       font-size: clamp(5.0rem, 14vw, 9.0rem); /* slightly larger for absolute center dominance */
       color: #ff3366; /* Gorgeous warm crimson rose */
+    }
+
+    .heart-username {
+      position: absolute;
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(0.75rem, 2vw, 1.25rem);
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      letter-spacing: 1px;
+      pointer-events: none;
+      z-index: 11;
+      text-transform: uppercase;
+      text-align: center;
+      max-width: 80%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
 }
