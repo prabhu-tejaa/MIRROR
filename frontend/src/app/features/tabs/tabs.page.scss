@@ -43,6 +43,15 @@ ion-tab-button {
   }
 }
 
+ion-tab-button[tab="you"] {
+  &.tab-selected {
+    ion-icon {
+      color: #ff4757 !important;
+      filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.55)) !important;
+    }
+  }
+}
+
 /* Toggle button hidden on mobile — only shown in desktop sidebar */
 .sidebar-toggle-btn {
   display: none;
@@ -186,14 +195,48 @@ ion-tab-button {
     margin-bottom: 24px; /* Pull it up from the very bottom edge */
   }
 
-  /* Content area offset */
-  ion-router-outlet {
-    margin-left: 64px;
-    transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Content area offset (removed margin-left so page backgrounds extend full screen behind the sidebar) */
+  ::ng-deep ion-router-outlet {
+    margin-left: 0 !important;
   }
 
-  ion-tab-bar.sidebar-expanded ~ ion-router-outlet {
-    margin-left: 200px;
+  ::ng-deep ion-tabs.sidebar-expanded ion-router-outlet {
+    margin-left: 0 !important;
+  }
+
+  /* Full screen page content padding offsets to keep content clear of the dynamic sidebar */
+  ::ng-deep .chat-wrapper,
+  ::ng-deep .profile-page-inner,
+  ::ng-deep app-explore-container {
+    transition: padding-left 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  @media (min-width: 1024px) {
+    ::ng-deep .chat-wrapper {
+      padding-left: calc(64px + 24px) !important;
+    }
+
+    ::ng-deep ion-tabs.sidebar-expanded .chat-wrapper {
+      padding-left: calc(200px + 24px) !important;
+    }
+
+    ::ng-deep .profile-page-inner {
+      padding-left: 64px !important;
+    }
+
+    ::ng-deep ion-tabs.sidebar-expanded .profile-page-inner {
+      padding-left: 200px !important;
+    }
+
+    ::ng-deep app-explore-container {
+      padding-left: 64px !important;
+      display: block;
+    }
+
+    ::ng-deep ion-tabs.sidebar-expanded app-explore-container {
+      padding-left: 200px !important;
+      display: block;
+    }
   }
 }
 

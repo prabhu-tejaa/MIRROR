@@ -28,9 +28,17 @@ export class TabsPage {
   public readonly chatbubblesOutline = chatbubblesOutline;
   public readonly personCircleOutline = personCircleOutline;
 
-  public sidebarExpanded = window.innerWidth >= 1280;
+  public sidebarExpanded = this.initSidebarState();
   public isDesktop = window.innerWidth >= 1024;
   public currentUrl = '';
+
+  private initSidebarState(): boolean {
+    const savedState = localStorage.getItem('sidebarExpanded');
+    if (savedState !== null) {
+      return savedState === 'true';
+    }
+    return window.innerWidth >= 1280;
+  }
 
   constructor() {
     addIcons({ 
@@ -64,13 +72,14 @@ export class TabsPage {
     this.isDesktop = window.innerWidth >= 1024;
     
     if (window.innerWidth >= 1280 && !wasDesktop) {
-      this.sidebarExpanded = true;
+      this.sidebarExpanded = this.initSidebarState();
     }
     this.cdr.markForCheck();
   }
 
   public toggleSidebar(): void {
     this.sidebarExpanded = !this.sidebarExpanded;
+    localStorage.setItem('sidebarExpanded', String(this.sidebarExpanded));
     this.cdr.markForCheck();
   }
 

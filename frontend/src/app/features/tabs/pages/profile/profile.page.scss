@@ -16,8 +16,8 @@ ion-content {
   height: 100%;
   min-height: 100%;
   width: 100%;
-  max-width: 640px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   box-sizing: border-box;
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
 }
@@ -174,7 +174,7 @@ ion-footer {
 /* ── Tablet: 768px+ — just wider ── */
 @media (min-width: 768px) {
   .profile-page-inner {
-    max-width: 680px;
+    max-width: 100%;
     padding-top: 8px;
   }
 
@@ -203,7 +203,7 @@ ion-footer {
 /* ── Desktop: 1024px+ — wider content, email truncation relaxed ── */
 @media (min-width: 1024px) {
   .profile-page-inner {
-    max-width: 760px;
+    max-width: 100%;
     padding-top: 16px;
   }
 
@@ -240,9 +240,8 @@ ion-footer {
   }
 }
 
-/* ── Large desktop: 1280px+ ── */
 @media (min-width: 1280px) {
   .profile-page-inner {
-    max-width: 860px;
+    max-width: 100%;
   }
 }
