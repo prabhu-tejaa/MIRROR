@@ -1,7 +1,16 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { 
+  IonHeader, 
+  IonToolbar, 
+  IonButtons, 
+  IonButton, 
+  IonIcon, 
+  IonTitle, 
+  IonContent, 
+  IonSpinner 
+} from '@ionic/angular/standalone';
 import { ToastService } from '../../../../core/services/toast.service';
 import { forkJoin } from 'rxjs';
 import { 
@@ -32,7 +41,18 @@ import {
   templateUrl: './admin-gateway.page.html',
   styleUrls: ['./admin-gateway.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [
+    CommonModule, 
+    FormsModule,
+    IonHeader, 
+    IonToolbar, 
+    IonButtons, 
+    IonButton, 
+    IonIcon, 
+    IonTitle, 
+    IonContent, 
+    IonSpinner
+  ]
 })
 export class AdminGatewayPage implements OnInit, OnDestroy {
   private location = inject(Location);
