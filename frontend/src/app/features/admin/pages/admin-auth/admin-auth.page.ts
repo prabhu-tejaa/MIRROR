@@ -2,12 +2,8 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
-  IonHeader, 
-  IonToolbar, 
-  IonButtons, 
   IonButton, 
   IonIcon, 
-  IonTitle, 
   IonContent, 
   IonSearchbar, 
   IonSpinner,
@@ -33,12 +29,8 @@ import { arrowBackOutline, refreshOutline, peopleOutline, checkmarkCircleOutline
   imports: [
     CommonModule, 
     FormsModule,
-    IonHeader, 
-    IonToolbar, 
-    IonButtons, 
     IonButton, 
     IonIcon, 
-    IonTitle, 
     IonContent, 
     IonSearchbar, 
     IonSpinner,

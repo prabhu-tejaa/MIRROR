@@ -195,8 +195,8 @@ public class TelemetryService {
             URL url = new URI(urlStr).toURL();
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-            conn.setConnectTimeout(600);
-            conn.setReadTimeout(600);
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(5000);
             int response = conn.getResponseCode();
             return response >= 200 && response < 400;
         } catch (Exception e) {

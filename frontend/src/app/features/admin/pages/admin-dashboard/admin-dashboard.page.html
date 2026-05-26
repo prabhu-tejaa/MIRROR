@@ -5,20 +5,20 @@
       <ion-icon name="arrow-back-outline"></ion-icon>
     </button>
 
-    <!-- Right side: PREVIEW label + Live Presence pill inline -->
-    <div class="nav-right-group">
-      <span class="nav-preview-badge">PREVIEW</span>
-      <div class="live-presence-pill">
+    <!-- Right side: Live Presence pill inline (no PREVIEW badge) -->
+    <div class="nav-right-group" *ngIf="{ count: (onlineUsersCount$ | async) ?? 0 } as state">
+      <div class="live-presence-pill" [class.offline]="state.count === 0">
         <span class="presence-dot"></span>
-        <span class="presence-label">{{ (onlineUsersCount$ | async) ?? 0 }} Online</span>
+        <span class="presence-label">{{ state.count }} Online</span>
       </div>
     </div>
+
   </div>
 
   <div class="dashboard-layout-container">
     <!-- Service Flows Grid -->
     <div class="services-grid">
-      
+
       <!-- API Gateway Card
       <div class="service-card active" routerLink="/admin/api-gateway">
         <div class="card-top">
@@ -40,21 +40,13 @@
 
       <!-- Auth Service Card -->
       <div class="service-card active" (click)="navigateTo('/admin/auth-service')">
-        <div class="card-top">
-          <div class="icon-box">
-            <ion-icon name="people-circle-outline"></ion-icon>
+        <div class="card-header-row">
+          <div class="card-title-group">
+
+            <h3>Auth Service</h3>
           </div>
         </div>
-        
-        <div class="card-body">
-          <h3>Auth Service</h3>
-          <p>Orchestrate user accounts, access roles, security credentials, timeline activities, and account verifications.</p>
-        </div>
-        
-        <div class="card-footer">
-          <span class="action-text">Configure Core</span>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
-        </div>
+
       </div>
 
       <!-- Memory Service Card

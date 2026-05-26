@@ -1,20 +1,19 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-button (click)="goBack()">
-        <ion-icon name="arrow-back-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <ion-title>Auth Service Users</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="loadUsers()">
-        <ion-icon name="refresh-outline"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Custom Space-themed Header matching Dashboard -->
+  <div class="dashboard-nav">
+    <button class="back-circle-btn" (click)="goBack()" title="Back to Dashboard">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+
+    <div class="nav-title-text">Auth Service</div>
+
+    <div class="nav-right-group">
+      <button class="refresh-circle-btn" (click)="loadUsers()" title="Refresh Users">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
   <div class="glass-container">
     <div class="header-section">
       <div class="header-top-row">
@@ -27,7 +26,7 @@
           Add User
         </ion-button>
       </div>
-      <p>Manage user accounts, roles, verification statuses, and credentials.</p>
+      <p>Manage user accounts, roles, verification statuses and credentials.</p>
     </div>
 
     <!-- Telemetry & Analytics Dashboard row -->

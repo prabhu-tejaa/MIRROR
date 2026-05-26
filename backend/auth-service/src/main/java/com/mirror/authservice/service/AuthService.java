@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import com.mirror.authservice.exception.LoginFailureException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -69,10 +70,10 @@ public class AuthService {
 
     public User loginUser(String email, String rawPassword) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Invalid email or password!"));
+                .orElseThrow(() -> new LoginFailureException("Invalid email or password!"));
 
         if (user.getLockedUntil() != null && user.getLockedUntil().isAfter(LocalDateTime.now())) {
-            throw new RuntimeException("Account is locked. Try again later.");
+            throw new LoginFailureException("Account is locked. Try again later.");
         }
 
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
@@ -81,7 +82,7 @@ public class AuthService {
                 user.setLockedUntil(LocalDateTime.now().plusMinutes(15));
             }
             userRepository.save(user);
-            throw new RuntimeException("Invalid email or password!");
+            throw new LoginFailureException("Invalid email or password!");
         }
 
         user.setFailedAttempts(0);
@@ -89,7 +90,7 @@ public class AuthService {
         return userRepository.save(user);
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = LoginFailureException.class)
     public AuthResponse loginUserAndIssueTokens(String email, String rawPassword) {
         User user = loginUser(email, rawPassword);
         return generateSessionTokens(user);

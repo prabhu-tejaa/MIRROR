@@ -41,8 +41,8 @@ export class AppComponent {
 
   public showDevBadge$: Observable<boolean> = this.router.events.pipe(
     filter(event => event instanceof NavigationEnd),
-    map(() => !this.router.url.includes('/tabs') && !this.router.url.includes('/admin')),
-    startWith(!window.location.pathname.includes('/tabs') && !window.location.pathname.includes('/admin'))
+    map(() => !this.router.url.includes('/tabs') && !this.router.url.includes('/admin') && !this.router.url.includes('/status')),
+    startWith(!window.location.pathname.includes('/tabs') && !window.location.pathname.includes('/admin') && !window.location.pathname.includes('/status'))
   );
 
   constructor() {

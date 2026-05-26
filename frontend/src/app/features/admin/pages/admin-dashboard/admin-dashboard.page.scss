@@ -89,6 +89,22 @@ ion-content {
     font-weight: 700;
     letter-spacing: 0.2px;
   }
+
+  &.offline {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    box-shadow: none !important;
+    
+    .presence-dot {
+      background-color: #9ca3af !important;
+      box-shadow: none !important;
+      animation: none !important;
+    }
+    
+    .presence-label {
+      color: #9ca3af !important;
+    }
+  }
 }
 
 /* Right-side nav group: PREVIEW + Online pill on same line */
@@ -146,30 +162,29 @@ ion-content {
 
 /* Grid Layout */
 .services-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  
-  @media (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-  }
+  margin-top: 10vh;
 }
 
 /* Service Card Styling */
 .service-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  padding: 28px;
+  padding: 18px 36px;
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 24px;
+  align-items: center;
+  justify-content: center;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  width: max-content;
+  min-width: 240px;
+
   
   &.active {
     cursor: pointer;
@@ -287,3 +302,80 @@ ion-content {
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 }
+
+/* Custom Inline Card Header and Pure White Styling */
+.card-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  
+  .icon-box {
+    margin: 0;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+  }
+  
+  h3 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: #ffffff !important;
+  }
+}
+
+.configure-action {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  .action-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff !important;
+  }
+  
+  .arrow-icon {
+    font-size: 14px;
+    color: #ffffff !important;
+    transition: transform 0.2s ease;
+  }
+}
+
+.service-card {
+  &.active {
+    .card-body p {
+      color: #ffffff !important;
+      opacity: 0.95;
+    }
+  }
+
+  &:hover {
+    .configure-action {
+      background: #ffffff !important;
+      border-color: #ffffff !important;
+      
+      .action-text {
+        color: #000000 !important;
+      }
+      
+      .arrow-icon {
+        color: #000000 !important;
+        transform: translateX(2px);
+      }
+    }
+  }
+}
+
