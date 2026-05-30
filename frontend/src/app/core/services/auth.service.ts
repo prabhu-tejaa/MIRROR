@@ -67,7 +67,7 @@ export class AuthService {
   private startSessionValidationTimer(): void {
     setInterval(() => {
       this.checkSessionValidity();
-    }, 4000);
+    }, 60000); // Check every 60 seconds instead of 4 seconds to reduce server load
   }
 
   private checkSessionValidity(): void {
@@ -85,8 +85,17 @@ export class AuthService {
     const refreshToken = localStorage.getItem(this.refreshTokenKey);
     if (!environment.mock && refreshToken) {
       this.http.post<{ valid: boolean }>(this.apiSvc.AUTH.VALIDATE, { refreshToken }).subscribe({
-        error: () => {
-          this.logout();
+        next: (res) => {
+          if (res && res.valid === false) {
+            this.logout();
+          }
+        },
+        error: (err) => {
+          // Only log out for explicit auth failures (401/403).
+          // Do NOT log out on transient 5xx server errors, connection timeouts, or offline status
+          if (err && (err.status === 401 || err.status === 403)) {
+            this.logout();
+          }
         }
       });
     }

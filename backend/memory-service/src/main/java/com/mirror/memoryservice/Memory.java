@@ -28,6 +28,9 @@ public class Memory {
     @Column(nullable = false, length = 50)
     private String sender = "user";
 
+    @Column(name = "embedding", columnDefinition = "vector(768)")
+    private String embedding;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
 }

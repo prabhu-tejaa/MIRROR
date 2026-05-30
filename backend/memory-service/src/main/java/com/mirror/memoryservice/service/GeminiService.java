@@ -44,7 +44,7 @@ public class GeminiService {
         }
 
         try {
-            String url = apiUrl + "/models/embedding-001:embedContent?key=" + apiKey;
+            String url = apiUrl + "/models/gemini-embedding-001:embedContent?key=" + apiKey;
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -57,7 +57,7 @@ public class GeminiService {
             content.put("parts", Collections.singletonList(parts));
 
             Map<String, Object> payload = new HashMap<>();
-            payload.put("model", "models/embedding-001");
+            payload.put("model", "models/gemini-embedding-001");
             payload.put("content", content);
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
@@ -78,7 +78,7 @@ public class GeminiService {
                 }
             }
         } catch (Exception e) {
-            log.error("Failed to query Gemini Embeddings API: {}. Falling back to mock embeddings.", e.getMessage());
+            log.error("Failed to query Gemini Embeddings API. Falling back to mock embeddings.", e);
         }
 
         return generateMockEmbedding(text);
@@ -103,7 +103,7 @@ public class GeminiService {
         }
 
         try {
-            String url = apiUrl + "/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+            String url = apiUrl + "/models/gemini-flash-latest:generateContent?key=" + apiKey;
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -166,7 +166,7 @@ public class GeminiService {
                 }
             }
         } catch (Exception e) {
-            log.error("Failed to query Gemini Reflection API: {}. Falling back to mock reflection.", e.getMessage());
+            log.error("Failed to query Gemini Reflection API. Falling back to mock reflection.", e);
         }
 
         return generateMockReflectionAndEmotion(prompt, pastContext);

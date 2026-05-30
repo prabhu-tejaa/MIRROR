@@ -117,13 +117,6 @@ export class ChatPage implements OnDestroy {
   constructor() {
     this.isNative = Capacitor.isNativePlatform();
 
-    effect(() => {
-      const msgs = this.messages();
-      if (msgs.length > 0) {
-        setTimeout(() => this.scrollToBottom(), 100);
-      }
-    });
-
     addIcons({
       micOutline,
       sendOutline,
@@ -239,19 +232,23 @@ export class ChatPage implements OnDestroy {
     }
   }
 
-  private scrollToBottom() {
+  private scrollToBottom(behavior: ScrollBehavior = 'smooth') {
     if (this.streamScroll?.nativeElement) {
       const el = this.streamScroll.nativeElement;
       el.scrollTo({
         top: el.scrollHeight,
-        behavior: 'smooth'
+        behavior
       });
     }
   }
 
   public ionViewDidEnter() {
     this.focusInput();
-    this.loadChatHistory();
+    if (this.isInitialLoad) {
+      this.loadChatHistory();
+    } else {
+      setTimeout(() => this.scrollToBottom('auto'), 50);
+    }
     this.setupScrollListener();
   }
 
@@ -502,6 +499,8 @@ export class ChatPage implements OnDestroy {
       this.textInput.nativeElement.blur();
     }
 
+    setTimeout(() => this.scrollToBottom('smooth'), 50);
+
     this.simulateMirrorResponse(text);
   }
 
@@ -530,11 +529,13 @@ export class ChatPage implements OnDestroy {
         }
         this.isLoadingHistory.set(false);
         this.isInitialLoad = false;
+        setTimeout(() => this.scrollToBottom('auto'), 50);
       },
       error: (err) => {
         console.error('Failed to load chat history from backend:', err);
         this.isLoadingHistory.set(false);
         this.isInitialLoad = false;
+        setTimeout(() => this.scrollToBottom('auto'), 50);
       }
     });
   }
@@ -612,6 +613,7 @@ export class ChatPage implements OnDestroy {
     };
 
     this.messages.update(prev => [...prev, typingMsg]);
+    setTimeout(() => this.scrollToBottom('smooth'), 50);
 
     const email = this.authSvc.getEmail() || 'guest@mirror.com';
     this.http.post<any>(`${environment.apiUrl}/api/memory/reflect`, prompt, {
@@ -633,6 +635,8 @@ export class ChatPage implements OnDestroy {
 
         this.messages.update(prev => [...prev, mirrorReply]);
         this.isWaitingForResponse.set(false);
+        setTimeout(() => this.scrollToBottom('smooth'), 50);
+        this.focusInput();
       },
       error: (err) => {
         console.error('Failed to generate backend reflection:', err);
@@ -649,6 +653,8 @@ export class ChatPage implements OnDestroy {
 
         this.messages.update(prev => [...prev, mirrorReply]);
         this.isWaitingForResponse.set(false);
+        setTimeout(() => this.scrollToBottom('smooth'), 50);
+        this.focusInput();
       }
     });
   }
