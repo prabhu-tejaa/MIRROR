@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.nio.charset.StandardCharsets;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 @Service
 public class GeminiService {
@@ -42,7 +44,7 @@ public class GeminiService {
         }
 
         try {
-            String url = apiUrl + "/models/text-embedding-004:embedContent?key=" + apiKey;
+            String url = apiUrl + "/models/embedding-001:embedContent?key=" + apiKey;
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -55,7 +57,7 @@ public class GeminiService {
             content.put("parts", Collections.singletonList(parts));
 
             Map<String, Object> payload = new HashMap<>();
-            payload.put("model", "models/text-embedding-004");
+            payload.put("model", "models/embedding-001");
             payload.put("content", content);
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
@@ -101,7 +103,7 @@ public class GeminiService {
         }
 
         try {
-            String url = apiUrl + "/models/gemini-1.5-flash:generateContent?key=" + apiKey;
+            String url = apiUrl + "/models/gemini-2.0-flash:generateContent?key=" + apiKey;
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -232,46 +234,52 @@ public class GeminiService {
      * Quick manual parser for simple json objects
      */
     private Map<String, String> parseJsonFields(String json) {
-        Map<String, String> result = new HashMap<>();
         try {
-            // Remove spaces, braces, and line breaks for simple parsing
-            String clean = json.replace("\n", "").replace("\r", "").trim();
-            int reflectionIdx = clean.indexOf("\"reflection\"");
-            int emotionIdx = clean.indexOf("\"emotion\"");
-
-            String reflection = "Shared reflections are synced.";
-            String emotion = "NEUTRAL";
-
-            if (reflectionIdx != -1) {
-                int start = clean.indexOf(":", reflectionIdx) + 1;
-                while (start < clean.length() && (clean.charAt(start) == ' ' || clean.charAt(start) == '"')) {
-                    start++;
-                }
-                int end = clean.indexOf("\"", start);
-                if (end != -1) {
-                    reflection = clean.substring(start, end);
-                }
-            }
-
-            if (emotionIdx != -1) {
-                int start = clean.indexOf(":", emotionIdx) + 1;
-                while (start < clean.length() && (clean.charAt(start) == ' ' || clean.charAt(start) == '"')) {
-                    start++;
-                }
-                int end = clean.indexOf("\"", start);
-                if (end != -1) {
-                    emotion = clean.substring(start, end).toUpperCase();
-                }
-            }
-
-            result.put("reflection", reflection);
-            result.put("emotion", emotion);
-            return result;
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(json, new TypeReference<Map<String, String>>(){});
         } catch (Exception parseEx) {
-            log.warn("Manual JSON parse failed for node: {}. Falling back to default tags.", json);
-            result.put("reflection", "Reflecting on your mood companion stream...");
-            result.put("emotion", "NEUTRAL");
-            return result;
+            log.warn("Jackson JSON parsing failed. Falling back to manual parser. Input: {}", json, parseEx);
+            Map<String, String> result = new HashMap<>();
+            try {
+                // Remove spaces, braces, and line breaks for simple parsing
+                String clean = json.replace("\n", "").replace("\r", "").trim();
+                int reflectionIdx = clean.indexOf("\"reflection\"");
+                int emotionIdx = clean.indexOf("\"emotion\"");
+
+                String reflection = "Shared reflections are synced.";
+                String emotion = "NEUTRAL";
+
+                if (reflectionIdx != -1) {
+                    int start = clean.indexOf(":", reflectionIdx) + 1;
+                    while (start < clean.length() && (clean.charAt(start) == ' ' || clean.charAt(start) == '"')) {
+                        start++;
+                    }
+                    int end = clean.indexOf("\"", start);
+                    if (end != -1) {
+                        reflection = clean.substring(start, end);
+                    }
+                }
+
+                if (emotionIdx != -1) {
+                    int start = clean.indexOf(":", emotionIdx) + 1;
+                    while (start < clean.length() && (clean.charAt(start) == ' ' || clean.charAt(start) == '"')) {
+                        start++;
+                    }
+                    int end = clean.indexOf("\"", start);
+                    if (end != -1) {
+                        emotion = clean.substring(start, end).toUpperCase();
+                    }
+                }
+
+                result.put("reflection", reflection);
+                result.put("emotion", emotion);
+                return result;
+            } catch (Exception innerEx) {
+                log.error("Manual fallback parser also failed. Returning default values.", innerEx);
+                result.put("reflection", "Reflecting on your mood companion stream...");
+                result.put("emotion", "NEUTRAL");
+                return result;
+            }
         }
     }
 }
