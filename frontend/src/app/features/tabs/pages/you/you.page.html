@@ -7,37 +7,4 @@
     </span>
   </div>
 
-  <div class="shape-palette-container" *appHasRole="'ADMIN'">
-    <div class="shape-palette">
-      <button class="shape-item" [class.active]="currentShape === 'heart'" (click)="setShape('heart')">
-        <ion-icon [icon]="heart"></ion-icon>
-        <ion-label>{{ 'SHAPES.HEART' | translate }}</ion-label>
-      </button>
-
-      <button class="shape-item" [class.active]="currentShape === 'star'" (click)="setShape('star')">
-        <ion-icon [icon]="star"></ion-icon>
-        <ion-label>{{ 'SHAPES.STAR' | translate }}</ion-label>
-      </button>
-
-      <button class="shape-item" [class.active]="currentShape === 'circle'" (click)="setShape('circle')">
-        <ion-icon [icon]="ellipseOutline"></ion-icon>
-        <ion-label>{{ 'SHAPES.CIRCLE' | translate }}</ion-label>
-      </button>
-
-      <button class="shape-item" [class.active]="currentShape === 'square'" (click)="setShape('square')">
-        <ion-icon [icon]="squareOutline"></ion-icon>
-        <ion-label>{{ 'SHAPES.SQUARE' | translate }}</ion-label>
-      </button>
-
-      <button class="shape-item" [class.active]="currentShape === 'smiley'" (click)="setShape('smiley')">
-        <ion-icon [icon]="happyOutline"></ion-icon>
-        <ion-label>{{ 'SHAPES.SMILEY' | translate }}</ion-label>
-      </button>
-
-      <button class="shape-item scatter" [class.active]="currentShape === 'none'" (click)="setShape('none')">
-        <ion-icon [icon]="infinite"></ion-icon>
-        <ion-label>{{ 'SHAPES.SCATTER' | translate }}</ion-label>
-      </button>
-    </div>
-  </div>
 </ion-content>

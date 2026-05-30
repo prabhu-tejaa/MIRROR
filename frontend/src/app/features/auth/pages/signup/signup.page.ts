@@ -1,12 +1,13 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { NavController, AnimationController, Animation, AnimationBuilder } from '@ionic/angular';
+import { NavController, AnimationController } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff, closeOutline, alertCircleOutline, shieldCheckmarkOutline } from 'ionicons/icons';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
+import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslationService } from '../../../../core/services/translation.service';
@@ -56,30 +57,6 @@ export class SignupPage implements OnInit {
     return this.signupForm.controls; 
   }
 
-  private getCrossfadeAnimation(): AnimationBuilder {
-    return (_baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }): Animation => {
-      const rootTransition = this.animationCtrl.create()
-        .duration(400)
-        .easing('ease-in-out');
-
-      if (opts?.enteringEl) {
-        const enteringAnimation = this.animationCtrl.create()
-          .addElement(opts.enteringEl)
-          .fromTo('opacity', 0, 1);
-        rootTransition.addAnimation(enteringAnimation);
-      }
-
-      if (opts?.leavingEl) {
-        const leavingAnimation = this.animationCtrl.create()
-          .addElement(opts.leavingEl)
-          .fromTo('opacity', 1, 0);
-        rootTransition.addAnimation(leavingAnimation);
-      }
-
-      return rootTransition;
-    };
-  }
-
   public onSignup(): void {
     this.isSubmitted = true;
     this.errorMessage = '';
@@ -101,7 +78,7 @@ export class SignupPage implements OnInit {
               this.cdr.markForCheck();
               this.navCtrl.navigateRoot('/otp', { 
                 queryParams: { flow: 'signup', email: email },
-                animation: this.getCrossfadeAnimation()
+                animation: getCrossfadeAnimation(this.animationCtrl)
               });
             },
             error: (err: Error) => {
@@ -124,7 +101,7 @@ export class SignupPage implements OnInit {
 
   public goToLogin(): void {
     this.navCtrl.navigateBack('/login', { 
-      animation: this.getCrossfadeAnimation() 
+      animation: getCrossfadeAnimation(this.animationCtrl) 
     });
   }
 }

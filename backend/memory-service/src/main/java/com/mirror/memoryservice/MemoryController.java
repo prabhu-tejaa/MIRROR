@@ -1,5 +1,6 @@
 package com.mirror.memoryservice;
 
+import com.mirror.memoryservice.service.MemoryService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -7,29 +8,26 @@ import java.util.List;
 @RequestMapping("/api/memory")
 public class MemoryController {
 
-    private final MemoryRepository repository;
+    private final MemoryService service;
 
-    public MemoryController(MemoryRepository repository) {
-        this.repository = repository;
+    public MemoryController(MemoryService service) {
+        this.service = service;
     }
 
     @PostMapping("/save")
     public String saveRandom(@RequestBody String text) {
-        Memory m = new Memory();
-        m.setContent(text);
-        repository.save(m);
-        return "Memory saved to Postgres!";
+        return service.saveMemory(text);
     }
 
     @GetMapping("/all")
     public List<Memory> getAll() {
-        return repository.findAll();
+        return service.getAllMemories();
     }
 
     @GetMapping("/keepalive")
     public String keepAlive() {
         try {
-            long count = repository.count();
+            long count = service.getMemoryCount();
             return "Memory service is awake. Active records: " + count;
         } catch (Exception e) {
             return "Memory service database error: " + e.getMessage();

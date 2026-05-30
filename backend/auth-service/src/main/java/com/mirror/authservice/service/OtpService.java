@@ -1,5 +1,6 @@
 package com.mirror.authservice.service;
 
+import com.mirror.authservice.exception.UserNotFoundException;
 import com.mirror.authservice.model.OtpToken;
 import com.mirror.authservice.model.User;
 import com.mirror.authservice.repository.OtpTokenRepository;
@@ -18,7 +19,7 @@ public class OtpService {
 
     public String generateOtp(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         String rawCode = String.format("%06d", new Random().nextInt(1000000));
         String hashedCode = DigestUtils.sha256Hex(rawCode);

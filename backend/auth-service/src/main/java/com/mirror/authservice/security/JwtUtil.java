@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -16,7 +17,11 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    private final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final Key SECRET_KEY;
+
+    public JwtUtil(@Value("${app.jwt.secret:dGhpcy1pcy1hLXNlY3VyZS1hbmQtY29uc2lzdGVudC1zZWNyZXQta2V5LWZvci1taXJyb3Itc3lzdGVtLXByb2R1Y3Rpb24=}") String secret) {
+        this.SECRET_KEY = Keys.hmacShaKeyFor(io.jsonwebtoken.io.Decoders.BASE64.decode(secret));
+    }
 
     private final long ACCESS_TOKEN_EXPIRATION = 1000 * 60 * 15;
 

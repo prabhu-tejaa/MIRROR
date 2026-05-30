@@ -2,12 +2,13 @@ import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, Chan
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
-import { NavController, AnimationController, Animation } from '@ionic/angular';
+import { NavController, AnimationController } from '@ionic/angular';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { alertCircleOutline } from 'ionicons/icons';
 import { StarfieldService } from '../../../../shared/starfield/starfield.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslationService } from '../../../../core/services/translation.service';
@@ -281,30 +282,6 @@ export class OtpPage implements OnInit, OnDestroy {
     return this.otpForm.controls;
   }
 
-  private getCrossfadeAnimation(): (baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }) => Animation {
-    return (_baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement, leavingEl?: HTMLElement }): Animation => {
-      const rootTransition = this.animationCtrl.create()
-        .duration(400)
-        .easing('ease-in-out');
-
-      if (opts?.enteringEl) {
-        const enteringAnimation = this.animationCtrl.create()
-          .addElement(opts.enteringEl)
-          .fromTo('opacity', 0, 1);
-        rootTransition.addAnimation(enteringAnimation);
-      }
-
-      if (opts?.leavingEl) {
-        const leavingAnimation = this.animationCtrl.create()
-          .addElement(opts.leavingEl)
-          .fromTo('opacity', 1, 0);
-        rootTransition.addAnimation(leavingAnimation);
-      }
-
-      return rootTransition;
-    };
-  }
-
   public onVerify(): void {
     this.isSubmitted = true;
     this.errorMessage = '';
@@ -329,7 +306,7 @@ export class OtpPage implements OnInit, OnDestroy {
               this.cdr.markForCheck();
               this.navCtrl.navigateRoot('/reset-password', {
                 queryParams: { email: this.email, code: code },
-                animation: this.getCrossfadeAnimation()
+                animation: getCrossfadeAnimation(this.animationCtrl)
               });
             }, 1000);
           },
@@ -351,7 +328,7 @@ export class OtpPage implements OnInit, OnDestroy {
               this.isLoading = false;
               this.cdr.markForCheck();
               this.navCtrl.navigateRoot('/login', {
-                animation: this.getCrossfadeAnimation()
+                animation: getCrossfadeAnimation(this.animationCtrl)
               });
             }, 1000);
           },
@@ -369,7 +346,7 @@ export class OtpPage implements OnInit, OnDestroy {
 
   public goToLogin(): void {
     this.navCtrl.navigateRoot('/login', {
-      animation: this.getCrossfadeAnimation()
+      animation: getCrossfadeAnimation(this.animationCtrl)
     });
   }
 }

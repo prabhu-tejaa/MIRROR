@@ -1,17 +1,11 @@
 package com.mirror.authservice.controller;
 
-import com.mirror.authservice.dto.AuthResponse;
-import com.mirror.authservice.dto.LoginRequest;
-import com.mirror.authservice.dto.RegisterRequest;
-import com.mirror.authservice.model.User;
-import com.mirror.authservice.repository.UserRepository;
-import com.mirror.authservice.security.JwtUtil;
+import com.mirror.authservice.dto.*;
 import com.mirror.authservice.service.AuthService;
-import com.mirror.authservice.service.EmailService;
-import com.mirror.authservice.service.OtpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Map;
 
 @RestController
@@ -20,193 +14,94 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
-    private final JwtUtil jwtUtil;
-    private final OtpService otpService;
-    private final UserRepository userRepository;
-    private final EmailService emailService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        try {
-            User registeredUser = authService.registerUser(
-                    request.username(),
-                    request.email(),
-                    request.password()
-            );
-            return ResponseEntity.ok("User registered successfully with ID: " + registeredUser.getId());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+        var registeredUser = authService.registerUser(
+                request.username(),
+                request.email(),
+                request.password()
+        );
+        return ResponseEntity.ok("User registered successfully with ID: " + registeredUser.getId());
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        try {
-            AuthResponse response = authService.loginUserAndIssueTokens(request.email(), request.password());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(e.getMessage());
-        }
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        AuthResponse response = authService.loginUserAndIssueTokens(request.email(), request.password());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/otp/request")
-    public ResponseEntity<?> requestOtp(@RequestBody Map<String, String> request) {
-        String email = request.get("email");
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        String code = otpService.generateOtp(email);
-
-        emailService.sendOtpEmail(email, code, user.getUsername(), "VERIFY");
-
+    public ResponseEntity<String> requestOtp(@RequestBody OtpRequest request) {
+        authService.requestOtp(request.email());
         return ResponseEntity.ok("OTP sent to your email.");
     }
 
     @PostMapping("/otp/verify")
-    public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
-        try {
-            String email = request.get("email");
-            String code = request.get("code");
-
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
-            boolean isValid = otpService.verifyOtp(user, code);
-
-            if (isValid) {
-                user.setVerified(true);
-                userRepository.save(user);
-
-                AuthResponse response = authService.issueTokensForVerifiedUser(user);
-                return ResponseEntity.ok(response);
-            }
-
-            return ResponseEntity.status(401).body("Invalid or expired OTP.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<AuthResponse> verifyOtp(@RequestBody OtpVerifyRequest request) {
+        AuthResponse response = authService.verifyOtpAndIssueTokens(request.email(), request.code());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/forgot-password/request")
-    public ResponseEntity<?> requestForgotPasswordOtp(@RequestBody Map<String, String> request) {
-        try {
-            String email = request.get("email");
-
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("No account found with this email address."));
-
-            String code = otpService.generateOtp(email);
-
-            emailService.sendOtpEmail(email, code, user.getUsername(), "RESET");
-
-            return ResponseEntity.ok("Password reset OTP sent to your email.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<String> requestForgotPasswordOtp(@RequestBody ForgotPasswordRequest request) {
+        authService.requestForgotPasswordOtp(request.email());
+        return ResponseEntity.ok("Password reset OTP sent to your email.");
     }
 
     @PostMapping("/forgot-password/verify")
-    public ResponseEntity<?> verifyForgotPasswordOtp(@RequestBody Map<String, String> request) {
-        try {
-            String email = request.get("email");
-            String code = request.get("code");
-
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
-            boolean isValid = otpService.verifyOtp(user, code);
-
-            if (isValid) {
-                return ResponseEntity.ok("OTP verified successfully. You may now reset your password.");
-            }
-
-            return ResponseEntity.status(401).body("Invalid or expired OTP.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<String> verifyForgotPasswordOtp(@RequestBody OtpVerifyRequest request) {
+        authService.verifyForgotPasswordOtp(request.email(), request.code());
+        return ResponseEntity.ok("OTP verified successfully. You may now reset your password.");
     }
 
     @PostMapping("/forgot-password/reset")
-    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
-        try {
-            String email = request.get("email");
-            String newPassword = request.get("password");
-
-            if (newPassword == null || newPassword.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body("Password cannot be empty.");
-            }
-
-            authService.resetPassword(email, newPassword);
-
-            return ResponseEntity.ok("Password reset successfully. Please proceed to login.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetRequest request) {
+        if (request.password() == null || request.password().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Password cannot be empty.");
         }
+        authService.resetPassword(request.email(), request.password());
+        return ResponseEntity.ok("Password reset successfully. Please proceed to login.");
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
-        try {
-            String refreshToken = request.get("refreshToken");
-            if (refreshToken == null || refreshToken.isEmpty()) {
-                return ResponseEntity.badRequest().body("Refresh token missing.");
-            }
-
-            AuthResponse response = authService.refreshAccessToken(refreshToken);
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(e.getMessage());
+    public ResponseEntity<?> refresh(@RequestBody TokenRequest request) {
+        if (request.refreshToken() == null || request.refreshToken().isEmpty()) {
+            return ResponseEntity.badRequest().body("Refresh token missing.");
         }
+        AuthResponse response = authService.refreshAccessToken(request.refreshToken());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody Map<String, String> request) {
-        try {
-            String refreshToken = request.get("refreshToken");
-            if (refreshToken != null && !refreshToken.isEmpty()) {
-                authService.logout(refreshToken);
-            }
-            return ResponseEntity.ok("Logged out successfully.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+    public ResponseEntity<String> logout(@RequestBody TokenRequest request) {
+        if (request.refreshToken() != null && !request.refreshToken().isEmpty()) {
+            authService.logout(request.refreshToken());
         }
+        return ResponseEntity.ok("Logged out successfully.");
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<?> validateSession(@RequestBody Map<String, String> request) {
-        try {
-            String refreshToken = request.get("refreshToken");
-            if (refreshToken == null || refreshToken.isEmpty()) {
-                return ResponseEntity.status(401).body(Map.of("valid", false, "message", "Session token missing."));
-            }
-            boolean isValid = authService.isSessionValid(refreshToken);
-            if (isValid) {
-                return ResponseEntity.ok(Map.of("valid", true));
-            }
-            return ResponseEntity.status(401).body(Map.of("valid", false, "message", "Session has been invalidated or logged out."));
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body(Map.of("valid", false, "message", e.getMessage()));
+    public ResponseEntity<?> validateSession(@RequestBody TokenRequest request) {
+        if (request.refreshToken() == null || request.refreshToken().isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("valid", false, "message", "Session token missing."));
         }
+        boolean isValid = authService.isSessionValid(request.refreshToken());
+        if (isValid) {
+            return ResponseEntity.ok(Map.of("valid", true));
+        }
+        return ResponseEntity.status(401).body(Map.of("valid", false, "message", "Session has been invalidated or logged out."));
     }
 
     @GetMapping("/keepalive")
     public ResponseEntity<?> keepAlive() {
-        try {
-            long count = userRepository.count();
-            return ResponseEntity.ok(Map.of(
-                "status", "awake",
-                "service", "auth-service",
-                "db_status", "healthy",
-                "user_count", count
-            ));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of(
-                "status", "awake",
-                "service", "auth-service",
-                "db_status", "unhealthy",
-                "error", e.getMessage()
-            ));
-        }
+        // Calling count via service layer to respect layered boundaries
+        long count = authService.getAllUsers().size();
+        return ResponseEntity.ok(Map.of(
+            "status", "awake",
+            "service", "auth-service",
+            "db_status", "healthy",
+            "user_count", count
+        ));
     }
 }

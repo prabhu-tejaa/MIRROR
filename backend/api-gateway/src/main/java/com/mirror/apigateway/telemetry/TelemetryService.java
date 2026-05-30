@@ -1,12 +1,12 @@
 package com.mirror.apigateway.telemetry;
 
+import com.mirror.apigateway.dto.TelemetryModels.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.stereotype.Service;
 import org.springframework.scheduling.annotation.Scheduled;
-import reactor.core.publisher.Flux;
 
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -47,20 +47,19 @@ public class TelemetryService {
         addLog("POST", "/api/auth/login", 200, 45, "auth-service");
     }
 
-    public record LogEntry(String timestamp, String method, String path, int status, int latency, String service) {}
-    public record ServiceHealth(String name, int port, String status, int latency, String color) {}
-    public record RouteMap(String id, String path, String destination, String service, boolean active) {}
-    public record BlockedIp(String ip, String reason, String blockedAt) {}
-    public record TelemetryStats(long totalRequestsToday, int whitelistedCount, int globalRateLimit) {}
-
     public boolean isRateLimited(String ip) {
         long now = System.currentTimeMillis();
-        ipLastResetTime.putIfAbsent(ip, now);
-        if (now - ipLastResetTime.get(ip) > 60000) {
-            ipLastResetTime.put(ip, now);
-            ipRequestCounts.put(ip, 0);
-        }
-        int count = ipRequestCounts.merge(ip, 1, Integer::sum);
+        
+        // Atomically compute reset intervals and count updates to prevent race conditions
+        int count = ipRequestCounts.compute(ip, (key, currentCount) -> {
+            Long lastReset = ipLastResetTime.get(ip);
+            if (lastReset == null || now - lastReset > 60000) {
+                ipLastResetTime.put(ip, now);
+                return 1;
+            }
+            return (currentCount == null) ? 1 : currentCount + 1;
+        });
+
         return count > globalRateLimit;
     }
 
@@ -132,10 +131,7 @@ public class TelemetryService {
         List<ServiceHealth> healthList = new ArrayList<>();
 
         healthList.add(probeServiceHealth("Auth Service", "auth-service-route", 8081));
-        
         healthList.add(probeServiceHealth("Memory Service", "memory-service-route", 8082));
-
-
 
         return healthList;
     }

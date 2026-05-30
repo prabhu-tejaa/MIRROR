@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import {
   IonContent,
   IonList, IonItem, IonLabel, IonIcon, IonNote, IonFooter,
@@ -32,7 +31,6 @@ export class ProfilePage {
   private navCtrl = inject(NavController);
   private alertCtrl = inject(AlertController);
   private translationSvc = inject(TranslationService);
-  private router = inject(Router);
 
   public readonly userId = computed(() => this.authSvc.getUserId() ?? 'User');
   public readonly userEmail = computed(() => this.authSvc.getEmail() ?? 'Email');

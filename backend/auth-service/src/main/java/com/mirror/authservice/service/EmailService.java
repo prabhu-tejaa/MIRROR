@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +15,7 @@ public class EmailService {
     @Value("${app.mail.from}")
     private String fromEmail;
 
+    @Async
     public void sendOtpEmail(String to, String otp, String username, String type) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);

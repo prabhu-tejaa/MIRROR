@@ -7,6 +7,8 @@ import com.mirror.authservice.model.User;
 import com.mirror.authservice.repository.UserRepository;
 import com.mirror.authservice.repository.RefreshTokenRepository;
 import com.mirror.authservice.repository.OtpTokenRepository;
+import com.mirror.authservice.exception.UserNotFoundException;
+import com.mirror.authservice.exception.InvalidOtpException;
 import com.mirror.authservice.security.JwtUtil;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,8 @@ public class AuthService {
     private final OtpTokenRepository otpTokenRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final OtpService otpService;
+    private final EmailService emailService;
 
     public User registerUser(String username, String email, String rawPassword) {
         if (userRepository.existsByEmail(email)) {
@@ -214,9 +218,48 @@ public class AuthService {
     }
 
     @Transactional
+    public void requestOtp(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        String code = otpService.generateOtp(email);
+        emailService.sendOtpEmail(email, code, user.getUsername(), "VERIFY");
+    }
+
+    @Transactional
+    public AuthResponse verifyOtpAndIssueTokens(String email, String code) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        boolean isValid = otpService.verifyOtp(user, code);
+        if (!isValid) {
+            throw new InvalidOtpException("Invalid or expired OTP.");
+        }
+        user.setVerified(true);
+        userRepository.save(user);
+        return issueTokensForVerifiedUser(user);
+    }
+
+    @Transactional
+    public void requestForgotPasswordOtp(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("No account found with this email address."));
+        String code = otpService.generateOtp(email);
+        emailService.sendOtpEmail(email, code, user.getUsername(), "RESET");
+    }
+
+    @Transactional
+    public void verifyForgotPasswordOtp(String email, String code) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        boolean isValid = otpService.verifyOtp(user, code);
+        if (!isValid) {
+            throw new InvalidOtpException("Invalid or expired OTP.");
+        }
+    }
+
+    @Transactional
     public void deleteUser(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         // Must delete refresh tokens & OTP tokens first — they have a FK to the user.
         // Failing to clear these children violates foreign key constraints and prevents deletion (500).

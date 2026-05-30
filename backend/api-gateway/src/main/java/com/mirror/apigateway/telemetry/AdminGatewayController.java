@@ -1,5 +1,7 @@
 package com.mirror.apigateway.telemetry;
 
+import com.mirror.apigateway.dto.*;
+import com.mirror.apigateway.dto.TelemetryModels.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +13,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/gateway/admin")
-@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class AdminGatewayController {
 
     @Autowired
@@ -20,17 +21,13 @@ public class AdminGatewayController {
     @Autowired
     private RouteLocator routeLocator;
 
-    public record ToggleRouteRequest(String id, boolean active) {}
-    public record BlockIpRequest(String ip, String reason) {}
-    public record UpdateRateLimitRequest(int limit) {}
-
     @GetMapping("/health")
-    public ResponseEntity<List<TelemetryService.ServiceHealth>> getHealth() {
+    public ResponseEntity<List<ServiceHealth>> getHealth() {
         return ResponseEntity.ok(telemetryService.getServicesHealth());
     }
 
     @GetMapping("/routes")
-    public Mono<ResponseEntity<List<TelemetryService.RouteMap>>> getRoutes() {
+    public Mono<ResponseEntity<List<RouteMap>>> getRoutes() {
         return routeLocator.getRoutes()
                 .map(route -> {
                     String path;
@@ -42,7 +39,7 @@ public class AdminGatewayController {
                         path = "/api/" + route.getId().replace("-route", "") + "/**";
                     }
                     boolean active = !telemetryService.getSuspendedRoutes().contains(route.getId());
-                    return new TelemetryService.RouteMap(
+                    return new RouteMap(
                         route.getId(),
                         path,
                         route.getUri().toString(),
@@ -64,7 +61,7 @@ public class AdminGatewayController {
     }
 
     @GetMapping("/blocked-ips")
-    public ResponseEntity<List<TelemetryService.BlockedIp>> getBlockedIps() {
+    public ResponseEntity<List<BlockedIp>> getBlockedIps() {
         return ResponseEntity.ok(telemetryService.getBlockedIps());
     }
 
@@ -92,12 +89,12 @@ public class AdminGatewayController {
     }
 
     @GetMapping("/logs")
-    public ResponseEntity<List<TelemetryService.LogEntry>> getLogs() {
+    public ResponseEntity<List<LogEntry>> getLogs() {
         return ResponseEntity.ok(telemetryService.getLogs());
     }
 
     @GetMapping("/stats")
-    public ResponseEntity<TelemetryService.TelemetryStats> getStats() {
+    public ResponseEntity<TelemetryStats> getStats() {
         return ResponseEntity.ok(telemetryService.getStats());
     }
 }
