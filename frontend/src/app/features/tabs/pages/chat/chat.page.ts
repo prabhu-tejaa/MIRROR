@@ -526,7 +526,7 @@ export class ChatPage implements OnDestroy {
           }));
           this.messages.set(loadedMessages);
           this.hasMoreHistory = data.hasMore;
-          this.currentPage = 1; // Next fetch will be page 1
+          this.currentPage = 1;
         }
         this.isLoadingHistory.set(false);
         this.isInitialLoad = false;
