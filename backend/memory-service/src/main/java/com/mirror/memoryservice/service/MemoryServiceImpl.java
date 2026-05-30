@@ -138,7 +138,7 @@ public class MemoryServiceImpl implements MemoryService {
      */
     private String formatVectorForSql(float[] vector) {
         if (vector == null || vector.length == 0) {
-            return "[]";
+            return null;
         }
         StringBuilder sb = new StringBuilder();
         sb.append("[");
