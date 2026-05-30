@@ -4,6 +4,23 @@
 
     <!-- Message Stream -->
     <div class="message-stream" #streamScroll>
+
+      <!-- Load More Indicator (top of chat) -->
+      <div class="load-more-indicator" *ngIf="isLoadingMore()">
+        <div class="load-more-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="load-more-text">Loading older messages...</span>
+      </div>
+
+      <!-- Initial History Loading Skeleton -->
+      <div class="history-loading-skeleton" *ngIf="isLoadingHistory()">
+        <div class="skeleton-dot-wave">
+          <span></span><span></span><span></span>
+        </div>
+        <p class="skeleton-text">Syncing your reflections...</p>
+      </div>
+
       <div *ngFor="let msg of messages()" class="message-wrapper" [class.user-message]="msg.sender === 'user'"
         [class.mirror-message]="msg.sender === 'mirror'">
 

@@ -29,6 +29,8 @@ import {
   stopCircleOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../../core/services/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 import { Capacitor } from '@capacitor/core';
 import { SpeechRecognition } from '@capacitor-community/speech-recognition';
 
@@ -56,6 +58,7 @@ interface Message {
 export class ChatPage implements OnDestroy {
   private authSvc = inject(AuthService);
   private alertCtrl = inject(AlertController);
+  private http = inject(HttpClient);
   private isNative = false;
   private nativeListenerHandle: any = null;
   private nativeStateListenerHandle: any = null;
@@ -79,6 +82,14 @@ export class ChatPage implements OnDestroy {
   public readonly chatInput = signal<string>('');
   public readonly isRecording = signal<boolean>(false);
   public readonly isWaitingForResponse = signal<boolean>(false);
+
+  // Pagination state
+  public readonly isLoadingHistory = signal<boolean>(false);
+  public readonly isLoadingMore = signal<boolean>(false);
+  private currentPage = 0;
+  private readonly pageSize = 20;
+  private hasMoreHistory = true;
+  private isInitialLoad = true;
 
 
   public readonly messages = signal<Message[]>([
@@ -240,6 +251,8 @@ export class ChatPage implements OnDestroy {
 
   public ionViewDidEnter() {
     this.focusInput();
+    this.loadChatHistory();
+    this.setupScrollListener();
   }
 
   private focusInput() {
@@ -492,6 +505,102 @@ export class ChatPage implements OnDestroy {
     this.simulateMirrorResponse(text);
   }
 
+  private loadChatHistory() {
+    const email = this.authSvc.getEmail() || 'guest@mirror.com';
+    this.isLoadingHistory.set(true);
+    this.currentPage = 0;
+    this.hasMoreHistory = true;
+    this.isInitialLoad = true;
+
+    this.http.get<any>(`${environment.apiUrl}/api/memory/history?page=0&size=${this.pageSize}`, {
+      headers: { 'X-User-Email': email }
+    }).subscribe({
+      next: (data) => {
+        if (data && data.messages && data.messages.length > 0) {
+          // Backend returns newest first, reverse for chronological display
+          const loadedMessages: Message[] = data.messages.reverse().map((m: any) => ({
+            id: m.id.toString(),
+            sender: m.sender || 'user',
+            text: m.content,
+            timestamp: new Date(m.createdAt || new Date())
+          }));
+          this.messages.set(loadedMessages);
+          this.hasMoreHistory = data.hasMore;
+          this.currentPage = 1; // Next fetch will be page 1
+        }
+        this.isLoadingHistory.set(false);
+        this.isInitialLoad = false;
+      },
+      error: (err) => {
+        console.error('Failed to load chat history from backend:', err);
+        this.isLoadingHistory.set(false);
+        this.isInitialLoad = false;
+      }
+    });
+  }
+
+  private loadMoreHistory() {
+    if (this.isLoadingMore() || !this.hasMoreHistory) {
+      return;
+    }
+
+    const email = this.authSvc.getEmail() || 'guest@mirror.com';
+    this.isLoadingMore.set(true);
+
+    this.http.get<any>(`${environment.apiUrl}/api/memory/history?page=${this.currentPage}&size=${this.pageSize}`, {
+      headers: { 'X-User-Email': email }
+    }).subscribe({
+      next: (data) => {
+        if (data && data.messages && data.messages.length > 0) {
+          // Preserve scroll position: capture current scroll height before prepending
+          const scrollEl = this.streamScroll?.nativeElement;
+          const prevScrollHeight = scrollEl ? scrollEl.scrollHeight : 0;
+
+          // Backend returns newest first, reverse for chronological order then prepend
+          const olderMessages: Message[] = data.messages.reverse().map((m: any) => ({
+            id: m.id.toString(),
+            sender: m.sender || 'user',
+            text: m.content,
+            timestamp: new Date(m.createdAt || new Date())
+          }));
+
+          this.messages.update(prev => [...olderMessages, ...prev]);
+          this.hasMoreHistory = data.hasMore;
+          this.currentPage++;
+
+          // Restore scroll position so the user doesn't jump to the top
+          setTimeout(() => {
+            if (scrollEl) {
+              const newScrollHeight = scrollEl.scrollHeight;
+              scrollEl.scrollTop = newScrollHeight - prevScrollHeight;
+            }
+          }, 50);
+        } else {
+          this.hasMoreHistory = false;
+        }
+        this.isLoadingMore.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to load more history:', err);
+        this.isLoadingMore.set(false);
+      }
+    });
+  }
+
+  private setupScrollListener() {
+    setTimeout(() => {
+      const scrollEl = this.streamScroll?.nativeElement;
+      if (scrollEl) {
+        scrollEl.addEventListener('scroll', () => {
+          // Trigger load more when scrolled near the top (within 60px)
+          if (scrollEl.scrollTop <= 60 && this.hasMoreHistory && !this.isLoadingMore() && !this.isInitialLoad) {
+            this.loadMoreHistory();
+          }
+        });
+      }
+    }, 300);
+  }
+
   private simulateMirrorResponse(prompt: string) {
     const typingId = 'typing-' + Math.random().toString(36).substring(7);
     const typingMsg: Message = {
@@ -504,20 +613,44 @@ export class ChatPage implements OnDestroy {
 
     this.messages.update(prev => [...prev, typingMsg]);
 
-    setTimeout(() => {
-      this.messages.update(prev => prev.filter(m => m.id !== typingId));
+    const email = this.authSvc.getEmail() || 'guest@mirror.com';
+    this.http.post<any>(`${environment.apiUrl}/api/memory/reflect`, prompt, {
+      headers: { 
+        'X-User-Email': email,
+        'Content-Type': 'text/plain' 
+      }
+    }).subscribe({
+      next: (res) => {
+        this.messages.update(prev => prev.filter(m => m.id !== typingId));
 
-      const replyText = this.generateAIResponse(prompt);
-      const mirrorReply: Message = {
-        id: Math.random().toString(36).substring(7),
-        sender: 'mirror',
-        text: replyText,
-        timestamp: new Date()
-      };
+        const reflectionText = res.reflection || "Thank you for sharing your thoughts.";
+        const mirrorReply: Message = {
+          id: Math.random().toString(36).substring(7),
+          sender: 'mirror',
+          text: reflectionText,
+          timestamp: new Date()
+        };
 
-      this.messages.update(prev => [...prev, mirrorReply]);
-      this.isWaitingForResponse.set(false);
-    }, 1500 + Math.random() * 1000);
+        this.messages.update(prev => [...prev, mirrorReply]);
+        this.isWaitingForResponse.set(false);
+      },
+      error: (err) => {
+        console.error('Failed to generate backend reflection:', err);
+        this.messages.update(prev => prev.filter(m => m.id !== typingId));
+        
+        // Fallback to local simulated AI response if backend is offline/error
+        const fallbackText = this.generateAIResponse(prompt);
+        const mirrorReply: Message = {
+          id: Math.random().toString(36).substring(7),
+          sender: 'mirror',
+          text: fallbackText,
+          timestamp: new Date()
+        };
+
+        this.messages.update(prev => [...prev, mirrorReply]);
+        this.isWaitingForResponse.set(false);
+      }
+    });
   }
 
   private generateAIResponse(prompt: string): string {
