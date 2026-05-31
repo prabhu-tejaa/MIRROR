@@ -41,7 +41,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       const customError = new Error(errorMessage);
-      (customError as any).status = error.status;
+      (customError as Error & { status?: number }).status = error.status;
       return throwError(() => customError);
     })
   );

@@ -110,7 +110,7 @@ public class GeminiService {
         }
 
         try {
-            String url = apiUrl + "/models/gemini-1.5-flash:generateContent?key=" + apiKey;
+            String url = apiUrl + "/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
