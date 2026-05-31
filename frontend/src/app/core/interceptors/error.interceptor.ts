@@ -16,8 +16,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.error) {
         if (typeof error.error === 'string') {
           errorMessage = error.error;
-        } else if (typeof error.error === 'object' && error.error.message) {
-          errorMessage = error.error.message;
+        } else if (typeof error.error === 'object') {
+          errorMessage = error.error.error || error.error.message || defaultErrorMessage;
         }
       } else if (error.message) {
         errorMessage = error.message;

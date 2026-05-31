@@ -31,7 +31,7 @@ public class GeminiService {
 
     /**
      * Converts a text string into a 768-dimensional float embedding vector.
-     * If the API Key is missing or request fails, falls back to a deterministic, high-fidelity mock vector.
+     * Throws an exception if the API Key is missing or the request fails.
      */
     public float[] getEmbedding(String text) {
         if (text == null) {
@@ -39,8 +39,7 @@ public class GeminiService {
         }
 
         if (apiKey == null || apiKey.trim().isEmpty()) {
-            log.warn("Gemini API key is not configured. Falling back to deterministic mock embedding.");
-            return generateMockEmbedding(text);
+            throw new IllegalStateException("Gemini API key is not configured. Please set the GEMINI_API_KEY environment variable.");
         }
 
         try {
@@ -77,11 +76,11 @@ public class GeminiService {
                     }
                 }
             }
+            throw new RuntimeException("Gemini Embeddings response was invalid or missing expected payload fields.");
         } catch (Exception e) {
-            log.error("Failed to query Gemini Embeddings API. Falling back to mock embeddings.", e);
+            log.error("Failed to query Gemini Embeddings API.", e);
+            throw new RuntimeException("Failed to query Gemini Embeddings API: " + e.getMessage(), e);
         }
-
-        return generateMockEmbedding(text);
     }
 
     /**
@@ -89,17 +88,15 @@ public class GeminiService {
      * Automatically requests structured JSON response mapping.
      */
     public Map<String, String> generateReflectionAndEmotion(String prompt, String pastContext) {
-        Map<String, String> result = new HashMap<>();
-        result.put("reflection", "Thank you for sharing. How are you feeling right now?");
-        result.put("emotion", "NEUTRAL");
-
         if (prompt == null || prompt.trim().isEmpty()) {
+            Map<String, String> result = new HashMap<>();
+            result.put("reflection", "Please enter some text so I can reflect with you.");
+            result.put("emotion", "NEUTRAL");
             return result;
         }
 
         if (apiKey == null || apiKey.trim().isEmpty()) {
-            log.warn("Gemini API key is not configured. Falling back to rule-based mock reflection & emotion.");
-            return generateMockReflectionAndEmotion(prompt, pastContext);
+            throw new IllegalStateException("Gemini API key is not configured. Please set the GEMINI_API_KEY environment variable.");
         }
 
         try {
@@ -127,14 +124,17 @@ public class GeminiService {
             Map<String, Object> systemPart = new HashMap<>();
             systemPart.put("text", "You are MIRROR, a highly empathetic, premium digital reflection companion and smart emotional journal. " +
                                   "Your personality is open-minded, intellectually present, conversational, and genuinely supportive—like a wise peer or mentor who truly vibes with the user. " +
-                                  "You help the user track not only sadness, but also their daily wins, ideas, coding highlights, philosophy, and regular life events. " +
+                                  "You help the user reflect on a rich, diverse range of topics: coding highlights, daily wins, failures, life events, philosophical thoughts, intellectual curiosity, stress, relationships, and raw ideas. " +
                                   "Analyze the user prompt and the past relevant memories context. Weave in past events organically (e.g. say 'Reminds me of when you mentioned...' or 'I remember last week you succeeded in...'). " +
                                   "CRITICAL CONSTRAINTS:\n" +
                                   "1. NEW CHATS: If the 'PAST RELEVANT MEMORIES CONTEXT' indicates there are no past memories (e.g., 'No past memories recorded yet'), act as an inviting, friendly peer and start building a connection without mentioning past history.\n" +
                                   "2. NO BOMBARDMENT: Do NOT force past memories into the conversation if they are not highly relevant to what the user is saying now. Only reference the past when it adds genuine, supportive value to the present moment. Otherwise, focus entirely on being present in the current vibe.\n" +
                                   "Ensure your reflection feels completely genuine, warm, and natural. " +
-                                  "Classify the user's current mood into exactly one emotion tag (choose from: JOY, SADNESS, ANGER, ANXIETY, NEUTRAL). " +
-                                  "Your response MUST be a JSON object: {\"reflection\": \"your reflection text here\", \"emotion\": \"JOY\"}");
+                                  "Classify the user's prompt into a highly expressive, multi-word emotion or cognitive state tag that fits the vibe (e.g. 'Thoughtful Curiosity', 'Aesthetic Coding Spark', 'Heavy Melancholy', 'Peaceful Gratitude', etc. Keep it up to 40 characters).\n" +
+                                  "Choose two dynamic CSS hex colors that perfectly represent the psychological vibe and emotional tone of this conversation:\n" +
+                                  "- 'primaryColor': A vibrant color representing the core mood (e.g., #00ffd5 for calm/curiosity, #ffb700 for joy, #ff0055 for anger, #a855f7 for anxiety, #10b981 for growth/focus, #ff7300 for excitement).\n" +
+                                  "- 'secondaryColor': An accent color that harmonizes or contrasts beautifully with the primary color.\n" +
+                                  "Your response MUST be a JSON object: {\"reflection\": \"your reflection text here\", \"emotion\": \"Thoughtful Curiosity\", \"primaryColor\": \"#00ffd5\", \"secondaryColor\": \"#a855f7\"}");
 
             Map<String, Object> systemInstruction = new HashMap<>();
             systemInstruction.put("parts", Collections.singletonList(systemPart));
@@ -158,76 +158,23 @@ public class GeminiService {
                         if (parts != null && !parts.isEmpty()) {
                             String jsonResponseText = (String) parts.get(0).get("text");
                             if (jsonResponseText != null) {
-                                // Extract properties manually to avoid extra mapping dependencies
-                                return parseJsonFields(jsonResponseText);
+                                Map<String, String> parsed = parseJsonFields(jsonResponseText);
+                                String rawEmotionText = parsed.getOrDefault("emotion", "NEUTRAL");
+                                String primaryColor = parsed.getOrDefault("primaryColor", "#a855f7");
+                                String secondaryColor = parsed.getOrDefault("secondaryColor", "#06b6d4");
+                                // Encode colors into the emotion field dynamically
+                                parsed.put("emotion", rawEmotionText + "|" + primaryColor + "|" + secondaryColor);
+                                return parsed;
                             }
                         }
                     }
                 }
             }
+            throw new RuntimeException("Gemini Reflection response was invalid or missing expected payload fields.");
         } catch (Exception e) {
-            log.error("Failed to query Gemini Reflection API. Falling back to mock reflection.", e);
+            log.error("Failed to query Gemini Reflection API.", e);
+            throw new RuntimeException("Failed to generate reflection from Gemini AI service: " + e.getMessage(), e);
         }
-
-        return generateMockReflectionAndEmotion(prompt, pastContext);
-    }
-
-    /**
-     * Generates a deterministic mock vector of dimension 768 based on string hash.
-     * This allows similarity algorithms (like cosine similarity) to function perfectly and query correctly even in offline/test runs.
-     */
-    private float[] generateMockEmbedding(String text) {
-        float[] vector = new float[768];
-        int hash = text.hashCode();
-        Random rand = new Random(hash);
-        float sumOfSquares = 0;
-        for (int i = 0; i < 768; i++) {
-            vector[i] = rand.nextFloat() - 0.5f;
-            sumOfSquares += vector[i] * vector[i];
-        }
-        // Normalize vector to have unit length (magnitude 1.0)
-        float magnitude = (float) Math.sqrt(sumOfSquares);
-        if (magnitude > 0) {
-            for (int i = 0; i < 768; i++) {
-                vector[i] /= magnitude;
-            }
-        }
-        return vector;
-    }
-
-    /**
-     * Local rule-based fallback reflection generator
-     */
-    private Map<String, String> generateMockReflectionAndEmotion(String prompt, String pastContext) {
-        Map<String, String> result = new HashMap<>();
-        String query = prompt.toLowerCase();
-        String emotion = "NEUTRAL";
-        String reflection = "That's an interesting thought. Tell me more—I'm mapping this straight to your reflection journal. Let's dig deeper.";
-
-        if (query.contains("happy") || query.contains("won") || query.contains("win") || query.contains("success") || query.contains("joke") || query.contains("awesome") || query.contains("great")) {
-            emotion = "JOY";
-            reflection = "Yes! I absolutely love to see this. Celebrating these wins—big or small—is exactly how we build massive momentum. What sparked this success?";
-        } else if (query.contains("sad") || query.contains("cry") || query.contains("pain") || query.contains("hurt") || query.contains("failed") || query.contains("lonely")) {
-            emotion = "SADNESS";
-            reflection = "I hear you, and it's completely okay to have low-energy days. MIRROR is your safe space to vent. Take all the time you need to process this.";
-        } else if (query.contains("anxious") || query.contains("worry") || query.contains("scared") || query.contains("fear") || query.contains("stress") || query.contains("panic")) {
-            emotion = "ANXIETY";
-            reflection = "Deep breath. This stress is just a temporary wave. If we look at your past wins, you've overcome way tougher obstacles. You've got the skills to handle this.";
-        } else if (query.contains("angry") || query.contains("mad") || query.contains("hate") || query.contains("annoyed") || query.contains("pissed")) {
-            emotion = "ANGER";
-            reflection = "I feel that fire. Frustration is just raw energy—let's redirect it. How can we channel this to solve the core issue step-by-step?";
-        } else if (query.contains("idea") || query.contains("concept") || query.contains("philosophy") || query.contains("code") || query.contains("learn") || query.contains("ponder")) {
-            emotion = "JOY";
-            reflection = "Whoa, this is a fascinating mental spark! Documentation of these learning moments is where pure growth happens. How did this idea hit you?";
-        }
-
-        if (pastContext != null && pastContext.contains("JOY") && emotion.equals("ANXIETY")) {
-            reflection += " Remember your recent win: it shows you are fully capable of overcoming this.";
-        }
-
-        result.put("reflection", reflection);
-        result.put("emotion", emotion);
-        return result;
     }
 
     /**

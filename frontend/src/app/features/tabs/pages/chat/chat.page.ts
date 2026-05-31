@@ -40,6 +40,9 @@ interface Message {
   text: string;
   timestamp: Date;
   isTyping?: boolean;
+  emotion?: string;
+  primaryColor?: string;
+  secondaryColor?: string;
 }
 
 @Component({
@@ -65,6 +68,7 @@ export class ChatPage implements OnDestroy {
   private initialInputText = '';
   private isSpeechToggleInFlight = false;
   private navCtrl = inject(NavController);
+  private activeTypingIntervals: any[] = [];
 
   public readonly isGuest = computed(() => this.authSvc.getEmail() === 'guest@mirror.com');
 
@@ -79,6 +83,9 @@ export class ChatPage implements OnDestroy {
   }
 
   public readonly activeStyle = signal<'cyberpunk' | 'aurora'>('aurora');
+  public readonly currentEmotion = signal<string>('NEUTRAL');
+  public readonly currentPrimaryColor = signal<string>('#a855f7');
+  public readonly currentSecondaryColor = signal<string>('#06b6d4');
   public readonly chatInput = signal<string>('');
   public readonly isRecording = signal<boolean>(false);
   public readonly isWaitingForResponse = signal<boolean>(false);
@@ -145,6 +152,11 @@ export class ChatPage implements OnDestroy {
 
   public ngOnDestroy() {
     this.clearSpeechTimeout();
+    
+    // Clear all active word-by-word streaming timers to prevent memory leaks on navigation
+    this.activeTypingIntervals.forEach(clearInterval);
+    this.activeTypingIntervals = [];
+
     if (this.isNative) {
       this.stopNativeRecording();
     } else if (this.recognition) {
@@ -247,7 +259,12 @@ export class ChatPage implements OnDestroy {
     if (this.isInitialLoad) {
       this.loadChatHistory();
     } else {
+      // Scroll multiple times to ensure we are at the absolute bottom
+      // during and after tab transitions and input focus.
+      this.scrollToBottom('auto');
       setTimeout(() => this.scrollToBottom('auto'), 50);
+      setTimeout(() => this.scrollToBottom('auto'), 150);
+      setTimeout(() => this.scrollToBottom('auto'), 300);
     }
     this.setupScrollListener();
   }
@@ -256,6 +273,8 @@ export class ChatPage implements OnDestroy {
     setTimeout(() => {
       if (this.textInput?.nativeElement) {
         this.textInput.nativeElement.focus();
+        // Scroll to bottom immediately after focusing to correct any focus-induced layout/keyboard shift
+        setTimeout(() => this.scrollToBottom('auto'), 50);
       }
     }, 150);
   }
@@ -504,6 +523,35 @@ export class ChatPage implements OnDestroy {
     this.simulateMirrorResponse(text);
   }
 
+  private parseEmotionAndColors(rawEmotion: string | undefined): { emotion: string, primary: string, secondary: string } {
+    if (!rawEmotion) {
+      return { emotion: 'NEUTRAL', primary: '#a855f7', secondary: '#06b6d4' };
+    }
+    const parts = rawEmotion.split('|');
+    const emotionText = parts[0] || 'NEUTRAL';
+    let primary = parts[1] || '';
+    let secondary = parts[2] || '';
+
+    // If no colors are stored, map standard emotions to beautiful fallback hex codes
+    if (!primary || !secondary) {
+      const e = emotionText.toUpperCase();
+      if (e.includes('JOY') || e.includes('HAPPY') || e.includes('EXCITE')) {
+        primary = '#ffb700'; secondary = '#ff5e00';
+      } else if (e.includes('SAD') || e.includes('LONELY') || e.includes('MELANCHOLY') || e.includes('NOSTALGIA')) {
+        primary = '#00ffd5'; secondary = '#0099ff';
+      } else if (e.includes('ANXIOUS') || e.includes('WORRY') || e.includes('FEAR') || e.includes('STRESS')) {
+        primary = '#a855f7'; secondary = '#06b6d4';
+      } else if (e.includes('ANGER') || e.includes('FRUSTRATION') || e.includes('MAD')) {
+        primary = '#ff0055'; secondary = '#e11d48';
+      } else if (e.includes('CREATIVITY') || e.includes('FOCUS') || e.includes('CALM') || e.includes('INSIGHT')) {
+        primary = '#10b981'; secondary = '#06b6d4';
+      } else {
+        primary = '#7928ca'; secondary = '#ff0080';
+      }
+    }
+    return { emotion: emotionText, primary, secondary };
+  }
+
   private loadChatHistory() {
     const email = this.authSvc.getEmail() || 'guest@mirror.com';
     this.isLoadingHistory.set(true);
@@ -517,13 +565,28 @@ export class ChatPage implements OnDestroy {
       next: (data) => {
         if (data && data.messages && data.messages.length > 0) {
           // Backend returns newest first, reverse for chronological display
-          const loadedMessages: Message[] = data.messages.reverse().map((m: any) => ({
-            id: m.id.toString(),
-            sender: m.sender || 'user',
-            text: m.content,
-            timestamp: new Date(m.createdAt || new Date())
-          }));
+          const loadedMessages: Message[] = data.messages.reverse().map((m: any) => {
+            const { emotion, primary, secondary } = this.parseEmotionAndColors(m.emotion);
+            return {
+              id: m.id.toString(),
+              sender: m.sender || 'user',
+              text: m.content,
+              timestamp: new Date(m.createdAt || new Date()),
+              emotion,
+              primaryColor: primary,
+              secondaryColor: secondary
+            };
+          });
           this.messages.set(loadedMessages);
+
+          // Set current active emotion and colors from the last mirrored message
+          const lastMirror = [...loadedMessages].reverse().find(m => m.sender === 'mirror');
+          if (lastMirror && lastMirror.primaryColor && lastMirror.secondaryColor) {
+            this.currentPrimaryColor.set(lastMirror.primaryColor);
+            this.currentSecondaryColor.set(lastMirror.secondaryColor);
+            this.currentEmotion.set(lastMirror.emotion || 'NEUTRAL');
+          }
+
           this.hasMoreHistory = data.hasMore;
           this.currentPage = 1;
         }
@@ -558,12 +621,18 @@ export class ChatPage implements OnDestroy {
           const prevScrollHeight = scrollEl ? scrollEl.scrollHeight : 0;
 
           // Backend returns newest first, reverse for chronological order then prepend
-          const olderMessages: Message[] = data.messages.reverse().map((m: any) => ({
-            id: m.id.toString(),
-            sender: m.sender || 'user',
-            text: m.content,
-            timestamp: new Date(m.createdAt || new Date())
-          }));
+          const olderMessages: Message[] = data.messages.reverse().map((m: any) => {
+            const { emotion, primary, secondary } = this.parseEmotionAndColors(m.emotion);
+            return {
+              id: m.id.toString(),
+              sender: m.sender || 'user',
+              text: m.content,
+              timestamp: new Date(m.createdAt || new Date()),
+              emotion,
+              primaryColor: primary,
+              secondaryColor: secondary
+            };
+          });
 
           this.messages.update(prev => [...olderMessages, ...prev]);
           this.hasMoreHistory = data.hasMore;
@@ -626,28 +695,65 @@ export class ChatPage implements OnDestroy {
         this.messages.update(prev => prev.filter(m => m.id !== typingId));
 
         const reflectionText = res.reflection || "Thank you for sharing your thoughts.";
+        const { emotion, primary, secondary } = this.parseEmotionAndColors(res.emotion);
+        
+        this.currentEmotion.set(emotion);
+        this.currentPrimaryColor.set(primary);
+        this.currentSecondaryColor.set(secondary);
+
+        const replyId = Math.random().toString(36).substring(7);
         const mirrorReply: Message = {
-          id: Math.random().toString(36).substring(7),
+          id: replyId,
           sender: 'mirror',
-          text: reflectionText,
-          timestamp: new Date()
+          text: '',
+          timestamp: new Date(),
+          emotion,
+          primaryColor: primary,
+          secondaryColor: secondary
         };
 
         this.messages.update(prev => [...prev, mirrorReply]);
         this.isWaitingForResponse.set(false);
-        setTimeout(() => this.scrollToBottom('smooth'), 50);
-        this.focusInput();
+
+        // Type out the reflection text word-by-word for an ultra-premium dynamic feel
+        let currentWordIdx = 0;
+        const words = reflectionText.split(' ');
+        const streamInterval = setInterval(() => {
+          if (currentWordIdx < words.length) {
+            const streamedText = words.slice(0, currentWordIdx + 1).join(' ');
+            this.messages.update(prev => prev.map(m => m.id === replyId ? { ...m, text: streamedText } : m));
+            currentWordIdx++;
+            this.scrollToBottom('smooth');
+          } else {
+            clearInterval(streamInterval);
+            this.activeTypingIntervals = this.activeTypingIntervals.filter(i => i !== streamInterval);
+            this.focusInput();
+          }
+        }, 35);
+        this.activeTypingIntervals.push(streamInterval);
       },
       error: (err) => {
         console.error('Failed to generate backend reflection:', err);
         this.messages.update(prev => prev.filter(m => m.id !== typingId));
         
-        // Fallback to local simulated AI response if backend is offline/error
-        const fallbackText = this.generateAIResponse(prompt);
+        let errorMsg = '⚠️ [CONNECTION ERROR] Failed to connect to the MIRROR reflection service. Please ensure the backend is running and try again.';
+        
+        const detailedMsg = err.error?.message || err.error || err.message || '';
+        const isConfigError = typeof detailedMsg === 'string' && 
+          (detailedMsg.toLowerCase().includes('key is not configured') || detailedMsg.toLowerCase().includes('apikey'));
+        
+        if (isConfigError) {
+          errorMsg = '⚠️ [CONFIGURATION ERROR] The Gemini API Key is not configured. Please set the GEMINI_API_KEY environment variable in the backend to start live reflection and emotional tracking.';
+        } else if (err.status === 500) {
+          errorMsg = `⚠️ [REFLECTION ERROR] The reflection service encountered a technical issue: ${detailedMsg || 'Internal Server Error'}.`;
+        } else if (err.status === 0) {
+          errorMsg = '⚠️ [NETWORK ERROR] Unable to reach the memory service. Please verify your backend server is active and accessible.';
+        }
+
         const mirrorReply: Message = {
           id: Math.random().toString(36).substring(7),
           sender: 'mirror',
-          text: fallbackText,
+          text: errorMsg,
           timestamp: new Date()
         };
 

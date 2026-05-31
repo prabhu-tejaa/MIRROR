@@ -1,4 +1,13 @@
-<ion-content [fullscreen]="true" [scrollY]="false" class="chat-content-container" [class]="activeStyle()">
+<ion-content [fullscreen]="true" [scrollY]="false" class="chat-content-container" 
+  [class]="activeStyle() + ' emotion-' + currentEmotion().toLowerCase()"
+  [style.--emotion-color-primary]="currentPrimaryColor()"
+  [style.--emotion-color-secondary]="currentSecondaryColor()">
+
+  <!-- Ambient Glow Backdrop Orbs -->
+  <div class="ambient-glows">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+  </div>
 
   <div class="chat-wrapper">
 
@@ -28,10 +37,18 @@
           <ion-icon name="finger-print" [class.loading-fingerprint]="msg.isTyping"></ion-icon>
         </div>
 
-        <div class="message-bubble" [class.typing-bubble]="msg.isTyping">
+        <div class="message-bubble" [class.typing-bubble]="msg.isTyping" 
+          [class]="'message-bubble ' + (msg.emotion ? 'emotion-' + msg.emotion.toLowerCase() : '')"
+          [style.--bubble-color-primary]="msg.primaryColor"
+          [style.--bubble-color-secondary]="msg.secondaryColor">
           <ng-container *ngIf="!msg.isTyping; else typingIndicator">
             <p class="msg-text">{{ msg.text }}</p>
-            <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
+            <div class="bubble-meta">
+              <span class="vibe-badge" *ngIf="msg.sender === 'mirror' && msg.emotion && msg.emotion !== 'NEUTRAL'">
+                {{ msg.emotion }}
+              </span>
+              <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
+            </div>
           </ng-container>
 
           <ng-template #typingIndicator>
