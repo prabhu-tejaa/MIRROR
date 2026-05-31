@@ -1,5 +1,5 @@
-<ion-content [fullscreen]="true" [scrollY]="false" class="chat-content-container" 
-  [class]="activeStyle() + ' emotion-' + currentEmotion().toLowerCase()"
+<ion-content [fullscreen]="true" [scrollY]="false"
+  [class]="'chat-content-container ' + activeStyle() + ' emotion-' + currentEmotion().toLowerCase()"
   [style.--emotion-color-primary]="currentPrimaryColor()"
   [style.--emotion-color-secondary]="currentSecondaryColor()">
 
@@ -49,8 +49,7 @@
           <ion-icon name="finger-print" [class.loading-fingerprint]="msg.isTyping"></ion-icon>
         </div>
 
-        <div class="message-bubble" [class.typing-bubble]="msg.isTyping" 
-          [class]="'message-bubble ' + (msg.emotion ? 'emotion-' + msg.emotion.toLowerCase() : '')"
+        <div [class]="'message-bubble ' + (msg.isTyping ? 'typing-bubble ' : '') + (msg.emotion ? 'emotion-' + msg.emotion.toLowerCase() : '')"
           [style.--bubble-color-primary]="msg.primaryColor"
           [style.--bubble-color-secondary]="msg.secondaryColor">
           <ng-container *ngIf="!msg.isTyping; else typingIndicator">

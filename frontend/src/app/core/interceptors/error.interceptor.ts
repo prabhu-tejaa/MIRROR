@@ -1,12 +1,14 @@
-import { inject } from '@angular/core';
+import { inject, Injector } from '@angular/core';
 import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
 import { TranslationService } from '../services/translation.service';
 import { ToastService } from '../services/toast.service';
+import { AuthService } from '../services/auth.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const translationSvc = inject(TranslationService);
   const toastSvc = inject(ToastService);
+  const injector = inject(Injector);
   const defaultErrorMessage = translationSvc.translate('ERRORS.UNEXPECTED');
 
   return next(req).pipe(
@@ -25,6 +27,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         errorMessage = error.message;
       } else {
         errorMessage = defaultErrorMessage;
+      }
+
+      // Check if session has been invalidated or expired
+      if (error.status === 401) {
+        const authSvc = injector.get(AuthService);
+        authSvc.logout();
       }
 
       const isCustomHandled = req.url.includes('/admin/users') || req.url.includes('/gateway/admin') || req.url.includes('/gateway/public') || req.url.includes('/auth/validate');

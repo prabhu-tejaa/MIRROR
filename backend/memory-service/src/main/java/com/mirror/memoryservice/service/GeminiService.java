@@ -58,6 +58,7 @@ public class GeminiService {
             Map<String, Object> payload = new HashMap<>();
             payload.put("model", "models/gemini-embedding-001");
             payload.put("content", content);
+            payload.put("outputDimensionality", 768);
 
             HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
             ResponseEntity<Map> response = restTemplate.postForEntity(url, request, Map.class);
@@ -70,14 +71,17 @@ public class GeminiService {
                     List<Number> valuesList = (List<Number>) embeddingNode.get("values");
                     if (valuesList != null) {
                         log.info("Gemini Embedding values size received: {}", valuesList.size());
-                        if (valuesList.size() == 768) {
+                        if (valuesList.size() >= 768) {
                             float[] vector = new float[768];
                             for (int i = 0; i < 768; i++) {
                                 vector[i] = valuesList.get(i).floatValue();
                             }
+                            if (valuesList.size() > 768) {
+                                log.info("Successfully applied Matryoshka dimension truncation from {} to 768.", valuesList.size());
+                            }
                             return vector;
                         } else {
-                            log.warn("Warning: Received embedding size is {}, but expected 768.", valuesList.size());
+                            log.warn("Warning: Received embedding size is {}, but expected at least 768.", valuesList.size());
                         }
                     }
                 }
@@ -106,7 +110,7 @@ public class GeminiService {
         }
 
         try {
-            String url = apiUrl + "/models/gemini-flash-latest:generateContent?key=" + apiKey;
+            String url = apiUrl + "/models/gemini-1.5-flash:generateContent?key=" + apiKey;
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -168,7 +172,8 @@ public class GeminiService {
                         if (parts != null && !parts.isEmpty()) {
                             String jsonResponseText = (String) parts.get(0).get("text");
                             if (jsonResponseText != null) {
-                                Map<String, String> parsed = parseJsonFields(jsonResponseText);
+                                String cleanedJson = sanitizeJsonText(jsonResponseText);
+                                Map<String, String> parsed = parseJsonFields(cleanedJson);
                                 String rawEmotionText = parsed.getOrDefault("emotion", "NEUTRAL");
                                 String primaryColor = parsed.getOrDefault("primaryColor", "#a855f7");
                                 String secondaryColor = parsed.getOrDefault("secondaryColor", "#06b6d4");
@@ -183,8 +188,27 @@ public class GeminiService {
             throw new RuntimeException("Gemini Reflection response was invalid or missing expected payload fields.");
         } catch (Exception e) {
             log.error("Failed to query Gemini Reflection API.", e);
-            throw new RuntimeException("Failed to generate reflection from Gemini AI service: " + e.getMessage(), e);
+            // Graceful fallback response instead of standard 500 crash
+            Map<String, String> fallback = new HashMap<>();
+            fallback.put("reflection", "I am having a brief moment of quiet thought. Let's reset and share your next reflection when you are ready.");
+            fallback.put("emotion", "Calm Vibe|#a855f7|#06b6d4");
+            return fallback;
         }
+    }
+
+    /**
+     * Sanitizes Markdown code block wrappers from AI responses
+     */
+    private String sanitizeJsonText(String text) {
+        if (text == null) {
+            return "{}";
+        }
+        String cleaned = text.trim();
+        if (cleaned.startsWith("```")) {
+            cleaned = cleaned.replaceAll("^```(?:json)?", "");
+            cleaned = cleaned.replaceAll("```$", "");
+        }
+        return cleaned.trim();
     }
 
     /**

@@ -696,12 +696,12 @@
 
   .ambient-glows {
     .orb-1 {
-      background: #ff0077;
+      background: var(--emotion-color-primary, #ff0077);
       opacity: 0.16;
     }
 
     .orb-2 {
-      background: #00f3ff;
+      background: var(--emotion-color-secondary, #00f3ff);
       opacity: 0.16;
     }
   }
@@ -786,13 +786,13 @@
     }
 
     .orb-1 {
-      background: #00ffd5;
+      background: var(--emotion-color-primary, #00ffd5);
       top: -10px;
       left: 10%;
     }
 
     .orb-2 {
-      background: #8800ff;
+      background: var(--emotion-color-secondary, #8800ff);
       bottom: 40px;
       right: 10%;
       animation-delay: 2s;
