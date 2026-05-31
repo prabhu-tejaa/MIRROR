@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, no-console */
-import { Component, ChangeDetectionStrategy, signal, computed, inject, ViewChild, ElementRef, effect, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {

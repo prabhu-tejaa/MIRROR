@@ -67,7 +67,8 @@ export class AuthService {
   private startSessionValidationTimer(): void {
     setInterval(() => {
       this.checkSessionValidity();
-    }, 60000); // Check every 60 seconds instead of 4 seconds to reduce server load
+      // Check every 60 seconds instead of 4 seconds to reduce server load
+    }, 60000);
   }
 
   private checkSessionValidity(): void {
