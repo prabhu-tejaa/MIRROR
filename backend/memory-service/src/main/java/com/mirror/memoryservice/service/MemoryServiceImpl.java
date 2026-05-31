@@ -109,7 +109,7 @@ public class MemoryServiceImpl implements MemoryService {
     @Override
     @Transactional(readOnly = true)
     public List<Memory> getAllMemories(String userId) {
-        return repository.findAllByUserIdOrderByCreatedAtDesc(userId);
+        return repository.findAllByUserIdOrderByCreatedAtDescIdDesc(userId);
     }
 
     @Override

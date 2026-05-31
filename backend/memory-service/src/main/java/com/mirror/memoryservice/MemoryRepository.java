@@ -48,9 +48,9 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
     List<Object[]> findEmotionCounts(@Param("userId") String userId);
 
     /**
-     * Find all memories for a user ordered by timestamp.
+     * Find all memories for a user ordered by timestamp and sequential sequence.
      */
-    List<Memory> findAllByUserIdOrderByCreatedAtDesc(String userId);
+    List<Memory> findAllByUserIdOrderByCreatedAtDescIdDesc(String userId);
 
     /**
      * Paginated fetch of memories for a user (newest first).
@@ -58,7 +58,7 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
      */
     @Query(value = "SELECT id, user_id, content, emotion, sender, CAST(embedding AS text) AS embedding, created_at FROM memories " +
                    "WHERE user_id = :userId " +
-                   "ORDER BY created_at DESC " +
+                   "ORDER BY created_at DESC, id DESC " +
                    "LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Memory> findMemoriesPaginated(
         @Param("userId") String userId,
