@@ -1,48 +1,29 @@
-.heart-title-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  left: 50%;
-  top: 45%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  pointer-events: none;
-  width: auto;
+// Personal Consciousness Mandala — a living procedural portrait of the user's mind
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&display=swap');
 
-  .heart-o {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    animation: heartBeatPulse 1.8s infinite ease-in-out;
-
-    ion-icon {
-      font-size: clamp(5.0rem, 14vw, 9.0rem);
-      color: #ff3366; /* Crimson rose */
-      filter: drop-shadow(0 0 20px rgba(255, 51, 102, 0.4));
-    }
-  }
+ion-content {
+  --background: transparent;
+  font-family: 'Outfit', sans-serif;
 }
 
-@keyframes heartBeatPulse {
-  0% {
-    transform: scale(0.95);
-  }
-  12% {
-    transform: scale(1.24); /* Quick sharp Systole Beat 1 */
-  }
-  24% {
-    transform: scale(1.02); /* Slight relaxation drop */
-  }
-  36% {
-    transform: scale(1.15); /* Secondary Diastole Beat 2 */
-  }
-  50% {
-    transform: scale(0.95); /* Full relaxation / Diastolic Pause */
-  }
-  100% {
-    transform: scale(0.95); /* Resting phase before next lub-dub */
-  }
+.art-universe-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: transparent;
+}
+
+// The canvas renders the mandala directly — no CSS filters needed
+// (We draw gradients in JS so the canvas is already beautiful)
+.generative-fluid-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  background: transparent;
+  // Soft outer glow on the whole canvas so the mandala feels like it floats in space
+  filter: drop-shadow(0 0 60px rgba(120, 80, 255, 0.08));
 }
