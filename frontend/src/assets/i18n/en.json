@@ -157,7 +157,8 @@
     "API_URL": "http://localhost:8060"
   },
   "ERRORS": {
-    "UNEXPECTED": "An unexpected error occurred. Please try again."
+    "UNEXPECTED": "An unexpected error occurred. Please try again.",
+    "CONNECTION_LOST": "Network connection lost. Please check your internet connection."
   },
   "TYPES": {
     "STRING": "string",

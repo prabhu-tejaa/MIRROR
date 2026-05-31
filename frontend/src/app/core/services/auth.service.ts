@@ -14,6 +14,9 @@ export class AuthService {
   private translationSvc = inject(TranslationService);
   private router = inject(Router);
 
+  private lastValidationTime = 0;
+  private isValidating = false;
+
   private getSessionInstanceId(): string {
     let id = sessionStorage.getItem('mirror_session_instance_id');
     if (!id) {
@@ -83,15 +86,25 @@ export class AuthService {
       return;
     }
 
+    // Cooldown check (10 seconds) and check if validation is already in flight
+    if (this.isValidating || Date.now() - this.lastValidationTime < 10000) {
+      return;
+    }
+
     const refreshToken = localStorage.getItem(this.refreshTokenKey);
     if (!environment.mock && refreshToken) {
+      this.isValidating = true;
+      this.lastValidationTime = Date.now();
+      
       this.http.post<{ valid: boolean }>(this.apiSvc.AUTH.VALIDATE, { refreshToken }).subscribe({
         next: (res) => {
+          this.isValidating = false;
           if (res && res.valid === false) {
             this.logout();
           }
         },
         error: (err) => {
+          this.isValidating = false;
           // Only log out for explicit auth failures (401/403).
           // Do NOT log out on transient 5xx server errors, connection timeouts, or offline status
           if (err && (err.status === 401 || err.status === 403)) {

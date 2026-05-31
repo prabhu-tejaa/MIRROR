@@ -148,5 +148,58 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     return of(new HttpResponse({ status: 200, body: message })).pipe(delay(300));
   }
 
+  if (url.includes('/api/memory/history')) {
+    const mockHistory = {
+      messages: [
+        {
+          id: '1',
+          sender: 'user',
+          content: 'Hello, I want to start my journey of self-reflection today.',
+          createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+          emotion: 'NEUTRAL'
+        },
+        {
+          id: '2',
+          sender: 'mirror',
+          content: 'Welcome! I am MIRROR, your sanctuary for deep reflection. Let us explore the depths of your thoughts and feelings. What is on your mind right now?',
+          createdAt: new Date(Date.now() - 3600000 * 2 + 5000).toISOString(),
+          emotion: 'CALM|#10b981|#06b6d4'
+        }
+      ],
+      hasMore: false
+    };
+    return of(new HttpResponse({ status: 200, body: mockHistory })).pipe(delay(600));
+  }
+
+  if (url.includes('/api/memory/reflect')) {
+    const userPrompt = typeof req.body === 'string' ? req.body : '';
+    let responseText = "I hear you. Every thought you share is a stepping stone to deeper self-awareness. Let's explore this feeling together.";
+    let emotionToken = "CALM|#10b981|#06b6d4";
+
+    const promptUpper = userPrompt.toUpperCase();
+    if (promptUpper.includes('HAPPY') || promptUpper.includes('JOY') || promptUpper.includes('GREAT') || promptUpper.includes('GOOD')) {
+      responseText = "It is wonderful to hear that you are experiencing joy! Celebrating these positive moments anchors gratitude in your journey. What else is contributing to this brightness?";
+      emotionToken = "JOY|#ffb700|#ff5e00";
+    } else if (promptUpper.includes('SAD') || promptUpper.includes('LONELY') || promptUpper.includes('CRY') || promptUpper.includes('HURT')) {
+      responseText = "I'm holding space for you. Feeling down or lonely is a completely natural human experience, and speaking it aloud is incredibly brave. Be gentle with yourself today.";
+      emotionToken = "SAD|#00ffd5|#0099ff";
+    } else if (promptUpper.includes('ANXIOUS') || promptUpper.includes('STRESS') || promptUpper.includes('WORRY') || promptUpper.includes('SCARED')) {
+      responseText = "Take a slow, deep breath. Anxiety can feel overwhelming, but remember that you are here, safe in this moment. We can unpack these worries one step at a time.";
+      emotionToken = "ANXIOUS|#a855f7|#06b6d4";
+    } else if (promptUpper.includes('ANGRY') || promptUpper.includes('MAD') || promptUpper.includes('FRUSTRATED')) {
+      responseText = "It is completely valid to feel angry or frustrated. Anger often points to things we care deeply about or boundaries that have been crossed. Let's release some of that tension together.";
+      emotionToken = "ANGER|#ff0055|#e11d48";
+    } else if (promptUpper.includes('CREATIVE') || promptUpper.includes('IDEA') || promptUpper.includes('INSIGHT')) {
+      responseText = "That sounds incredibly inspiring! Cultivating creativity lets your inner voice speak in new and beautiful ways. Tell me more about what you're imagining.";
+      emotionToken = "CREATIVITY|#10b981|#06b6d4";
+    }
+
+    const mockReflection = {
+      reflection: responseText,
+      emotion: emotionToken
+    };
+    return of(new HttpResponse({ status: 200, body: mockReflection })).pipe(delay(1000));
+  }
+
   return next(req);
 };

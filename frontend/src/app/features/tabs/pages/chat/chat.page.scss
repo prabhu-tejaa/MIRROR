@@ -40,19 +40,19 @@
   }
 
   .orb-1 {
-    width: 350px;
-    height: 350px;
+    width: 280px;
+    height: 280px;
     background: #7928ca;
-    top: -50px;
-    left: -100px;
+    top: -20px;
+    left: -20px;
   }
 
   .orb-2 {
-    width: 300px;
-    height: 300px;
+    width: 260px;
+    height: 260px;
     background: #ff0080;
-    bottom: 50px;
-    right: -100px;
+    bottom: 60px;
+    right: -20px;
   }
 }
 
@@ -607,53 +607,53 @@
 
 .bottom-ambient-glow {
   position: absolute;
-  bottom: -100px;
+  bottom: -60px;
   left: 50%;
   transform: translateX(-50%);
-  width: 160%;
-  height: 213px;
+  width: calc(100% + 48px);
+  height: 140px;
   border-radius: 50%;
   background: radial-gradient(ellipse at center,
       rgba(49, 46, 129, 0.45) 0%,
-      rgba(99, 102, 241, 0.28) 35%,
-      rgba(71, 85, 105, 0.18) 55%,
-      transparent 76%);
-  filter: blur(28px);
+      rgba(99, 102, 241, 0.28) 45%,
+      rgba(71, 85, 105, 0.18) 70%,
+      transparent 90%);
+  filter: blur(24px);
   pointer-events: none;
   z-index: 1;
   animation: bottomGlowBreathPrimary 30s infinite linear;
   opacity: 0.90;   
 
   @media (min-width: 768px) {
-    width: 160%;
-    height: 211px;
-    bottom: -100px;
+    width: calc(100% + 48px);
+    height: 140px;
+    bottom: -60px;
   }
 }
 
 .bottom-ambient-glow-secondary {
   position: absolute;
-  bottom: -110px;
+  bottom: -70px;
   left: 50%;
   transform: translateX(-50%);
-  width: 154%;
-  height: 188px;
+  width: calc(100% + 48px);
+  height: 120px;
   border-radius: 50%;
   background: radial-gradient(ellipse at center,
       rgba(99, 102, 241, 0.32) 0%,
-      rgba(49, 46, 129, 0.22) 40%,
-      rgba(71, 85, 105, 0.14) 60%,
-      transparent 82%);
-  filter: blur(34px);
+      rgba(49, 46, 129, 0.22) 45%,
+      rgba(71, 85, 105, 0.14) 70%,
+      transparent 90%);
+  filter: blur(28px);
   pointer-events: none;
   z-index: 1;
   animation: bottomGlowBreathSecondary 40s infinite linear;
   opacity: 0.80;
 
   @media (min-width: 768px) {
-    width: 126%;
-    height: 186px;
-    bottom: -110px;
+    width: calc(100% + 48px);
+    height: 120px;
+    bottom: -70px;
   }
 }
 
@@ -787,13 +787,13 @@
 
     .orb-1 {
       background: #00ffd5;
-      top: -100px;
+      top: -10px;
       left: 10%;
     }
 
     .orb-2 {
       background: #8800ff;
-      bottom: -50px;
+      bottom: 40px;
       right: 10%;
       animation-delay: 2s;
     }
@@ -1186,4 +1186,101 @@
       }
     }
   }
+
+  // 💎 PREMIUM GEMINI-STYLE WELCOME BANNER
+  .welcome-banner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px;
+    margin: auto 0;
+    width: 100%;
+    max-width: 720px;
+    align-self: center;
+    box-sizing: border-box;
+    animation: bannerFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+    .banner-orb {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      animation: floatIcon 6s ease-in-out infinite;
+
+      .banner-icon {
+        font-size: 32px;
+        color: #ffffff;
+        background: linear-gradient(135deg, #00ffd5, #8800ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+    }
+
+    .greeting-title {
+      margin: 0;
+      color: #ffffff;
+      line-height: 1.2;
+
+      .greeting-time-text {
+        display: block;
+        font-size: 2.2rem;
+        font-weight: 500;
+        letter-spacing: -0.5px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .username-highlight {
+        display: block;
+        font-size: 3.4rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-top: 8px;
+        color: #ffffff;
+        text-shadow: 0 4px 24px rgba(255, 255, 255, 0.2);
+      }
+    }
+
+    .greeting-subtitle {
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: rgba(255, 255, 255, 0.65);
+      margin: 24px 0 0 0;
+      max-width: 620px;
+      font-weight: 400;
+      letter-spacing: 0.2px;
+
+      .quote-text {
+        font-style: italic;
+        display: block;
+      }
+
+      .quote-author {
+        display: block;
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.45);
+        margin-top: 10px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@keyframes floatIcon {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(180deg); }
+}
+
+@keyframes bannerFadeIn {
+  from { opacity: 0; transform: scale(0.96) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
 }

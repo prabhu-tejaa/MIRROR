@@ -27,7 +27,19 @@
         <div class="skeleton-dot-wave">
           <span></span><span></span><span></span>
         </div>
-        <p class="skeleton-text">Syncing your reflections...</p>
+        <p class="skeleton-text">Connecting...</p>
+      </div>
+
+      <!-- Premium Dynamic Welcome Banner (shown only when chat is completely empty) -->
+      <div class="welcome-banner" *ngIf="messages().length === 0 && !isLoadingHistory()">
+        <h1 class="greeting-title">
+          <span class="greeting-time-text">{{ getGreeting() }},</span>
+          <span class="username-highlight">{{ getUsername() }}</span>
+        </h1>
+        <p class="greeting-subtitle">
+          <span class="quote-text">“{{ activeQuote().text }}”</span>
+          <span class="quote-author">{{ activeQuote().author }}</span>
+        </p>
       </div>
 
       <div *ngFor="let msg of messages()" class="message-wrapper" [class.user-message]="msg.sender === 'user'"
@@ -44,7 +56,7 @@
           <ng-container *ngIf="!msg.isTyping; else typingIndicator">
             <p class="msg-text">{{ msg.text }}</p>
             <div class="bubble-meta">
-              <span class="vibe-badge" *ngIf="msg.sender === 'mirror' && msg.emotion && msg.emotion !== 'NEUTRAL'">
+              <span class="vibe-badge" *ngIf="msg.sender === 'mirror' && msg.emotion && msg.emotion !== 'NEUTRAL' && isAdmin()">
                 {{ msg.emotion }}
               </span>
               <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>

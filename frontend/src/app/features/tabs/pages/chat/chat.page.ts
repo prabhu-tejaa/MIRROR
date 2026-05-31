@@ -29,6 +29,7 @@ import {
   stopCircleOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../../core/services/auth.service';
+import { RoleService } from '../../../../core/services/role.service';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { Capacitor } from '@capacitor/core';
@@ -43,6 +44,11 @@ interface Message {
   emotion?: string;
   primaryColor?: string;
   secondaryColor?: string;
+}
+
+interface Quote {
+  text: string;
+  author: string;
 }
 
 @Component({
@@ -60,6 +66,7 @@ interface Message {
 })
 export class ChatPage implements OnDestroy {
   private authSvc = inject(AuthService);
+  private roleSvc = inject(RoleService);
   private alertCtrl = inject(AlertController);
   private http = inject(HttpClient);
   private isNative = false;
@@ -71,6 +78,51 @@ export class ChatPage implements OnDestroy {
   private activeTypingIntervals: any[] = [];
 
   public readonly isGuest = computed(() => this.authSvc.getEmail() === 'guest@mirror.com');
+  public readonly isAdmin = computed(() => this.roleSvc.hasRole('ADMIN'));
+
+  public getUsername(): string {
+    return this.authSvc.getUserId() || 'Friend';
+  }
+
+  public getGreeting(): string {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) {
+      return 'Good morning';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good afternoon';
+    } else if (hour >= 17 && hour < 22) {
+      return 'Good evening';
+    } else {
+      return 'Up late';
+    }
+  }
+
+  // A clean, high-fidelity default to prevent layout shift and handle offline scenarios elegantly
+  public readonly activeQuote = signal<Quote>({
+    text: 'Who looks outside, dreams; who looks inside, awakes.',
+    author: 'Carl Jung'
+  });
+
+  /**
+   * Fetches a fresh dynamic quote from a free public API.
+   * Leverages safe navigation and fallback strategies in case of CORS or connection failures.
+   */
+  private fetchDynamicQuote(): void {
+    this.http.get<any>('https://dummyjson.com/quotes/random').subscribe({
+      next: (res) => {
+        if (res?.quote && res?.author) {
+          this.activeQuote.set({
+            text: res.quote,
+            author: res.author
+          });
+        }
+      },
+      error: (err) => {
+        console.warn('[ChatPage] Failed to fetch dynamic quote from public API, using local fallback:', err);
+      }
+    });
+  }
+
 
   private get guestChatCount(): number {
     const val = localStorage.getItem('mirror_guest_chat_count');
@@ -99,14 +151,7 @@ export class ChatPage implements OnDestroy {
   private isInitialLoad = true;
 
 
-  public readonly messages = signal<Message[]>([
-    {
-      id: 'welcome',
-      sender: 'mirror',
-      text: 'I am your reflection companion, designed to help you capture your daily wins, track your emotional patterns and preserve key life lessons before they fade. How are you feeling today? Share a moment, a win or a pain, and let\'s begin reflecting.',
-      timestamp: new Date()
-    }
-  ]);
+  public readonly messages = signal<Message[]>([]);
 
   @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLInputElement>;
@@ -114,15 +159,9 @@ export class ChatPage implements OnDestroy {
   private recognition: any = null;
   private speechTimeout: any = null;
 
-  public readonly suggestionChips = [
-    { label: 'Tell a Joke', icon: 'happy-outline', text: 'Tell me a funny, geeky programming joke!' },
-    { label: 'Draft Email', icon: 'code-slash-outline', text: 'Draft a quick, high-end professional email for a project sync.' },
-    { label: 'System Health', icon: 'pulse-outline', text: 'What is the status of our system and services?' },
-    { label: 'Philosophy', icon: 'globe-outline', text: 'Explain the philosophy of the MIRROR concept.' }
-  ];
-
   constructor() {
     this.isNative = Capacitor.isNativePlatform();
+    this.fetchDynamicQuote();
 
     addIcons({
       micOutline,
@@ -515,7 +554,7 @@ export class ChatPage implements OnDestroy {
     this.chatInput.set('');
     
     if (this.textInput?.nativeElement) {
-      this.textInput.nativeElement.blur();
+      this.textInput.nativeElement.focus();
     }
 
     setTimeout(() => this.scrollToBottom('smooth'), 50);
@@ -713,23 +752,26 @@ export class ChatPage implements OnDestroy {
         };
 
         this.messages.update(prev => [...prev, mirrorReply]);
-        this.isWaitingForResponse.set(false);
 
-        // Type out the reflection text word-by-word for an ultra-premium dynamic feel
-        let currentWordIdx = 0;
-        const words = reflectionText.split(' ');
+        // Type out the reflection text character-by-character for a smooth, premium real-time typing feel
+        let currentCharIdx = 0;
         const streamInterval = setInterval(() => {
-          if (currentWordIdx < words.length) {
-            const streamedText = words.slice(0, currentWordIdx + 1).join(' ');
+          if (currentCharIdx < reflectionText.length) {
+            // Type 3 characters at a time for a fast, organic, and ultra-smooth flow
+            currentCharIdx += 3;
+            if (currentCharIdx > reflectionText.length) {
+              currentCharIdx = reflectionText.length;
+            }
+            const streamedText = reflectionText.slice(0, currentCharIdx);
             this.messages.update(prev => prev.map(m => m.id === replyId ? { ...m, text: streamedText } : m));
-            currentWordIdx++;
             this.scrollToBottom('smooth');
           } else {
             clearInterval(streamInterval);
             this.activeTypingIntervals = this.activeTypingIntervals.filter(i => i !== streamInterval);
+            this.isWaitingForResponse.set(false);
             this.focusInput();
           }
-        }, 35);
+        }, 15);
         this.activeTypingIntervals.push(streamInterval);
       },
       error: (err) => {
@@ -763,49 +805,5 @@ export class ChatPage implements OnDestroy {
         this.focusInput();
       }
     });
-  }
-
-  private generateAIResponse(prompt: string): string {
-    const query = prompt.toLowerCase();
-
-    if (query.includes('joke')) {
-      const jokes = [
-        "Why do programmers prefer dark mode? Because light attracts bugs! 🪲",
-        "There are 10 kinds of people in this world: Those who understand binary, and those who don't.",
-        "How many programmers does it take to change a light bulb? None, that's a hardware problem!",
-        "['hip', 'hip'] (hip hip array!) 🏎️"
-      ];
-      return jokes[Math.floor(Math.random() * jokes.length)];
-    }
-
-    if (query.includes('email') || query.includes('draft')) {
-      return `Subject: Sync & Review: MIRROR Frontend & Microservices Integration
-
-Dear Team,
-
-I hope you are doing well. 
-
-I wanted to send a quick update on our MIRROR synchronization module. The frontend layouts and safe area paddings are now fully synced across web, android live-reload, and production packaging.
-
-We have successfully refined our telemetry dashboard and active memory gateway routing. Our next focus will be verifying performance telemetry statistics in the real-time console. Let's touch base tomorrow morning at 10:00 AM.
-
-Best regards,
-MIRROR Core`;
-    }
-
-    if (query.includes('status') || query.includes('health') || query.includes('system')) {
-      return `🌐 [SYSTEM DIAGNOSTICS - LIVE]
-- Auth Microservice: ONLINE (Port 8081, Latency: 12ms)
-- Memory Postgres Node: ONLINE (Port 8082, Latency: 22ms)
-- Gateway Proxy Routing: ACTIVE (Active routes: 2)
-- Telemetry Broker: SUCCESS (48.5K telemetry events processed today)
-- System Health Score: 100% Correct and Synchronized!`;
-    }
-
-    if (query.includes('philosophy') || query.includes('mirror')) {
-      return "The philosophy of MIRROR centers on pure digital convergence. It operates on the premise that your coding workflows, interface design, and backing microservices should exist as a single, beautifully synchronized entity. Like a physical mirror reflects your form, MIRROR projects a harmonious reflection of elegant software engineering and high-end aesthetic fidelity.";
-    }
-
-    return "Thank you! This feature is currently under development.";
   }
 }
