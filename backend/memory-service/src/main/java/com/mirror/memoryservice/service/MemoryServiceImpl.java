@@ -71,7 +71,7 @@ public class MemoryServiceImpl implements MemoryService {
     @Transactional
     public Map<String, String> generateReflection(String userId, String prompt) {
         // 1. Retrieve similar past memories (Cosine Similarity Search)
-        List<Memory> pastMemories = getSimilarMemories(userId, prompt, 3);
+        List<Memory> pastMemories = getSimilarMemories(userId, prompt, 5);
         
         // 2. Build semantic RAG context
         StringBuilder contextBuilder = new StringBuilder();

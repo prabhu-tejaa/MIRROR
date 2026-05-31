@@ -21,6 +21,69 @@
   box-sizing: border-box;
 }
 
+.voice-selector-capsule {
+  align-self: center;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 6px 14px;
+  z-index: 15;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+
+  .selector-inner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    .selector-icon {
+      font-size: 16px;
+      color: var(--emotion-color-primary, #a855f7);
+      animation: floatBreath 3s infinite ease-in-out;
+    }
+
+    .selector-label {
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    select {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.82rem;
+      outline: none;
+      cursor: pointer;
+      padding-right: 4px;
+
+      option {
+        background: #0d0b18;
+        color: #ffffff;
+      }
+    }
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.16);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+}
+
+@keyframes floatBreath {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
 .ambient-glows {
   position: absolute;
   top: 0;
@@ -341,6 +404,45 @@
       gap: 10px;
       margin-top: 6px;
       width: 100%;
+
+      .tts-button {
+        background: transparent;
+        border: none;
+        color: inherit;
+        opacity: 0.45;
+        padding: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        outline: none;
+        font-size: 13px;
+        border-radius: 50%;
+        transition: all 0.25s ease;
+
+        ion-icon {
+          pointer-events: none;
+        }
+
+        &:hover {
+          opacity: 0.9;
+          transform: scale(1.1);
+          background: rgba(255, 255, 255, 0.05);
+        }
+
+        &.speaking {
+          opacity: 1;
+          color: #ffffff;
+          filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
+          animation: ttsPulseGlow 1.5s infinite ease-in-out;
+        }
+      }
+    }
+
+    @keyframes ttsPulseGlow {
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.8; }
     }
 
     .vibe-badge {

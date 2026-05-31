@@ -10,7 +10,7 @@
   </div>
 
   <div class="chat-wrapper">
-
+ 
     <!-- Message Stream -->
     <div class="message-stream" #streamScroll>
 
@@ -31,7 +31,7 @@
       </div>
 
       <!-- Premium Dynamic Welcome Banner (shown only when chat is completely empty) -->
-      <div class="welcome-banner" *ngIf="messages().length === 0 && !isLoadingHistory()">
+      <div class="welcome-banner" *ngIf="todayMessages().length === 0 && !isLoadingHistory()">
         <h1 class="greeting-title">
           <span class="greeting-time-text">{{ getGreeting() }},</span>
           <span class="username-highlight">{{ getUsername() }}</span>
@@ -41,20 +41,23 @@
           <span class="quote-author">{{ activeQuote().author }}</span>
         </p>
       </div>
-
-      <div *ngFor="let msg of messages(); trackBy: trackByMessageId" class="message-wrapper" [class.user-message]="msg.sender === 'user'"
+ 
+      <div *ngFor="let msg of todayMessages(); trackBy: trackByMessageId" class="message-wrapper" [class.user-message]="msg.sender === 'user'"
         [class.mirror-message]="msg.sender === 'mirror'">
-
+ 
         <div class="avatar" *ngIf="msg.sender === 'mirror'">
           <ion-icon name="finger-print" [class.loading-fingerprint]="msg.isTyping"></ion-icon>
         </div>
-
+ 
         <div [class]="'message-bubble ' + (msg.isTyping ? 'typing-bubble ' : '') + (msg.emotion ? 'emotion-' + msg.emotion.toLowerCase() : '')"
           [style.--bubble-color-primary]="msg.primaryColor"
           [style.--bubble-color-secondary]="msg.secondaryColor">
           <ng-container *ngIf="!msg.isTyping; else typingIndicator">
             <p class="msg-text">{{ msg.text }}</p>
             <div class="bubble-meta">
+              <button class="tts-button" *ngIf="msg.sender === 'mirror'" (click)="speakText(msg.id, msg.text, $event)" [class.speaking]="currentlySpeakingId() === msg.id" aria-label="Listen to reflection">
+                <ion-icon [name]="currentlySpeakingId() === msg.id ? 'volume-high-outline' : 'volume-mute-outline'"></ion-icon>
+              </button>
               <span class="vibe-badge" *ngIf="msg.sender === 'mirror' && msg.emotion && msg.emotion !== 'NEUTRAL' && isAdmin()">
                 {{ msg.emotion }}
               </span>

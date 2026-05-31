@@ -26,7 +26,9 @@ import {
   happyOutline,
   codeSlashOutline,
   pulseOutline,
-  stopCircleOutline
+  stopCircleOutline,
+  volumeHighOutline,
+  volumeMuteOutline
 } from 'ionicons/icons';
 import { AuthService } from '../../../../core/services/auth.service';
 import { RoleService } from '../../../../core/services/role.service';
@@ -149,9 +151,21 @@ export class ChatPage implements OnDestroy {
   private readonly pageSize = 20;
   private hasMoreHistory = true;
   private isInitialLoad = true;
+  private loadedEmail: string | null = null;
 
 
   public readonly messages = signal<Message[]>([]);
+  public readonly currentlySpeakingId = signal<string | null>(null);
+  public readonly availableVoices = signal<SpeechSynthesisVoice[]>([]);
+  public readonly selectedVoiceName = signal<string>('');
+  private checkMidnightInterval: any = null;
+  private currentDayOfMonth = new Date().getDate();
+
+  public readonly todayMessages = computed(() => {
+    const midnight = new Date();
+    midnight.setHours(0, 0, 0, 0);
+    return this.messages().filter(m => new Date(m.timestamp).getTime() >= midnight.getTime());
+  });
 
   @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLInputElement>;
@@ -183,10 +197,58 @@ export class ChatPage implements OnDestroy {
       happyOutline,
       codeSlashOutline,
       pulseOutline,
-      stopCircleOutline
+      stopCircleOutline,
+      volumeHighOutline,
+      volumeMuteOutline
     });
 
     this.initSpeechRecognition();
+    this.setupMidnightChecker();
+    this.preCacheVoices();
+  }
+
+  private preCacheVoices() {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      const loadVoices = () => {
+        // Query English system voices
+        const voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+        this.availableVoices.set(voices);
+
+        // Pre-select a comforting female voice by default if available
+        if (!this.selectedVoiceName() && voices.length > 0) {
+          const defaultFav = voices.find(v => 
+            v.name.toLowerCase().includes('samantha') || 
+            v.name.toLowerCase().includes('zira') || 
+            v.name.toLowerCase().includes('hazel') ||
+            v.name.toLowerCase().includes('female')
+          ) || voices[0];
+          if (defaultFav) {
+            this.selectedVoiceName.set(defaultFav.name);
+          }
+        }
+      };
+
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = () => {
+        loadVoices();
+      };
+    }
+  }
+
+  public setVoice(voiceName: string) {
+    this.selectedVoiceName.set(voiceName);
+  }
+
+  private setupMidnightChecker() {
+    this.checkMidnightInterval = setInterval(() => {
+      const day = new Date().getDate();
+      if (day !== this.currentDayOfMonth) {
+        this.currentDayOfMonth = day;
+        // Trigger reactive update
+        this.messages.update(prev => [...prev]);
+      }
+      // Check every minute
+    }, 60000);
   }
 
   public ngOnDestroy() {
@@ -195,6 +257,13 @@ export class ChatPage implements OnDestroy {
     // Clear all active word-by-word streaming timers to prevent memory leaks on navigation
     this.activeTypingIntervals.forEach(clearInterval);
     this.activeTypingIntervals = [];
+
+    if (this.checkMidnightInterval) {
+      clearInterval(this.checkMidnightInterval);
+    }
+    
+    // Stop any active speech synthesis on destroy
+    window.speechSynthesis.cancel();
 
     if (this.isNative) {
       this.stopNativeRecording();
@@ -295,7 +364,8 @@ export class ChatPage implements OnDestroy {
 
   public ionViewDidEnter() {
     this.focusInput();
-    if (this.isInitialLoad) {
+    const currentEmail = this.authSvc.getEmail() || 'guest@mirror.com';
+    if (this.isInitialLoad || this.loadedEmail !== currentEmail) {
       this.loadChatHistory();
     } else {
       // Scroll multiple times to ensure we are at the absolute bottom
@@ -512,6 +582,65 @@ export class ChatPage implements OnDestroy {
     }
   }
 
+  public speakText(msgId: string, text: string, event?: Event) {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    // If currently speaking this specific message, cancel it
+    if (this.currentlySpeakingId() === msgId) {
+      window.speechSynthesis.cancel();
+      this.currentlySpeakingId.set(null);
+      return;
+    }
+
+    // Cancel any other running speaking session
+    window.speechSynthesis.cancel();
+
+    // Create speaking request
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Dynamic voice selection: Query system voices and find a premium, warm, or natural voice
+    const voices = window.speechSynthesis.getVoices();
+    console.log('[MIRROR TTS] Available voices on this device:', voices.map(v => `${v.name} (${v.lang})`));
+    
+    // Direct priority lock: Seek Google UK English Female first, with robust comforting soft female fallbacks
+    const selectedVoice = voices.find(v => v.name.toLowerCase().includes('google uk english female')) ||
+                          voices.find(v => v.name.toLowerCase().includes('google uk english')) ||
+                          voices.find(v => v.name.toLowerCase().includes('samantha')) ||
+                          voices.find(v => v.name.toLowerCase().includes('zira')) ||
+                          voices.find(v => v.name.toLowerCase().includes('hazel')) ||
+                          voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
+                          voices.find(v => v.lang.startsWith('en')) || 
+                          voices[0];
+
+    if (selectedVoice) {
+      console.log('[MIRROR TTS] Speaking using selected female voice:', selectedVoice.name);
+      utterance.voice = selectedVoice;
+    }
+
+    // Calibrate rate and pitch for an empathetic, calm conversational vibe
+    // Slightly relaxed, comfortable pacing
+    utterance.rate = 0.95;
+    // Warmer, more melodic and friendly frequency pitch
+    utterance.pitch = 1.05;
+    
+    utterance.onend = () => {
+      if (this.currentlySpeakingId() === msgId) {
+        this.currentlySpeakingId.set(null);
+      }
+    };
+    utterance.onerror = (e) => {
+      console.error('Speech synthesis error:', e);
+      if (this.currentlySpeakingId() === msgId) {
+        this.currentlySpeakingId.set(null);
+      }
+    };
+
+    this.currentlySpeakingId.set(msgId);
+    window.speechSynthesis.speak(utterance);
+  }
+
   private async showSignupPopup() {
     const alert = await this.alertCtrl.create({
       header: 'Limit Reached',
@@ -536,6 +665,9 @@ export class ChatPage implements OnDestroy {
     await alert.present();
   }
 
+  /**
+   * Track by function for ngFor loop performance optimization.
+   */
   public trackByMessageId(index: number, message: Message): string {
     return message.id;
   }
@@ -597,10 +729,17 @@ export class ChatPage implements OnDestroy {
 
   private loadChatHistory() {
     const email = this.authSvc.getEmail() || 'guest@mirror.com';
+    this.loadedEmail = email;
     this.isLoadingHistory.set(true);
     this.currentPage = 0;
     this.hasMoreHistory = true;
     this.isInitialLoad = true;
+    
+    // Reset state for the new/loading user
+    this.messages.set([]);
+    this.currentEmotion.set('NEUTRAL');
+    this.currentPrimaryColor.set('#a855f7');
+    this.currentSecondaryColor.set('#06b6d4');
 
     this.http.get<any>(`${environment.apiUrl}/api/memory/history?page=0&size=${this.pageSize}`, {
       headers: { 'X-User-Email': email }
