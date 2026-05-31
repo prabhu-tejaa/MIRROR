@@ -42,7 +42,7 @@
         </p>
       </div>
 
-      <div *ngFor="let msg of messages()" class="message-wrapper" [class.user-message]="msg.sender === 'user'"
+      <div *ngFor="let msg of messages(); trackBy: trackByMessageId" class="message-wrapper" [class.user-message]="msg.sender === 'user'"
         [class.mirror-message]="msg.sender === 'mirror'">
 
         <div class="avatar" *ngIf="msg.sender === 'mirror'">

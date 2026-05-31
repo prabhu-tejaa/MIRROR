@@ -29,7 +29,7 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
      * Semantic Cosine Similarity search on past memories context using pgvector's <=> operator.
      * Restricts queries strictly to the authenticated user's own thoughts (sender = 'user').
      */
-    @Query(value = "SELECT id, user_id, content, emotion, sender, created_at FROM memories " +
+    @Query(value = "SELECT id, user_id, content, emotion, sender, CAST(embedding AS text) AS embedding, created_at FROM memories " +
                    "WHERE user_id = :userId AND sender = 'user' " +
                    "ORDER BY embedding <=> CAST(:embedding AS vector) " +
                    "LIMIT :limit", nativeQuery = true)
@@ -56,7 +56,7 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
      * Paginated fetch of memories for a user (newest first).
      * Uses native SQL with LIMIT/OFFSET for efficient cursor-free pagination.
      */
-    @Query(value = "SELECT id, user_id, content, emotion, sender, created_at FROM memories " +
+    @Query(value = "SELECT id, user_id, content, emotion, sender, CAST(embedding AS text) AS embedding, created_at FROM memories " +
                    "WHERE user_id = :userId " +
                    "ORDER BY created_at DESC " +
                    "LIMIT :limit OFFSET :offset", nativeQuery = true)

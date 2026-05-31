@@ -32,7 +32,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         toastSvc.showError(errorMessage);
       }
 
-      return throwError(() => new Error(errorMessage));
+      const customError = new Error(errorMessage);
+      (customError as any).status = error.status;
+      return throwError(() => customError);
     })
   );
 };

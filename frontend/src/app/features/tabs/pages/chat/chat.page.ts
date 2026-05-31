@@ -536,6 +536,10 @@ export class ChatPage implements OnDestroy {
     await alert.present();
   }
 
+  public trackByMessageId(index: number, message: Message): string {
+    return message.id;
+  }
+
   private sendMessage(text: string) {
     if (this.isGuest()) {
       this.incrementGuestChatCount();
