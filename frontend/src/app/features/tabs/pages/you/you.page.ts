@@ -89,7 +89,7 @@ export class YouPage implements AfterViewInit, OnDestroy {
     this.canvasCtx = canvas.getContext('2d');
     this.resizeCanvas();
     this.setupTouchListeners(canvas);
-    this.buildDNA(); // Build the personal mandala seed
+    this.buildDNA();
   }
 
   private resizeCanvas() {
@@ -144,7 +144,7 @@ export class YouPage implements AfterViewInit, OnDestroy {
     for (let i = 0; i < str.length; i++) {
       hash = (hash * 33) ^ str.charCodeAt(i);
     }
-    return Math.abs(hash >>> 0); // Unsigned 32-bit int
+    return Math.abs(hash >>> 0);
   }
 
   /** Seeded random — deterministic from a given seed */
@@ -198,12 +198,12 @@ export class YouPage implements AfterViewInit, OnDestroy {
       const ri = (idx: number) => this.seededRand(seed + i * 97, idx);
       this.orbitParticles.push({
         angle: (i / orbitCount) * Math.PI * 2 + ri(0) * 0.3,
-        orbitRadiusFraction: 0.52 + ri(1) * 0.25, // fraction of min(W,H)/2
+        orbitRadiusFraction: 0.52 + ri(1) * 0.25,
         speed: (ri(2) > 0.5 ? 1 : -1) * (0.0003 + ri(3) * 0.0006),
         size: 1.5 + ri(4) * 3.5,
         hue: hues[Math.floor(ri(5) * 3)],
         alpha: 0.35 + ri(6) * 0.55,
-        connected: ri(7) > 0.45, // whether this particle draws a line to the next
+        connected: ri(7) > 0.45,
       });
     }
 
@@ -218,7 +218,7 @@ export class YouPage implements AfterViewInit, OnDestroy {
         yFrac: ri(2) > 0.5 ? (0.7 + ri(3) * 0.3) : (ri(3) * 0.3),
         driftX: (ri(4) - 0.5) * 0.00012,
         driftY: (ri(5) - 0.5) * 0.00012,
-        radiusFraction: 0.12 + ri(6) * 0.18, // fraction of min(W,H)
+        radiusFraction: 0.12 + ri(6) * 0.18,
         hue: hues[Math.floor(ri(7) * 3)],
         alpha: 0.04 + ri(8) * 0.08,
         pulseSpeed: 0.4 + ri(9) * 0.8,
@@ -233,17 +233,17 @@ export class YouPage implements AfterViewInit, OnDestroy {
     for (let i = 0; i < spiritCount; i++) {
       const ri = (idx: number) => this.seededRand(seed + i * 53 + 9999, idx);
       this.spiritParticles.push({
-        x: ri(0),         // fraction of W
-        y: ri(1),         // fraction of H
+        x: ri(0),         
+        y: ri(1),         
         vx: (ri(2) - 0.5) * 0.00025,
-        vy: -(0.00008 + ri(3) * 0.00018), // upward drift
+        vy: -(0.00008 + ri(3) * 0.00018),
         size: 0.8 + ri(4) * 2.2,
         hue: hues[Math.floor(ri(5) * 3)],
         alpha: 0.2 + ri(6) * 0.6,
         twinkleSpeed: 0.8 + ri(7) * 2.5,
         twinklePhase: ri(8) * Math.PI * 2,
-        life: ri(9),      // start at random phase so they don't all appear at once
-        maxLife: 0.6 + ri(10) * 0.4, // fraction — wraps 0..1
+        life: ri(9),
+        maxLife: 0.6 + ri(10) * 0.4,
       });
     }
   }
@@ -295,11 +295,11 @@ export class YouPage implements AfterViewInit, OnDestroy {
     // Hue tint from dominant emotion
     let hueShift = 0;
     const dominant = Object.entries(counts).reduce((a, b) => b[1] > a[1] ? b : a, ['CALM', 0])[0];
-    if (dominant === 'JOY')     hueShift = 20;   // Warm shift
-    if (dominant === 'ANGER')   hueShift = -30;  // Hot red shift
-    if (dominant === 'SAD')     hueShift = -60;  // Cool blue shift
-    if (dominant === 'ANXIOUS') hueShift = 40;   // Purple-violet shift
-    if (dominant === 'CALM')    hueShift = -20;  // Green-teal shift
+    if (dominant === 'JOY')     hueShift = 20;
+    if (dominant === 'ANGER')   hueShift = -30;
+    if (dominant === 'SAD')     hueShift = -60;
+    if (dominant === 'ANXIOUS') hueShift = 40;
+    if (dominant === 'CALM')    hueShift = -20;
 
     const pH = (dna.primaryHue   + hueShift + 360) % 360;
     const sH = (dna.secondaryHue + hueShift + 360) % 360;
@@ -307,7 +307,7 @@ export class YouPage implements AfterViewInit, OnDestroy {
 
     // ── Journal depth: total entries drive mandala complexity ─────────────────
     // More entries → more layers fully visible, more detail
-    const journalDepth = Math.min(1.0, this.totalCount() / 50); // Saturates at 50 entries
+    const journalDepth = Math.min(1.0, this.totalCount() / 50);
 
     // ── Interaction: mouse breathing ──────────────────────────────────────────
     let breathExtra = 0;
@@ -385,12 +385,12 @@ export class YouPage implements AfterViewInit, OnDestroy {
     // ── 3. Spirit Particles — tiny souls drifting upward across the whole canvas ──
     for (const sp of this.spiritParticles) {
       sp.x = ((sp.x + sp.vx + 1) % 1);
-      sp.y = ((sp.y + sp.vy + 1) % 1); // wraps — respawns from bottom
+      sp.y = ((sp.y + sp.vy + 1) % 1); 
       sp.life = (sp.life + 0.0018) % sp.maxLife;
 
       const lifeFrac = sp.life / sp.maxLife;
       // Life cycle: fade in, hold, fade out
-      let lifeAlpha = lifeFrac < 0.15 ? lifeFrac / 0.15
+      const lifeAlpha = lifeFrac < 0.15 ? lifeFrac / 0.15
                     : lifeFrac > 0.8  ? (1 - lifeFrac) / 0.2
                     : 1.0;
 
@@ -422,7 +422,7 @@ export class YouPage implements AfterViewInit, OnDestroy {
 
     // ── 4. Heartbeat Pulse Rings — expanding waves from the mandala center ────
     const now = t;
-    if (now - this.lastPulseTime > 3.2) { // Fire every ~3.2 seconds
+    if (now - this.lastPulseTime > 3.2) {
       this.pulseRings.push({ radius: 0, maxRadius: maxRadius * 2.2, alpha: 0.55, hue: pH });
       this.lastPulseTime = now;
     }
@@ -479,7 +479,7 @@ export class YouPage implements AfterViewInit, OnDestroy {
     }
 
     // ── Draw mandala layers from outer to inner ───────────────────────────────
-    const totalLayers = dna.layers + Math.floor(journalDepth * 2); // More depth = more rings visible
+    const totalLayers = dna.layers + Math.floor(journalDepth * 2);
 
     for (let layer = totalLayers; layer >= 0; layer--) {
       const layerFraction = layer / totalLayers;
@@ -704,8 +704,8 @@ interface AmbientOrb {
 }
 
 interface SpiritParticle {
-  x: number;           // fraction of W
-  y: number;           // fraction of H
+  x: number;           
+  y: number;           
   vx: number;
   vy: number;
   size: number;
