@@ -4,370 +4,916 @@ ion-content {
   color: #f5f6fa;
 }
 
-// Full page non-scrollable flex wrapper that fits perfectly on all screens
+// Custom Scrollbar styling
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.01);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+}
+
 .mind-space-wrapper {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 0 20px 32px;
+  padding: 12px 16px 16px;
   box-sizing: border-box;
   text-align: center;
   position: relative;
-  overflow: hidden;
-  background: transparent;
-  gap: 24px;
+  overflow: hidden; // Prevent scrolling to keep it on one page
+  background: transparent; // Starry field preserved
+  gap: 10px;
 }
 
-// 1. Header Styling
+// 1. Header Styles (Sized down)
 .mind-header {
   h1 {
     margin: 0;
-    font-size: 24px;
-    font-weight: 500;
+    font-size: 22px;
+    font-weight: 600;
     letter-spacing: -0.5px;
-    background: linear-gradient(90deg, #ffffff 0%, #a2a3be 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #8b8ea8 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
 
   .subtitle {
-    margin: 6px 0 0 0;
-    font-size: 13px;
+    margin: 3px 0 0 0;
+    font-size: 11px;
     color: #797a95;
     font-weight: 350;
   }
 }
 
-// 2. Central Dynamic Consciousness Orb Area
 .aura-visualization-area {
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  flex: 1;
-  margin: 0;
+  flex: 1; // Takes up all remaining vertical space in the middle to center the balls!
 
-  // Backdrop glow — matches sphere colors, breathes softly
-  .aura-glow-backdrop {
-    position: absolute;
-    width: 230px;
-    height: 230px;
-    border-radius: 50%;
-    filter: blur(55px);
-    opacity: 0.55;
-    transition: background 1.2s ease;
-    animation: aura-pulse-breathe 6s ease-in-out infinite alternate;
-    z-index: 1;
-    pointer-events: none;
-  }
 
-  .aura-sphere-container {
+
+  .aura-stage-container {
     position: relative;
+    width: 280px;
+    height: 280px;
     z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
-  // Perspective wrapper — defines the 3D camera depth
-  .aura-3d-stage {
-    perspective: 400px;
-    perspective-origin: 50% 50%;
-  }
-
-  // The sphere itself tumbles in 3D space — slow planetary wobble
-  .aura-sphere-outer {
-    width: 162px;
-    height: 162px;
-    border-radius: 50%;
-    position: relative;
-    overflow: hidden;
-    background: #090910;
-    transform-style: preserve-3d;
-    animation:
-      sphere-3d-tumble 18s ease-in-out infinite,
-      sphere-breathe 5s ease-in-out infinite alternate;
-    // Realistic planet-like edge shadow
-    box-shadow:
-      0 0 0 1px rgba(255, 255, 255, 0.06),
-      0 18px 50px rgba(0, 0, 0, 0.55),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-  }
-
-  // Layer 1: Main blurred conic gradient — slow Z-axis spin
-  .aura-sphere-core {
+  // The floating / morphing orb styling
+  .aura-orb {
     position: absolute;
-    inset: 0;
     border-radius: 50%;
-    filter: blur(22px);
-    transform: scale(1.18);
-    transition: background 1.2s ease;
-    animation: aura-core-spin 24s linear infinite;
-    transform-origin: center center;
+    transition: all 1.2s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
-  // Layer 2: Secondary drifting blob — counter-spin, larger blur, creates lava-lamp depth
-  .aura-blob-secondary {
-    position: absolute;
-    width: 70%;
-    height: 70%;
-    top: 15%;
-    left: 15%;
-    border-radius: 50%;
-    filter: blur(30px);
-    opacity: 0.7;
-    transition: background 1.2s ease;
-    animation: aura-core-spin 34s linear infinite reverse;
-    transform-origin: center center;
-    mix-blend-mode: screen;
+  // Center / Dominant Orb (Sized up)
+  .dominant-orb {
+    width: 110px;
+    height: 110px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.8px;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    // Synced core animation blends glassy core colors when outer orbs sweep inside!
+    animation: morphBlob 8s ease-in-out infinite alternate, glassyCoreAuroraIntro 3s ease-in-out forwards, glassyCoreAuroraLoop 16s ease-in-out infinite 3s;
+
+    &.glassy-core {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      backdrop-filter: blur(25px) !important;
+      color: rgba(255, 255, 255, 0.95) !important;
+    }
+
+    .orb-label {
+      text-transform: uppercase;
+      font-weight: 700;
+    }
   }
 
-  // Layer 3: Inset rim shadow — creates the dark "horizon" that makes it look 3D
-  .aura-sphere-rim {
+  // Outer Orbs Rotational stage
+  .outer-orbs-wrapper {
     position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: transparent;
-    box-shadow: inset 0 0 35px 14px rgba(0, 0, 0, 0.7);
+    width: 100%;
+    height: 100%;
   }
 
-  // Layer 4: Glass refraction — the dark-edged depth lens
-  .aura-sphere-overlay {
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    background: radial-gradient(
-      circle at 38% 36%,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.01) 40%,
-      rgba(0, 0, 0, 0.2) 80%,
-      rgba(0, 0, 0, 0.55) 100%
-    );
-    border: 1px solid rgba(255, 255, 255, 0.07);
+  // Synchronized continuous rotating carousel loop after an explosive shoot out from the center on load.
+  .top-left-orb {
+    width: 44px;
+    height: 44px;
+    top: 5%;
+    left: 5%;
+    cursor: pointer;
+    animation: floatTopLeftIntro 3s cubic-bezier(0.25, 1, 0.5, 1) forwards, floatTopLeftLoop 14s linear infinite 3s, morphBlob 5s ease-in-out infinite alternate;
+    &:hover { transform: scale(1.15) !important; filter: brightness(1.2); }
   }
 
-  // Layer 5: Moving specular highlight — orbits slowly to simulate revolving light source
-  .aura-sphere-specular {
-    position: absolute;
-    width: 52px;
-    height: 26px;
-    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%);
-    border-radius: 50%;
-    animation: specular-orbit 14s ease-in-out infinite;
-    pointer-events: none;
+  .top-right-orb {
+    width: 42px;
+    height: 42px;
+    top: 5%;
+    right: 5%;
+    cursor: pointer;
+    animation: floatTopRightIntro 3s cubic-bezier(0.25, 1, 0.5, 1) forwards, floatTopRightLoop 14s linear infinite 3s, morphBlob 6s ease-in-out infinite alternate-reverse;
+    &:hover { transform: scale(1.15) !important; filter: brightness(1.2); }
+  }
+
+  .bottom-left-orb {
+    width: 46px;
+    height: 46px;
+    bottom: 5%;
+    left: 5%;
+    cursor: pointer;
+    animation: floatBottomLeftIntro 3s cubic-bezier(0.25, 1, 0.5, 1) forwards, floatBottomLeftLoop 14s linear infinite 3s, morphBlob 7s ease-in-out infinite alternate;
+    &:hover { transform: scale(1.15) !important; filter: brightness(1.2); }
+  }
+
+  .bottom-right-orb {
+    width: 40px;
+    height: 40px;
+    bottom: 5%;
+    right: 5%;
+    cursor: pointer;
+    animation: floatBottomRightIntro 3s cubic-bezier(0.25, 1, 0.5, 1) forwards, floatBottomRightLoop 14s linear infinite 3s, morphBlob 5.5s ease-in-out infinite alternate-reverse;
+    &:hover { transform: scale(1.15) !important; filter: brightness(1.2); }
   }
 }
 
+// First Time user neutral Canvas styling
+.empty-state {
+  flex-direction: column;
+  height: auto;
+  gap: 12px;
+  margin: 10px 0;
 
-// 3. Compact Horizontal selectors
-.emotion-selectors {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  max-width: 480px;
-  margin: 0;
-  z-index: 3;
+  .neutral-backdrop {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+  }
 
-  .emotion-pill {
+  .neutral-orb {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+
+  .empty-guidance-card {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 20px;
-    padding: 6px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #9293b4;
+    border-radius: 16px;
+    padding: 16px;
+    max-width: 300px;
+    backdrop-filter: blur(15px);
+
+    h3 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    p {
+      margin: 0 0 12px;
+      font-size: 11px;
+      color: #797a95;
+      line-height: 1.4;
+    }
+
+    .btn-reflect-now {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      padding: 8px 18px;
+      border-radius: 16px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-1px);
+      }
+    }
+  }
+}
+
+// 3. Glowing Text Buttons (Compact styling)
+.emotion-text-selectors {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  max-width: 440px;
+  margin-bottom: 16px; // Sit just a bit above bottom nav
+  padding-right: 60px; // Shift right side elements left to clear room for the music button!
+
+  .emotion-text-btn {
+    background: transparent;
+    border: none;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+    gap: 6px;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    opacity: 0.6;
+    padding: 3px 6px;
 
-    .pill-dot {
-      width: 6px;
-      height: 6px;
+    .btn-indicator {
+      width: 4px;
+      height: 4px;
       border-radius: 50%;
-      background-color: var(--pill-color);
-      box-shadow: 0 0 8px var(--pill-color);
+      opacity: 0.5;
+      transition: all 0.3s ease;
     }
 
     &:hover {
-      background: rgba(255, 255, 255, 0.06);
-      color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.12);
-      transform: translateY(-1px);
+      opacity: 1;
+      transform: translateY(-0.5px);
+      .btn-indicator { opacity: 1; }
     }
 
     &.active {
-      background: rgba(255, 255, 255, 0.08);
-      color: #ffffff;
-      border-color: var(--pill-color);
-      box-shadow: 0 0 12px var(--pill-glow);
+      opacity: 1;
+      transform: scale(1.05);
+      font-weight: 700;
+      .btn-indicator {
+        opacity: 1;
+        transform: scale(1.4);
+        box-shadow: 0 0 8px currentColor;
+      }
     }
   }
 }
 
-// 4. Insight Panel
-.aura-insights-panel {
-  height: 44px;
+// 4. Interactive Glassmorphic Timeline (Highly compact scroll box)
+// 4. Interactive Glassmorphic Timeline Dialogue (Absolute overlay popup)
+.timeline-popup-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(4, 4, 10, 0.6);
+  z-index: 100;
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin: 6px 0;
-
-  .insight-text {
-    margin: 0;
-    font-size: 13.5px;
-    color: #8c8da7;
-    font-weight: 400;
-    line-height: 1.4;
-  }
-
-  .highlight-dominant {
-    text-transform: capitalize;
-    font-weight: 600;
-
-    &[data-mood="JOY"] { color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.25); }
-    &[data-mood="CALM"] { color: #2ecc71; text-shadow: 0 0 8px rgba(46, 204, 113, 0.25); }
-    &[data-mood="SAD"] { color: #3498db; text-shadow: 0 0 8px rgba(52, 152, 219, 0.25); }
-    &[data-mood="ANXIOUS"] { color: #9b59b6; text-shadow: 0 0 8px rgba(155, 89, 182, 0.25); }
-    &[data-mood="ANGER"] { color: #e74c3c; text-shadow: 0 0 8px rgba(231, 76, 60, 0.25); }
-  }
-
-  .highlight-focus {
-    font-weight: 600;
-  }
-}
-
-// 5. Clean, Minimalist stats grid footer
-.stats-minimal-bar {
-  display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 32px;
-  margin: 10px 0;
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
 
-  .stat-unit {
+  .timeline-popup-card {
+    width: 90%;
+    max-width: 380px;
+    background: rgba(255, 255, 255, 0.05); // Glassy transparent frosted glass
+    border: 1px solid rgba(255, 255, 255, 0.16); // High-end thin glass border
+    border-radius: 20px;
+    padding: 16px;
+    box-sizing: border-box;
+    backdrop-filter: blur(35px);
+    text-align: left;
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.5);
     display: flex;
     flex-direction: column;
+    gap: 12px;
+    animation: slideUpFade 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  }
+
+  .popup-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    h4 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
   }
 
-  .stat-number {
-    font-size: 18px;
-    font-weight: 600;
-    color: #ffffff;
+  .btn-close-popup {
+    background: transparent;
+    border: none;
+    color: #8c8da7;
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 2px 6px;
+    &:hover {
+      color: #ffffff;
+    }
   }
 
-  .stat-desc {
-    font-size: 10px;
+  .popup-scroller {
+    max-height: 220px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 4px;
+  }
+
+  .popup-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-left: 2px solid rgba(255, 255, 255, 0.15);
+    padding: 8px 12px;
+    border-radius: 0 8px 8px 0;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-left-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .card-time {
+      font-size: 9.5px;
+      color: #6a6b82;
+      font-weight: 550;
+    }
+
+    .card-text {
+      margin: 3px 0 0;
+      font-size: 12px;
+      color: #e2e2ec;
+      line-height: 1.4;
+    }
+  }
+
+  .empty-popup-logs, .no-memories-text {
+    font-size: 11.5px;
     color: #6a6b82;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-top: 3px;
-    font-weight: 500;
-  }
-
-  .stat-separator {
-    width: 1px;
-    height: 24px;
-    background: rgba(255, 255, 255, 0.08);
+    text-align: center;
+    margin: 10px 0;
   }
 }
 
-// 6. Action Button Styling (Minimal custom pill button)
-.action-footer {
-  margin-top: 6px;
+// 5. Floating Music Button & Popover System (Pinned Bottom Right)
+.music-floating-system {
+  position: absolute;
+  bottom: 20px; // Pinned directly at the very bottom right
+  right: 24px;
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
 
-  .btn-reflect {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 24px;
-    padding: 11px 24px;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #e5e5f0;
+  .floating-music-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05); // Glassy transparent frosted glass
+    border: 1px solid rgba(255, 255, 255, 0.16); // Clean white border
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 8px;
     cursor: pointer;
+    backdrop-filter: blur(15px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
     transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 
-    .arrow-svg {
-      transition: transform 0.25s ease;
+    .music-icon-svg {
+      width: 22px;
+      height: 22px;
+      display: block;
+      color: rgba(255, 255, 255, 0.85); // Glassy white music icon
+      filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.25));
     }
 
     &:hover {
-      border-color: rgba(255, 255, 255, 0.4);
-      background: rgba(255, 255, 255, 0.03);
-      color: #ffffff;
-      transform: translateY(-1px);
-
-      .arrow-svg {
-        transform: translateX(2px);
+      transform: scale(1.08) translateY(-1px);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.4);
+      .music-icon-svg {
+        color: #ffffff;
       }
     }
 
-    &:active {
-      transform: translateY(0);
+    &.playing {
+      border-color: rgba(255, 255, 255, 0.45);
+      animation: pulseGlowBtn 2s ease-in-out infinite alternate;
+      .music-icon-svg {
+        color: #ffffff;
+      }
+    }
+  }
+
+  .floating-music-popover {
+    width: 210px;
+    background: rgba(255, 255, 255, 0.04); // Glassy transparent frosted glass
+    border: 1px solid rgba(255, 255, 255, 0.15); // High-end thin glass border
+    border-radius: 16px;
+    padding: 12px;
+    backdrop-filter: blur(25px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    animation: popoverSlideUp 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+    .popover-track-info {
+      h5 {
+        margin: 0;
+        font-size: 12px;
+        font-weight: 600;
+        color: #ffffff;
+      }
+      p {
+        margin: 2px 0 0;
+        font-size: 9.5px;
+        color: #797a95;
+      }
+    }
+
+    .popover-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 0;
+    }
+
+    .btn-play-pause-mini {
+      background: #ffffff;
+      border: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 9.5px;
+      cursor: pointer;
+      color: #080812;
+      font-weight: bold;
+      transition: all 0.2s ease;
+
+      &:hover {
+        transform: scale(1.08);
+      }
+    }
+
+    .music-wave-bars-mini {
+      display: flex;
+      gap: 2px;
+      align-items: flex-end;
+      height: 10px;
+
+      .wave-bar {
+        width: 1.8px;
+        border-radius: 1px;
+        animation: bounceWave 0.8s ease-in-out infinite alternate;
+        
+        &:nth-child(1) { height: 60%; animation-delay: 0.1s; }
+        &:nth-child(2) { height: 100%; animation-delay: 0.3s; }
+        &:nth-child(3) { height: 40%; animation-delay: 0.0s; }
+      }
+    }
+
+    .popover-tracks {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .popover-track-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: #9293b4;
+      padding: 5px 8px;
+      border-radius: 10px;
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.06);
+        color: #ffffff;
+      }
+
+      &.selected {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.25);
+        color: #ffffff;
+      }
     }
   }
 }
 
-// Keyframes
-
-// Backdrop glow breathes in and out
-@keyframes aura-pulse-breathe {
-  0%   { transform: scale(0.92); opacity: 0.45; }
-  100% { transform: scale(1.08); opacity: 0.65; }
+@keyframes spinIcon {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-// Core conic gradient flat-spins on Z axis (inside sphere)
-@keyframes aura-core-spin {
-  0%   { transform: scale(1.18) rotate(0deg); }
-  100% { transform: scale(1.18) rotate(360deg); }
+@keyframes pulseGlowBtn {
+  0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.1), 0 8px 24px rgba(0, 0, 0, 0.4); }
+  100% { box-shadow: 0 0 18px rgba(255, 255, 255, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4); }
 }
 
-// Sphere 3D tumble — slow multi-axis planetary wobble
-@keyframes sphere-3d-tumble {
-  0%   { transform: rotateX(10deg)  rotateY(0deg)   rotateZ(0deg); }
-  20%  { transform: rotateX(-6deg)  rotateY(72deg)  rotateZ(4deg); }
-  40%  { transform: rotateX(8deg)   rotateY(144deg) rotateZ(-5deg); }
-  60%  { transform: rotateX(-10deg) rotateY(216deg) rotateZ(6deg); }
-  80%  { transform: rotateX(6deg)   rotateY(288deg) rotateZ(-3deg); }
-  100% { transform: rotateX(10deg)  rotateY(360deg) rotateZ(0deg); }
+@keyframes popoverSlideUp {
+  0% { opacity: 0; transform: translateY(10px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-// Sphere gently breathes (subtle scale pulse)
-@keyframes sphere-breathe {
-  0%   { transform: scale(0.97); }
-  100% { transform: scale(1.03); }
+// 6. Masterpiece Keyframe Animations
+@keyframes rotateOuter {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-// Specular highlight slowly orbits the sphere surface, simulating a revolving light source
-@keyframes specular-orbit {
-  0%   { top: 8%;  left: 12%; opacity: 0.22; transform: rotate(-30deg) scale(1);    }
-  25%  { top: 12%; left: 62%; opacity: 0.10; transform: rotate(25deg)  scale(0.75); }
-  50%  { top: 58%; left: 55%; opacity: 0.05; transform: rotate(70deg)  scale(0.55); }
-  75%  { top: 55%; left: 8%;  opacity: 0.12; transform: rotate(-15deg) scale(0.8);  }
-  100% { top: 8%;  left: 12%; opacity: 0.22; transform: rotate(-30deg) scale(1);    }
-}
-
-// Responsive optimization
-@media (max-height: 600px) {
-  .mind-space-wrapper {
-    padding: 2vh 20px;
+@keyframes morphBlob {
+  0% {
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
   }
-  .aura-visualization-area {
-    height: 180px;
-    .aura-sphere-outer {
-      width: 120px;
-      height: 120px;
+  34% {
+    border-radius: 70% 30% 50% 50% / 30% 60% 40% 70%;
+  }
+  67% {
+    border-radius: 50% 60% 30% 70% / 60% 40% 70% 30%;
+  }
+  100% {
+    border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+  }
+}
+
+@keyframes pulseOrb {
+  0% { transform: scale(0.96); }
+  100% { transform: scale(1.04); }
+}
+
+@keyframes bounceWave {
+  0% { transform: scaleY(0.12); }
+  100% { transform: scaleY(1.0); }
+}
+
+@keyframes slideUpFade {
+  0% { opacity: 0; transform: translateY(8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+// 7. Playing Music Spectrum Animation
+.playing-spectrum {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2.2px;
+  width: 20px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.85);
+
+  .spec-bar {
+    width: 2.5px;
+    height: 100%;
+    background-color: currentColor;
+    border-radius: 1.5px;
+    transform-origin: bottom center !important;
+    animation: bounceWave 0.8s ease-in-out infinite alternate;
+    transition: transform 0.1s cubic-bezier(0.25, 0.8, 0.25, 1.15); // Dynamic springy groove!
+    
+    &.bar-1 { animation-delay: 0.15s; animation-duration: 0.65s; }
+    &.bar-2 { animation-delay: 0.35s; animation-duration: 0.85s; }
+    &.bar-3 { animation-delay: 0.0s; animation-duration: 0.55s; }
+    &.bar-4 { animation-delay: 0.5s; animation-duration: 0.75s; }
+  }
+
+  // Seamless override when real-time Web Audio analyzer variables are present
+  &[style*="--bar1-scale"] {
+    .spec-bar {
+      animation: none !important;
+      
+      &.bar-1 { transform: scaleY(var(--bar1-scale)); }
+      &.bar-2 { transform: scaleY(var(--bar2-scale)); }
+      &.bar-3 { transform: scaleY(var(--bar3-scale)); }
+      &.bar-4 { transform: scaleY(var(--bar4-scale)); }
     }
-    .aura-glow-backdrop {
-      width: 160px;
-      height: 160px;
-    }
+  }
+}
+
+// 8. Sleek Circular Loading Spinner for Audio Buffering
+.music-btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  border-top: 2px solid #ffffff;
+  border-radius: 50%;
+  animation: spinLoader 0.7s linear infinite;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.35));
+}
+
+.floating-music-btn.loading {
+  cursor: not-allowed !important;
+  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+@keyframes spinLoader {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// 9. Symmetrical Outer Carousel Orbit (Chained: Intro charging/shootout, then infinite loop rotating only)
+@keyframes floatTopLeftIntro {
+  0%, 50% {
+    // Charging Phase: Pulse gently inside the center glassy core as a small colorful energy ember!
+    transform: translate(110px, 110px) scale(0.35);
+    opacity: 0.7;
+    box-shadow: 0 0 28px rgba(255, 215, 0, 0.8);
+    background: rgba(255, 215, 0, 0.92);
+  }
+  100% {
+    // Shoot out/explode to corner with springy scale!
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+    box-shadow: 0 0 28px rgba(255, 215, 0, 0.8);
+    background: rgba(255, 215, 0, 0.92);
+  }
+}
+
+@keyframes floatTopLeftLoop {
+  0% {
+    transform: translate(0, 0) scale(1);
+    box-shadow: 0 0 28px rgba(255, 215, 0, 0.8);
+    background: rgba(255, 215, 0, 0.92);
+  }
+  15% {
+    transform: translate(90px, -20px) scale(0.9);
+    box-shadow: 0 0 38px rgba(255, 120, 0, 0.95);
+    background: rgba(255, 120, 0, 0.92);
+  }
+  30% {
+    transform: translate(185px, 30px) scale(1.1);
+    box-shadow: 0 0 28px rgba(255, 215, 0, 0.8);
+    background: rgba(255, 215, 0, 0.92);
+  }
+  45% {
+    transform: translate(130px, 110px) scale(0.78);
+    box-shadow: 0 0 34px rgba(255, 120, 0, 0.9);
+    background: rgba(255, 120, 0, 0.92);
+  }
+  60% {
+    transform: translate(185px, 185px) scale(1.05);
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.85);
+    background: rgba(255, 215, 0, 0.92);
+  }
+  75% {
+    transform: translate(50px, 160px) scale(0.88);
+    box-shadow: 0 0 32px rgba(255, 165, 0, 0.85);
+    background: rgba(255, 165, 0, 0.92);
+  }
+  88% {
+    transform: translate(-25px, 95px) scale(1.12);
+    box-shadow: 0 0 38px rgba(255, 120, 0, 0.95);
+    background: rgba(255, 120, 0, 0.92);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    box-shadow: 0 0 28px rgba(255, 215, 0, 0.8);
+    background: rgba(255, 215, 0, 0.92);
+  }
+}
+
+@keyframes floatTopRightIntro {
+  0%, 50% {
+    transform: translate(-110px, 110px) scale(0.35);
+    opacity: 0.7;
+    box-shadow: 0 0 28px rgba(46, 204, 113, 0.8);
+    background: rgba(46, 204, 113, 0.92);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+    box-shadow: 0 0 28px rgba(46, 204, 113, 0.8);
+    background: rgba(46, 204, 113, 0.92);
+  }
+}
+
+@keyframes floatTopRightLoop {
+  0% {
+    transform: translate(0, 0) scale(1);
+    box-shadow: 0 0 28px rgba(46, 204, 113, 0.8);
+    background: rgba(46, 204, 113, 0.92);
+  }
+  12% {
+    transform: translate(-35px, 95px) scale(1.1);
+    box-shadow: 0 0 38px rgba(26, 188, 156, 0.95);
+    background: rgba(26, 188, 156, 0.92);
+  }
+  25% {
+    transform: translate(-95px, 180px) scale(0.8);
+    box-shadow: 0 0 28px rgba(46, 204, 113, 0.8);
+    background: rgba(46, 204, 113, 0.92);
+  }
+  40% {
+    transform: translate(-185px, 80px) scale(1.05);
+    box-shadow: 0 0 35px rgba(26, 188, 156, 0.9);
+    background: rgba(26, 188, 156, 0.92);
+  }
+  55% {
+    transform: translate(-120px, -25px) scale(0.85);
+    box-shadow: 0 0 30px rgba(46, 204, 113, 0.85);
+    background: rgba(46, 204, 113, 0.92);
+  }
+  70% {
+    transform: translate(-185px, 185px) scale(1.15);
+    box-shadow: 0 0 32px rgba(26, 188, 156, 0.85);
+    background: rgba(26, 188, 156, 0.92);
+  }
+  85% {
+    transform: translate(-55px, 45px) scale(0.78);
+    box-shadow: 0 0 38px rgba(26, 188, 156, 0.95);
+    background: rgba(26, 188, 156, 0.92);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    box-shadow: 0 0 28px rgba(46, 204, 113, 0.8);
+    background: rgba(46, 204, 113, 0.92);
+  }
+}
+
+@keyframes floatBottomLeftIntro {
+  0%, 50% {
+    transform: translate(110px, -110px) scale(0.35);
+    opacity: 0.7;
+    box-shadow: 0 0 28px rgba(52, 152, 219, 0.8);
+    background: rgba(52, 152, 219, 0.92);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+    box-shadow: 0 0 28px rgba(52, 152, 219, 0.8);
+    background: rgba(52, 152, 219, 0.92);
+  }
+}
+
+@keyframes floatBottomLeftLoop {
+  0% {
+    transform: translate(0, 0) scale(1);
+    box-shadow: 0 0 28px rgba(52, 152, 219, 0.8);
+    background: rgba(52, 152, 219, 0.92);
+  }
+  18% {
+    transform: translate(75px, -45px) scale(0.82);
+    box-shadow: 0 0 38px rgba(41, 128, 185, 0.95);
+    background: rgba(41, 128, 185, 0.92);
+  }
+  35% {
+    transform: translate(185px, -185px) scale(1.12);
+    box-shadow: 0 0 28px rgba(52, 152, 219, 0.8);
+    background: rgba(52, 152, 219, 0.92);
+  }
+  50% {
+    transform: translate(115px, -85px) scale(0.88);
+    box-shadow: 0 0 34px rgba(41, 128, 185, 0.9);
+    background: rgba(41, 128, 185, 0.92);
+  }
+  68% {
+    transform: translate(185px, 0) scale(1.05);
+    box-shadow: 0 0 30px rgba(52, 152, 219, 0.85);
+    background: rgba(52, 152, 219, 0.92);
+  }
+  82% {
+    transform: translate(35px, -25px) scale(0.78);
+    box-shadow: 0 0 32px rgba(41, 128, 185, 0.85);
+    background: rgba(41, 128, 185, 0.92);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    box-shadow: 0 0 28px rgba(52, 152, 219, 0.8);
+    background: rgba(52, 152, 219, 0.92);
+  }
+}
+
+@keyframes floatBottomRightIntro {
+  0%, 50% {
+    transform: translate(-110px, -110px) scale(0.35);
+    opacity: 0.7;
+    box-shadow: 0 0 28px rgba(155, 89, 182, 0.8);
+    background: rgba(155, 89, 182, 0.92);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+    box-shadow: 0 0 28px rgba(155, 89, 182, 0.8);
+    background: rgba(155, 89, 182, 0.92);
+  }
+}
+
+@keyframes floatBottomRightLoop {
+  0% {
+    transform: translate(0, 0) scale(1);
+    box-shadow: 0 0 28px rgba(155, 89, 182, 0.8);
+    background: rgba(155, 89, 182, 0.92);
+  }
+  15% {
+    transform: translate(-115px, -35px) scale(1.1);
+    box-shadow: 0 0 38px rgba(142, 68, 173, 0.95);
+    background: rgba(142, 68, 173, 0.92);
+  }
+  30% {
+    transform: translate(-185px, -185px) scale(0.8);
+    box-shadow: 0 0 28px rgba(155, 89, 182, 0.8);
+    background: rgba(155, 89, 182, 0.92);
+  }
+  48% {
+    transform: translate(-75px, -110px) scale(0.98);
+    box-shadow: 0 0 35px rgba(142, 68, 173, 0.9);
+    background: rgba(142, 68, 173, 0.92);
+  }
+  65% {
+    transform: translate(0, -185px) scale(1.14);
+    box-shadow: 0 0 30px rgba(155, 89, 182, 0.85);
+    background: rgba(155, 89, 182, 0.92);
+  }
+  80% {
+    transform: translate(-45px, -55px) scale(0.78);
+    box-shadow: 0 0 32px rgba(142, 68, 173, 0.85);
+    background: rgba(142, 68, 173, 0.92);
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    box-shadow: 0 0 28px rgba(155, 89, 182, 0.8);
+    background: rgba(155, 89, 182, 0.92);
+  }
+}
+
+// 10. Sleek, Multi-Layered Breathing Glassy Core Glow (Smooth color cycle in background)
+@keyframes glassyCoreAuroraIntro {
+  0%, 65% {
+    // 0% to 65% of intro: Swirling 4-color radial gradient blend + stacked multi-colored neon glow bloom!
+    box-shadow: 
+      0 0 35px rgba(255, 215, 0, 0.8),    // Joy (Yellow)
+      0 0 65px rgba(46, 204, 113, 0.7),   // Calm (Green)
+      0 0 95px rgba(52, 152, 219, 0.6),   // Sad (Blue)
+      0 0 130px rgba(155, 89, 182, 0.5) !important; // Anxiety (Purple)
+    background: radial-gradient(circle at 35% 35%, rgba(255, 215, 0, 0.25) 0%, rgba(46, 204, 113, 0.22) 35%, rgba(52, 152, 219, 0.2) 65%, rgba(155, 89, 182, 0.22) 100%) !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+  }
+  100% {
+    // Shootout Release: Core returns to quiet glassy white glow
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.15), 0 0 60px rgba(255, 255, 255, 0.05) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+  }
+}
+
+@keyframes glassyCoreAuroraLoop {
+  0% {
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.15), 0 0 60px rgba(255, 255, 255, 0.05) !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+  }
+  50% {
+    // Soft, glowing gold-teal aura breathing
+    box-shadow: 0 0 45px rgba(46, 204, 113, 0.6), 0 0 90px rgba(255, 215, 0, 0.4), 0 0 150px rgba(46, 204, 113, 0.15) !important;
+    background: rgba(46, 204, 113, 0.04) !important;
+    border-color: rgba(46, 204, 113, 0.3) !important;
+  }
+  100% {
+    // Soft, glowing indigo-purple aura breathing
+    box-shadow: 0 0 45px rgba(155, 89, 182, 0.6), 0 0 90px rgba(52, 152, 219, 0.4), 0 0 150px rgba(155, 89, 182, 0.15) !important;
+    background: rgba(155, 89, 182, 0.04) !important;
+    border-color: rgba(155, 89, 182, 0.3) !important;
   }
 }

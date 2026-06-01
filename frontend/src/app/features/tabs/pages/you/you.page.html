@@ -1,57 +1,99 @@
-<ion-content [fullscreen]="true" [scrollY]="false">
+<ion-content [fullscreen]="true" [scrollY]="true">
   <div class="mind-space-wrapper">
     
 
-    <!-- 2. Central Aura Orb -->
-    <div class="aura-visualization-area">
-      <div class="aura-glow-backdrop" [style.background]="auraGradient()"></div>
-      <div class="aura-sphere-container">
-        <!-- Perspective wrapper for 3D space -->
-        <div class="aura-3d-stage">
-          <div class="aura-sphere-outer">
-            <!-- Layer 1: Main blurred conic gradient — slow spin on Z axis -->
-            <div class="aura-sphere-core" [style.background]="auraGradient()"></div>
-            <!-- Layer 2: Secondary drifting blob for lava-lamp depth feel -->
-            <div class="aura-blob-secondary" [style.background]="auraGradient()"></div>
-            <!-- Layer 3: Dark edge rim shadow for 3D depth illusion -->
-            <div class="aura-sphere-rim"></div>
-            <!-- Layer 4: Glass refraction overlay -->
-            <div class="aura-sphere-overlay"></div>
-            <!-- Layer 5: Moving specular highlight -->
-            <div class="aura-sphere-specular"></div>
+    <!-- 2. Dynamic 5-Orb Stage (Only shown when user has logged memories) -->
+    <div class="aura-visualization-area" *ngIf="totalCount() > 0">
+      <div class="aura-stage-container">
+        
+        <!-- Center Orb (Always Glassy Core 代表 Core Self) -->
+        <div class="aura-orb dominant-orb glassy-core">
+          <span class="orb-label">{{ username() }}</span>
+        </div>
+
+        <!-- 4 Outer Orbs floating and playing around dynamically -->
+        <div class="outer-orbs-wrapper">
+          <!-- Top Left Orb (Joy) -->
+          <div class="aura-orb top-left-orb" (click)="selectEmotion('JOY')"></div>
+
+          <!-- Top Right Orb (Calm) -->
+          <div class="aura-orb top-right-orb" (click)="selectEmotion('CALM')"></div>
+
+          <!-- Bottom Left Orb (Sadness) -->
+          <div class="aura-orb bottom-left-orb" (click)="selectEmotion('SAD')"></div>
+
+          <!-- Bottom Right Orb (Anxiety) -->
+          <div class="aura-orb bottom-right-orb" (click)="selectEmotion('ANXIOUS')"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- First-Time User State / Empty Canvas (When no memories are logged) -->
+    <div class="aura-visualization-area empty-state" *ngIf="totalCount() === 0 && !isLoading()">
+      <div class="aura-stage-container">
+        <div class="aura-orb neutral-orb">
+          <span class="orb-label">CALM</span>
+        </div>
+      </div>
+      <div class="empty-guidance-card">
+        <h3>Cosmic Canvas</h3>
+        <p>Your mind space is a quiet pool. Start reflecting in the chat assistant to seed your aura mapping.</p>
+        <button class="btn-reflect-now" (click)="startReflection()">
+          Begin Reflection
+        </button>
+      </div>
+    </div>
+
+    <!-- 3. Dynamic Text Selectors (Colors of Emotions) -->
+    <div class="emotion-text-selectors" *ngIf="totalCount() > 0">
+      <button 
+        *ngFor="let stat of emotionStats()" 
+        class="emotion-text-btn"
+        [class.active]="selectedEmotion() === stat.key"
+        (click)="selectEmotion(stat.key)"
+        [style.color]="stat.color"
+        [style.text-shadow]="selectedEmotion() === stat.key ? '0 0 15px ' + stat.color : 'none'">
+        {{ stat.name }}
+      </button>
+    </div>
+
+    <!-- 4. Interactive Timeline Popup Modal/Dialogue (Saves space completely) -->
+    <div class="timeline-popup-overlay" *ngIf="selectedEmotion()" (click)="selectEmotion(null)">
+      <div class="timeline-popup-card" (click)="$event.stopPropagation()" [style.border-color]="getEmotionColor(selectedEmotion() || '')">
+        <div class="popup-header">
+          <h4>Reflections tagged: <span [style.color]="getEmotionColor(selectedEmotion() || '')">{{ formatEmotionName(selectedEmotion() || '') }}</span></h4>
+          <button class="btn-close-popup" (click)="selectEmotion(null)">✕</button>
+        </div>
+        <div class="popup-scroller">
+          <div class="popup-card" *ngFor="let item of filteredReflections()">
+            <span class="card-time">{{ item.createdAt | date:'shortTime' }} • {{ item.createdAt | date:'mediumDate' }}</span>
+            <p class="card-text">"{{ item.content }}"</p>
+          </div>
+          <div class="empty-popup-logs" *ngIf="filteredReflections().length === 0">
+            <p class="no-memories-text">No reflections recorded for this emotion state yet.</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 3. Clean Horizontal Emotion Selector (Compact & Responsive) -->
-    <div class="emotion-selectors">
-      <button 
-        *ngFor="let stat of emotionStats()" 
-        class="emotion-pill" 
-        [class.active]="selectedEmotion() === stat.key"
-        (click)="selectEmotion(stat.key)"
-        [style.--pill-color]="stat.color"
-        [style.--pill-glow]="stat.glow"
-        aria-label="Filter by emotion">
-        <span class="pill-dot"></span>
-        <span class="pill-name">{{ stat.name }}</span>
-        <span class="pill-percentage">{{ stat.percentage }}%</span>
+    <div class="music-floating-system">
+      <button class="floating-music-btn" (click)="togglePlay()" [class.playing]="isPlaying()" [class.loading]="isLoadingAudio()" [disabled]="isLoadingAudio()">
+        <!-- Spinner (Show when buffering/loading) -->
+        <div class="music-btn-spinner" *ngIf="isLoadingAudio()"></div>
+        <!-- Play Icon (Show when paused and not loading) -->
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="music-icon-svg" *ngIf="!isPlaying() && !isLoadingAudio()">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+        <!-- Wavy Spectrum (Show when playing and not loading) -->
+        <div class="playing-spectrum" *ngIf="isPlaying() && !isLoadingAudio()">
+          <span class="spec-bar bar-1"></span>
+          <span class="spec-bar bar-2"></span>
+          <span class="spec-bar bar-3"></span>
+          <span class="spec-bar bar-4"></span>
+        </div>
       </button>
     </div>
-
-    <!-- 4. Interactive Minimalistic Insights (Fits perfectly on screen) -->
-    <div class="aura-insights-panel">
-      <div class="insight-content">
-        <p class="insight-text" *ngIf="!selectedEmotion()">
-          Your dominant mind state is <span class="highlight-dominant" [attr.data-mood]="dominantEmotion()">{{ dominantEmotion() }}</span>.
-        </p>
-        <p class="insight-text" *ngIf="selectedEmotion()">
-          Logged <span class="highlight-focus" [style.color]="selectedEmotion() ? getEmotionColor(selectedEmotion() || '') : ''">{{ selectedEmotion() }}</span> in {{ selectedEmotion() ? emotionCounts()[selectedEmotion() || ''] : 0 }} reflections.
-        </p>
-      </div>
-    </div>
-
 
   </div>
 </ion-content>

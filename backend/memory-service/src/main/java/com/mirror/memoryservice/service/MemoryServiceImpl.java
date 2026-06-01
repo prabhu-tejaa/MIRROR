@@ -16,10 +16,12 @@ public class MemoryServiceImpl implements MemoryService {
 
     private final MemoryRepository repository;
     private final GeminiService geminiService;
+    private final EmotionCacheService emotionCacheService;
 
-    public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService) {
+    public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService, EmotionCacheService emotionCacheService) {
         this.repository = repository;
         this.geminiService = geminiService;
+        this.emotionCacheService = emotionCacheService;
     }
 
     @Override
@@ -28,6 +30,7 @@ public class MemoryServiceImpl implements MemoryService {
         try {
             String embeddingStr = formatVectorForSql(embedding);
             repository.saveMemoryWithEmbedding(userId, content, emotion, sender, embeddingStr);
+            emotionCacheService.evict(userId);
             return "Memory successfully cataloged and indexed semantically.";
         } catch (Exception e) {
             log.error("Error saving memory to Postgres: {}", e.getMessage(), e);
@@ -51,6 +54,10 @@ public class MemoryServiceImpl implements MemoryService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Long> getEmotionalAnalytics(String userId) {
+        Map<String, Long> cached = emotionCacheService.getAnalytics(userId);
+        if (cached != null) {
+            return cached;
+        }
         Map<String, Long> analytics = new HashMap<>();
         try {
             List<Object[]> counts = repository.findEmotionCounts(userId);
@@ -61,6 +68,7 @@ public class MemoryServiceImpl implements MemoryService {
                     analytics.put(emotion, count);
                 }
             }
+            emotionCacheService.putAnalytics(userId, analytics);
         } catch (Exception e) {
             log.error("Error generating emotional analytics metrics: {}", e.getMessage(), e);
         }
