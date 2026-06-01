@@ -1,29 +1,373 @@
-// Personal Consciousness Mandala — a living procedural portrait of the user's mind
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&display=swap');
-
 ion-content {
   --background: transparent;
   font-family: 'Outfit', sans-serif;
+  color: #f5f6fa;
 }
 
-.art-universe-container {
+// Full page non-scrollable flex wrapper that fits perfectly on all screens
+.mind-space-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 20px 32px;
+  box-sizing: border-box;
+  text-align: center;
   position: relative;
-  width: 100vw;
-  height: 100vh;
   overflow: hidden;
   background: transparent;
+  gap: 24px;
 }
 
-// The canvas renders the mandala directly — no CSS filters needed
-// (We draw gradients in JS so the canvas is already beautiful)
-.generative-fluid-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: block;
-  background: transparent;
-  // Soft outer glow on the whole canvas so the mandala feels like it floats in space
-  filter: drop-shadow(0 0 60px rgba(120, 80, 255, 0.08));
+// 1. Header Styling
+.mind-header {
+  h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, #ffffff 0%, #a2a3be 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    margin: 6px 0 0 0;
+    font-size: 13px;
+    color: #797a95;
+    font-weight: 350;
+  }
+}
+
+// 2. Central Dynamic Consciousness Orb Area
+.aura-visualization-area {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+  margin: 0;
+
+  // Backdrop glow — matches sphere colors, breathes softly
+  .aura-glow-backdrop {
+    position: absolute;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    filter: blur(55px);
+    opacity: 0.55;
+    transition: background 1.2s ease;
+    animation: aura-pulse-breathe 6s ease-in-out infinite alternate;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .aura-sphere-container {
+    position: relative;
+    z-index: 2;
+  }
+
+  // Perspective wrapper — defines the 3D camera depth
+  .aura-3d-stage {
+    perspective: 400px;
+    perspective-origin: 50% 50%;
+  }
+
+  // The sphere itself tumbles in 3D space — slow planetary wobble
+  .aura-sphere-outer {
+    width: 162px;
+    height: 162px;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    background: #090910;
+    transform-style: preserve-3d;
+    animation:
+      sphere-3d-tumble 18s ease-in-out infinite,
+      sphere-breathe 5s ease-in-out infinite alternate;
+    // Realistic planet-like edge shadow
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 255, 0.06),
+      0 18px 50px rgba(0, 0, 0, 0.55),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  // Layer 1: Main blurred conic gradient — slow Z-axis spin
+  .aura-sphere-core {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    filter: blur(22px);
+    transform: scale(1.18);
+    transition: background 1.2s ease;
+    animation: aura-core-spin 24s linear infinite;
+    transform-origin: center center;
+  }
+
+  // Layer 2: Secondary drifting blob — counter-spin, larger blur, creates lava-lamp depth
+  .aura-blob-secondary {
+    position: absolute;
+    width: 70%;
+    height: 70%;
+    top: 15%;
+    left: 15%;
+    border-radius: 50%;
+    filter: blur(30px);
+    opacity: 0.7;
+    transition: background 1.2s ease;
+    animation: aura-core-spin 34s linear infinite reverse;
+    transform-origin: center center;
+    mix-blend-mode: screen;
+  }
+
+  // Layer 3: Inset rim shadow — creates the dark "horizon" that makes it look 3D
+  .aura-sphere-rim {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: inset 0 0 35px 14px rgba(0, 0, 0, 0.7);
+  }
+
+  // Layer 4: Glass refraction — the dark-edged depth lens
+  .aura-sphere-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle at 38% 36%,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.01) 40%,
+      rgba(0, 0, 0, 0.2) 80%,
+      rgba(0, 0, 0, 0.55) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  // Layer 5: Moving specular highlight — orbits slowly to simulate revolving light source
+  .aura-sphere-specular {
+    position: absolute;
+    width: 52px;
+    height: 26px;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%);
+    border-radius: 50%;
+    animation: specular-orbit 14s ease-in-out infinite;
+    pointer-events: none;
+  }
+}
+
+
+// 3. Compact Horizontal selectors
+.emotion-selectors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  max-width: 480px;
+  margin: 0;
+  z-index: 3;
+
+  .emotion-pill {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #9293b4;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--pill-color);
+      box-shadow: 0 0 8px var(--pill-color);
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.12);
+      transform: translateY(-1px);
+    }
+
+    &.active {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      border-color: var(--pill-color);
+      box-shadow: 0 0 12px var(--pill-glow);
+    }
+  }
+}
+
+// 4. Insight Panel
+.aura-insights-panel {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0;
+
+  .insight-text {
+    margin: 0;
+    font-size: 13.5px;
+    color: #8c8da7;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  .highlight-dominant {
+    text-transform: capitalize;
+    font-weight: 600;
+
+    &[data-mood="JOY"] { color: #ffd700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.25); }
+    &[data-mood="CALM"] { color: #2ecc71; text-shadow: 0 0 8px rgba(46, 204, 113, 0.25); }
+    &[data-mood="SAD"] { color: #3498db; text-shadow: 0 0 8px rgba(52, 152, 219, 0.25); }
+    &[data-mood="ANXIOUS"] { color: #9b59b6; text-shadow: 0 0 8px rgba(155, 89, 182, 0.25); }
+    &[data-mood="ANGER"] { color: #e74c3c; text-shadow: 0 0 8px rgba(231, 76, 60, 0.25); }
+  }
+
+  .highlight-focus {
+    font-weight: 600;
+  }
+}
+
+// 5. Clean, Minimalist stats grid footer
+.stats-minimal-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin: 10px 0;
+
+  .stat-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .stat-number {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .stat-desc {
+    font-size: 10px;
+    color: #6a6b82;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-top: 3px;
+    font-weight: 500;
+  }
+
+  .stat-separator {
+    width: 1px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.08);
+  }
+}
+
+// 6. Action Button Styling (Minimal custom pill button)
+.action-footer {
+  margin-top: 6px;
+
+  .btn-reflect {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 24px;
+    padding: 11px 24px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #e5e5f0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+    .arrow-svg {
+      transition: transform 0.25s ease;
+    }
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.03);
+      color: #ffffff;
+      transform: translateY(-1px);
+
+      .arrow-svg {
+        transform: translateX(2px);
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Keyframes
+
+// Backdrop glow breathes in and out
+@keyframes aura-pulse-breathe {
+  0%   { transform: scale(0.92); opacity: 0.45; }
+  100% { transform: scale(1.08); opacity: 0.65; }
+}
+
+// Core conic gradient flat-spins on Z axis (inside sphere)
+@keyframes aura-core-spin {
+  0%   { transform: scale(1.18) rotate(0deg); }
+  100% { transform: scale(1.18) rotate(360deg); }
+}
+
+// Sphere 3D tumble — slow multi-axis planetary wobble
+@keyframes sphere-3d-tumble {
+  0%   { transform: rotateX(10deg)  rotateY(0deg)   rotateZ(0deg); }
+  20%  { transform: rotateX(-6deg)  rotateY(72deg)  rotateZ(4deg); }
+  40%  { transform: rotateX(8deg)   rotateY(144deg) rotateZ(-5deg); }
+  60%  { transform: rotateX(-10deg) rotateY(216deg) rotateZ(6deg); }
+  80%  { transform: rotateX(6deg)   rotateY(288deg) rotateZ(-3deg); }
+  100% { transform: rotateX(10deg)  rotateY(360deg) rotateZ(0deg); }
+}
+
+// Sphere gently breathes (subtle scale pulse)
+@keyframes sphere-breathe {
+  0%   { transform: scale(0.97); }
+  100% { transform: scale(1.03); }
+}
+
+// Specular highlight slowly orbits the sphere surface, simulating a revolving light source
+@keyframes specular-orbit {
+  0%   { top: 8%;  left: 12%; opacity: 0.22; transform: rotate(-30deg) scale(1);    }
+  25%  { top: 12%; left: 62%; opacity: 0.10; transform: rotate(25deg)  scale(0.75); }
+  50%  { top: 58%; left: 55%; opacity: 0.05; transform: rotate(70deg)  scale(0.55); }
+  75%  { top: 55%; left: 8%;  opacity: 0.12; transform: rotate(-15deg) scale(0.8);  }
+  100% { top: 8%;  left: 12%; opacity: 0.22; transform: rotate(-30deg) scale(1);    }
+}
+
+// Responsive optimization
+@media (max-height: 600px) {
+  .mind-space-wrapper {
+    padding: 2vh 20px;
+  }
+  .aura-visualization-area {
+    height: 180px;
+    .aura-sphere-outer {
+      width: 120px;
+      height: 120px;
+    }
+    .aura-glow-backdrop {
+      width: 160px;
+      height: 160px;
+    }
+  }
 }

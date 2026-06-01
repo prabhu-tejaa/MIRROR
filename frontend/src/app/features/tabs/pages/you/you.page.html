@@ -1,10 +1,57 @@
-<ion-content [fullscreen]="true">
-  <div class="art-universe-container">
-    <!-- Generative Live Fluid Particle Flow Field -->
-    <canvas #fluidCanvas class="generative-fluid-canvas"></canvas>
+<ion-content [fullscreen]="true" [scrollY]="false">
+  <div class="mind-space-wrapper">
+    
+
+    <!-- 2. Central Aura Orb -->
+    <div class="aura-visualization-area">
+      <div class="aura-glow-backdrop" [style.background]="auraGradient()"></div>
+      <div class="aura-sphere-container">
+        <!-- Perspective wrapper for 3D space -->
+        <div class="aura-3d-stage">
+          <div class="aura-sphere-outer">
+            <!-- Layer 1: Main blurred conic gradient — slow spin on Z axis -->
+            <div class="aura-sphere-core" [style.background]="auraGradient()"></div>
+            <!-- Layer 2: Secondary drifting blob for lava-lamp depth feel -->
+            <div class="aura-blob-secondary" [style.background]="auraGradient()"></div>
+            <!-- Layer 3: Dark edge rim shadow for 3D depth illusion -->
+            <div class="aura-sphere-rim"></div>
+            <!-- Layer 4: Glass refraction overlay -->
+            <div class="aura-sphere-overlay"></div>
+            <!-- Layer 5: Moving specular highlight -->
+            <div class="aura-sphere-specular"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Clean Horizontal Emotion Selector (Compact & Responsive) -->
+    <div class="emotion-selectors">
+      <button 
+        *ngFor="let stat of emotionStats()" 
+        class="emotion-pill" 
+        [class.active]="selectedEmotion() === stat.key"
+        (click)="selectEmotion(stat.key)"
+        [style.--pill-color]="stat.color"
+        [style.--pill-glow]="stat.glow"
+        aria-label="Filter by emotion">
+        <span class="pill-dot"></span>
+        <span class="pill-name">{{ stat.name }}</span>
+        <span class="pill-percentage">{{ stat.percentage }}%</span>
+      </button>
+    </div>
+
+    <!-- 4. Interactive Minimalistic Insights (Fits perfectly on screen) -->
+    <div class="aura-insights-panel">
+      <div class="insight-content">
+        <p class="insight-text" *ngIf="!selectedEmotion()">
+          Your dominant mind state is <span class="highlight-dominant" [attr.data-mood]="dominantEmotion()">{{ dominantEmotion() }}</span>.
+        </p>
+        <p class="insight-text" *ngIf="selectedEmotion()">
+          Logged <span class="highlight-focus" [style.color]="selectedEmotion() ? getEmotionColor(selectedEmotion() || '') : ''">{{ selectedEmotion() }}</span> in {{ selectedEmotion() ? emotionCounts()[selectedEmotion() || ''] : 0 }} reflections.
+        </p>
+      </div>
+    </div>
+
+
   </div>
 </ion-content>
-
-
-
-
