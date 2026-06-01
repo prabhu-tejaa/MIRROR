@@ -141,6 +141,39 @@ public class MemoryServiceImpl implements MemoryService {
         return repository.countByUserId(userId);
     }
 
+    @Override
+    @Transactional
+    public void deleteMemory(Long id) {
+        repository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateMemory(Long id, String userId, String content, String emotion) {
+        Memory memory = repository.findById(id).orElseThrow(() -> new RuntimeException("Memory not found"));
+        
+        // If content changes, regenerate embedding
+        if (!memory.getContent().equals(content)) {
+            float[] newEmbedding = geminiService.getEmbedding(content);
+            String embeddingStr = "[" + java.util.stream.IntStream.range(0, newEmbedding.length)
+                    .mapToObj(i -> String.valueOf(newEmbedding[i]))
+                    .collect(java.util.stream.Collectors.joining(",")) + "]";
+            memory.setEmbedding(embeddingStr);
+        }
+        
+        memory.setUserId(userId);
+        memory.setContent(content);
+        memory.setEmotion(emotion);
+        repository.save(memory);
+        emotionCacheService.evict(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Memory> getAllMemoriesAdmin() {
+        return repository.findAll();
+    }
+
     /**
      * Converts a float[] vector array into standard Postgres pgvector string format: [0.1,0.2,...]
      */

@@ -41,4 +41,19 @@ public interface MemoryService {
      * Retrieves the total memory count for a user.
      */
     long getMemoryCount(String userId);
+
+    /**
+     * Deletes a memory by ID (Admin).
+     */
+    void deleteMemory(Long id);
+
+    /**
+     * Updates an existing memory record.
+     */
+    void updateMemory(Long id, String userId, String content, String emotion);
+
+    /**
+     * Retrieves all memories in the system (Admin).
+     */
+    List<Memory> getAllMemoriesAdmin();
 }

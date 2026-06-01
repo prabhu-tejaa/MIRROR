@@ -4,26 +4,23 @@
 
     <!-- 2. Dynamic Stage (Always shown, adapts to state) -->
     <div class="aura-visualization-area">
-      <div class="aura-stage-container">
+      <div class="aura-stage-container" [class.animate-intro]="shouldAnimateIntro">
         
         <!-- Center Orb (Always Glassy Core 代表 Core Self) -->
         <div class="aura-orb dominant-orb glassy-core" [style.--dynamic-aura-gradient]="auraGradient()">
           <span class="orb-label">{{ username() }}</span>
         </div>
 
-        <!-- 4 Outer Orbs floating and playing around dynamically -->
+        <!-- N Outer Orbs floating and playing around dynamically (Top 4) -->
         <div class="outer-orbs-wrapper" *ngIf="totalCount() > 0">
-          <!-- Top Left Orb (Joy) -->
-          <div class="aura-orb top-left-orb" (click)="selectEmotion('JOY')" [style.--orb-scale]="getEmotionScale('JOY')"></div>
-
-          <!-- Top Right Orb (Calm) -->
-          <div class="aura-orb top-right-orb" (click)="selectEmotion('CALM')" [style.--orb-scale]="getEmotionScale('CALM')"></div>
-
-          <!-- Bottom Left Orb (Sadness) -->
-          <div class="aura-orb bottom-left-orb" (click)="selectEmotion('SAD')" [style.--orb-scale]="getEmotionScale('SAD')"></div>
-
-          <!-- Bottom Right Orb (Anxiety) -->
-          <div class="aura-orb bottom-right-orb" (click)="selectEmotion('ANXIOUS')" [style.--orb-scale]="getEmotionScale('ANXIOUS')"></div>
+          <div *ngFor="let stat of topOrbs(); let i = index"
+               class="aura-orb"
+               [ngClass]="orbClasses[i]"
+               (click)="selectEmotion(stat.key)"
+               [style.--orb-scale]="getEmotionScale(stat.key)"
+               [style.background]="stat.primaryColor"
+               [style.box-shadow]="'0 0 28px ' + stat.primaryColor">
+          </div>
         </div>
 
       </div>
@@ -47,23 +44,23 @@
     </div>
 
     <!-- 3. Dynamic Text Selectors (Colors of Emotions) -->
-    <div class="emotion-text-selectors" *ngIf="totalCount() > 0">
+    <div class="emotion-text-selectors" *ngIf="totalCount() > 0" [class.animate-intro]="shouldAnimateIntro">
       <button 
         *ngFor="let stat of emotionStats()" 
         class="emotion-text-btn"
         [class.active]="selectedEmotion() === stat.key"
         (click)="selectEmotion(stat.key)"
-        [style.color]="stat.color"
-        [style.text-shadow]="selectedEmotion() === stat.key ? '0 0 15px ' + stat.color : 'none'">
+        [style.color]="stat.primaryColor"
+        [style.text-shadow]="selectedEmotion() === stat.key ? '0 0 15px ' + stat.primaryColor : 'none'">
         {{ stat.name }}
       </button>
     </div>
 
     <!-- 4. Interactive Timeline Popup Modal/Dialogue (Saves space completely) -->
     <div class="timeline-popup-overlay" *ngIf="selectedEmotion()" (click)="selectEmotion(null)">
-      <div class="timeline-popup-card" (click)="$event.stopPropagation()" [style.border-color]="getEmotionColor(selectedEmotion() || '')">
+      <div class="timeline-popup-card" (click)="$event.stopPropagation()" [style.border-color]="parseEmotionTag(selectedEmotion() || '').primaryColor">
         <div class="popup-header">
-          <h4>Reflections tagged: <span [style.color]="getEmotionColor(selectedEmotion() || '')">{{ formatEmotionName(selectedEmotion() || '') }}</span></h4>
+          <h4>Reflections tagged: <span [style.color]="parseEmotionTag(selectedEmotion() || '').primaryColor">{{ parseEmotionTag(selectedEmotion() || '').name }}</span></h4>
           <button class="btn-close-popup" (click)="selectEmotion(null)">✕</button>
         </div>
         <div class="popup-scroller">

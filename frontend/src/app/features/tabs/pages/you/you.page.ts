@@ -31,9 +31,7 @@ export class YouPage implements OnDestroy {
   
   // Initial empty state before backend loads
   public readonly totalCount = signal<number>(0);
-  public readonly emotionCounts = signal<Record<string, number>>({
-    JOY: 0, SAD: 0, ANXIOUS: 0, CALM: 0
-  });
+  public readonly emotionCounts = signal<Record<string, number>>({});
 
   // Interactive UI Focus
   public readonly selectedEmotion = signal<string | null>(null);
@@ -75,33 +73,37 @@ export class YouPage implements OnDestroy {
     const counts = this.emotionCounts();
     const total = this.totalCount() || 1;
     
-    return Object.entries(counts).map(([emotion, count]) => {
+    return Object.entries(counts).map(([rawKey, count]) => {
       const percentage = Math.round((count / total) * 100);
+      const parsed = this.parseEmotionTag(rawKey);
       return {
-        key: emotion,
-        name: this.formatEmotionName(emotion),
+        key: rawKey,
+        name: parsed.name,
         count,
         percentage,
-        color: this.getEmotionColor(emotion),
-        glow: this.getEmotionGlow(emotion)
+        primaryColor: parsed.primaryColor,
+        secondaryColor: parsed.secondaryColor
       };
     }).sort((a, b) => b.count - a.count);
   });
+
+  public readonly topOrbs = computed(() => {
+    return this.emotionStats().slice(0, 4);
+  });
+
+  public readonly orbClasses = [
+    'top-left-orb',
+    'top-right-orb',
+    'bottom-left-orb',
+    'bottom-right-orb'
+  ];
 
   // Computed timeline reflections for the selected emotion
   public readonly filteredReflections = computed(() => {
     const selected = this.selectedEmotion();
     if (!selected) return [];
     return this.reflectionsList()
-      .filter(ref => {
-        if (!ref.emotion) return false;
-        const k = ref.emotion.toUpperCase();
-        let norm = 'CALM';
-        if (k.includes('JOY') || k.includes('HAPPY') || k.includes('EXCITE') || k.includes('ANGER') || k.includes('FRUSTRATION') || k.includes('MAD')) norm = 'JOY';
-        else if (k.includes('SAD') || k.includes('LONELY') || k.includes('MELANCHOLY') || k.includes('NOSTALGIA')) norm = 'SAD';
-        else if (k.includes('ANXIOUS') || k.includes('WORRY') || k.includes('FEAR') || k.includes('STRESS') || k.includes('NEUTRAL')) norm = 'ANXIOUS';
-        return norm === selected;
-      })
+      .filter(ref => ref.emotion === selected)
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 5);
   });
@@ -120,13 +122,13 @@ export class YouPage implements OnDestroy {
     stats.forEach(stat => {
       if (stat.percentage > 0) {
         const nextPercent = currentPercent + stat.percentage;
-        gradientParts.push(`${stat.color} ${currentPercent}% ${nextPercent}%`);
+        gradientParts.push(`${stat.primaryColor} ${currentPercent}% ${nextPercent}%`);
         currentPercent = nextPercent;
       }
     });
 
     if (currentPercent < 100 && gradientParts.length > 0) {
-      gradientParts.push(`${stats[0].color} ${currentPercent}% 100%`);
+      gradientParts.push(`${stats[0].primaryColor} ${currentPercent}% 100%`);
     }
 
     return `conic-gradient(${gradientParts.join(', ')})`;
@@ -155,34 +157,24 @@ export class YouPage implements OnDestroy {
     this.router.navigate(['/tabs/chat']);
   }
 
-  public formatEmotionName(emotion: string): string {
-    const mapping: Record<string, string> = {
-      JOY: 'Joy',
-      CALM: 'Calm',
-      SAD: 'Sadness',
-      ANXIOUS: 'Anxiety'
-    };
-    return mapping[emotion.toUpperCase()] || emotion;
-  }
+  public parseEmotionTag(rawTag: string) {
+    if (!rawTag) return { name: 'Calm', primaryColor: '#2ecc71', secondaryColor: 'rgba(46, 204, 113, 0.4)' };
+    const parts = rawTag.split('|');
+    const name = parts[0] || rawTag;
+    
+    // Legacy mapping fallback for static old tags if they don't have hex codes
+    let primaryColor = parts[1];
+    let secondaryColor = parts[2];
 
-  public getEmotionColor(emotion: string): string {
-    const mapping: Record<string, string> = {
-      JOY: '#ffd700',
-      CALM: '#2ecc71',
-      SAD: '#3498db',
-      ANXIOUS: '#9b59b6'
-    };
-    return mapping[emotion.toUpperCase()] || '#7f8c8d';
-  }
+    if (!primaryColor || !secondaryColor) {
+      const up = name.toUpperCase();
+      if (up.includes('JOY')) { primaryColor = '#ffd700'; secondaryColor = 'rgba(255, 215, 0, 0.4)'; }
+      else if (up.includes('SAD')) { primaryColor = '#3498db'; secondaryColor = 'rgba(52, 152, 219, 0.4)'; }
+      else if (up.includes('ANXIOUS')) { primaryColor = '#9b59b6'; secondaryColor = 'rgba(155, 89, 182, 0.4)'; }
+      else { primaryColor = '#2ecc71'; secondaryColor = 'rgba(46, 204, 113, 0.4)'; }
+    }
 
-  public getEmotionGlow(emotion: string): string {
-    const mapping: Record<string, string> = {
-      JOY: 'rgba(255, 215, 0, 0.4)',
-      CALM: 'rgba(46, 204, 113, 0.4)',
-      SAD: 'rgba(52, 152, 219, 0.4)',
-      ANXIOUS: 'rgba(155, 89, 182, 0.4)'
-    };
-    return mapping[emotion.toUpperCase()] || 'rgba(127, 140, 141, 0.4)';
+    return { name, primaryColor, secondaryColor };
   }
 
   // Audio player methods
@@ -237,7 +229,7 @@ export class YouPage implements OnDestroy {
     if (!this.audioObj) return;
 
     try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContextClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
       if (!AudioContextClass) return;
 
       if (!this.audioCtx) {
@@ -330,26 +322,28 @@ export class YouPage implements OnDestroy {
     }
   }
 
+  private dataLoadedOnce = false;
+  public shouldAnimateIntro = true;
+
   private fetchAnalytics() {
     const email = this.authSvc.getEmail() || 'guest@mirror.com';
-    this.isLoading.set(true);
+    
+    // Only trigger the visual "Syncing Aura..." loader on the very first visit
+    if (!this.dataLoadedOnce) {
+      this.isLoading.set(true);
+    }
 
-    // 1. Fetch live metrics counts
+    // 1. Fetch live metrics counts in the background
     this.http.get<Record<string, number>>(`${environment.apiUrl}/api/memory/analytics`, {
       headers: { 'X-User-Email': email }
     }).subscribe({
       next: (data) => {
-        const normalized: Record<string, number> = { JOY: 0, SAD: 0, ANXIOUS: 0, CALM: 0 };
+        const normalized: Record<string, number> = {};
         let total = 0;
         
         if (data && Object.keys(data).length > 0) {
           Object.entries(data).forEach(([key, count]) => {
-            const k = key.toUpperCase();
-            let norm = 'CALM';
-            if (k.includes('JOY') || k.includes('HAPPY') || k.includes('EXCITE') || k.includes('ANGER') || k.includes('FRUSTRATION') || k.includes('MAD')) norm = 'JOY';
-            else if (k.includes('SAD') || k.includes('LONELY') || k.includes('MELANCHOLY') || k.includes('NOSTALGIA')) norm = 'SAD';
-            else if (k.includes('ANXIOUS') || k.includes('WORRY') || k.includes('FEAR') || k.includes('STRESS') || k.includes('NEUTRAL')) norm = 'ANXIOUS';
-            normalized[norm] += count;
+            normalized[key] = (normalized[key] || 0) + count;
             total += count;
           });
         }
@@ -357,9 +351,17 @@ export class YouPage implements OnDestroy {
         // Always override with real backend data, even if total is 0
         this.emotionCounts.set(normalized);
         this.totalCount.set(total);
+        if (!this.dataLoadedOnce) {
+          setTimeout(() => { this.shouldAnimateIntro = false; }, 3000);
+        }
+        this.dataLoadedOnce = true;
         this.isLoading.set(false);
       },
       error: () => {
+        if (!this.dataLoadedOnce) {
+          setTimeout(() => { this.shouldAnimateIntro = false; }, 3000);
+        }
+        this.dataLoadedOnce = true;
         this.isLoading.set(false);
       }
     });

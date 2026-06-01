@@ -55,6 +55,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/admin/pages/admin-gateway/admin-gateway.page').then(m => m.AdminGatewayPage)
   },
   {
+    path: 'admin/memory-service',
+    canActivate: [authGuard, adminGuard],
+    loadComponent: () => import('./features/admin/pages/admin-memory/admin-memory.page').then(m => m.AdminMemoryPage)
+  },
+  {
     path: 'status',
     loadComponent: () => import('./features/status/system-status.page').then(m => m.SystemStatusPage)
   },

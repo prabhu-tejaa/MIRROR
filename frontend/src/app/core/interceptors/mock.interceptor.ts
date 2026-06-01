@@ -154,16 +154,30 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
         {
           id: '1',
           sender: 'user',
-          content: 'Hello, I want to start my journey of self-reflection today.',
+          content: 'Feeling completely overwhelmed today. I have my final MCA project review coming up and I feel like the backend isn\'t ready.',
           createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-          emotion: 'NEUTRAL'
+          emotion: 'ANXIOUS'
         },
         {
           id: '2',
           sender: 'mirror',
-          content: 'Welcome! I am MIRROR, your sanctuary for deep reflection. Let us explore the depths of your thoughts and feelings. What is on your mind right now?',
+          content: 'It is completely normal to feel overwhelmed when facing a major milestone like your final review. Let\'s break it down. What part of the backend is worrying you the most right now?',
           createdAt: new Date(Date.now() - 3600000 * 2 + 5000).toISOString(),
           emotion: 'CALM|#10b981|#06b6d4'
+        },
+        {
+          id: '3',
+          sender: 'user',
+          content: 'Actually, just talking it out helped. The microservices are working, I just need to polish the UI. I can do this.',
+          createdAt: new Date(Date.now() - 3600000 * 1).toISOString(),
+          emotion: 'JOY'
+        },
+        {
+          id: '4',
+          sender: 'mirror',
+          content: 'I love that shift in perspective! You have already built the hardest part. Taking it one step at a time will get you across the finish line. You\'ve got this.',
+          createdAt: new Date(Date.now() - 3600000 * 1 + 5000).toISOString(),
+          emotion: 'JOY|#ffb700|#ff5e00'
         }
       ],
       hasMore: false
@@ -183,8 +197,8 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     } else if (promptUpper.includes('SAD') || promptUpper.includes('LONELY') || promptUpper.includes('CRY') || promptUpper.includes('HURT')) {
       responseText = "I'm holding space for you. Feeling down or lonely is a completely natural human experience, and speaking it aloud is incredibly brave. Be gentle with yourself today.";
       emotionToken = "SAD|#00ffd5|#0099ff";
-    } else if (promptUpper.includes('ANXIOUS') || promptUpper.includes('STRESS') || promptUpper.includes('WORRY') || promptUpper.includes('SCARED')) {
-      responseText = "Take a slow, deep breath. Anxiety can feel overwhelming, but remember that you are here, safe in this moment. We can unpack these worries one step at a time.";
+    } else if (promptUpper.includes('ANXIOUS') || promptUpper.includes('STRESS') || promptUpper.includes('WORRY') || promptUpper.includes('SCARED') || promptUpper.includes('OVERWHELMED')) {
+      responseText = "Take a slow, deep breath. Anxiety can feel overwhelming, especially with academic pressure. Remember that you are here, safe in this moment. We can unpack these worries one step at a time.";
       emotionToken = "ANXIOUS|#a855f7|#06b6d4";
     } else if (promptUpper.includes('ANGRY') || promptUpper.includes('MAD') || promptUpper.includes('FRUSTRATED')) {
       responseText = "It is completely valid to feel angry or frustrated. Anger often points to things we care deeply about or boundaries that have been crossed. Let's release some of that tension together.";
@@ -203,18 +217,18 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
 
   if (url.includes('/api/memory/analytics')) {
     const mockAnalytics = {
-      JOY: 21, SAD: 8, ANXIOUS: 6, CALM: 14
+      JOY: 35, SAD: 10, ANXIOUS: 25, CALM: 30
     };
     return of(new HttpResponse({ status: 200, body: mockAnalytics })).pipe(delay(500));
   }
 
   if (url.includes('/api/memory/all')) {
     const mockAll = [
-      { content: 'Had a wonderful day walking through the sunlit park.', emotion: 'JOY', createdAt: new Date().toISOString(), sender: 'user' },
-      { content: 'Stressed about the upcoming final presentations.', emotion: 'ANXIOUS', createdAt: new Date(Date.now() - 3600000).toISOString(), sender: 'user' },
-      { content: 'Missing old childhood school friends today.', emotion: 'SAD', createdAt: new Date(Date.now() - 7200000).toISOString(), sender: 'user' },
-      { content: 'Found peace meditating under the night sky.', emotion: 'CALM', createdAt: new Date(Date.now() - 14400000).toISOString(), sender: 'user' },
-      { content: 'Feeling extremely passionate and determined about the new project roadmap!', emotion: 'JOY', createdAt: new Date(Date.now() - 86400000).toISOString(), sender: 'user' }
+      { content: 'Finally submitted the zeroth review documents! So relieved.', emotion: 'JOY', createdAt: new Date().toISOString(), sender: 'user' },
+      { content: 'Stressed about the upcoming MCA final presentations and microservices architecture.', emotion: 'ANXIOUS', createdAt: new Date(Date.now() - 3600000 * 24).toISOString(), sender: 'user' },
+      { content: 'Feeling a bit burnt out from looking at code all day.', emotion: 'SAD', createdAt: new Date(Date.now() - 3600000 * 48).toISOString(), sender: 'user' },
+      { content: 'Had a quiet evening just listening to music and disconnecting from screens.', emotion: 'CALM', createdAt: new Date(Date.now() - 3600000 * 72).toISOString(), sender: 'user' },
+      { content: 'Figured out the JWT authentication bug! Let\'s go!', emotion: 'JOY', createdAt: new Date(Date.now() - 3600000 * 96).toISOString(), sender: 'user' }
     ];
     return of(new HttpResponse({ status: 200, body: mockAll })).pipe(delay(500));
   }
