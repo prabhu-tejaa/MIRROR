@@ -64,8 +64,8 @@ ion-content {
 
   .aura-stage-container {
     position: relative;
-    width: 280px;
-    height: 280px;
+    width: clamp(240px, 75vw, 380px);
+    height: clamp(240px, 75vw, 380px);
     z-index: 2;
     display: flex;
     justify-content: center;
@@ -79,10 +79,10 @@ ion-content {
     transition: all 1.2s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
-  // Center / Dominant Orb (Sized up)
+  // Center / Dominant Orb (Sized up and responsive)
   .dominant-orb {
-    width: 110px;
-    height: 110px;
+    width: clamp(110px, 35vw, 160px);
+    height: clamp(110px, 35vw, 160px);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.12);
     z-index: 10;
@@ -90,7 +90,7 @@ ion-content {
     justify-content: center;
     align-items: center;
     font-weight: 700;
-    font-size: 14px;
+    font-size: clamp(14px, 4vw, 17px);
     letter-spacing: 0.8px;
     color: #ffffff;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
@@ -102,11 +102,36 @@ ion-content {
       border: 1px solid rgba(255, 255, 255, 0.16) !important;
       backdrop-filter: blur(25px) !important;
       color: rgba(255, 255, 255, 0.95) !important;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: var(--dynamic-aura-gradient, conic-gradient(
+          from 0deg,
+          rgba(255, 215, 0, 0.85) 0deg,
+          rgba(46, 204, 113, 0.85) 90deg,
+          rgba(52, 152, 219, 0.85) 180deg,
+          rgba(155, 89, 182, 0.85) 270deg,
+          rgba(255, 215, 0, 0.85) 360deg
+        ));
+        filter: blur(24px);
+        animation: rotateOuter 8s linear infinite;
+        z-index: -1;
+      }
     }
 
     .orb-label {
       text-transform: uppercase;
       font-weight: 700;
+      max-width: 85%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
@@ -115,47 +140,116 @@ ion-content {
     position: absolute;
     width: 100%;
     height: 100%;
+    animation: rotateOuter 25s linear infinite;
   }
 
   // Synchronized continuous rotating carousel loop after an explosive shoot out from the center on load.
   .top-left-orb {
-    width: 44px;
-    height: 44px;
+    width: clamp(44px, 14vw, 62px);
+    height: clamp(44px, 14vw, 62px);
     top: 5%;
     left: 5%;
     cursor: pointer;
-    animation: floatTopLeftIntro 3s cubic-bezier(0.25, 1, 0.5, 1) forwards, floatTopLeftLoop 14s linear infinite 3s, morphBlob 5s ease-in-out infinite alternate;
-    &:hover { transform: scale(1.15) !important; filter: brightness(1.2); }
+    background: rgba(255, 215, 0, 0.92);
+    box-shadow: 0 0 28px rgba(255, 215, 0, 0.8);
+    transform: scale(var(--orb-scale, 1));
+    animation: morphBlob 5s ease-in-out infinite alternate;
+    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
   }
 
   .top-right-orb {
-    width: 42px;
-    height: 42px;
+    width: clamp(42px, 13vw, 58px);
+    height: clamp(42px, 13vw, 58px);
     top: 5%;
     right: 5%;
     cursor: pointer;
-    animation: floatTopRightIntro 3s cubic-bezier(0.25, 1, 0.5, 1) forwards, floatTopRightLoop 14s linear infinite 3s, morphBlob 6s ease-in-out infinite alternate-reverse;
-    &:hover { transform: scale(1.15) !important; filter: brightness(1.2); }
+    background: rgba(46, 204, 113, 0.92);
+    box-shadow: 0 0 28px rgba(46, 204, 113, 0.8);
+    transform: scale(var(--orb-scale, 1));
+    animation: morphBlob 6s ease-in-out infinite alternate-reverse;
+    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
   }
 
   .bottom-left-orb {
-    width: 46px;
-    height: 46px;
+    width: clamp(46px, 15vw, 66px);
+    height: clamp(46px, 15vw, 66px);
     bottom: 5%;
     left: 5%;
     cursor: pointer;
-    animation: floatBottomLeftIntro 3s cubic-bezier(0.25, 1, 0.5, 1) forwards, floatBottomLeftLoop 14s linear infinite 3s, morphBlob 7s ease-in-out infinite alternate;
-    &:hover { transform: scale(1.15) !important; filter: brightness(1.2); }
+    background: rgba(52, 152, 219, 0.92);
+    box-shadow: 0 0 28px rgba(52, 152, 219, 0.8);
+    transform: scale(var(--orb-scale, 1));
+    animation: morphBlob 7s ease-in-out infinite alternate;
+    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
   }
 
   .bottom-right-orb {
-    width: 40px;
-    height: 40px;
+    width: clamp(40px, 12vw, 56px);
+    height: clamp(40px, 12vw, 56px);
     bottom: 5%;
     right: 5%;
     cursor: pointer;
-    animation: floatBottomRightIntro 3s cubic-bezier(0.25, 1, 0.5, 1) forwards, floatBottomRightLoop 14s linear infinite 3s, morphBlob 5.5s ease-in-out infinite alternate-reverse;
-    &:hover { transform: scale(1.15) !important; filter: brightness(1.2); }
+    background: rgba(155, 89, 182, 0.92);
+    box-shadow: 0 0 28px rgba(155, 89, 182, 0.8);
+    transform: scale(var(--orb-scale, 1));
+    animation: morphBlob 5.5s ease-in-out infinite alternate-reverse;
+    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+  }
+}
+
+// Status Overlay to prevent flex layout shifts
+.status-overlay {
+  position: absolute;
+  top: calc(50% + clamp(150px, 45vw, 210px));
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.empty-guidance-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 16px;
+  max-width: 300px;
+  backdrop-filter: blur(15px);
+  pointer-events: auto;
+  text-align: center;
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0 0 12px;
+    font-size: 11px;
+    color: #797a95;
+    line-height: 1.4;
+  }
+
+  .btn-reflect-now {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 8px 18px;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+
+    &:active {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.2);
+    }
   }
 }
 
@@ -183,47 +277,6 @@ ion-content {
     font-size: 10px;
     letter-spacing: 0.5px;
     font-weight: 500;
-  }
-
-  .empty-guidance-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 16px;
-    padding: 16px;
-    max-width: 300px;
-    backdrop-filter: blur(15px);
-
-    h3 {
-      margin: 0 0 6px;
-      font-size: 14px;
-      color: #ffffff;
-      font-weight: 600;
-    }
-
-    p {
-      margin: 0 0 12px;
-      font-size: 11px;
-      color: #797a95;
-      line-height: 1.4;
-    }
-
-    .btn-reflect-now {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #ffffff;
-      padding: 8px 18px;
-      border-radius: 16px;
-      font-size: 11.5px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.3);
-        transform: translateY(-1px);
-      }
-    }
   }
 }
 
@@ -378,6 +431,23 @@ ion-content {
     text-align: center;
     margin: 10px 0;
   }
+}
+
+// Syncing Loader
+.syncing-indicator {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  animation: pulseOpacity 1.5s infinite ease-in-out;
+}
+
+@keyframes pulseOpacity {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
 }
 
 // 5. Floating Music Button & Popover System (Pinned Bottom Right)

@@ -201,5 +201,23 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     return of(new HttpResponse({ status: 200, body: mockReflection })).pipe(delay(1000));
   }
 
+  if (url.includes('/api/memory/analytics')) {
+    const mockAnalytics = {
+      JOY: 21, SAD: 8, ANXIOUS: 6, CALM: 14
+    };
+    return of(new HttpResponse({ status: 200, body: mockAnalytics })).pipe(delay(500));
+  }
+
+  if (url.includes('/api/memory/all')) {
+    const mockAll = [
+      { content: 'Had a wonderful day walking through the sunlit park.', emotion: 'JOY', createdAt: new Date().toISOString(), sender: 'user' },
+      { content: 'Stressed about the upcoming final presentations.', emotion: 'ANXIOUS', createdAt: new Date(Date.now() - 3600000).toISOString(), sender: 'user' },
+      { content: 'Missing old childhood school friends today.', emotion: 'SAD', createdAt: new Date(Date.now() - 7200000).toISOString(), sender: 'user' },
+      { content: 'Found peace meditating under the night sky.', emotion: 'CALM', createdAt: new Date(Date.now() - 14400000).toISOString(), sender: 'user' },
+      { content: 'Feeling extremely passionate and determined about the new project roadmap!', emotion: 'JOY', createdAt: new Date(Date.now() - 86400000).toISOString(), sender: 'user' }
+    ];
+    return of(new HttpResponse({ status: 200, body: mockAll })).pipe(delay(500));
+  }
+
   return next(req);
 };

@@ -2,46 +2,47 @@
   <div class="mind-space-wrapper">
     
 
-    <!-- 2. Dynamic 5-Orb Stage (Only shown when user has logged memories) -->
-    <div class="aura-visualization-area" *ngIf="totalCount() > 0">
+    <!-- 2. Dynamic Stage (Always shown, adapts to state) -->
+    <div class="aura-visualization-area">
       <div class="aura-stage-container">
         
         <!-- Center Orb (Always Glassy Core 代表 Core Self) -->
-        <div class="aura-orb dominant-orb glassy-core">
+        <div class="aura-orb dominant-orb glassy-core" [style.--dynamic-aura-gradient]="auraGradient()">
           <span class="orb-label">{{ username() }}</span>
         </div>
 
         <!-- 4 Outer Orbs floating and playing around dynamically -->
-        <div class="outer-orbs-wrapper">
+        <div class="outer-orbs-wrapper" *ngIf="totalCount() > 0">
           <!-- Top Left Orb (Joy) -->
-          <div class="aura-orb top-left-orb" (click)="selectEmotion('JOY')"></div>
+          <div class="aura-orb top-left-orb" (click)="selectEmotion('JOY')" [style.--orb-scale]="getEmotionScale('JOY')"></div>
 
           <!-- Top Right Orb (Calm) -->
-          <div class="aura-orb top-right-orb" (click)="selectEmotion('CALM')"></div>
+          <div class="aura-orb top-right-orb" (click)="selectEmotion('CALM')" [style.--orb-scale]="getEmotionScale('CALM')"></div>
 
           <!-- Bottom Left Orb (Sadness) -->
-          <div class="aura-orb bottom-left-orb" (click)="selectEmotion('SAD')"></div>
+          <div class="aura-orb bottom-left-orb" (click)="selectEmotion('SAD')" [style.--orb-scale]="getEmotionScale('SAD')"></div>
 
           <!-- Bottom Right Orb (Anxiety) -->
-          <div class="aura-orb bottom-right-orb" (click)="selectEmotion('ANXIOUS')"></div>
+          <div class="aura-orb bottom-right-orb" (click)="selectEmotion('ANXIOUS')" [style.--orb-scale]="getEmotionScale('ANXIOUS')"></div>
         </div>
 
       </div>
-    </div>
 
-    <!-- First-Time User State / Empty Canvas (When no memories are logged) -->
-    <div class="aura-visualization-area empty-state" *ngIf="totalCount() === 0 && !isLoading()">
-      <div class="aura-stage-container">
-        <div class="aura-orb neutral-orb">
-          <span class="orb-label">CALM</span>
+      <!-- Status Overlay (Absolutely positioned so the orb never jumps) -->
+      <div class="status-overlay" *ngIf="totalCount() === 0">
+        <!-- Syncing State (Shows while fetching data from backend) -->
+        <div class="syncing-indicator" *ngIf="isLoading()">
+          <span>Syncing Aura...</span>
         </div>
-      </div>
-      <div class="empty-guidance-card">
-        <h3>Cosmic Canvas</h3>
-        <p>Your mind space is a quiet pool. Start reflecting in the chat assistant to seed your aura mapping.</p>
-        <button class="btn-reflect-now" (click)="startReflection()">
-          Begin Reflection
-        </button>
+
+        <!-- First-Time User State Guidance Card -->
+        <div class="empty-guidance-card" *ngIf="!isLoading()">
+          <h3>Your Mind Space</h3>
+          <p>Your aura is currently clear. Start a reflection in the chat to begin mapping your emotions.</p>
+          <button class="btn-reflect-now" (click)="startReflection()">
+            Begin Reflection
+          </button>
+        </div>
       </div>
     </div>
 

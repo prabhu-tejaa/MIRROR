@@ -29,23 +29,17 @@ export class YouPage implements OnDestroy {
   public readonly isLoading = signal<boolean>(false);
   public readonly isLoadingAudio = signal<boolean>(false);
   
-  // Vibrant dummy/demo initial values so user sees full visual effects instantly
-  public readonly totalCount = signal<number>(49);
+  // Initial empty state before backend loads
+  public readonly totalCount = signal<number>(0);
   public readonly emotionCounts = signal<Record<string, number>>({
-    JOY: 21, SAD: 8, ANXIOUS: 6, CALM: 14
+    JOY: 0, SAD: 0, ANXIOUS: 0, CALM: 0
   });
 
   // Interactive UI Focus
   public readonly selectedEmotion = signal<string | null>(null);
 
-  // Reflections history list with preset stunning dummy reflections
-  public readonly reflectionsList = signal<Reflection[]>([
-    { content: 'Had a wonderful day walking through the sunlit park.', emotion: 'JOY', createdAt: new Date().toISOString() },
-    { content: 'Stressed about the upcoming final presentations.', emotion: 'ANXIOUS', createdAt: new Date(Date.now() - 3600000).toISOString() },
-    { content: 'Missing old childhood school friends today.', emotion: 'SAD', createdAt: new Date(Date.now() - 7200000).toISOString() },
-    { content: 'Found peace meditating under the night sky.', emotion: 'CALM', createdAt: new Date(Date.now() - 14400000).toISOString() },
-    { content: 'Feeling extremely passionate and determined about the new project roadmap!', emotion: 'JOY', createdAt: new Date(Date.now() - 86400000).toISOString() }
-  ]);
+  // Reflections history list initialized empty
+  public readonly reflectionsList = signal<Reflection[]>([]);
 
   // Ambient Sound Player Properties
   public readonly isPlaying = signal<boolean>(false);
@@ -107,7 +101,9 @@ export class YouPage implements OnDestroy {
         else if (k.includes('SAD') || k.includes('LONELY') || k.includes('MELANCHOLY') || k.includes('NOSTALGIA')) norm = 'SAD';
         else if (k.includes('ANXIOUS') || k.includes('WORRY') || k.includes('FEAR') || k.includes('STRESS') || k.includes('NEUTRAL')) norm = 'ANXIOUS';
         return norm === selected;
-      });
+      })
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 5);
   });
 
   // Generates a stunning, custom conic-gradient color wheel based strictly on real emotions
@@ -115,7 +111,7 @@ export class YouPage implements OnDestroy {
     const stats = this.emotionStats();
     const total = this.totalCount();
     if (total === 0) {
-      return 'conic-gradient(var(--color-calm, #2ecc71) 0% 100%)';
+      return 'transparent';
     }
 
     let currentPercent = 0;
@@ -135,6 +131,15 @@ export class YouPage implements OnDestroy {
 
     return `conic-gradient(${gradientParts.join(', ')})`;
   });
+
+  public getEmotionScale(emotionKey: string): number {
+    const stats = this.emotionStats();
+    const stat = stats.find(s => s.key === emotionKey);
+    if (!stat) return 0.7;
+
+    // Scale from 0.7 (0%) up to 1.6 (100%)
+    return 0.7 + (stat.percentage / 100) * 0.9;
+  }
 
   constructor() {}
 
@@ -349,15 +354,12 @@ export class YouPage implements OnDestroy {
           });
         }
 
-        // Only override if live data actually exists to ensure full dummy preview by default
-        if (total > 0) {
-          this.emotionCounts.set(normalized);
-          this.totalCount.set(total);
-        }
+        // Always override with real backend data, even if total is 0
+        this.emotionCounts.set(normalized);
+        this.totalCount.set(total);
         this.isLoading.set(false);
       },
       error: () => {
-        // Safe fallback is already preset in initial signals
         this.isLoading.set(false);
       }
     });
