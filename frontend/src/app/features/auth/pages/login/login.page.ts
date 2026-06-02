@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, ElementRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, ElementRef, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController } from '@ionic/angular';
@@ -13,6 +13,7 @@ import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslationService } from '../../../../core/services/translation.service';
 import { Subscription } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-login',
@@ -32,6 +33,7 @@ export class LoginPage implements OnInit {
   private authSvc = inject(AuthService);
   private translationSvc = inject(TranslationService);
   private el = inject(ElementRef);
+  private destroyRef = inject(DestroyRef);
 
   public loginForm!: FormGroup;
   public isSubmitted: boolean = false;
@@ -97,7 +99,7 @@ export class LoginPage implements OnInit {
 
       const { email, password } = this.loginForm.value;
 
-      this.loginSub = this.authSvc.loginUser({ email, password }).subscribe({
+      this.loginSub = this.authSvc.loginUser({ email, password }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (res) => {
           this.analyticsSvc.setUserId(email);
           this.username = res.username || this.authSvc.getUserId() || '';

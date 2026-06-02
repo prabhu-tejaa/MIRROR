@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController } from '@ionic/angular';
@@ -9,6 +9,7 @@ import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
 import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-forgot-password',
@@ -25,6 +26,7 @@ export class ForgotPasswordPage implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private authSvc = inject(AuthService);
   private translationSvc = inject(TranslationService);
+  private destroyRef = inject(DestroyRef);
 
   public forgotForm!: FormGroup;
   public isSubmitted: boolean = false;
@@ -57,7 +59,7 @@ export class ForgotPasswordPage implements OnInit {
       
       const emailValue = this.forgotForm.value.email as string;
 
-      this.authSvc.requestForgotPasswordOtp(emailValue).subscribe({
+      this.authSvc.requestForgotPasswordOtp(emailValue).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.isLoading = false;
           this.cdr.markForCheck();

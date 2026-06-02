@@ -1,10 +1,13 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationStart } from '@angular/router';
 import { Observable, tap, filter } from 'rxjs';
 import { RegisterRequest, LoginRequest, AuthResponse } from '../models/auth.model';
 import { ApiService } from './api.service';
 import { TranslationService } from './translation.service';
+import { StorageService } from './storage.service';
+import { StorageKeys, getActiveSessionKey } from '../constants/storage.constants';
+import { RoutePaths } from '../constants/route.constants';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -13,15 +16,16 @@ export class AuthService {
   private apiSvc = inject(ApiService);
   private translationSvc = inject(TranslationService);
   private router = inject(Router);
-
+  private storageSvc = inject(StorageService);
+  private ngZone = inject(NgZone);
   private lastValidationTime = 0;
   private isValidating = false;
 
   private getSessionInstanceId(): string {
-    let id = localStorage.getItem('mirror_session_instance_id');
+    let id = this.storageSvc.get(StorageKeys.SESSION_INSTANCE_ID);
     if (!id) {
       id = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      localStorage.setItem('mirror_session_instance_id', id);
+      this.storageSvc.set(StorageKeys.SESSION_INSTANCE_ID, id);
     }
     return id;
   }
@@ -36,14 +40,14 @@ export class AuthService {
     window.addEventListener('storage', (event) => {
       if (event.key && event.key.startsWith('mirror_active_session_')) {
         const email = this.getEmail();
-        if (email && event.key === 'mirror_active_session_' + email) {
+        if (email && event.key === getActiveSessionKey(email)) {
           const activeSessionId = event.newValue;
           if (activeSessionId && activeSessionId !== this.getSessionInstanceId()) {
             this.logout();
           }
         }
       }
-      if (event.key === this.accessTokenKey && !event.newValue) {
+      if (event.key === StorageKeys.ACCESS_TOKEN && !event.newValue) {
         this.clearSession();
       }
     });
@@ -68,10 +72,13 @@ export class AuthService {
   }
 
   private startSessionValidationTimer(): void {
-    setInterval(() => {
-      this.checkSessionValidity();
-      // Check every 60 seconds instead of 4 seconds to reduce server load
-    }, 60000);
+    this.ngZone.runOutsideAngular(() => {
+      setInterval(() => {
+        this.ngZone.run(() => {
+          this.checkSessionValidity();
+        });
+      }, 60000);
+    });
   }
 
   private checkSessionValidity(): void {
@@ -80,7 +87,7 @@ export class AuthService {
       return;
     }
 
-    const activeSessionId = localStorage.getItem('mirror_active_session_' + email);
+    const activeSessionId = this.storageSvc.get(getActiveSessionKey(email));
     if (activeSessionId && activeSessionId !== this.getSessionInstanceId()) {
       this.logout();
       return;
@@ -91,7 +98,7 @@ export class AuthService {
       return;
     }
 
-    const refreshToken = localStorage.getItem(this.refreshTokenKey);
+    const refreshToken = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
     if (!environment.mock && refreshToken) {
       this.isValidating = true;
       this.lastValidationTime = Date.now();
@@ -115,24 +122,8 @@ export class AuthService {
     }
   }
 
-  private get accessTokenKey(): string {
-    return 'mirror_access_token';
-  }
-
-  private get refreshTokenKey(): string {
-    return 'mirror_refresh_token';
-  }
-
-  private get usernameKey(): string {
-    return 'mirror_username';
-  }
-
-  private get emailKey(): string {
-    return 'mirror_email';
-  }
-
   private readonly authSignal = signal<boolean>(
-    !!localStorage.getItem('mirror_access_token')
+    !!this.storageSvc.get(StorageKeys.ACCESS_TOKEN)
   );
 
   public readonly isAuthenticated = computed(() => this.authSignal());
@@ -180,12 +171,12 @@ export class AuthService {
   }
 
   private saveSession(response: AuthResponse): void {
-    localStorage.setItem(this.accessTokenKey, response.accessToken);
-    localStorage.setItem(this.refreshTokenKey, response.refreshToken);
-    localStorage.setItem(this.usernameKey, response.username);
+    this.storageSvc.set(StorageKeys.ACCESS_TOKEN, response.accessToken);
+    this.storageSvc.set(StorageKeys.REFRESH_TOKEN, response.refreshToken);
+    this.storageSvc.set(StorageKeys.USERNAME, response.username);
     if (response.email) {
-      localStorage.setItem(this.emailKey, response.email);
-      localStorage.setItem('mirror_active_session_' + response.email, this.getSessionInstanceId());
+      this.storageSvc.set(StorageKeys.EMAIL, response.email);
+      this.storageSvc.set(getActiveSessionKey(response.email), this.getSessionInstanceId());
     }
     this.authSignal.set(true);
   }
@@ -193,21 +184,21 @@ export class AuthService {
   private clearSession(): void {
     const email = this.getEmail();
     if (email) {
-      localStorage.removeItem('mirror_active_session_' + email);
+      this.storageSvc.remove(getActiveSessionKey(email));
     }
-    localStorage.removeItem(this.accessTokenKey);
-    localStorage.removeItem(this.refreshTokenKey);
-    localStorage.removeItem(this.usernameKey);
-    localStorage.removeItem(this.emailKey);
-    localStorage.removeItem('mirror_guest_chat_count');
-    localStorage.removeItem('mirror_session_instance_id');
+    this.storageSvc.remove(StorageKeys.ACCESS_TOKEN);
+    this.storageSvc.remove(StorageKeys.REFRESH_TOKEN);
+    this.storageSvc.remove(StorageKeys.USERNAME);
+    this.storageSvc.remove(StorageKeys.EMAIL);
+    this.storageSvc.remove(StorageKeys.GUEST_CHAT_COUNT);
+    this.storageSvc.remove(StorageKeys.SESSION_INSTANCE_ID);
     this.authSignal.set(false);
-    this.router.navigate(['/login']);
+    this.router.navigate([RoutePaths.AUTH.LOGIN]);
   }
 
 
   public logout(): void {
-    const token = localStorage.getItem(this.refreshTokenKey);
+    const token = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
     this.clearSession();
     if (token) {
       this.logoutSession(token).subscribe({
@@ -218,14 +209,14 @@ export class AuthService {
   }
 
   public getUserId(): string | null {
-    return localStorage.getItem(this.usernameKey);
+    return this.storageSvc.get(StorageKeys.USERNAME);
   }
 
   public getEmail(): string | null {
-    return localStorage.getItem(this.emailKey);
+    return this.storageSvc.get(StorageKeys.EMAIL);
   }
 
   public getAccessToken(): string | null {
-    return localStorage.getItem(this.accessTokenKey);
+    return this.storageSvc.get(StorageKeys.ACCESS_TOKEN);
   }
 }

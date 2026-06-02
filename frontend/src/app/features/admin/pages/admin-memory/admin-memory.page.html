@@ -64,7 +64,11 @@
           <tr *ngFor="let record of filteredRecords">
             <td>#{{ record.id }}</td>
             <td>{{ record.userId }}</td>
-            <td><span class="emotion-badge" [ngClass]="record.emotion?.toLowerCase()">{{ record.emotion }}</span></td>
+            <td>
+              <div class="memory-emotion">
+                <span class="emotion-badge" [ngClass]="record.emotion.toLowerCase()">{{ record.emotion }}</span>
+              </div>
+            </td>
             <td>{{ record.createdAt | date:'short' }}</td>
             <td>
               <button class="action-btn edit" (click)="editRecord(record.id)" title="Edit">

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, DestroyRef } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -35,6 +35,7 @@ import {
   chevronForwardOutline, 
   lockOpenOutline 
 } from 'ionicons/icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-admin-gateway',
@@ -58,6 +59,7 @@ export class AdminGatewayPage implements OnInit, OnDestroy {
   private location = inject(Location);
   private toastSvc = inject(ToastService);
   private gatewaySvc = inject(AdminGatewayService);
+  private destroyRef = inject(DestroyRef);
 
   public services: ServiceHealth[] = [];
   public routes: RouteMap[] = [];
@@ -115,7 +117,7 @@ export class AdminGatewayPage implements OnInit, OnDestroy {
       blockedIps: this.gatewaySvc.getBlockedIps(),
       logs: this.gatewaySvc.getLogs(),
       stats: this.gatewaySvc.getStats()
-    }).subscribe({
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.services = res.health;
         this.routes = res.routes;
@@ -127,7 +129,6 @@ export class AdminGatewayPage implements OnInit, OnDestroy {
         this.isLoading = false;
       },
       error: () => {
-        this.toastSvc.showError('Failed to fetch registry and telemetry statistics');
         this.isLoading = false;
       }
     });
@@ -135,39 +136,39 @@ export class AdminGatewayPage implements OnInit, OnDestroy {
 
   public startLiveTelemetryPolling() {
     this.pollTimer = setInterval(() => {
-      this.gatewaySvc.getLogs().subscribe(data => this.logs = data);
+      this.gatewaySvc.getLogs().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => this.logs = data);
       
-      this.gatewaySvc.getStats().subscribe(stats => {
+      this.gatewaySvc.getStats().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(stats => {
         this.totalRequestsToday = stats.totalRequestsToday;
         this.whitelistedCount = stats.whitelistedCount;
       });
 
-      this.gatewaySvc.getHealth().subscribe(data => this.services = data);
+      this.gatewaySvc.getHealth().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => this.services = data);
     }, 3500);
   }
 
   public toggleRoute(route: RouteMap) {
     const nextState = !route.active;
-    this.gatewaySvc.toggleRoute(route.id, nextState).subscribe({
+    this.gatewaySvc.toggleRoute(route.id, nextState).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         route.active = nextState;
         const state = nextState ? 'Activated' : 'Suspended';
         this.toastSvc.showSuccess(`Route proxy targeting ${route.service} ${state}`);
         this.refreshLogsOnly();
       },
-      error: () => this.toastSvc.showError('Failed to change proxy route mapping status')
+      error: () => {}
     });
   }
 
   public unblockIp(ip: string) {
-    this.gatewaySvc.unblockIp(ip).subscribe({
+    this.gatewaySvc.unblockIp(ip).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.blockedIps = this.blockedIps.filter(item => item.ip !== ip);
         this.whitelistedCount++;
         this.toastSvc.showSuccess(`IP address ${ip} whitelisted and unblocked`);
         this.refreshLogsOnly();
       },
-      error: () => this.toastSvc.showError('Failed to remove IP block')
+      error: () => {}
     });
   }
 
@@ -181,8 +182,7 @@ export class AdminGatewayPage implements OnInit, OnDestroy {
       this.toastSvc.showError(`Gateway timeout (504): Target service ${route.service} is unreachable.`);
       return;
     }
-    
-    this.gatewaySvc.getHealth().subscribe(healths => {
+    this.gatewaySvc.getHealth().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(healths => {
       this.services = healths;
       const probed = healths.find(h => h.name.toLowerCase().includes(route.service.split('-')[0]));
       if (probed && probed.status === 'ONLINE') {
@@ -195,17 +195,17 @@ export class AdminGatewayPage implements OnInit, OnDestroy {
   }
 
   public onRateLimitChange() {
-    this.gatewaySvc.updateRateLimit(this.globalRateLimit).subscribe({
+    this.gatewaySvc.updateRateLimit(this.globalRateLimit).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.toastSvc.showSuccess(`Dynamic threshold updated: firewall lock triggers at ${this.globalRateLimit} req/min`);
       },
-      error: () => this.toastSvc.showError('Failed to save rate limit threshold changes')
+      error: () => {}
     });
   }
 
   private refreshLogsOnly() {
-    this.gatewaySvc.getLogs().subscribe(data => this.logs = data);
-    this.gatewaySvc.getStats().subscribe(stats => {
+    this.gatewaySvc.getLogs().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => this.logs = data);
+    this.gatewaySvc.getStats().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(stats => {
       this.totalRequestsToday = stats.totalRequestsToday;
       this.whitelistedCount = stats.whitelistedCount;
     });

@@ -5,11 +5,30 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: prabhu
-      POSTGRES_PASSWORD: rootpassword
-      POSTGRES_DB: mirror_memory
+      POSTGRES_USER: ${POSTGRES_USER:-mirror_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mirror_secure_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-mirror_memory}
     volumes:
       - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: mirror-redis
+    ports:
+      - "6379:6379"
+
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: mirror-zipkin
+    ports:
+      - "9411:9411"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: mirror-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
 
 volumes:
   pgdata:

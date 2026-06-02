@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController } from '@ionic/angular';
@@ -11,6 +11,7 @@ import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-signup',
@@ -28,6 +29,7 @@ export class SignupPage implements OnInit {
   private analyticsSvc = inject(AnalyticsService);
   private authSvc = inject(AuthService);
   private translationSvc = inject(TranslationService);
+  private destroyRef = inject(DestroyRef);
 
   public signupForm!: FormGroup;
   public isSubmitted: boolean = false;
@@ -68,11 +70,11 @@ export class SignupPage implements OnInit {
 
       const { username, email, password } = this.signupForm.value;
 
-      this.authSvc.signup({ username, email, password }).subscribe({
+      this.authSvc.signup({ username, email, password }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (_response) => {
           this.analyticsSvc.setUserId(email);
           
-          this.authSvc.requestOtp(email).subscribe({
+          this.authSvc.requestOtp(email).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
               this.isLoading = false;
               this.cdr.markForCheck();

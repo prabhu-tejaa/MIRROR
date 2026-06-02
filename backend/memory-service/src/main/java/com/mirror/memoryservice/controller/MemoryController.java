@@ -1,4 +1,6 @@
-package com.mirror.memoryservice;
+package com.mirror.memoryservice.controller;
+
+import com.mirror.memoryservice.model.Memory;
 
 import com.mirror.memoryservice.service.MemoryService;
 import com.mirror.memoryservice.service.GeminiService;
@@ -13,27 +15,31 @@ import java.util.Map;
 public class MemoryController {
 
     private final MemoryService service;
-    private final GeminiService geminiService;
+    private final org.springframework.amqp.rabbit.core.RabbitTemplate rabbitTemplate;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
-    public MemoryController(MemoryService service, GeminiService geminiService) {
+    public MemoryController(MemoryService service, org.springframework.amqp.rabbit.core.RabbitTemplate rabbitTemplate, com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.service = service;
-        this.geminiService = geminiService;
+        this.rabbitTemplate = rabbitTemplate;
+        this.objectMapper = objectMapper;
     }
 
     /**
-     * Saves a new memory for the user. Automatically tag it with sentiment and embeddings.
+     * Queues a new memory for the user. Processing happens asynchronously.
      */
     @PostMapping("/save")
     public ResponseEntity<String> saveMemory(
-            @RequestHeader(value = "X-User-Email", defaultValue = "guest@mirror.com") String userId,
+            @RequestHeader(value = "X-User-Email") String userId,
             @RequestBody String content
     ) {
-        float[] embedding = geminiService.getEmbedding(content);
-        Map<String, String> sentiment = geminiService.generateReflectionAndEmotion(content, null);
-        String emotion = sentiment.getOrDefault("emotion", "NEUTRAL");
-        
-        String result = service.saveMemory(userId, content, emotion, "user", embedding);
-        return ResponseEntity.ok(result);
+        try {
+            com.mirror.memoryservice.dto.MemorySaveEvent event = new com.mirror.memoryservice.dto.MemorySaveEvent(userId, content);
+            String message = objectMapper.writeValueAsString(event);
+            rabbitTemplate.convertAndSend(com.mirror.memoryservice.config.RabbitMQConfig.MEMORY_SAVE_QUEUE, message);
+            return ResponseEntity.accepted().body("Memory queued for processing.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Failed to queue memory: " + e.getMessage());
+        }
     }
 
     /**
@@ -42,7 +48,7 @@ public class MemoryController {
      */
     @PostMapping("/reflect")
     public ResponseEntity<Map<String, String>> reflect(
-            @RequestHeader(value = "X-User-Email", defaultValue = "guest@mirror.com") String userId,
+            @RequestHeader(value = "X-User-Email") String userId,
             @RequestBody String prompt
     ) {
         Map<String, String> response = service.generateReflection(userId, prompt);
@@ -54,7 +60,7 @@ public class MemoryController {
      */
     @GetMapping("/analytics")
     public ResponseEntity<Map<String, Long>> getAnalytics(
-            @RequestHeader(value = "X-User-Email", defaultValue = "guest@mirror.com") String userId
+            @RequestHeader(value = "X-User-Email") String userId
     ) {
         Map<String, Long> analytics = service.getEmotionalAnalytics(userId);
         return ResponseEntity.ok(analytics);
@@ -65,23 +71,23 @@ public class MemoryController {
      */
     @GetMapping("/all")
     public ResponseEntity<List<Memory>> getAll(
-            @RequestHeader(value = "X-User-Email", defaultValue = "guest@mirror.com") String userId
+            @RequestHeader(value = "X-User-Email") String userId
     ) {
         List<Memory> memories = service.getAllMemories(userId);
         return ResponseEntity.ok(memories);
     }
 
     /**
-     * Paginated chat history endpoint. Returns messages in newest-first order
-     * with total count and hasMore flag for infinite scroll support.
+     * Cursor-based paginated chat history endpoint. Returns messages in newest-first order
+     * with total count, hasMore flag, and nextCursor for infinite scroll support.
      */
     @GetMapping("/history")
     public ResponseEntity<Map<String, Object>> getHistory(
-            @RequestHeader(value = "X-User-Email", defaultValue = "guest@mirror.com") String userId,
-            @RequestParam(defaultValue = "0") int page,
+            @RequestHeader(value = "X-User-Email") String userId,
+            @RequestParam(required = false) Long cursor,
             @RequestParam(defaultValue = "20") int size
     ) {
-        Map<String, Object> result = service.getMemoriesPaginated(userId, page, size);
+        Map<String, Object> result = service.getMemoriesPaginated(userId, cursor, size);
         return ResponseEntity.ok(result);
     }
 
@@ -90,7 +96,7 @@ public class MemoryController {
      */
     @GetMapping("/keepalive")
     public String keepAlive(
-            @RequestHeader(value = "X-User-Email", defaultValue = "guest@mirror.com") String userId
+            @RequestHeader(value = "X-User-Email") String userId
     ) {
         try {
             long count = service.getMemoryCount(userId);

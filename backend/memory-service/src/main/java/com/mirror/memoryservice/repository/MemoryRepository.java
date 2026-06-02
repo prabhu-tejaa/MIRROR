@@ -1,4 +1,6 @@
-package com.mirror.memoryservice;
+package com.mirror.memoryservice.repository;
+
+import com.mirror.memoryservice.model.Memory;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -64,6 +66,20 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
         @Param("userId") String userId,
         @Param("limit") int limit,
         @Param("offset") int offset
+    );
+
+    /**
+     * Cursor-based (Keyset) pagination fetch of memories for a user (newest first).
+     * Uses native SQL with a cursor (lastId) for deep pagination scalability.
+     */
+    @Query(value = "SELECT id, user_id, content, emotion, sender, CAST(embedding AS text) AS embedding, created_at FROM memories " +
+                   "WHERE user_id = :userId AND (:cursor IS NULL OR id < CAST(CAST(:cursor AS TEXT) AS BIGINT)) " +
+                   "ORDER BY id DESC " +
+                   "LIMIT :limit", nativeQuery = true)
+    List<Memory> findMemoriesKeysetPaginated(
+        @Param("userId") String userId,
+        @Param("limit") int limit,
+        @Param("cursor") Long cursor
     );
 
     /**

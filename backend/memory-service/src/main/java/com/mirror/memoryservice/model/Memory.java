@@ -1,4 +1,4 @@
-package com.mirror.memoryservice;
+package com.mirror.memoryservice.model;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,4 +1,6 @@
-package com.mirror.memoryservice;
+package com.mirror.memoryservice.controller;
+
+import com.mirror.memoryservice.model.Memory;
 
 import com.mirror.memoryservice.service.MemoryService;
 import com.mirror.memoryservice.service.GeminiService;

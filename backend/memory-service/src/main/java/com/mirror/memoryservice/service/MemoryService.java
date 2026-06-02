@@ -1,6 +1,6 @@
 package com.mirror.memoryservice.service;
 
-import com.mirror.memoryservice.Memory;
+import com.mirror.memoryservice.model.Memory;
 import java.util.List;
 import java.util.Map;
 
@@ -32,10 +32,10 @@ public interface MemoryService {
     List<Memory> getAllMemories(String userId);
 
     /**
-     * Retrieves a paginated slice of memories for a user (newest first).
-     * Returns a map with keys: "messages" (List), "total" (Long), "hasMore" (Boolean).
+     * Retrieves a paginated slice of memories for a user (newest first) using keyset pagination.
+     * Returns a map with keys: "messages" (List), "total" (Long), "hasMore" (Boolean), "nextCursor" (Long).
      */
-    Map<String, Object> getMemoriesPaginated(String userId, int page, int size);
+    Map<String, Object> getMemoriesPaginated(String userId, Long cursor, int size);
 
     /**
      * Retrieves the total memory count for a user.

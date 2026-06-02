@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
@@ -11,6 +11,7 @@ import {
   checkmarkCircleOutline, searchOutline, closeOutline, serverOutline,
   mailOutline, documentTextOutline, heartHalfOutline
 } from 'ionicons/icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-admin-memory',
@@ -23,6 +24,7 @@ export class AdminMemoryPage implements OnInit {
   private router = inject(Router);
   private toastCtrl = inject(ToastController);
   private adminMemorySvc = inject(AdminMemoryService);
+  private destroyRef = inject(DestroyRef);
 
   public activeTab: 'UPLOAD' | 'MANAGE' = 'MANAGE';
   public isUploading = false;
@@ -56,7 +58,7 @@ export class AdminMemoryPage implements OnInit {
 
   public loadRecords() {
     this.isLoading = true;
-    this.adminMemorySvc.getAllMemories().subscribe({
+    this.adminMemorySvc.getAllMemories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (records: AdminMemoryRecord[]) => {
         this.dbRecords = records;
         this.isLoading = false;
@@ -80,7 +82,7 @@ export class AdminMemoryPage implements OnInit {
     const file = target.files?.[0];
     if (file) {
       this.isUploading = true;
-      this.adminMemorySvc.uploadMockData(file).subscribe({
+      this.adminMemorySvc.uploadMockData(file).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: async (res: string) => {
           this.isUploading = false;
           const toast = await this.toastCtrl.create({
@@ -93,15 +95,8 @@ export class AdminMemoryPage implements OnInit {
           toast.present();
           this.loadRecords();
         },
-        error: async () => {
+        error: () => {
           this.isUploading = false;
-          const toast = await this.toastCtrl.create({
-            message: 'Failed to upload mock data',
-            duration: 3000,
-            color: 'danger',
-            position: 'top'
-          });
-          toast.present();
         }
       });
     }
@@ -152,7 +147,7 @@ export class AdminMemoryPage implements OnInit {
     };
 
     if (this.modalMode === 'ADD') {
-      this.adminMemorySvc.createMemory(payload).subscribe({
+      this.adminMemorySvc.createMemory(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: async () => {
           const toast = await this.toastCtrl.create({
             message: 'New record created successfully!',
@@ -164,18 +159,10 @@ export class AdminMemoryPage implements OnInit {
           toast.present();
           this.loadRecords();
         },
-        error: async () => {
-          const toast = await this.toastCtrl.create({
-            message: 'Failed to create record',
-            duration: 2000,
-            color: 'danger',
-            position: 'top'
-          });
-          toast.present();
-        }
+        error: () => {}
       });
     } else if (this.modalMode === 'EDIT' && this.editingId) {
-      this.adminMemorySvc.updateMemory(this.editingId, payload).subscribe({
+      this.adminMemorySvc.updateMemory(this.editingId, payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: async () => {
           const toast = await this.toastCtrl.create({
             message: `Record ${this.editingId} updated!`,
@@ -187,21 +174,13 @@ export class AdminMemoryPage implements OnInit {
           toast.present();
           this.loadRecords();
         },
-        error: async () => {
-          const toast = await this.toastCtrl.create({
-            message: 'Failed to update record',
-            duration: 2000,
-            color: 'danger',
-            position: 'top'
-          });
-          toast.present();
-        }
+        error: () => {}
       });
     }
   }
 
   public deleteRecord(id: string) {
-    this.adminMemorySvc.deleteMemory(id).subscribe({
+    this.adminMemorySvc.deleteMemory(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: async (res: string) => {
         const toast = await this.toastCtrl.create({
           message: res,
@@ -212,15 +191,7 @@ export class AdminMemoryPage implements OnInit {
         toast.present();
         this.loadRecords();
       },
-      error: async () => {
-        const toast = await this.toastCtrl.create({
-          message: 'Failed to delete record',
-          duration: 2000,
-          color: 'danger',
-          position: 'top'
-        });
-        toast.present();
-      }
+      error: () => {}
     });
   }
 }

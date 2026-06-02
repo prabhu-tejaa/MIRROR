@@ -30,17 +30,41 @@ spring:
           uri: lb://auth-service
           predicates:
             - Path=/api/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
 
         - id: memory-service-route
           uri: lb://memory-service
           predicates:
             - Path=/api/memory/**
+          filters:
+            - AuthenticationFilter
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
 
 management:
   endpoints:
     web:
       exposure:
-        include: info, health
+        include: info, health, prometheus, circuitbreakers
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      defaultCircuitBreaker:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 3
 
 eureka:
   instance:
@@ -63,9 +87,6 @@ spring:
           '[/**]':
             allowedOrigins:
               - "https://projectmirror.tech"
-              - "http://localhost:8100"
-              - "https://localhost"       # <--- ADDED FOR ANDROID EMULATOR/DEVICE WEBVIEW
-              - "capacitor://localhost"   # <--- ADDED FOR NATIVE CAPACITOR CORS HANDSHAKES
             allowedMethods:
               - GET
               - POST
@@ -79,11 +100,20 @@ spring:
           uri: ${AUTH_SERVICE_URL}
           predicates:
             - Path=/api/auth/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
 
         - id: memory-service-route
           uri: ${MEMORY_SERVICE_URL}
           predicates:
             - Path=/api/memory/**
+          filters:
+            - AuthenticationFilter
+            - name: CircuitBreaker
+              args:
+                name: defaultCircuitBreaker
 
 eureka:
   client:

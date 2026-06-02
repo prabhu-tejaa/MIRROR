@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -18,6 +18,7 @@ import { AdminUserResponse, AdminUserUpdateRequest } from '../../../../../core/m
 
 import { addIcons } from 'ionicons';
 import { closeOutline, personOutline, mailOutline, shieldOutline, keyOutline } from 'ionicons/icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-user-edit-modal',
@@ -43,6 +44,7 @@ export class UserEditModalComponent implements OnInit {
   private modalCtrl = inject(ModalController);
   private adminAuthSvc = inject(AdminAuthService);
   private toastSvc = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
 
   constructor() {
     addIcons({ closeOutline, personOutline, mailOutline, shieldOutline, keyOutline });
@@ -93,14 +95,12 @@ export class UserEditModalComponent implements OnInit {
       request.password = this.editForm.password.trim();
     }
 
-    this.adminAuthSvc.updateUser(this.user.id, request).subscribe({
+    this.adminAuthSvc.updateUser(this.user.id, request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.toastSvc.showSuccess('User updated successfully');
         this.dismiss(true);
       },
-      error: (err) => {
-        const errorMsg = err.error?.message || 'Failed to update user';
-        this.toastSvc.showError(errorMsg);
+      error: () => {
         this.isSubmitting = false;
       }
     });

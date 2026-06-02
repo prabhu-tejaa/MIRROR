@@ -109,7 +109,11 @@
           <path d="M8 5v14l11-7z"/>
         </svg>
         <!-- Wavy Spectrum (Show when playing and not loading) -->
-        <div class="playing-spectrum" *ngIf="isPlaying() && !isLoadingAudio()">
+        <div class="playing-spectrum" *ngIf="isPlaying() && !isLoadingAudio()"
+             [style.--bar1-scale]="scale1()"
+             [style.--bar2-scale]="scale2()"
+             [style.--bar3-scale]="scale3()"
+             [style.--bar4-scale]="scale4()">
           <span class="spec-bar bar-1"></span>
           <span class="spec-bar bar-2"></span>
           <span class="spec-bar bar-3"></span>

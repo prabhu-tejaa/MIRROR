@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -12,6 +12,7 @@ import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-otp',
@@ -31,6 +32,7 @@ export class OtpPage implements OnInit, OnDestroy {
   private authSvc = inject(AuthService);
   private translationSvc = inject(TranslationService);
   private el = inject(ElementRef);
+  private destroyRef = inject(DestroyRef);
 
   @ViewChildren('otpInput') private otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
@@ -54,7 +56,7 @@ export class OtpPage implements OnInit, OnDestroy {
 
   constructor() {
     addIcons({ alertCircleOutline });
-    this.routeSub = this.route.queryParams.subscribe((params: Params) => {
+    this.routeSub = this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params: Params) => {
       this.flowContext = (params['flow'] as string) || 'signup';
       this.email = (params['email'] as string) || '';
     });
@@ -256,7 +258,7 @@ export class OtpPage implements OnInit, OnDestroy {
         ? this.authSvc.requestForgotPasswordOtp(this.email)
         : this.authSvc.requestOtp(this.email);
 
-      request$.subscribe({
+      request$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.startResendTimer();
           this.cdr.markForCheck();
@@ -294,7 +296,7 @@ export class OtpPage implements OnInit, OnDestroy {
       const code = this.otpForm.get('code')?.value as string;
 
       if (this.flowContext === 'reset') {
-        this.authSvc.verifyForgotPasswordOtp(this.email, code).subscribe({
+        this.authSvc.verifyForgotPasswordOtp(this.email, code).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => {
             const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
             const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
@@ -317,7 +319,7 @@ export class OtpPage implements OnInit, OnDestroy {
           }
         });
       } else {
-        this.authSvc.verifyOtp(this.email, code).subscribe({
+        this.authSvc.verifyOtp(this.email, code).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => {
             const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
             const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;

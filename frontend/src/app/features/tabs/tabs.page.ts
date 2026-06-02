@@ -1,10 +1,13 @@
-import { Component, EnvironmentInjector, inject, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, EnvironmentInjector, inject, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, DestroyRef } from '@angular/core';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { addIcons } from 'ionicons';
 import { triangle, ellipse, square, person, chatbubbles, personCircle, menuOutline, chevronBackOutline, chevronForwardOutline, heart, heartOutline, chatbubblesOutline, personCircleOutline } from 'ionicons/icons';
 import { TranslatePipe } from '../../shared/pipes/translate.pipe';
+import { StorageService } from '../../core/services/storage.service';
+import { StorageKeys } from '../../core/constants/storage.constants';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-tabs',
@@ -18,6 +21,8 @@ export class TabsPage {
   private environmentInjector = inject(EnvironmentInjector);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
+  private storageSvc = inject(StorageService);
+  private destroyRef = inject(DestroyRef);
 
   public readonly person = person;
   public readonly chatbubbles = chatbubbles;
@@ -33,7 +38,7 @@ export class TabsPage {
   public currentUrl = '';
 
   private initSidebarState(): boolean {
-    const savedState = localStorage.getItem('sidebarExpanded');
+    const savedState = this.storageSvc.get(StorageKeys.SIDEBAR_EXPANDED);
     if (savedState !== null) {
       return savedState === 'true';
     }
@@ -59,7 +64,8 @@ export class TabsPage {
 
     this.currentUrl = this.router.url;
     this.router.events.pipe(
-      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      takeUntilDestroyed()
     ).subscribe((event: NavigationEnd) => {
       this.currentUrl = event.urlAfterRedirects || event.url;
       this.cdr.markForCheck();
@@ -79,7 +85,7 @@ export class TabsPage {
 
   public toggleSidebar(): void {
     this.sidebarExpanded = !this.sidebarExpanded;
-    localStorage.setItem('sidebarExpanded', String(this.sidebarExpanded));
+    this.storageSvc.set(StorageKeys.SIDEBAR_EXPANDED, String(this.sidebarExpanded));
     this.cdr.markForCheck();
   }
 

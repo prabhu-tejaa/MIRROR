@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { AdminGatewayService, ServiceHealth } from '../../core/services/admin-gateway.service';
 import { TranslationService } from '../../core/services/translation.service';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline, warningOutline, pulseOutline, refreshOutline } from 'ionicons/icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-system-status',
@@ -278,6 +279,7 @@ import { checkmarkCircleOutline, warningOutline, pulseOutline, refreshOutline } 
 export class SystemStatusPage implements OnInit, OnDestroy {
   private gatewaySvc = inject(AdminGatewayService);
   private translationSvc = inject(TranslationService);
+  private destroyRef = inject(DestroyRef);
 
   public services: ServiceHealth[] = [];
   public gatewayHealth: ServiceHealth | null = null;
@@ -307,7 +309,7 @@ export class SystemStatusPage implements OnInit, OnDestroy {
   public loadHealth() {
     this.isLoading = true;
     const start = Date.now();
-    this.gatewaySvc.getPublicHealth().subscribe({
+    this.gatewaySvc.getPublicHealth().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.gatewayHealth = {
           name: 'API Gateway',
@@ -342,7 +344,7 @@ export class SystemStatusPage implements OnInit, OnDestroy {
   private startPolling() {
     this.pollTimer = setInterval(() => {
       const start = Date.now();
-      this.gatewaySvc.getPublicHealth().subscribe({
+      this.gatewaySvc.getPublicHealth().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (data) => {
           this.services = data;
           this.gatewayHealth = {

@@ -35,10 +35,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         authSvc.logout();
       }
 
-      const isCustomHandled = req.url.includes('/admin/users') || req.url.includes('/gateway/admin') || req.url.includes('/gateway/public') || req.url.includes('/auth/validate');
-      if (!isCustomHandled) {
-        toastSvc.showError(errorMessage);
-      }
+      toastSvc.showError(errorMessage);
 
       const customError = new Error(errorMessage);
       (customError as Error & { status?: number }).status = error.status;

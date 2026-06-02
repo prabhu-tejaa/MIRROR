@@ -9,6 +9,8 @@ import { errorInterceptor } from './app/core/interceptors/error.interceptor';
 import { cancelInterceptor } from './app/core/interceptors/cancel.interceptor';
 import { TranslationService } from './app/core/services/translation.service';
 
+import { authInterceptor } from './app/core/interceptors/auth.interceptor';
+
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
@@ -40,7 +42,7 @@ bootstrapApplication(AppComponent, {
       scrollAssist: true
     }),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(withInterceptors([cancelInterceptor, errorInterceptor, mockInterceptor, apiInterceptor])),
+    provideHttpClient(withInterceptors([cancelInterceptor, errorInterceptor, mockInterceptor, authInterceptor, apiInterceptor])),
     {
       provide: APP_INITIALIZER,
       useFactory: () => {

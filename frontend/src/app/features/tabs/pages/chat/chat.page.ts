@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, no-console */
-import { Component, ChangeDetectionStrategy, signal, computed, inject, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, computed, inject, ViewChild, ElementRef, OnDestroy, DestroyRef } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonContent, IonIcon, NavController, AlertController
+  IonContent, IonIcon, NavController, AlertController, ToastController
 } from '@ionic/angular/standalone';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { addIcons } from 'ionicons';
 import {
   micOutline,
@@ -33,8 +34,10 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from '../../../../core/services/auth.service';
 import { RoleService } from '../../../../core/services/role.service';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../../environments/environment';
+import { ChatService } from '../../../../core/services/chat.service';
+import { getEmotionColors } from '../../../../core/constants/theme.constants';
+import { StorageService } from '../../../../core/services/storage.service';
+import { StorageKeys } from '../../../../core/constants/storage.constants';
 import { Capacitor } from '@capacitor/core';
 import { SpeechRecognition } from '@capacitor-community/speech-recognition';
 
@@ -80,7 +83,10 @@ export class ChatPage implements OnDestroy {
   private authSvc = inject(AuthService);
   private roleSvc = inject(RoleService);
   private alertCtrl = inject(AlertController);
-  private http = inject(HttpClient);
+  private toastCtrl = inject(ToastController);
+  private chatSvc = inject(ChatService);
+  private destroyRef = inject(DestroyRef);
+  private storageSvc = inject(StorageService);
   private isNative = false;
   private nativeListenerHandle: any = null;
   private nativeStateListenerHandle: any = null;
@@ -120,7 +126,7 @@ export class ChatPage implements OnDestroy {
    * Leverages safe navigation and fallback strategies in case of CORS or connection failures.
    */
   private fetchDynamicQuote(): void {
-    this.http.get<any>('https://dummyjson.com/quotes/random').subscribe({
+    this.chatSvc.getRandomQuote().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (res?.quote && res?.author) {
           this.activeQuote.set({
@@ -129,21 +135,32 @@ export class ChatPage implements OnDestroy {
           });
         }
       },
-      error: (err) => {
+      error: async (err) => {
         console.warn('[ChatPage] Failed to fetch dynamic quote from public API, using local fallback:', err);
+        const toast = await this.toastCtrl.create({
+          message: 'Using local quotes (offline mode).',
+          duration: 2000,
+          color: 'medium'
+        });
+        toast.present();
       }
     });
   }
 
 
-  private get guestChatCount(): number {
-    const val = localStorage.getItem('mirror_guest_chat_count');
-    return val ? parseInt(val, 10) : 0;
-  }
-
-  private incrementGuestChatCount(): void {
-    const current = this.guestChatCount;
-    localStorage.setItem('mirror_guest_chat_count', (current + 1).toString());
+  private checkGuestLimit(): boolean {
+    if (this.authSvc.isAuthenticated()) {
+      return true;
+    }
+    const val = this.storageSvc.get(StorageKeys.GUEST_CHAT_COUNT);
+    const current = val ? parseInt(val, 10) : 0;
+    
+    if (current >= 5) {
+      return false;
+    }
+    
+    this.storageSvc.set(StorageKeys.GUEST_CHAT_COUNT, (current + 1).toString());
+    return true;
   }
 
   public readonly activeStyle = signal<'cyberpunk' | 'aurora'>('aurora');
@@ -157,7 +174,7 @@ export class ChatPage implements OnDestroy {
   // Pagination state
   public readonly isLoadingHistory = signal<boolean>(false);
   public readonly isLoadingMore = signal<boolean>(false);
-  private currentPage = 0;
+  private currentCursor: string | null = null;
   private readonly pageSize = 20;
   private hasMoreHistory = true;
   private isInitialLoad = true;
@@ -584,7 +601,7 @@ export class ChatPage implements OnDestroy {
     if (this.isWaitingForResponse()) {
       return;
     }
-    if (this.isGuest() && this.guestChatCount >= 2) {
+    if (!this.checkGuestLimit()) {
       this.showSignupPopup();
       return;
     }
@@ -595,7 +612,7 @@ export class ChatPage implements OnDestroy {
     if (event.key === 'Enter') {
       const input = this.chatInput().trim();
       if (input && !this.isWaitingForResponse()) {
-        if (this.isGuest() && this.guestChatCount >= 2) {
+        if (!this.checkGuestLimit()) {
           this.showSignupPopup();
           return;
         }
@@ -607,7 +624,7 @@ export class ChatPage implements OnDestroy {
   public triggerSend() {
     const input = this.chatInput().trim();
     if (input && !this.isWaitingForResponse()) {
-      if (this.isGuest() && this.guestChatCount >= 2) {
+      if (!this.checkGuestLimit()) {
         this.showSignupPopup();
         return;
       }
@@ -711,9 +728,7 @@ export class ChatPage implements OnDestroy {
   }
 
   private sendMessage(text: string) {
-    if (this.isGuest()) {
-      this.incrementGuestChatCount();
-    }
+    // We already checked checkGuestLimit() before calling sendMessage
 
     this.isWaitingForResponse.set(true);
 
@@ -748,20 +763,9 @@ export class ChatPage implements OnDestroy {
 
     // If no colors are stored, map standard emotions to beautiful fallback hex codes
     if (!primary || !secondary) {
-      const e = emotionText.toUpperCase();
-      if (e.includes('JOY') || e.includes('HAPPY') || e.includes('EXCITE')) {
-        primary = '#ffb700'; secondary = '#ff5e00';
-      } else if (e.includes('SAD') || e.includes('LONELY') || e.includes('MELANCHOLY') || e.includes('NOSTALGIA')) {
-        primary = '#00ffd5'; secondary = '#0099ff';
-      } else if (e.includes('ANXIOUS') || e.includes('WORRY') || e.includes('FEAR') || e.includes('STRESS')) {
-        primary = '#a855f7'; secondary = '#06b6d4';
-      } else if (e.includes('ANGER') || e.includes('FRUSTRATION') || e.includes('MAD')) {
-        primary = '#ff0055'; secondary = '#e11d48';
-      } else if (e.includes('CREATIVITY') || e.includes('FOCUS') || e.includes('CALM') || e.includes('INSIGHT')) {
-        primary = '#10b981'; secondary = '#06b6d4';
-      } else {
-        primary = '#7928ca'; secondary = '#ff0080';
-      }
+      const colors = getEmotionColors(emotionText);
+      primary = colors.primary;
+      secondary = colors.secondary;
     }
     return { emotion: emotionText, primary, secondary };
   }
@@ -770,7 +774,7 @@ export class ChatPage implements OnDestroy {
     const email = this.authSvc.getEmail() || 'guest@mirror.com';
     this.loadedEmail = email;
     this.isLoadingHistory.set(true);
-    this.currentPage = 0;
+    this.currentCursor = null;
     this.hasMoreHistory = true;
     this.isInitialLoad = true;
     
@@ -780,9 +784,7 @@ export class ChatPage implements OnDestroy {
     this.currentPrimaryColor.set('#a855f7');
     this.currentSecondaryColor.set('#06b6d4');
 
-    this.http.get<any>(`${environment.apiUrl}/api/memory/history?page=0&size=${this.pageSize}`, {
-      headers: { 'X-User-Email': email }
-    }).subscribe({
+    this.chatSvc.getHistory(email, null, this.pageSize).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         if (data && data.messages && data.messages.length > 0) {
           // Backend returns newest first, reverse for chronological display
@@ -809,17 +811,24 @@ export class ChatPage implements OnDestroy {
           }
 
           this.hasMoreHistory = data.hasMore;
-          this.currentPage = 1;
+          this.currentCursor = data.nextCursor;
         }
         this.isLoadingHistory.set(false);
         this.isInitialLoad = false;
         setTimeout(() => this.scrollToBottom('auto'), 50);
       },
-      error: (err) => {
+      error: async (err) => {
         console.error('Failed to load chat history from backend:', err);
         this.isLoadingHistory.set(false);
         this.isInitialLoad = false;
         setTimeout(() => this.scrollToBottom('auto'), 50);
+        
+        const toast = await this.toastCtrl.create({
+          message: 'Failed to load chat history.',
+          duration: 3000,
+          color: 'warning'
+        });
+        toast.present();
       }
     });
   }
@@ -832,9 +841,7 @@ export class ChatPage implements OnDestroy {
     const email = this.authSvc.getEmail() || 'guest@mirror.com';
     this.isLoadingMore.set(true);
 
-    this.http.get<any>(`${environment.apiUrl}/api/memory/history?page=${this.currentPage}&size=${this.pageSize}`, {
-      headers: { 'X-User-Email': email }
-    }).subscribe({
+    this.chatSvc.getHistory(email, this.currentCursor, this.pageSize).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         if (data && data.messages && data.messages.length > 0) {
           // Preserve scroll position: capture current scroll height before prepending
@@ -857,7 +864,7 @@ export class ChatPage implements OnDestroy {
 
           this.messages.update(prev => [...olderMessages, ...prev]);
           this.hasMoreHistory = data.hasMore;
-          this.currentPage++;
+          this.currentCursor = data.nextCursor;
 
           // Restore scroll position so the user doesn't jump to the top
           setTimeout(() => {
@@ -871,9 +878,15 @@ export class ChatPage implements OnDestroy {
         }
         this.isLoadingMore.set(false);
       },
-      error: (err) => {
+      error: async (err) => {
         console.error('Failed to load more history:', err);
         this.isLoadingMore.set(false);
+        const toast = await this.toastCtrl.create({
+          message: 'Failed to load older messages.',
+          duration: 2000,
+          color: 'warning'
+        });
+        toast.present();
       }
     });
   }
@@ -907,12 +920,7 @@ export class ChatPage implements OnDestroy {
     setTimeout(() => this.scrollToBottom('smooth'), 50);
 
     const email = this.authSvc.getEmail() || 'guest@mirror.com';
-    this.http.post<any>(`${environment.apiUrl}/api/memory/reflect`, prompt, {
-      headers: { 
-        'X-User-Email': email,
-        'Content-Type': 'text/plain' 
-      }
-    }).subscribe({
+    this.chatSvc.reflect(email, prompt).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.messages.update(prev => prev.filter(m => m.id !== typingId));
 
@@ -958,7 +966,7 @@ export class ChatPage implements OnDestroy {
         }, 15);
         this.activeTypingIntervals.push(streamInterval);
       },
-      error: (err) => {
+      error: async (err) => {
         console.error('Failed to generate backend reflection:', err);
         this.messages.update(prev => prev.filter(m => m.id !== typingId));
         
@@ -988,6 +996,13 @@ export class ChatPage implements OnDestroy {
         this.isWaitingForResponse.set(false);
         setTimeout(() => this.scrollToBottom('smooth'), 50);
         this.focusInput();
+        
+        const toast = await this.toastCtrl.create({
+          message: 'Connection issue while communicating with MIRROR.',
+          duration: 3000,
+          color: 'danger'
+        });
+        toast.present();
       }
     });
   }

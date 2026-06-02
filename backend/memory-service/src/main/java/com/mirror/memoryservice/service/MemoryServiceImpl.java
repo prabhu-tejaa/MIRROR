@@ -1,9 +1,11 @@
 package com.mirror.memoryservice.service;
 
-import com.mirror.memoryservice.Memory;
-import com.mirror.memoryservice.MemoryRepository;
+import com.mirror.memoryservice.model.Memory;
+import com.mirror.memoryservice.repository.MemoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,21 +18,19 @@ public class MemoryServiceImpl implements MemoryService {
 
     private final MemoryRepository repository;
     private final GeminiService geminiService;
-    private final EmotionCacheService emotionCacheService;
 
-    public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService, EmotionCacheService emotionCacheService) {
+    public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService) {
         this.repository = repository;
         this.geminiService = geminiService;
-        this.emotionCacheService = emotionCacheService;
     }
 
     @Override
     @Transactional
+    @CacheEvict(value = "emotionAnalytics", key = "#userId")
     public String saveMemory(String userId, String content, String emotion, String sender, float[] embedding) {
         try {
             String embeddingStr = formatVectorForSql(embedding);
             repository.saveMemoryWithEmbedding(userId, content, emotion, sender, embeddingStr);
-            emotionCacheService.evict(userId);
             return "Memory successfully cataloged and indexed semantically.";
         } catch (Exception e) {
             log.error("Error saving memory to Postgres: {}", e.getMessage(), e);
@@ -53,11 +53,8 @@ public class MemoryServiceImpl implements MemoryService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "emotionAnalytics", key = "#userId")
     public Map<String, Long> getEmotionalAnalytics(String userId) {
-        Map<String, Long> cached = emotionCacheService.getAnalytics(userId);
-        if (cached != null) {
-            return cached;
-        }
         Map<String, Long> analytics = new HashMap<>();
         try {
             List<Object[]> counts = repository.findEmotionCounts(userId);
@@ -68,7 +65,6 @@ public class MemoryServiceImpl implements MemoryService {
                     analytics.put(emotion, count);
                 }
             }
-            emotionCacheService.putAnalytics(userId, analytics);
         } catch (Exception e) {
             log.error("Error generating emotional analytics metrics: {}", e.getMessage(), e);
         }
@@ -122,16 +118,24 @@ public class MemoryServiceImpl implements MemoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> getMemoriesPaginated(String userId, int page, int size) {
-        int offset = page * size;
-        List<Memory> memories = repository.findMemoriesPaginated(userId, size, offset);
-        long total = repository.countByUserId(userId);
-        boolean hasMore = (offset + memories.size()) < total;
+    public Map<String, Object> getMemoriesPaginated(String userId, Long cursor, int size) {
+        List<Memory> memories = repository.findMemoriesKeysetPaginated(userId, size, cursor);
+        
+        Long total = null;
+        if (cursor == null) {
+            total = repository.countByUserId(userId);
+        }
+        
+        boolean hasMore = memories.size() == size;
+        Long nextCursor = memories.isEmpty() ? null : memories.get(memories.size() - 1).getId();
 
         Map<String, Object> result = new HashMap<>();
         result.put("messages", memories);
-        result.put("total", total);
+        if (total != null) {
+            result.put("total", total);
+        }
         result.put("hasMore", hasMore);
+        result.put("nextCursor", nextCursor);
         return result;
     }
 
@@ -149,6 +153,7 @@ public class MemoryServiceImpl implements MemoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "emotionAnalytics", key = "#userId")
     public void updateMemory(Long id, String userId, String content, String emotion) {
         Memory memory = repository.findById(id).orElseThrow(() -> new RuntimeException("Memory not found"));
         
@@ -165,7 +170,6 @@ public class MemoryServiceImpl implements MemoryService {
         memory.setContent(content);
         memory.setEmotion(emotion);
         repository.save(memory);
-        emotionCacheService.evict(userId);
     }
 
     @Override
@@ -181,15 +185,6 @@ public class MemoryServiceImpl implements MemoryService {
         if (vector == null || vector.length == 0) {
             return null;
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (int i = 0; i < vector.length; i++) {
-            sb.append(vector[i]);
-            if (i < vector.length - 1) {
-                sb.append(",");
-            }
-        }
-        sb.append("]");
-        return sb.toString();
+        return java.util.Arrays.toString(vector);
     }
 }

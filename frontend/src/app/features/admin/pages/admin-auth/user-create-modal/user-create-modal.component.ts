@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -17,6 +17,7 @@ import { AdminCreateUserRequest } from '../../../../../core/models/auth.model';
 
 import { addIcons } from 'ionicons';
 import { closeOutline, personOutline, mailOutline, shieldOutline, keyOutline, personAddOutline } from 'ionicons/icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-user-create-modal',
@@ -39,6 +40,7 @@ export class UserCreateModalComponent {
   private modalCtrl = inject(ModalController);
   private adminAuthSvc = inject(AdminAuthService);
   private toastSvc = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
 
   constructor() {
     addIcons({ closeOutline, personOutline, mailOutline, shieldOutline, keyOutline, personAddOutline });
@@ -83,14 +85,12 @@ export class UserCreateModalComponent {
       role: this.createForm.role
     };
 
-    this.adminAuthSvc.createUser(request).subscribe({
+    this.adminAuthSvc.createUser(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.toastSvc.showSuccess(`User "${request.username}" created successfully`);
         this.dismiss(true);
       },
-      error: (err) => {
-        const errorMsg = err.error?.message || err.message || 'Failed to create user';
-        this.toastSvc.showError(errorMsg);
+      error: () => {
         this.isSubmitting = false;
       }
     });

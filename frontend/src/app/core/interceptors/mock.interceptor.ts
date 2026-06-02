@@ -180,7 +180,8 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
           emotion: 'JOY|#ffb700|#ff5e00'
         }
       ],
-      hasMore: false
+      hasMore: false,
+      nextCursor: null
     };
     return of(new HttpResponse({ status: 200, body: mockHistory })).pipe(delay(600));
   }

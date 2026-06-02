@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -11,6 +11,7 @@ import { strictPasswordValidator } from '../../../../shared/validators/password.
 import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
 import { AuthService } from '../../../../core/services/auth.service';
 import { TranslationService } from '../../../../core/services/translation.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-reset-password',
@@ -28,6 +29,7 @@ export class ResetPasswordPage implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private authSvc = inject(AuthService);
   private translationSvc = inject(TranslationService);
+  private destroyRef = inject(DestroyRef);
 
   public resetForm!: FormGroup;
   public isSubmitted: boolean = false;
@@ -42,7 +44,7 @@ export class ResetPasswordPage implements OnInit {
 
   constructor() {
     addIcons({ eye, eyeOff, alertCircleOutline });
-    this.route.queryParams.subscribe((params: Params) => {
+    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params: Params) => {
       this.email = (params['email'] as string) || '';
     });
   }
@@ -72,7 +74,7 @@ export class ResetPasswordPage implements OnInit {
 
       const { password } = this.resetForm.value;
 
-      this.authSvc.resetPassword(this.email, password).subscribe({
+      this.authSvc.resetPassword(this.email, password).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.isLoading = false;
           this.cdr.markForCheck();
