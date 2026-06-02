@@ -5,6 +5,10 @@ spring:
   application:
     name: api-gateway
 
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+
   cloud:
     gateway:
       globalcors:
