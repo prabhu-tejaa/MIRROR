@@ -24,15 +24,12 @@ export class ChatService {
 
   public getHistory(email: string, cursor: string | null, size: number): Observable<any> {
     const cursorParam = cursor ? `&cursor=${cursor}` : '';
-    return this.http.get<any>(`${environment.apiUrl}/api/memory/history?size=${size}${cursorParam}`, {
-      headers: { 'X-User-Email': email }
-    });
+    return this.http.get<any>(`${environment.apiUrl}/api/memory/history?size=${size}${cursorParam}`);
   }
 
   public reflect(email: string, prompt: string): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/api/memory/reflect`, prompt, {
       headers: { 
-        'X-User-Email': email,
         'Content-Type': 'text/plain' 
       }
     });

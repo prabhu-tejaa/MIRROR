@@ -29,9 +29,10 @@ public class MemoryController {
      */
     @PostMapping("/save")
     public ResponseEntity<String> saveMemory(
-            @RequestHeader(value = "X-User-Email") String userId,
+            java.security.Principal principal,
             @RequestBody String content
     ) {
+        String userId = principal.getName();
         try {
             com.mirror.memoryservice.dto.MemorySaveEvent event = new com.mirror.memoryservice.dto.MemorySaveEvent(userId, content);
             String message = objectMapper.writeValueAsString(event);
@@ -48,9 +49,10 @@ public class MemoryController {
      */
     @PostMapping("/reflect")
     public ResponseEntity<Map<String, String>> reflect(
-            @RequestHeader(value = "X-User-Email") String userId,
+            java.security.Principal principal,
             @RequestBody String prompt
     ) {
+        String userId = principal.getName();
         Map<String, String> response = service.generateReflection(userId, prompt);
         return ResponseEntity.ok(response);
     }
@@ -60,8 +62,9 @@ public class MemoryController {
      */
     @GetMapping("/analytics")
     public ResponseEntity<Map<String, Long>> getAnalytics(
-            @RequestHeader(value = "X-User-Email") String userId
+            java.security.Principal principal
     ) {
+        String userId = principal.getName();
         Map<String, Long> analytics = service.getEmotionalAnalytics(userId);
         return ResponseEntity.ok(analytics);
     }
@@ -71,8 +74,9 @@ public class MemoryController {
      */
     @GetMapping("/all")
     public ResponseEntity<List<Memory>> getAll(
-            @RequestHeader(value = "X-User-Email") String userId
+            java.security.Principal principal
     ) {
+        String userId = principal.getName();
         List<Memory> memories = service.getAllMemories(userId);
         return ResponseEntity.ok(memories);
     }
@@ -83,10 +87,11 @@ public class MemoryController {
      */
     @GetMapping("/history")
     public ResponseEntity<Map<String, Object>> getHistory(
-            @RequestHeader(value = "X-User-Email") String userId,
+            java.security.Principal principal,
             @RequestParam(required = false) Long cursor,
             @RequestParam(defaultValue = "20") int size
     ) {
+        String userId = principal.getName();
         Map<String, Object> result = service.getMemoriesPaginated(userId, cursor, size);
         return ResponseEntity.ok(result);
     }
@@ -96,8 +101,9 @@ public class MemoryController {
      */
     @GetMapping("/keepalive")
     public String keepAlive(
-            @RequestHeader(value = "X-User-Email") String userId
+            java.security.Principal principal
     ) {
+        String userId = principal.getName();
         try {
             long count = service.getMemoryCount(userId);
             return "Memory service is awake. Active records for user: " + count;
