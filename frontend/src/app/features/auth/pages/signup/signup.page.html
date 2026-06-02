@@ -18,7 +18,7 @@
         <div class="input-row">
 
           <div class="input-group">
-            <ion-input formControlName="username" type="text" [placeholder]="'SIGNUP.PLACEHOLDER_USERNAME' | translate"
+            <ion-input id="signup-username" formControlName="username" type="text" [placeholder]="'SIGNUP.PLACEHOLDER_USERNAME' | translate"
               class="glassy-input"></ion-input>
             @if (isSubmitted && f['username'].errors) {
             <div class="error-msg">
@@ -36,7 +36,7 @@
           </div>
 
           <div class="input-group">
-            <ion-input formControlName="email" type="email" [placeholder]="'SIGNUP.PLACEHOLDER_EMAIL' | translate"
+            <ion-input id="signup-email" formControlName="email" type="email" [placeholder]="'SIGNUP.PLACEHOLDER_EMAIL' | translate"
               class="glassy-input"></ion-input>
             @if (isSubmitted && f['email'].errors) {
             <div class="error-msg">
@@ -54,7 +54,7 @@
         </div>
 
         <div class="input-group">
-          <ion-input formControlName="password" [type]="showPassword ? 'text' : 'password'"
+          <ion-input id="signup-password" formControlName="password" [type]="showPassword ? 'text' : 'password'"
             [placeholder]="'SIGNUP.PLACEHOLDER_PASSWORD' | translate" class="glassy-input">
             <button type="button" slot="end" class="eye-toggle" (click)="showPassword = !showPassword"
               aria-label="Toggle password visibility">
