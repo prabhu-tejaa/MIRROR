@@ -13,6 +13,11 @@ import java.util.*;
 import com.mirror.memoryservice.exception.MemoryNotFoundException;
 import com.mirror.memoryservice.exception.MemoryProcessingException;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mirror.memoryservice.dto.ReflectionSaveEvent;
+import com.mirror.memoryservice.config.RabbitMQConfig;
+
 @Service
 public class MemoryServiceImpl implements MemoryService {
 
@@ -21,10 +26,14 @@ public class MemoryServiceImpl implements MemoryService {
 
     private final MemoryRepository repository;
     private final GeminiService geminiService;
+    private final RabbitTemplate rabbitTemplate;
+    private final ObjectMapper objectMapper;
 
-    public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService) {
+    public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService, RabbitTemplate rabbitTemplate, ObjectMapper objectMapper) {
         this.repository = repository;
         this.geminiService = geminiService;
+        this.rabbitTemplate = rabbitTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -92,20 +101,18 @@ public class MemoryServiceImpl implements MemoryService {
         // 3. Generate empathetic reflection + emotion tag using Gemini
         Map<String, String> aiResponse = geminiService.generateReflectionAndEmotion(prompt, contextBuilder.toString());
         
-        // 4. Save both the user prompt (sender='user') and the Gemini reflection (sender='mirror')!
+        // 4. Async background save using RabbitMQ
         try {
-            // A. Save the user prompt (compute & store embedding vector)
-            float[] promptEmbedding = geminiService.getEmbedding(prompt);
             String detectedEmotion = aiResponse.getOrDefault("emotion", "NEUTRAL");
-            saveMemory(userId, prompt, detectedEmotion, "user", promptEmbedding);
-            
-            // B. Save the Gemini reflection reply (sender='mirror', embedding=null since we don't search comfort text)
             String reflectionText = aiResponse.getOrDefault("reflection", "");
-            saveMemory(userId, reflectionText, detectedEmotion, "mirror", null);
             
-            log.info("Successfully cataloged prompt and Gemini reply as memories for user: {}", userId);
+            ReflectionSaveEvent event = new ReflectionSaveEvent(userId, prompt, reflectionText, detectedEmotion);
+            String message = objectMapper.writeValueAsString(event);
+            rabbitTemplate.convertAndSend(RabbitMQConfig.REFLECTION_SAVE_QUEUE, message);
+            
+            log.info("Successfully queued prompt and reflection for background async saving for user: {}", userId);
         } catch (Exception e) {
-            log.error("Could not auto-save RAG interaction to database: {}", e.getMessage());
+            log.error("Could not auto-save RAG interaction to RabbitMQ: {}", e.getMessage());
         }
 
         return aiResponse;

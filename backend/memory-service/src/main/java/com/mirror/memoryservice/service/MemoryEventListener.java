@@ -40,4 +40,24 @@ public class MemoryEventListener {
             log.error("Failed to process memory save event", e);
         }
     }
+    @RabbitListener(queues = RabbitMQConfig.REFLECTION_SAVE_QUEUE)
+    public void handleReflectionSaveEvent(String message) {
+        try {
+            com.mirror.memoryservice.dto.ReflectionSaveEvent event = objectMapper.readValue(message, com.mirror.memoryservice.dto.ReflectionSaveEvent.class);
+            log.info("Processing async reflection background save for user: {}", event.userId());
+            
+            // 1. Calculate embedding for the user prompt
+            float[] promptEmbedding = geminiService.getEmbedding(event.prompt());
+            
+            // 2. Save the user prompt (with embedding)
+            memoryService.saveMemory(event.userId(), event.prompt(), event.emotion(), "user", promptEmbedding);
+            
+            // 3. Save the mirror reflection (without embedding)
+            memoryService.saveMemory(event.userId(), event.reflection(), event.emotion(), "mirror", null);
+            
+            log.info("Successfully processed and saved background reflection for user: {}", event.userId());
+        } catch (Exception e) {
+            log.error("Failed to process background reflection save event", e);
+        }
+    }
 }
