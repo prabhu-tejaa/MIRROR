@@ -5,14 +5,39 @@ import { Injectable } from '@angular/core';
 })
 export class StorageService {
 
+  private readonly secretKey = 'mirror_secret_key_123';
+
+  private encrypt(value: string): string {
+    let result = '';
+    for (let i = 0; i < value.length; i++) {
+      result += String.fromCharCode(value.charCodeAt(i) ^ this.secretKey.charCodeAt(i % this.secretKey.length));
+    }
+    return btoa(result);
+  }
+
+  private decrypt(value: string): string {
+    let result = '';
+    try {
+      const decoded = atob(value);
+      for (let i = 0; i < decoded.length; i++) {
+        result += String.fromCharCode(decoded.charCodeAt(i) ^ this.secretKey.charCodeAt(i % this.secretKey.length));
+      }
+      return result;
+    } catch {
+      return value;
+    }
+  }
+
   public get(key: string): string | null {
     if (typeof localStorage === 'undefined') return null;
-    return localStorage.getItem(key);
+    const value = localStorage.getItem(key);
+    if (!value) return null;
+    return this.decrypt(value);
   }
 
   public set(key: string, value: string): void {
     if (typeof localStorage === 'undefined') return;
-    localStorage.setItem(key, value);
+    localStorage.setItem(key, this.encrypt(value));
   }
 
   public remove(key: string): void {

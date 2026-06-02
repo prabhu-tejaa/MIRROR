@@ -1,14 +1,13 @@
 server:
   port: 8060
 
-spring:
-  application:
-    name: api-gateway
-
 app:
   jwt:
     secret: ${JWT_SECRET}
 
+spring:
+  application:
+    name: api-gateway
   cloud:
     gateway:
       globalcors:
@@ -31,7 +30,7 @@ app:
 
       routes:
         - id: auth-service-route
-          uri: lb://auth-service
+          uri: http://localhost:8080
           predicates:
             - Path=/api/auth/**
           filters:
@@ -40,7 +39,7 @@ app:
                 name: defaultCircuitBreaker
 
         - id: memory-service-route
-          uri: lb://memory-service
+          uri: http://localhost:8081
           predicates:
             - Path=/api/memory/**
           filters:
@@ -76,14 +75,7 @@ resilience4j:
         waitDurationInOpenState: 10s
         permittedNumberOfCallsInHalfOpenState: 3
 
-eureka:
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
-  client:
-    registry-fetch-interval-seconds: 5
-  service-url:
-    defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+
 
 ---
 spring:
@@ -130,7 +122,4 @@ spring:
             - name: CircuitBreaker
               args:
                 name: defaultCircuitBreaker
-
-eureka:
-  client:
-    enabled: false
+

@@ -22,8 +22,8 @@ public class AdminGatewayController {
     private RouteLocator routeLocator;
 
     @GetMapping("/health")
-    public ResponseEntity<List<ServiceHealth>> getHealth() {
-        return ResponseEntity.ok(telemetryService.getServicesHealth());
+    public Mono<ResponseEntity<List<ServiceHealth>>> getHealth() {
+        return telemetryService.getServicesHealth().map(ResponseEntity::ok);
     }
 
     @GetMapping("/routes")

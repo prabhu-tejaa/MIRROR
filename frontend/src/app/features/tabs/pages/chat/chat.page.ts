@@ -891,10 +891,14 @@ export class ChatPage implements OnDestroy {
     });
   }
 
+  private scrollListenerAttached = false;
+
   private setupScrollListener() {
+    if (this.scrollListenerAttached) return;
     setTimeout(() => {
       const scrollEl = this.streamScroll?.nativeElement;
       if (scrollEl) {
+        this.scrollListenerAttached = true;
         scrollEl.addEventListener('scroll', () => {
           // Trigger load more when scrolled near the top (within 60px)
           if (scrollEl.scrollTop <= 60 && this.hasMoreHistory && !this.isLoadingMore() && !this.isInitialLoad) {

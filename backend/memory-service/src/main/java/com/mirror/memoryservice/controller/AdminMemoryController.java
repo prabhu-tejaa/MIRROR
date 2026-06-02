@@ -14,8 +14,11 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/admin/memory")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminMemoryController {
 
     private static final Logger log = LoggerFactory.getLogger(AdminMemoryController.class);

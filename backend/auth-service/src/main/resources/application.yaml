@@ -28,21 +28,17 @@ spring:
     hibernate:
       ddl-auto: validate
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+
 app:
   mail:
     from: ${MAIL_FROM:projectmirror.tech@gmail.com}
   jwt:
     secret: ${JWT_SECRET}
 
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
 
-spring:
-  rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
 
 management:
   tracing:
@@ -57,7 +53,3 @@ spring:
   config:
     activate:
       on-profile: prod
-
-eureka:
-  client:
-    enabled: false

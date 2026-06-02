@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
-import java.util.Random;
+import java.security.SecureRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class OtpService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        String rawCode = String.format("%06d", new Random().nextInt(1000000));
+        String rawCode = String.format("%06d", new SecureRandom().nextInt(1000000));
         String hashedCode = DigestUtils.sha256Hex(rawCode);
 
         OtpToken otp = OtpToken.builder()

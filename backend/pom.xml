@@ -22,7 +22,6 @@
 
     <modules>
         <module>api-gateway</module>
-        <module>discovery-server</module>
         <module>memory-service</module>
         <module>auth-service</module>
     </modules>

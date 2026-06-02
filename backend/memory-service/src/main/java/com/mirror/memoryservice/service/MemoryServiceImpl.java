@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import com.mirror.memoryservice.exception.MemoryNotFoundException;
+import com.mirror.memoryservice.exception.MemoryProcessingException;
 
 @Service
 public class MemoryServiceImpl implements MemoryService {
@@ -35,7 +37,7 @@ public class MemoryServiceImpl implements MemoryService {
             return "Memory successfully cataloged and indexed semantically.";
         } catch (Exception e) {
             log.error("Error saving memory to Postgres: {}", e.getMessage(), e);
-            throw new RuntimeException("Database error saving memory: " + e.getMessage());
+            throw new MemoryProcessingException("Database error saving memory: " + e.getMessage(), e);
         }
     }
 
@@ -153,7 +155,7 @@ public class MemoryServiceImpl implements MemoryService {
     @Override
     @CacheEvict(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
     public void updateMemory(Long id, String userId, String content, String emotion) {
-        Memory memory = repository.findById(id).orElseThrow(() -> new RuntimeException("Memory not found"));
+        Memory memory = repository.findById(id).orElseThrow(() -> new MemoryNotFoundException("Memory " + id + " not found"));
         
         // If content changes, regenerate embedding
         if (!memory.getContent().equals(content)) {

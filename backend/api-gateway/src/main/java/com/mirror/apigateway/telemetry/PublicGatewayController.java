@@ -15,7 +15,7 @@ public class PublicGatewayController {
     private TelemetryService telemetryService;
 
     @GetMapping("/health")
-    public ResponseEntity<List<ServiceHealth>> getPublicHealth() {
-        return ResponseEntity.ok(telemetryService.getServicesHealth());
+    public reactor.core.publisher.Mono<ResponseEntity<List<ServiceHealth>>> getPublicHealth() {
+        return telemetryService.getServicesHealth().map(ResponseEntity::ok);
     }
 }

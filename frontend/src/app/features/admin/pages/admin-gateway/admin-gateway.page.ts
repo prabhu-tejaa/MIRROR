@@ -144,7 +144,7 @@ export class AdminGatewayPage implements OnInit, OnDestroy {
       });
 
       this.gatewaySvc.getHealth().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(data => this.services = data);
-    }, 3500);
+    }, 15000);
   }
 
   public toggleRoute(route: RouteMap) {

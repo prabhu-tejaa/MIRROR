@@ -1,4 +1,4 @@
-package com.mirror.apigateway.security;
+package com.mirror.memoryservice.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -17,17 +17,13 @@ public class JwtUtil {
 
     public JwtUtil(@Value("${app.jwt.secret:}") String secret) {
         if (secret == null || secret.trim().isEmpty()) {
-            throw new IllegalStateException("JWT Secret is not configured. Please set the 'app.jwt.secret' property.");
+            throw new IllegalStateException("JWT Secret is not configured.");
         }
         this.SECRET_KEY = Keys.hmacShaKeyFor(io.jsonwebtoken.io.Decoders.BASE64.decode(secret));
     }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
-    }
-
-    public String extractEmail(String token) {
-        return extractClaim(token, claims -> claims.get("email", String.class));
     }
 
     public String extractRole(String token) {
@@ -51,9 +47,10 @@ public class JwtUtil {
                 .getBody();
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, String username) {
         try {
-            return !isTokenExpired(token);
+            final String extractedUsername = extractUsername(token);
+            return (extractedUsername.equals(username) && !isTokenExpired(token));
         } catch (Exception e) {
             return false;
         }
