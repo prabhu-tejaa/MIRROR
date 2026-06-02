@@ -18,7 +18,7 @@ export class AudioVisualizerService implements OnDestroy {
   private analyser: AnalyserNode | null = null;
   private source: MediaElementAudioSourceNode | null = null;
   private animationFrameId: number | null = null;
-  private fadeInterval: any = null;
+  private fadeInterval: ReturnType<typeof setInterval> | null = null;
 
   private ngZone = inject(NgZone);
 

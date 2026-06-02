@@ -19,4 +19,37 @@ export class ApiService {
       VALIDATE: '/api/auth/validate'
     } as const;
   }
+
+  public get ADMIN_MEMORY() {
+    return {
+      ALL: '/api/admin/memory/all',
+      DELETE: (id: string) => `/api/admin/memory/${id}`,
+      UPLOAD: '/api/admin/memory/upload',
+      CREATE: '/api/admin/memory',
+      UPDATE: (id: string) => `/api/admin/memory/${id}`
+    } as const;
+  }
+
+  public get ADMIN_GATEWAY() {
+    return {
+      HEALTH: '/api/gateway/admin/health',
+      ROUTES: '/api/gateway/admin/routes',
+      ROUTES_TOGGLE: '/api/gateway/admin/routes/toggle',
+      BLOCKED_IPS: '/api/gateway/admin/blocked-ips',
+      UNBLOCK_IP: (ip: string) => `/api/gateway/admin/blocked-ips/${ip}`,
+      RATE_LIMIT: '/api/gateway/admin/rate-limit',
+      LOGS: '/api/gateway/admin/logs',
+      STATS: '/api/gateway/admin/stats',
+      PUBLIC_HEALTH: '/api/gateway/public/health'
+    } as const;
+  }
+
+  public get USER_MEMORY() {
+    return {
+      HISTORY: '/api/memory/history',
+      REFLECT: '/api/memory/reflect',
+      ANALYTICS: '/api/memory/analytics',
+      ALL: '/api/memory/all'
+    } as const;
+  }
 }

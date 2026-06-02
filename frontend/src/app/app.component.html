@@ -1,9 +1,5 @@
 <ion-app>
   
-  <div class="dev-badge" *ngIf="showDevBadge$ | async">
-    {{ 'GLOBAL.UNDER_DEVELOPMENT' | translate }}
-    <span class="preview-tooltip">{{ 'GLOBAL.PREVIEW_TOOLTIP' | translate }}</span>
-  </div>
   <app-starfield [nebulaGlow]="false"></app-starfield>
   <ion-router-outlet [animated]="false"></ion-router-outlet>
 

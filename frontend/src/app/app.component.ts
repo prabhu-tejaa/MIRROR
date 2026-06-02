@@ -1,8 +1,8 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map, filter, startWith } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { StarfieldComponent } from './shared/starfield/starfield.component';
 import { NoInternetComponent } from './shared/no-internet/no-internet.component';
@@ -37,12 +37,6 @@ export class AppComponent {
   
   public isOffline$: Observable<boolean> = this.connectionService.isOnline$.pipe(
     map(online => !online)
-  );
-
-  public showDevBadge$: Observable<boolean> = this.router.events.pipe(
-    filter(event => event instanceof NavigationEnd),
-    map(() => !this.router.url.includes('/tabs') && !this.router.url.includes('/admin') && !this.router.url.includes('/status')),
-    startWith(!window.location.pathname.includes('/tabs') && !window.location.pathname.includes('/admin') && !window.location.pathname.includes('/status'))
   );
 
   constructor() {

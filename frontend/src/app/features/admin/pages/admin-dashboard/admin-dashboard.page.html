@@ -5,7 +5,7 @@
       <ion-icon name="arrow-back-outline"></ion-icon>
     </button>
 
-    <!-- Right side: Live Presence pill inline (no PREVIEW badge) -->
+    <!-- Right side: Live Presence pill inline -->
     <div class="nav-right-group" *ngIf="{ count: (onlineUsersCount$ | async) ?? 0 } as state">
       <div class="live-presence-pill" [class.offline]="state.count === 0">
         <span class="presence-dot"></span>

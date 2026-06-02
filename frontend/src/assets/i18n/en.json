@@ -115,10 +115,6 @@
     "SMILEY": "Smile",
     "SCATTER": "Scatter"
   },
-  "GLOBAL": {
-    "UNDER_DEVELOPMENT": "P R E V I E W",
-    "PREVIEW_TOOLTIP": "Development in progress..."
-  },
   "PROFILE": {
     "ACCOUNT": "Account",
     "EMAIL": "Email",
@@ -138,19 +134,6 @@
     "REFRESH_TOKEN": "mirror_refresh_token",
     "USERNAME": "mirror_username",
     "EMAIL": "mirror_email"
-  },
-  "API": {
-    "SIGNUP": "/api/auth/signup",
-    "LOGIN": "/api/auth/login",
-    "OTP_REQUEST": "/api/auth/otp/request",
-    "OTP_VERIFY": "/api/auth/otp/verify",
-    "FORGOT_PASSWORD_REQUEST": "/api/auth/forgot-password/request",
-    "FORGOT_PASSWORD_VERIFY": "/api/auth/forgot-password/verify",
-    "FORGOT_PASSWORD_RESET": "/api/auth/forgot-password/reset",
-    "REFRESH": "/api/auth/refresh",
-    "LOGOUT": "/api/auth/logout",
-    "ADMIN_USERS": "/api/auth/admin/users",
-    "VALIDATE": "/api/auth/validate"
   },
   "CONFIG": {
     "API_PREFIX": "/api/",

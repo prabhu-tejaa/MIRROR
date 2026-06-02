@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ApiService } from './api.service';
 
 export interface ChatMessage {
   id: string;
@@ -21,14 +22,15 @@ export interface ChatMessage {
 })
 export class ChatService {
   private http = inject(HttpClient);
+  private apiSvc = inject(ApiService);
 
   public getHistory(email: string, cursor: string | null, size: number): Observable<any> {
     const cursorParam = cursor ? `&cursor=${cursor}` : '';
-    return this.http.get<any>(`${environment.apiUrl}/api/memory/history?size=${size}${cursorParam}`);
+    return this.http.get<any>(`${this.apiSvc.USER_MEMORY.HISTORY}?size=${size}${cursorParam}`);
   }
 
   public reflect(email: string, prompt: string): Observable<any> {
-    return this.http.post<any>(`${environment.apiUrl}/api/memory/reflect`, prompt, {
+    return this.http.post<any>(this.apiSvc.USER_MEMORY.REFLECT, prompt, {
       headers: { 
         'Content-Type': 'text/plain' 
       }

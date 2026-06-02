@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { ApiService } from './api.service';
 
 export interface ServiceHealth {
   name: string;
@@ -44,48 +45,49 @@ export interface TelemetryStats {
 })
 export class AdminGatewayService {
   private http = inject(HttpClient);
+  private apiSvc = inject(ApiService);
 
   public getHealth(): Observable<ServiceHealth[]> {
-    return this.http.get<ServiceHealth[]>('/api/gateway/admin/health');
+    return this.http.get<ServiceHealth[]>(this.apiSvc.ADMIN_GATEWAY.HEALTH);
   }
 
   public getRoutes(): Observable<RouteMap[]> {
-    return this.http.get<RouteMap[]>('/api/gateway/admin/routes');
+    return this.http.get<RouteMap[]>(this.apiSvc.ADMIN_GATEWAY.ROUTES);
   }
 
   public toggleRoute(id: string, active: boolean): Observable<unknown> {
-    return this.http.post('/api/gateway/admin/routes/toggle', { id, active });
+    return this.http.post(this.apiSvc.ADMIN_GATEWAY.ROUTES_TOGGLE, { id, active });
   }
 
   public getBlockedIps(): Observable<BlockedIp[]> {
-    return this.http.get<BlockedIp[]>('/api/gateway/admin/blocked-ips');
+    return this.http.get<BlockedIp[]>(this.apiSvc.ADMIN_GATEWAY.BLOCKED_IPS);
   }
 
   public blockIp(ip: string, reason: string): Observable<unknown> {
-    return this.http.post('/api/gateway/admin/blocked-ips', { ip, reason });
+    return this.http.post(this.apiSvc.ADMIN_GATEWAY.BLOCKED_IPS, { ip, reason });
   }
 
   public unblockIp(ip: string): Observable<unknown> {
-    return this.http.delete(`/api/gateway/admin/blocked-ips/${ip}`);
+    return this.http.delete(this.apiSvc.ADMIN_GATEWAY.UNBLOCK_IP(ip));
   }
 
   public getRateLimit(): Observable<{ limit: number }> {
-    return this.http.get<{ limit: number }>('/api/gateway/admin/rate-limit');
+    return this.http.get<{ limit: number }>(this.apiSvc.ADMIN_GATEWAY.RATE_LIMIT);
   }
 
   public updateRateLimit(limit: number): Observable<unknown> {
-    return this.http.post('/api/gateway/admin/rate-limit', { limit });
+    return this.http.post(this.apiSvc.ADMIN_GATEWAY.RATE_LIMIT, { limit });
   }
 
   public getLogs(): Observable<LogEntry[]> {
-    return this.http.get<LogEntry[]>('/api/gateway/admin/logs');
+    return this.http.get<LogEntry[]>(this.apiSvc.ADMIN_GATEWAY.LOGS);
   }
 
   public getStats(): Observable<TelemetryStats> {
-    return this.http.get<TelemetryStats>('/api/gateway/admin/stats');
+    return this.http.get<TelemetryStats>(this.apiSvc.ADMIN_GATEWAY.STATS);
   }
 
   public getPublicHealth(): Observable<ServiceHealth[]> {
-    return this.http.get<ServiceHealth[]>('/api/gateway/public/health');
+    return this.http.get<ServiceHealth[]>(this.apiSvc.ADMIN_GATEWAY.PUBLIC_HEALTH);
   }
 }

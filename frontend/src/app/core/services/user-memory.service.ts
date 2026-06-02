@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { ApiService } from './api.service';
 
 export interface Reflection {
   content: string;
@@ -15,12 +15,13 @@ export interface Reflection {
 })
 export class UserMemoryService {
   private http = inject(HttpClient);
+  private apiSvc = inject(ApiService);
 
   public getAnalytics(_email: string): Observable<Record<string, number>> {
-    return this.http.get<Record<string, number>>(`${environment.apiUrl}/api/memory/analytics`);
+    return this.http.get<Record<string, number>>(this.apiSvc.USER_MEMORY.ANALYTICS);
   }
 
   public getAllMemories(_email: string): Observable<Reflection[]> {
-    return this.http.get<Reflection[]>((`${environment.apiUrl}/api/memory/all`));
+    return this.http.get<Reflection[]>(this.apiSvc.USER_MEMORY.ALL);
   }
 }

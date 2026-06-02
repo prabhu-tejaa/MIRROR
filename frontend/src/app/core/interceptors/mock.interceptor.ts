@@ -1,24 +1,27 @@
 import { HttpInterceptorFn, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { ApiService } from '../services/api.service';
 
 export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   if (!environment.mock) {
     return next(req);
   }
 
+  const apiSvc = inject(ApiService);
   const url = req.url;
 
-  const signupPath = '/api/auth/signup';
-  const loginPath = '/api/auth/login';
-  const otpRequestPath = '/api/auth/otp/request';
-  const otpVerifyPath = '/api/auth/otp/verify';
-  const forgotPasswordRequestPath = '/api/auth/forgot-password/request';
-  const forgotPasswordVerifyPath = '/api/auth/forgot-password/verify';
-  const forgotPasswordResetPath = '/api/auth/forgot-password/reset';
-  const refreshPath = '/api/auth/refresh';
-  const logoutPath = '/api/auth/logout';
+  const signupPath = apiSvc.AUTH.SIGNUP;
+  const loginPath = apiSvc.AUTH.LOGIN;
+  const otpRequestPath = apiSvc.AUTH.OTP_REQUEST;
+  const otpVerifyPath = apiSvc.AUTH.OTP_VERIFY;
+  const forgotPasswordRequestPath = apiSvc.AUTH.FORGOT_PASSWORD_REQUEST;
+  const forgotPasswordVerifyPath = apiSvc.AUTH.FORGOT_PASSWORD_VERIFY;
+  const forgotPasswordResetPath = apiSvc.AUTH.FORGOT_PASSWORD_RESET;
+  const refreshPath = apiSvc.AUTH.REFRESH;
+  const logoutPath = apiSvc.AUTH.LOGOUT;
 
   const defaultUsername = 'mockuser';
   const mockAccessToken = 'mock_jwt_access_token_xyz';
@@ -148,7 +151,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     return of(new HttpResponse({ status: 200, body: message })).pipe(delay(300));
   }
 
-  if (url.includes('/api/memory/history')) {
+  if (url.includes(apiSvc.USER_MEMORY.HISTORY)) {
     const mockHistory = {
       messages: [
         {
@@ -186,7 +189,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     return of(new HttpResponse({ status: 200, body: mockHistory })).pipe(delay(600));
   }
 
-  if (url.includes('/api/memory/reflect')) {
+  if (url.includes(apiSvc.USER_MEMORY.REFLECT)) {
     const userPrompt = typeof req.body === 'string' ? req.body : '';
     let responseText = "I hear you. Every thought you share is a stepping stone to deeper self-awareness. Let's explore this feeling together.";
     let emotionToken = "CALM|#10b981|#06b6d4";
@@ -216,14 +219,14 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     return of(new HttpResponse({ status: 200, body: mockReflection })).pipe(delay(1000));
   }
 
-  if (url.includes('/api/memory/analytics')) {
+  if (url.includes(apiSvc.USER_MEMORY.ANALYTICS)) {
     const mockAnalytics = {
       JOY: 35, SAD: 10, ANXIOUS: 25, CALM: 30
     };
     return of(new HttpResponse({ status: 200, body: mockAnalytics })).pipe(delay(500));
   }
 
-  if (url.includes('/api/memory/all')) {
+  if (url.includes(apiSvc.USER_MEMORY.ALL)) {
     const mockAll = [
       { content: 'Finally submitted the zeroth review documents! So relieved.', emotion: 'JOY', createdAt: new Date().toISOString(), sender: 'user' },
       { content: 'Stressed about the upcoming MCA final presentations and microservices architecture.', emotion: 'ANXIOUS', createdAt: new Date(Date.now() - 3600000 * 24).toISOString(), sender: 'user' },

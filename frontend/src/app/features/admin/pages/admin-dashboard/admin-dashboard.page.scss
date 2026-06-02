@@ -107,23 +107,11 @@ ion-content {
   }
 }
 
-/* Right-side nav group: PREVIEW + Online pill on same line */
+/* Right-side nav group: Online pill on same line */
 .nav-right-group {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.nav-preview-badge {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 4px 10px;
 }
 
 @keyframes presence-pulse {
