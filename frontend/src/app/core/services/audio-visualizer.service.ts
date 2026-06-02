@@ -18,20 +18,86 @@ export class AudioVisualizerService implements OnDestroy {
   private analyser: AnalyserNode | null = null;
   private source: MediaElementAudioSourceNode | null = null;
   private animationFrameId: number | null = null;
+  private fadeInterval: any = null;
 
   private ngZone = inject(NgZone);
 
   constructor() {}
 
+  private fadeIn() {
+    if (!this.audioObj) return;
+    
+    if (this.fadeInterval) {
+      clearInterval(this.fadeInterval);
+      this.fadeInterval = null;
+    }
+    
+    const targetVolume = 1;
+    const fadeSteps = 25;
+    const fadeDuration = 800;
+    const stepTime = fadeDuration / fadeSteps;
+    const volumeStep = targetVolume / fadeSteps;
+
+    this.fadeInterval = setInterval(() => {
+      if (!this.audioObj) {
+        if (this.fadeInterval) clearInterval(this.fadeInterval);
+        return;
+      }
+      let newVolume = this.audioObj.volume + volumeStep;
+      if (newVolume >= targetVolume) {
+        newVolume = targetVolume;
+        if (this.fadeInterval) clearInterval(this.fadeInterval);
+        this.fadeInterval = null;
+      }
+      this.audioObj.volume = newVolume;
+    }, stepTime);
+  }
+
+  private fadeOut(callback: () => void) {
+    if (!this.audioObj) {
+      callback();
+      return;
+    }
+
+    if (this.fadeInterval) {
+      clearInterval(this.fadeInterval);
+      this.fadeInterval = null;
+    }
+
+    const fadeSteps = 25;
+    const fadeDuration = 500;
+    const stepTime = fadeDuration / fadeSteps;
+    const volumeStep = (this.audioObj.volume || 1) / fadeSteps;
+
+    this.fadeInterval = setInterval(() => {
+      if (!this.audioObj) {
+        if (this.fadeInterval) clearInterval(this.fadeInterval);
+        callback();
+        return;
+      }
+      let newVolume = this.audioObj.volume - volumeStep;
+      if (newVolume <= 0.02) {
+        newVolume = 0;
+        if (this.fadeInterval) clearInterval(this.fadeInterval);
+        this.fadeInterval = null;
+        this.audioObj.volume = newVolume;
+        callback();
+      } else {
+        this.audioObj.volume = newVolume;
+      }
+    }, stepTime);
+  }
+
   public togglePlay(audioUrl: string) {
     if (this.isLoadingAudio()) return;
 
     if (this.isPlaying()) {
-      if (this.audioObj) {
-        this.audioObj.pause();
-      }
       this.isPlaying.set(false);
-      this.cancelAnalysisLoop();
+      this.fadeOut(() => {
+        if (this.audioObj) {
+          this.audioObj.pause();
+        }
+      });
     } else {
       if (!this.audioObj) {
         this.audioObj = new Audio();
@@ -40,20 +106,23 @@ export class AudioVisualizerService implements OnDestroy {
         this.audioObj.addEventListener('loadstart', () => this.isLoadingAudio.set(true));
         this.audioObj.addEventListener('waiting', () => this.isLoadingAudio.set(true));
         
-        this.audioObj.addEventListener('playing', () => {
+        this.audioObj.addEventListener('playing', async () => {
           this.isLoadingAudio.set(false);
           this.isPlaying.set(true);
-          this.setupAudioAnalysis();
+          await this.setupAudioAnalysis();
+          this.fadeIn();
         });
         
         this.audioObj.addEventListener('pause', () => {
           this.isPlaying.set(false);
           this.isLoadingAudio.set(false);
+          this.cancelAnalysisLoop();
         });
         
         this.audioObj.addEventListener('error', () => {
           this.isLoadingAudio.set(false);
           this.isPlaying.set(false);
+          this.cancelAnalysisLoop();
         });
 
         this.audioObj.src = audioUrl;
@@ -61,15 +130,22 @@ export class AudioVisualizerService implements OnDestroy {
       }
       
       this.isLoadingAudio.set(true);
+      if (this.audioObj) {
+        this.audioObj.volume = 0;
+      }
       this.audioObj.play()
         .catch(() => {
           this.isPlaying.set(false);
           this.isLoadingAudio.set(false);
+          if (this.fadeInterval) {
+            clearInterval(this.fadeInterval);
+            this.fadeInterval = null;
+          }
         });
     }
   }
 
-  private setupAudioAnalysis() {
+  private async setupAudioAnalysis(): Promise<void> {
     if (!this.audioObj) return;
 
     try {
@@ -88,7 +164,7 @@ export class AudioVisualizerService implements OnDestroy {
       }
 
       if (this.audioCtx.state === 'suspended') {
-        this.audioCtx.resume();
+        await this.audioCtx.resume();
       }
 
       this.isRealtimeSync.set(true);
@@ -105,7 +181,7 @@ export class AudioVisualizerService implements OnDestroy {
     const dataArray = new Uint8Array(bufferLength);
 
     const update = () => {
-      if (!this.isPlaying() || !this.analyser) {
+      if (!this.audioObj || this.audioObj.paused || !this.analyser) {
         this.cancelAnalysisLoop();
         return;
       }
@@ -159,6 +235,10 @@ export class AudioVisualizerService implements OnDestroy {
 
   public ngOnDestroy() {
     this.cancelAnalysisLoop();
+    if (this.fadeInterval) {
+      clearInterval(this.fadeInterval);
+      this.fadeInterval = null;
+    }
     if (this.audioObj) {
       this.audioObj.pause();
       this.audioObj = null;

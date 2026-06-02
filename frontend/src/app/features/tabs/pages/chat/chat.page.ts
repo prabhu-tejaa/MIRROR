@@ -4,7 +4,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  IonContent, IonIcon, NavController, AlertController, ToastController
+  IonContent, IonIcon, NavController, AlertController
 } from '@ionic/angular/standalone';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { addIcons } from 'ionicons';
@@ -84,7 +84,6 @@ export class ChatPage implements OnDestroy {
   private authSvc = inject(AuthService);
   private roleSvc = inject(RoleService);
   private alertCtrl = inject(AlertController);
-  private toastCtrl = inject(ToastController);
   private toastSvc = inject(ToastService);
   private chatSvc = inject(ChatService);
   private destroyRef = inject(DestroyRef);
@@ -139,12 +138,7 @@ export class ChatPage implements OnDestroy {
       },
       error: async (err) => {
         console.warn('[ChatPage] Failed to fetch dynamic quote from public API, using local fallback:', err);
-        const toast = await this.toastCtrl.create({
-          message: 'Using local quotes (offline mode).',
-          duration: 2000,
-          color: 'medium'
-        });
-        toast.present();
+        this.toastSvc.showInfo('Using local quotes (offline mode).');
       }
     });
   }

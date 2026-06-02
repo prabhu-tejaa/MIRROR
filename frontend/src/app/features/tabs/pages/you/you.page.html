@@ -7,7 +7,7 @@
       <div class="aura-stage-container" [class.animate-intro]="shouldAnimateIntro">
         
         <!-- Center Orb (Always Glassy Core 代表 Core Self) -->
-        <div class="aura-orb dominant-orb glassy-core" [style.--dynamic-aura-gradient]="auraGradient()" (click)="isAllEmotionsOpen.set(true)" style="cursor: pointer;">
+        <div class="aura-orb dominant-orb glassy-core" [style.--dynamic-aura-gradient]="auraGradient()" (click)="totalCount() > 0 && isAllEmotionsOpen.set(true)" [style.cursor]="totalCount() > 0 ? 'pointer' : 'default'">
           <span class="orb-label">{{ username() }}</span>
         </div>
 

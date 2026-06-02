@@ -1,7 +1,8 @@
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ToastController } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular';
+import { ToastService } from '../../../../core/services/toast.service';
 import { Router } from '@angular/router';
 import { AdminMemoryService, AdminMemoryRecord } from '../../../../core/services/admin-memory.service';
 import { addIcons } from 'ionicons';
@@ -22,7 +23,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 export class AdminMemoryPage implements OnInit {
   private router = inject(Router);
-  private toastCtrl = inject(ToastController);
+  private toastSvc = inject(ToastService);
   private adminMemorySvc = inject(AdminMemoryService);
   private destroyRef = inject(DestroyRef);
 
@@ -85,14 +86,7 @@ export class AdminMemoryPage implements OnInit {
       this.adminMemorySvc.uploadMockData(file).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: async (res: string) => {
           this.isUploading = false;
-          const toast = await this.toastCtrl.create({
-            message: res,
-            duration: 3000,
-            color: 'success',
-            position: 'top',
-            icon: 'checkmark-circle-outline'
-          });
-          toast.present();
+          this.toastSvc.showSuccess(res);
           this.loadRecords();
         },
         error: () => {
@@ -149,14 +143,7 @@ export class AdminMemoryPage implements OnInit {
     if (this.modalMode === 'ADD') {
       this.adminMemorySvc.createMemory(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: async () => {
-          const toast = await this.toastCtrl.create({
-            message: 'New record created successfully!',
-            duration: 2000,
-            color: 'success',
-            position: 'top',
-            icon: 'checkmark-circle-outline'
-          });
-          toast.present();
+          this.toastSvc.showSuccess('New record created successfully!');
           this.loadRecords();
         },
         error: () => {}
@@ -164,14 +151,7 @@ export class AdminMemoryPage implements OnInit {
     } else if (this.modalMode === 'EDIT' && this.editingId) {
       this.adminMemorySvc.updateMemory(this.editingId, payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: async () => {
-          const toast = await this.toastCtrl.create({
-            message: `Record ${this.editingId} updated!`,
-            duration: 2000,
-            color: 'success',
-            position: 'top',
-            icon: 'checkmark-circle-outline'
-          });
-          toast.present();
+          this.toastSvc.showSuccess(`Record ${this.editingId} updated!`);
           this.loadRecords();
         },
         error: () => {}
@@ -182,13 +162,7 @@ export class AdminMemoryPage implements OnInit {
   public deleteRecord(id: string) {
     this.adminMemorySvc.deleteMemory(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: async (res: string) => {
-        const toast = await this.toastCtrl.create({
-          message: res,
-          duration: 2000,
-          color: 'danger',
-          position: 'top'
-        });
-        toast.present();
+        this.toastSvc.showError(res);
         this.loadRecords();
       },
       error: () => {}

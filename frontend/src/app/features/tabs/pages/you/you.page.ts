@@ -1,9 +1,10 @@
 import { Component, ChangeDetectionStrategy, signal, inject, computed, DestroyRef, NgZone } from '@angular/core';
 import { AudioVisualizerService } from '../../../../core/services/audio-visualizer.service';
 import { CommonModule } from '@angular/common';
-import { IonContent, ToastController } from '@ionic/angular/standalone';
+import { IonContent } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ToastService } from '../../../../core/services/toast.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { UserMemoryService, Reflection } from '../../../../core/services/user-memory.service';
 import { environment } from '../../../../../environments/environment';
@@ -22,7 +23,7 @@ export class YouPage {
   private authSvc = inject(AuthService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
-  private toastCtrl = inject(ToastController);
+  private toastSvc = inject(ToastService);
   private ngZone = inject(NgZone);
 
   private audioVisualizerSvc = inject(AudioVisualizerService);
@@ -219,12 +220,7 @@ export class YouPage {
         }
         this.dataLoadedOnce = true;
         this.isLoading.set(false);
-        const toast = await this.toastCtrl.create({
-          message: 'Failed to sync your aura. Please try again.',
-          duration: 3000,
-          color: 'danger'
-        });
-        toast.present();
+        this.toastSvc.showError('Failed to sync your aura. Please try again.');
       }
     });
 
@@ -236,12 +232,7 @@ export class YouPage {
         }
       },
       error: async () => {
-        const toast = await this.toastCtrl.create({
-          message: 'Could not load past reflections.',
-          duration: 3000,
-          color: 'warning'
-        });
-        toast.present();
+        this.toastSvc.showInfo('Could not load past reflections.');
       }
     });
   }
