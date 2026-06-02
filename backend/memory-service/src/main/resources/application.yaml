@@ -6,10 +6,8 @@ spring:
     name: memory-service
   flyway:
     baseline-on-migrate: true
-
-app:
-  jwt:
-    secret: ${JWT_SECRET}
+    baseline-version: 3
+    table: memory_flyway_schema_history_v2
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
@@ -19,6 +17,10 @@ app:
     hibernate:
       ddl-auto: validate
     show-sql: false
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
   redis:
     host: ${REDIS_HOST:localhost}
     port: ${REDIS_PORT:6379}

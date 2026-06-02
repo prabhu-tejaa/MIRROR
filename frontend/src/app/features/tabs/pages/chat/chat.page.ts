@@ -37,6 +37,7 @@ import { RoleService } from '../../../../core/services/role.service';
 import { ChatService } from '../../../../core/services/chat.service';
 import { getEmotionColors } from '../../../../core/constants/theme.constants';
 import { StorageService } from '../../../../core/services/storage.service';
+import { ToastService } from '../../../../core/services/toast.service';
 import { StorageKeys } from '../../../../core/constants/storage.constants';
 import { Capacitor } from '@capacitor/core';
 import { SpeechRecognition } from '@capacitor-community/speech-recognition';
@@ -84,6 +85,7 @@ export class ChatPage implements OnDestroy {
   private roleSvc = inject(RoleService);
   private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
+  private toastSvc = inject(ToastService);
   private chatSvc = inject(ChatService);
   private destroyRef = inject(DestroyRef);
   private storageSvc = inject(StorageService);
@@ -823,12 +825,7 @@ export class ChatPage implements OnDestroy {
         this.isInitialLoad = false;
         setTimeout(() => this.scrollToBottom('auto'), 50);
         
-        const toast = await this.toastCtrl.create({
-          message: 'Failed to load chat history.',
-          duration: 3000,
-          color: 'warning'
-        });
-        toast.present();
+        await this.toastSvc.showError('Failed to load chat history.');
       }
     });
   }
@@ -881,12 +878,7 @@ export class ChatPage implements OnDestroy {
       error: async (err) => {
         console.error('Failed to load more history:', err);
         this.isLoadingMore.set(false);
-        const toast = await this.toastCtrl.create({
-          message: 'Failed to load older messages.',
-          duration: 2000,
-          color: 'warning'
-        });
-        toast.present();
+        await this.toastSvc.showError('Failed to load older messages.');
       }
     });
   }
@@ -1001,12 +993,7 @@ export class ChatPage implements OnDestroy {
         setTimeout(() => this.scrollToBottom('smooth'), 50);
         this.focusInput();
         
-        const toast = await this.toastCtrl.create({
-          message: 'Connection issue while communicating with MIRROR.',
-          duration: 3000,
-          color: 'danger'
-        });
-        toast.present();
+        await this.toastSvc.showError('Connection issue while communicating with MIRROR.');
       }
     });
   }

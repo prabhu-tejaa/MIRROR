@@ -11,9 +11,11 @@ spring:
   cloud:
     gateway:
       globalcors:
+        add-to-simple-url-handler-mapping: true
         cors-configurations:
           '[/**]':
             allowedOrigins:
+              - "http://localhost:4200"
               - "http://localhost:8100"
               - "http://192.168.1.101:8100"
               - "http://localhost"
@@ -67,6 +69,10 @@ management:
       endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
 
 resilience4j:
+  timelimiter:
+    instances:
+      defaultCircuitBreaker:
+        timeoutDuration: 10s
   circuitbreaker:
     instances:
       defaultCircuitBreaker:
