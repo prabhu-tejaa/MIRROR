@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, no-console */
 import { Component, ChangeDetectionStrategy, signal, computed, inject, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -46,6 +47,7 @@ interface Message {
   emotion?: string;
   primaryColor?: string;
   secondaryColor?: string;
+  isCurrentSession?: boolean;
 }
 
 interface Quote {
@@ -63,6 +65,14 @@ interface Quote {
     FormsModule,
     IonContent,
     IonIcon
+  ],
+  animations: [
+    trigger('messageAnimation', [
+      transition(':leave', [
+        style({ opacity: 1, transform: 'scale(1)', height: '*' }),
+        animate('600ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 0, transform: 'scale(0.9)', height: 0, padding: 0, margin: 0 }))
+      ])
+    ])
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -164,7 +174,7 @@ export class ChatPage implements OnDestroy {
   public readonly todayMessages = computed(() => {
     const midnight = new Date();
     midnight.setHours(0, 0, 0, 0);
-    return this.messages().filter(m => new Date(m.timestamp).getTime() >= midnight.getTime());
+    return this.messages().filter(m => m.isCurrentSession || new Date(m.timestamp).getTime() >= midnight.getTime());
   });
 
   @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
@@ -362,12 +372,17 @@ export class ChatPage implements OnDestroy {
     }
   }
 
-  public ionViewDidEnter() {
-    this.focusInput();
+  public ionViewWillEnter() {
     const currentEmail = this.authSvc.getEmail() || 'guest@mirror.com';
     if (this.isInitialLoad || this.loadedEmail !== currentEmail) {
       this.loadChatHistory();
-    } else {
+    }
+  }
+
+  public ionViewDidEnter() {
+    this.focusInput();
+    const currentEmail = this.authSvc.getEmail() || 'guest@mirror.com';
+    if (!(this.isInitialLoad || this.loadedEmail !== currentEmail)) {
       // Scroll multiple times to ensure we are at the absolute bottom
       // during and after tab transitions and input focus.
       this.scrollToBottom('auto');
@@ -379,13 +394,31 @@ export class ChatPage implements OnDestroy {
   }
 
   private focusInput() {
+    // Skip auto-focusing on mobile/native platforms to prevent annoying virtual keyboard popups
+    if (this.isNative || (typeof window !== 'undefined' && window.innerWidth < 768)) {
+      return;
+    }
     setTimeout(() => {
       if (this.textInput?.nativeElement) {
-        this.textInput.nativeElement.focus();
+        const input = this.textInput.nativeElement;
+        input.focus();
+        const len = input.value.length;
+        input.setSelectionRange(len, len);
         // Scroll to bottom immediately after focusing to correct any focus-induced layout/keyboard shift
         setTimeout(() => this.scrollToBottom('auto'), 50);
       }
     }, 150);
+  }
+
+  public moveCursorToEnd(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input) {
+      // Small timeout ensures the browser has finished its default focus/click positioning
+      setTimeout(() => {
+        const len = input.value.length;
+        input.setSelectionRange(len, len);
+      }, 0);
+    }
   }
 
   public async toggleRecording() {
@@ -638,7 +671,12 @@ export class ChatPage implements OnDestroy {
     };
 
     this.currentlySpeakingId.set(msgId);
-    window.speechSynthesis.speak(utterance);
+    
+    // A 100ms timeout prevents Android System WebView TTS engine from stalling
+    // which happens when cancel() is followed immediately by speak()
+    setTimeout(() => {
+      window.speechSynthesis.speak(utterance);
+    }, 100);
   }
 
   private async showSignupPopup() {
@@ -683,7 +721,8 @@ export class ChatPage implements OnDestroy {
       id: Math.random().toString(36).substring(7),
       sender: 'user',
       text,
-      timestamp: new Date()
+      timestamp: new Date(),
+      isCurrentSession: true
     };
 
     this.messages.update(prev => [...prev, userMsg]);
@@ -759,7 +798,7 @@ export class ChatPage implements OnDestroy {
               secondaryColor: secondary
             };
           });
-          this.messages.set(loadedMessages);
+          this.messages.update(prev => [...loadedMessages, ...prev]);
 
           // Set current active emotion and colors from the last mirrored message
           const lastMirror = [...loadedMessages].reverse().find(m => m.sender === 'mirror');
@@ -860,7 +899,8 @@ export class ChatPage implements OnDestroy {
       sender: 'mirror',
       text: '',
       timestamp: new Date(),
-      isTyping: true
+      isTyping: true,
+      isCurrentSession: true
     };
 
     this.messages.update(prev => [...prev, typingMsg]);
@@ -891,7 +931,8 @@ export class ChatPage implements OnDestroy {
           timestamp: new Date(),
           emotion,
           primaryColor: primary,
-          secondaryColor: secondary
+          secondaryColor: secondary,
+          isCurrentSession: true
         };
 
         this.messages.update(prev => [...prev, mirrorReply]);
@@ -939,7 +980,8 @@ export class ChatPage implements OnDestroy {
           id: Math.random().toString(36).substring(7),
           sender: 'mirror',
           text: errorMsg,
-          timestamp: new Date()
+          timestamp: new Date(),
+          isCurrentSession: true
         };
 
         this.messages.update(prev => [...prev, mirrorReply]);

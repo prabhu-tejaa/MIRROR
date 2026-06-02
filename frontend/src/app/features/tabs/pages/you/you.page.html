@@ -7,7 +7,7 @@
       <div class="aura-stage-container" [class.animate-intro]="shouldAnimateIntro">
         
         <!-- Center Orb (Always Glassy Core 代表 Core Self) -->
-        <div class="aura-orb dominant-orb glassy-core" [style.--dynamic-aura-gradient]="auraGradient()">
+        <div class="aura-orb dominant-orb glassy-core" [style.--dynamic-aura-gradient]="auraGradient()" (click)="isAllEmotionsOpen.set(true)" style="cursor: pointer;">
           <span class="orb-label">{{ username() }}</span>
         </div>
 
@@ -43,10 +43,10 @@
       </div>
     </div>
 
-    <!-- 3. Dynamic Text Selectors (Colors of Emotions) -->
+    <!-- 3. Dynamic Text Selectors (Colors of Emotions) - Show top 4 synced with orbs -->
     <div class="emotion-text-selectors" *ngIf="totalCount() > 0" [class.animate-intro]="shouldAnimateIntro">
       <button 
-        *ngFor="let stat of emotionStats()" 
+        *ngFor="let stat of topOrbs()" 
         class="emotion-text-btn"
         [class.active]="selectedEmotion() === stat.key"
         (click)="selectEmotion(stat.key)"
@@ -70,6 +70,31 @@
           </div>
           <div class="empty-popup-logs" *ngIf="filteredReflections().length === 0">
             <p class="no-memories-text">No reflections recorded for this emotion state yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. All Emotions Dialog Modal -->
+    <div class="timeline-popup-overlay" *ngIf="isAllEmotionsOpen()" (click)="isAllEmotionsOpen.set(false)">
+      <div class="timeline-popup-card" (click)="$event.stopPropagation()" style="border-color: rgba(255, 255, 255, 0.2);">
+        <div class="popup-header">
+          <h4>All Emotion States</h4>
+          <button class="btn-close-popup" (click)="isAllEmotionsOpen.set(false)">✕</button>
+        </div>
+        <div class="popup-scroller" style="max-height: 280px;">
+          <div class="all-emotions-grid" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+            <button 
+              *ngFor="let stat of emotionStats()"
+              class="emotion-list-item-btn"
+              (click)="selectFromAllEmotions(stat.key)"
+              [style.color]="stat.primaryColor"
+              [style.border-color]="stat.primaryColor"
+              style="background: rgba(255, 255, 255, 0.03); border: 1px solid; border-radius: 12px; padding: 12px; font-weight: 600; font-size: 14px; text-align: left; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;"
+            >
+              <span>{{ stat.name }}</span>
+              <span style="font-size: 12px; opacity: 0.7;">{{ stat.percentage }}%</span>
+            </button>
           </div>
         </div>
       </div>

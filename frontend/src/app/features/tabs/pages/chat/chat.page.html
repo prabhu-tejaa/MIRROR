@@ -44,7 +44,7 @@
         </p>
       </div>
  
-      <div *ngFor="let msg of todayMessages(); trackBy: trackByMessageId" class="message-wrapper" [class.user-message]="msg.sender === 'user'"
+      <div *ngFor="let msg of todayMessages(); trackBy: trackByMessageId" [@messageAnimation] class="message-wrapper" [class.user-message]="msg.sender === 'user'"
         [class.mirror-message]="msg.sender === 'mirror'">
  
         <div class="avatar" *ngIf="msg.sender === 'mirror'">
@@ -110,7 +110,8 @@
         </button>
 
         <input type="text" placeholder="Speak or type..." [ngModel]="chatInput()"
-          (ngModelChange)="chatInput.set($event)" (keypress)="handleKeyPress($event)" #textInput
+          (ngModelChange)="chatInput.set($event)" (keypress)="handleKeyPress($event)"
+          (focus)="moveCursorToEnd($event)" (click)="moveCursorToEnd($event)" #textInput
           aria-label="Chat input message" />
 
         <button class="send-btn" [class.disabled]="!chatInput().trim() || isWaitingForResponse()" [disabled]="!chatInput().trim() || isWaitingForResponse()"

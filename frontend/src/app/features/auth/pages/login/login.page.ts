@@ -121,7 +121,6 @@ export class LoginPage implements OnInit {
           setTimeout(() => {
             this.starfieldSvc.setShape('none');
             this.isLoading = false;
-            this.showHeartUsername = false;
             this.cdr.markForCheck();
             this.navCtrl.navigateRoot('/tabs/chat', {
               animation: getCrossfadeAnimation(this.animationCtrl)

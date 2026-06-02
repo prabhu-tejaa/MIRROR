@@ -996,3 +996,18 @@ ion-content {
     border-color: rgba(155, 89, 182, 0.3) !important;
   }
 }
+
+.emotion-list-item-btn {
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1) !important;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}

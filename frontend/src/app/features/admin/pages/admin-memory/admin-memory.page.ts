@@ -35,8 +35,8 @@ export class AdminMemoryPage implements OnInit {
     if (!this.searchQuery) return this.dbRecords;
     const lowerQuery = this.searchQuery.toLowerCase();
     return this.dbRecords.filter(r => 
-      r.user?.toLowerCase().includes(lowerQuery) || 
-      (r as { content?: string }).content?.toLowerCase().includes(lowerQuery) ||
+      r.userId?.toLowerCase().includes(lowerQuery) || 
+      r.content?.toLowerCase().includes(lowerQuery) ||
       r.emotion?.toLowerCase().includes(lowerQuery)
     );
   }
@@ -111,7 +111,7 @@ export class AdminMemoryPage implements OnInit {
   public modalMode: 'ADD' | 'EDIT' = 'ADD';
   public editingId: string | null = null;
   public modalForm = {
-    user: '',
+    userId: '',
     content: '',
     emotion: ''
   };
@@ -119,7 +119,7 @@ export class AdminMemoryPage implements OnInit {
   public async addRecord() {
     this.modalMode = 'ADD';
     this.editingId = null;
-    this.modalForm = { user: '', content: '', emotion: '' };
+    this.modalForm = { userId: '', content: '', emotion: '' };
     this.isModalOpen = true;
   }
 
@@ -129,8 +129,8 @@ export class AdminMemoryPage implements OnInit {
     const record = this.dbRecords.find(r => r.id === id);
     if (record) {
       this.modalForm = { 
-        user: record.user, 
-        content: (record as { content?: string }).content || '', 
+        userId: record.userId, 
+        content: record.content, 
         emotion: record.emotion 
       };
     }
@@ -144,9 +144,9 @@ export class AdminMemoryPage implements OnInit {
   public saveModalRecord() {
     this.isModalOpen = false;
     
-    // Map modal form keys to backend expected keys (user -> userId)
+    // Map modal form keys to backend expected keys
     const payload = {
-      userId: this.modalForm.user,
+      userId: this.modalForm.userId,
       content: this.modalForm.content,
       emotion: this.modalForm.emotion
     };

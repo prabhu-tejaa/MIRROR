@@ -35,6 +35,7 @@ export class YouPage implements OnDestroy {
 
   // Interactive UI Focus
   public readonly selectedEmotion = signal<string | null>(null);
+  public readonly isAllEmotionsOpen = signal<boolean>(false);
 
   // Reflections history list initialized empty
   public readonly reflectionsList = signal<Reflection[]>([]);
@@ -151,6 +152,11 @@ export class YouPage implements OnDestroy {
 
   public selectEmotion(emotionKey: string | null) {
     this.selectedEmotion.set(emotionKey === this.selectedEmotion() ? null : emotionKey);
+  }
+
+  public selectFromAllEmotions(emotionKey: string) {
+    this.selectEmotion(emotionKey);
+    this.isAllEmotionsOpen.set(false);
   }
 
   public startReflection() {

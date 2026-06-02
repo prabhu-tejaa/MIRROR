@@ -4,12 +4,11 @@ import { Observable } from 'rxjs';
 
 export interface AdminMemoryRecord {
   id: string;
-  user: string;
-  userId?: string;
-  content?: string;
+  userId: string;
+  content: string;
   emotion: string;
-  date: string;
-  createdAt?: string;
+  sender: string;
+  createdAt: string;
 }
 
 @Injectable({

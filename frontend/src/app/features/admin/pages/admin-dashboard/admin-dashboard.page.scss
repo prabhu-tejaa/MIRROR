@@ -165,6 +165,7 @@ ion-content {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
   gap: 24px;
   width: 100%;
   margin-top: 10vh;
@@ -185,6 +186,7 @@ ion-content {
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   width: max-content;
   min-width: 240px;
+  max-width: 100%;
 
   
   &.active {

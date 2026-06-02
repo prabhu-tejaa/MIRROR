@@ -18,10 +18,10 @@ export class AuthService {
   private isValidating = false;
 
   private getSessionInstanceId(): string {
-    let id = sessionStorage.getItem('mirror_session_instance_id');
+    let id = localStorage.getItem('mirror_session_instance_id');
     if (!id) {
       id = Math.random().toString(36).substring(2) + Date.now().toString(36);
-      sessionStorage.setItem('mirror_session_instance_id', id);
+      localStorage.setItem('mirror_session_instance_id', id);
     }
     return id;
   }
@@ -200,6 +200,7 @@ export class AuthService {
     localStorage.removeItem(this.usernameKey);
     localStorage.removeItem(this.emailKey);
     localStorage.removeItem('mirror_guest_chat_count');
+    localStorage.removeItem('mirror_session_instance_id');
     this.authSignal.set(false);
     this.router.navigate(['/login']);
   }
