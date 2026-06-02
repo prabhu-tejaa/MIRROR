@@ -8,6 +8,11 @@ app:
 spring:
   application:
     name: api-gateway
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
+      password: ${SPRING_DATA_REDIS_PASSWORD}
   cloud:
     gateway:
       globalcors:
@@ -66,7 +71,7 @@ management:
       probability: 1.0
   zipkin:
     tracing:
-      endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+      endpoint: ${ZIPKIN_URL}
 
 resilience4j:
   timelimiter:

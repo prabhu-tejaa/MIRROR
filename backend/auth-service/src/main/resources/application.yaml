@@ -34,8 +34,10 @@ spring:
     table: auth_flyway_schema_history_v2
 
   rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
+    host: ${SPRING_RABBITMQ_HOST}
+    port: ${SPRING_RABBITMQ_PORT}
+    username: ${SPRING_RABBITMQ_USERNAME}
+    password: ${SPRING_RABBITMQ_PASSWORD}
 
 app:
   mail:
@@ -51,7 +53,7 @@ management:
       probability: 1.0
   zipkin:
     tracing:
-      endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+      endpoint: ${ZIPKIN_URL}
 
 ---
 spring:

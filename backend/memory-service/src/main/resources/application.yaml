@@ -17,16 +17,20 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
+      password: ${SPRING_DATA_REDIS_PASSWORD}
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST}
+    port: ${SPRING_RABBITMQ_PORT}
+    username: ${SPRING_RABBITMQ_USERNAME}
+    password: ${SPRING_RABBITMQ_PASSWORD}
 
 app:
   jwt:
     secret: ${JWT_SECRET}
-  redis:
-    host: ${REDIS_HOST:localhost}
-    port: ${REDIS_PORT:6379}
-  rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
 
 gemini:
   api:
@@ -37,15 +41,13 @@ gemini:
   generation:
     temperature: 0.7
 
-
-
 management:
   tracing:
     sampling:
       probability: 1.0
   zipkin:
     tracing:
-      endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+      endpoint: ${ZIPKIN_URL}
 
 ---
 spring:
