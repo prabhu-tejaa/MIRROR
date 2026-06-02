@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, inject, computed, OnDestroy, DestroyRef, NgZone } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, computed, DestroyRef, NgZone } from '@angular/core';
 import { AudioVisualizerService } from '../../../../core/services/audio-visualizer.service';
 import { CommonModule } from '@angular/common';
 import { IonContent, ToastController } from '@ionic/angular/standalone';
@@ -17,7 +17,7 @@ import { getEmotionColors } from '../../../../core/constants/theme.constants';
   imports: [CommonModule, IonContent],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class YouPage implements OnDestroy {
+export class YouPage {
   private userMemorySvc = inject(UserMemoryService);
   private authSvc = inject(AuthService);
   private router = inject(Router);
@@ -36,6 +36,13 @@ export class YouPage implements OnDestroy {
   public readonly scale2 = this.audioVisualizerSvc.scale2;
   public readonly scale3 = this.audioVisualizerSvc.scale3;
   public readonly scale4 = this.audioVisualizerSvc.scale4;
+
+  public isLoading = signal<boolean>(false);
+  public selectedEmotion = signal<string | null>(null);
+  public isAllEmotionsOpen = signal<boolean>(false);
+  public emotionCounts = signal<Record<string, number>>({});
+  public totalCount = signal<number>(0);
+  public reflectionsList = signal<Reflection[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private readonly groovesaladUrl = (environment as any).grooveSaladUrl || 'https://ice1.somafm.com/groovesalad-128-mp3';
@@ -237,11 +244,5 @@ export class YouPage implements OnDestroy {
         toast.present();
       }
     });
-  }
-
-  public ngOnDestroy() {
-    // Service handles its own teardown when destroyed at root,
-    // but if we wanted to pause on page exit, we could do it here
-    // this.audioVisualizerSvc.togglePlay(this.groovesaladUrl);
   }
 }

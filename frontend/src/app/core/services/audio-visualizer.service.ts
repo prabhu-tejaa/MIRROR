@@ -1,4 +1,4 @@
-import { Injectable, NgZone, signal, OnDestroy } from '@angular/core';
+import { Injectable, NgZone, signal, OnDestroy, inject } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +19,9 @@ export class AudioVisualizerService implements OnDestroy {
   private source: MediaElementAudioSourceNode | null = null;
   private animationFrameId: number | null = null;
 
-  constructor(private ngZone: NgZone) {}
+  private ngZone = inject(NgZone);
+
+  constructor() {}
 
   public togglePlay(audioUrl: string) {
     if (this.isLoadingAudio()) return;
@@ -155,7 +157,7 @@ export class AudioVisualizerService implements OnDestroy {
     }
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.cancelAnalysisLoop();
     if (this.audioObj) {
       this.audioObj.pause();
