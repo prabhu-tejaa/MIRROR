@@ -36,4 +36,15 @@ public class GlobalExceptionHandler {
         
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(LoginFailureException.class)
+    public ResponseEntity<Map<String, Object>> handleLoginFailureException(LoginFailureException ex) {
+        log.warn("Login failure: {}", ex.getMessage());
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Unauthorized");
+        errorResponse.put("message", ex.getMessage());
+        errorResponse.put("status", HttpStatus.UNAUTHORIZED.value());
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
 }

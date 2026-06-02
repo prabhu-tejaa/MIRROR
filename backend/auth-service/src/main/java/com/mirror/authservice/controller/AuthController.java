@@ -27,7 +27,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        AuthResponse response = authService.loginUserAndIssueTokens(request.email(), request.password());
+        String safeEmail = request.email() != null ? request.email().trim().toLowerCase() : null;
+        AuthResponse response = authService.loginUserAndIssueTokens(safeEmail, request.password());
         return ResponseEntity.ok(response);
     }
 

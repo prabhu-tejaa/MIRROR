@@ -20,15 +20,17 @@ public class GeminiService {
     @Value("${gemini.api.key:}")
     private String apiKey;
 
-    @Value("${gemini.api.url:https://generativelanguage.googleapis.com/v1beta}")
+    @Value("${gemini.api.url}")
     private String apiUrl;
 
-    @Value("${gemini.prompts.system:}")
-    private String systemPrompt;
+    @Value("${gemini.generation.temperature:0.7}")
+    private double temperature;
 
     private final RestClient restClient;
+    private final PromptService promptService;
 
-    public GeminiService() {
+    public GeminiService(PromptService promptService) {
+        this.promptService = promptService;
         org.springframework.http.client.SimpleClientHttpRequestFactory factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(10000); // 10 seconds
         factory.setReadTimeout(15000); // 15 seconds
@@ -139,12 +141,11 @@ public class GeminiService {
             // Set JSON response config
             Map<String, Object> generationConfig = new HashMap<>();
             generationConfig.put("responseMimeType", "application/json");
+            generationConfig.put("temperature", temperature);
 
             // System Instruction
             Map<String, Object> systemPart = new HashMap<>();
-            String finalSystemPrompt = (systemPrompt != null && !systemPrompt.isEmpty()) 
-                    ? systemPrompt 
-                    : "You are MIRROR, an empathetic AI companion. Respond with {\"reflection\": \"...\", \"emotion\": \"...\", \"primaryColor\": \"...\", \"secondaryColor\": \"...\"}";
+            String finalSystemPrompt = promptService.getSystemPrompt();
             systemPart.put("text", finalSystemPrompt);
 
             Map<String, Object> systemInstruction = new HashMap<>();
