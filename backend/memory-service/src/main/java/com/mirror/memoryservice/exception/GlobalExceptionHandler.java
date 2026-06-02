@@ -1,4 +1,4 @@
-package com.mirror.authservice.exception;
+package com.mirror.memoryservice.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -15,6 +15,7 @@ import java.util.*;
 public class MemoryServiceImpl implements MemoryService {
 
     private static final Logger log = LoggerFactory.getLogger(MemoryServiceImpl.class);
+    private static final String CACHE_EMOTION_ANALYTICS = "emotionAnalytics";
 
     private final MemoryRepository repository;
     private final GeminiService geminiService;
@@ -26,7 +27,7 @@ public class MemoryServiceImpl implements MemoryService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "emotionAnalytics", key = "#userId")
+    @CacheEvict(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
     public String saveMemory(String userId, String content, String emotion, String sender, float[] embedding) {
         try {
             String embeddingStr = formatVectorForSql(embedding);
@@ -39,7 +40,6 @@ public class MemoryServiceImpl implements MemoryService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Memory> getSimilarMemories(String userId, String prompt, int limit) {
         try {
             float[] queryEmbedding = geminiService.getEmbedding(prompt);
@@ -53,7 +53,7 @@ public class MemoryServiceImpl implements MemoryService {
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "emotionAnalytics", key = "#userId")
+    @Cacheable(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
     public Map<String, Long> getEmotionalAnalytics(String userId) {
         Map<String, Long> analytics = new HashMap<>();
         try {
@@ -72,7 +72,6 @@ public class MemoryServiceImpl implements MemoryService {
     }
 
     @Override
-    @Transactional
     public Map<String, String> generateReflection(String userId, String prompt) {
         // 1. Retrieve similar past memories (Cosine Similarity Search)
         List<Memory> pastMemories = getSimilarMemories(userId, prompt, 5);
@@ -152,8 +151,7 @@ public class MemoryServiceImpl implements MemoryService {
     }
 
     @Override
-    @Transactional
-    @CacheEvict(value = "emotionAnalytics", key = "#userId")
+    @CacheEvict(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
     public void updateMemory(Long id, String userId, String content, String emotion) {
         Memory memory = repository.findById(id).orElseThrow(() -> new RuntimeException("Memory not found"));
         

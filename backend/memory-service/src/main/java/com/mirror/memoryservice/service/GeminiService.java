@@ -29,7 +29,10 @@ public class GeminiService {
     private final RestClient restClient;
 
     public GeminiService() {
-        this.restClient = RestClient.create();
+        org.springframework.http.client.SimpleClientHttpRequestFactory factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(10000); // 10 seconds
+        factory.setReadTimeout(15000); // 15 seconds
+        this.restClient = RestClient.builder().requestFactory(factory).build();
     }
 
     /**

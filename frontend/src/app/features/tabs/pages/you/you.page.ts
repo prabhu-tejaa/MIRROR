@@ -1,4 +1,5 @@
-import { Component, ChangeDetectionStrategy, signal, inject, computed, OnDestroy, DestroyRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, computed, OnDestroy, DestroyRef, NgZone } from '@angular/core';
+import { AudioVisualizerService } from '../../../../core/services/audio-visualizer.service';
 import { CommonModule } from '@angular/common';
 import { IonContent, ToastController } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
@@ -22,38 +23,22 @@ export class YouPage implements OnDestroy {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private toastCtrl = inject(ToastController);
+  private ngZone = inject(NgZone);
 
-  public readonly isLoading = signal<boolean>(false);
-  public readonly isLoadingAudio = signal<boolean>(false);
-  
-  // Initial empty state before backend loads
-  public readonly totalCount = signal<number>(0);
-  public readonly emotionCounts = signal<Record<string, number>>({});
-
-  // Interactive UI Focus
-  public readonly selectedEmotion = signal<string | null>(null);
-  public readonly isAllEmotionsOpen = signal<boolean>(false);
-
-  // Reflections history list initialized empty
-  public readonly reflectionsList = signal<Reflection[]>([]);
+  private audioVisualizerSvc = inject(AudioVisualizerService);
 
   // Ambient Sound Player Properties
-  public readonly isPlaying = signal<boolean>(false);
-  public readonly isRealtimeSync = signal<boolean>(false);
-  private audioObj: HTMLAudioElement | null = null;
+  public readonly isPlaying = this.audioVisualizerSvc.isPlaying;
+  public readonly isLoadingAudio = this.audioVisualizerSvc.isLoadingAudio;
+  public readonly isRealtimeSync = this.audioVisualizerSvc.isRealtimeSync;
+  
+  public readonly scale1 = this.audioVisualizerSvc.scale1;
+  public readonly scale2 = this.audioVisualizerSvc.scale2;
+  public readonly scale3 = this.audioVisualizerSvc.scale3;
+  public readonly scale4 = this.audioVisualizerSvc.scale4;
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private readonly groovesaladUrl = (environment as any).grooveSaladUrl || 'https://ice1.somafm.com/groovesalad-128-mp3';
-
-  // Web Audio API analysis properties
-  private audioCtx: AudioContext | null = null;
-  private analyser: AnalyserNode | null = null;
-  private source: MediaElementAudioSourceNode | null = null;
-  private animationFrameId: number | null = null;
-  
-  public readonly scale1 = signal<number>(0);
-  public readonly scale2 = signal<number>(0);
-  public readonly scale3 = signal<number>(0);
-  public readonly scale4 = signal<number>(0);
 
   public username = computed(() => {
     return this.authSvc.getUserId() || 'Soul';
@@ -184,146 +169,8 @@ export class YouPage implements OnDestroy {
     return { name, primaryColor, secondaryColor };
   }
 
-  // Audio player methods
   public togglePlay() {
-    if (this.isLoadingAudio()) return;
-
-    if (this.isPlaying()) {
-      if (this.audioObj) {
-        this.audioObj.pause();
-      }
-      this.isPlaying.set(false);
-      this.cancelAnalysisLoop();
-    } else {
-      if (!this.audioObj) {
-        this.audioObj = new Audio();
-        this.audioObj.crossOrigin = 'anonymous';
-        
-        // Listeners for load start and buffering state
-        this.audioObj.addEventListener('loadstart', () => this.isLoadingAudio.set(true));
-        this.audioObj.addEventListener('waiting', () => this.isLoadingAudio.set(true));
-        
-        this.audioObj.addEventListener('playing', () => {
-          this.isLoadingAudio.set(false);
-          this.isPlaying.set(true);
-          this.setupAudioAnalysis();
-        });
-        
-        this.audioObj.addEventListener('pause', () => {
-          this.isPlaying.set(false);
-          this.isLoadingAudio.set(false);
-        });
-        
-        this.audioObj.addEventListener('error', () => {
-          this.isLoadingAudio.set(false);
-          this.isPlaying.set(false);
-        });
-
-        this.audioObj.src = this.groovesaladUrl;
-        this.audioObj.loop = true;
-      }
-      
-      this.isLoadingAudio.set(true);
-      this.audioObj.play()
-        .catch(() => {
-          this.isPlaying.set(false);
-          this.isLoadingAudio.set(false);
-        });
-    }
-  }
-
-  private setupAudioAnalysis() {
-    if (!this.audioObj) return;
-
-    try {
-      const AudioContextClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!AudioContextClass) return;
-
-      if (!this.audioCtx) {
-        this.audioCtx = new AudioContextClass();
-        this.analyser = this.audioCtx.createAnalyser();
-        this.analyser.fftSize = 32;
-        this.analyser.smoothingTimeConstant = 0.78;
-
-        this.source = this.audioCtx.createMediaElementSource(this.audioObj);
-        this.source.connect(this.analyser);
-        this.analyser.connect(this.audioCtx.destination);
-      }
-
-      if (this.audioCtx.state === 'suspended') {
-        this.audioCtx.resume();
-      }
-
-      this.isRealtimeSync.set(true);
-      this.startAnalysisLoop();
-    } catch {
-      this.isRealtimeSync.set(false);
-    }
-  }
-
-  private startAnalysisLoop() {
-    if (!this.analyser) return;
-
-    const bufferLength = this.analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-
-    const update = () => {
-      if (!this.isPlaying() || !this.analyser) {
-        this.cancelAnalysisLoop();
-        return;
-      }
-
-      this.analyser.getByteFrequencyData(dataArray);
-
-      // Check if all frequency bins are zero (indicating CORS blockage or silent browser policy)
-      const sum = dataArray.reduce((acc, val) => acc + val, 0);
-      const isSilent = sum === 0;
-
-      let scale1: number;
-      let scale2: number;
-      let scale3: number;
-      let scale4: number;
-
-      if (isSilent) {
-        // Procedurally generate highly dynamic breathing lofi groove scales that stay compressed at the bottom and pop up on beats!
-        const time = Date.now() * 0.005;
-        const groove = 0.5 + Math.sin(time * 0.6) * 0.45;
-        
-        // Squaring the sine waves makes the bars hover near the low baseline and pop up sharply on rhythmic accents!
-        scale1 = 0.12 + Math.pow(Math.sin(time * 1.3 + 0.1), 2) * 0.75 * groove;
-        scale2 = 0.12 + Math.pow(Math.sin(time * 0.9 + 0.5), 2) * 0.85 * groove;
-        scale3 = 0.12 + Math.pow(Math.sin(time * 1.5 + 1.0), 2) * 0.80 * groove;
-        scale4 = 0.12 + Math.pow(Math.sin(time * 1.1 + 1.5), 2) * 0.65 * groove;
-      } else {
-        // Highly dynamic live scaling that compresses to the bottom and pops on peaks!
-        const v1 = dataArray[3] || 0;
-        const v2 = dataArray[5] || 0;
-        const v3 = dataArray[7] || 0;
-        const v4 = dataArray[9] || 0;
-
-        // Squaring the normalized audio volume keeps the visualizer low and reacts logarithmically to snare/kick peaks
-        scale1 = Math.min(1.4, 0.12 + Math.pow(v1 / 255, 2) * 1.3);
-        scale2 = Math.min(1.4, 0.12 + Math.pow(v2 / 255, 2) * 1.3);
-        scale3 = Math.min(1.4, 0.12 + Math.pow(v3 / 255, 2) * 1.3);
-        scale4 = Math.min(1.4, 0.12 + Math.pow(v4 / 255, 2) * 1.3);
-      }
-
-      this.scale1.set(scale1);
-      this.scale2.set(scale2);
-      this.scale3.set(scale3);
-      this.scale4.set(scale4);
-
-      this.animationFrameId = requestAnimationFrame(update);
-    };
-
-    this.animationFrameId = requestAnimationFrame(update);
-  }
-
-  private cancelAnalysisLoop() {
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = null;
-    }
+    this.audioVisualizerSvc.togglePlay(this.groovesaladUrl);
   }
 
   private dataLoadedOnce = false;
@@ -393,14 +240,8 @@ export class YouPage implements OnDestroy {
   }
 
   public ngOnDestroy() {
-    this.cancelAnalysisLoop();
-    if (this.audioObj) {
-      this.audioObj.pause();
-      this.audioObj = null;
-    }
-    if (this.audioCtx) {
-      this.audioCtx.close();
-      this.audioCtx = null;
-    }
+    // Service handles its own teardown when destroyed at root,
+    // but if we wanted to pause on page exit, we could do it here
+    // this.audioVisualizerSvc.togglePlay(this.groovesaladUrl);
   }
 }
