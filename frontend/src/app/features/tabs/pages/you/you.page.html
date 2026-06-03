@@ -13,7 +13,7 @@
 
         <!-- N Outer Orbs floating and playing around dynamically (Top 4) -->
         <div class="outer-orbs-wrapper" *ngIf="totalCount() > 0" [class.animate-intro]="shouldAnimateIntro">
-          <div *ngFor="let stat of topOrbs(); let i = index"
+          <div *ngFor="let stat of topOrbs(); let i = index; trackBy: trackByKey"
                class="aura-orb"
                [ngClass]="orbClasses[i]"
                (click)="selectEmotion(stat.key)"
@@ -46,7 +46,7 @@
     <!-- 3. Dynamic Text Selectors (Colors of Emotions) - Show top 4 synced with orbs -->
     <div class="emotion-text-selectors" *ngIf="totalCount() > 0" [class.animate-intro]="shouldAnimateIntro">
       <button 
-        *ngFor="let stat of topOrbs()" 
+        *ngFor="let stat of topOrbs(); trackBy: trackByKey" 
         class="emotion-text-btn"
         [class.active]="selectedEmotion() === stat.key"
         (click)="selectEmotion(stat.key)"
@@ -58,13 +58,13 @@
 
     <!-- 4. Interactive Timeline Popup Modal/Dialogue (Saves space completely) -->
     <div class="timeline-popup-overlay" *ngIf="selectedEmotion()" (click)="selectEmotion(null)">
-      <div class="timeline-popup-card" (click)="$event.stopPropagation()" [style.border-color]="parseEmotionTag(selectedEmotion() || '').primaryColor">
+      <div class="timeline-popup-card" (click)="$event.stopPropagation()" [style.border-color]="getSelectedEmotionStat(selectedEmotion()).primaryColor">
         <div class="popup-header">
-          <h4>Reflections tagged: <span [style.color]="parseEmotionTag(selectedEmotion() || '').primaryColor">{{ parseEmotionTag(selectedEmotion() || '').name }}</span></h4>
+          <h4>Reflections tagged: <span [style.color]="getSelectedEmotionStat(selectedEmotion()).primaryColor">{{ getSelectedEmotionStat(selectedEmotion()).name }}</span></h4>
           <button class="btn-close-popup" (click)="selectEmotion(null)">✕</button>
         </div>
         <div class="popup-scroller">
-          <div class="popup-card" *ngFor="let item of filteredReflections()">
+          <div class="popup-card" *ngFor="let item of filteredReflections(); trackBy: trackByCreatedAt">
             <span class="card-time">{{ item.createdAt | date:'shortTime' }} • {{ item.createdAt | date:'mediumDate' }}</span>
             <p class="card-text">"{{ item.content }}"</p>
           </div>
@@ -85,7 +85,7 @@
         <div class="popup-scroller" style="max-height: 280px;">
           <div class="all-emotions-grid" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
             <button 
-              *ngFor="let stat of emotionStats()"
+              *ngFor="let stat of emotionStats(); trackBy: trackByKey"
               class="emotion-list-item-btn"
               (click)="selectFromAllEmotions(stat.key)"
               [style.color]="stat.primaryColor"

@@ -6,9 +6,8 @@ import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { UserMemoryService, Reflection } from '../../../../core/services/user-memory.service';
+import { UserMemoryService, Reflection, EmotionStat } from '../../../../core/services/user-memory.service';
 import { environment } from '../../../../../environments/environment';
-import { getEmotionColors } from '../../../../core/constants/theme.constants';
 
 @Component({
   selector: 'app-you',
@@ -32,7 +31,7 @@ export class YouPage {
   public readonly isPlaying = this.audioVisualizerSvc.isPlaying;
   public readonly isLoadingAudio = this.audioVisualizerSvc.isLoadingAudio;
   public readonly isRealtimeSync = this.audioVisualizerSvc.isRealtimeSync;
-  
+
   public readonly scale1 = this.audioVisualizerSvc.scale1;
   public readonly scale2 = this.audioVisualizerSvc.scale2;
   public readonly scale3 = this.audioVisualizerSvc.scale3;
@@ -42,8 +41,11 @@ export class YouPage {
   public isTabActive = signal<boolean>(true);
   public selectedEmotion = signal<string | null>(null);
   public isAllEmotionsOpen = signal<boolean>(false);
-  public emotionCounts = signal<Record<string, number>>({});
   public totalCount = signal<number>(0);
+  public dominantEmotion = signal<string>('CALM');
+  public activeStreak = signal<number>(0);
+  public emotionStats = signal<EmotionStat[]>([]);
+  public auraGradient = signal<string>('transparent');
   public reflectionsList = signal<Reflection[]>([]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,38 +53,6 @@ export class YouPage {
 
   public username = computed(() => {
     return this.authSvc.getUserId() || 'Soul';
-  });
-
-  public readonly dominantEmotion = computed(() => {
-    const counts = this.emotionCounts();
-    const total = this.totalCount();
-    if (total === 0) return 'CALM';
-    
-    return Object.entries(counts).reduce((a, b) => b[1] > a[1] ? b : a, ['CALM', 0])[0];
-  });
-
-  public readonly activeStreak = computed(() => {
-    const total = this.totalCount();
-    if (total === 0) return 0;
-    return Math.max(1, Math.min(12, Math.floor(total / 4) + 1));
-  });
-
-  public readonly emotionStats = computed(() => {
-    const counts = this.emotionCounts();
-    const total = this.totalCount() || 1;
-    
-    return Object.entries(counts).map(([rawKey, count]) => {
-      const percentage = Math.round((count / total) * 100);
-      const parsed = this.parseEmotionTag(rawKey);
-      return {
-        key: rawKey,
-        name: parsed.name,
-        count,
-        percentage,
-        primaryColor: parsed.primaryColor,
-        secondaryColor: parsed.secondaryColor
-      };
-    }).sort((a, b) => b.count - a.count);
   });
 
   public readonly topOrbs = computed(() => {
@@ -106,31 +76,6 @@ export class YouPage {
       .slice(0, 5);
   });
 
-  // Generates a stunning, custom conic-gradient color wheel based strictly on real emotions
-  public readonly auraGradient = computed(() => {
-    const stats = this.emotionStats();
-    const total = this.totalCount();
-    if (total === 0) {
-      return 'transparent';
-    }
-
-    let currentPercent = 0;
-    const gradientParts: string[] = [];
-
-    stats.forEach(stat => {
-      if (stat.percentage > 0) {
-        const nextPercent = currentPercent + stat.percentage;
-        gradientParts.push(`${stat.primaryColor} ${currentPercent}% ${nextPercent}%`);
-        currentPercent = nextPercent;
-      }
-    });
-
-    if (currentPercent < 100 && gradientParts.length > 0) {
-      gradientParts.push(`${stats[0].primaryColor} ${currentPercent}% 100%`);
-    }
-
-    return `conic-gradient(${gradientParts.join(', ')})`;
-  });
 
   public getEmotionScale(emotionKey: string): number {
     const stats = this.emotionStats();
@@ -141,7 +86,7 @@ export class YouPage {
     return 0.7 + (stat.percentage / 100) * 0.9;
   }
 
-  constructor() {}
+  constructor() { }
 
   public ionViewWillEnter() {
     this.isTabActive.set(true);
@@ -161,40 +106,22 @@ export class YouPage {
     this.isAllEmotionsOpen.set(false);
   }
 
+  public trackByKey(index: number, item: { key: string }): string {
+    return item.key;
+  }
+
+  public trackByCreatedAt(index: number, item: { createdAt: string }): string {
+    return item.createdAt;
+  }
+
   public startReflection() {
     this.router.navigate(['/tabs/chat']);
   }
 
-  public parseEmotionTag(rawTag: string) {
-    if (!rawTag) return { pillar: 'FEELINGS', name: 'Calm', primaryColor: '#2ecc71', secondaryColor: 'rgba(46, 204, 113, 0.4)' };
-    const parts = rawTag.split('|');
-    
-    let pillar = 'FEELINGS';
-    let name = rawTag;
-    let primaryColor: string | undefined;
-    let secondaryColor: string | undefined;
-
-    if (parts.length === 4) {
-      pillar = parts[0];
-      name = parts[1];
-      primaryColor = parts[2];
-      secondaryColor = parts[3];
-    } else if (parts.length === 3) {
-      name = parts[0];
-      primaryColor = parts[1];
-      secondaryColor = parts[2];
-    } else {
-      name = parts[0] || rawTag;
-    }
-
-    // Legacy mapping fallback for static old tags if they don't have hex codes
-    if (!primaryColor || !secondaryColor) {
-      const colors = getEmotionColors(name);
-      primaryColor = colors.primary;
-      secondaryColor = colors.secondary;
-    }
-
-    return { pillar, name, primaryColor, secondaryColor };
+  public getSelectedEmotionStat(key: string | null) {
+    if (!key) return { name: 'Calm', primaryColor: '#2ecc71', secondaryColor: 'rgba(46, 204, 113, 0.4)' };
+    const stat = this.emotionStats().find(s => s.key === key);
+    return stat || { name: key || 'Calm', primaryColor: '#2ecc71', secondaryColor: 'rgba(46, 204, 113, 0.4)' };
   }
 
   public togglePlay() {
@@ -205,8 +132,8 @@ export class YouPage {
   public shouldAnimateIntro = !YouPage.dataLoadedOnceGlobally;
 
   private fetchAnalytics() {
-    const email = this.authSvc.getEmail() || 'guest@mirror.com';
-    
+    const email = this.authSvc.getEmail() || 'guest@mirror.tech';
+
     // Only trigger the visual "Syncing Aura..." loader on the very first visit
     if (!YouPage.dataLoadedOnceGlobally) {
       this.isLoading.set(true);
@@ -215,18 +142,12 @@ export class YouPage {
     // 1. Fetch live metrics counts in the background
     this.userMemorySvc.getAnalytics(email).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
-        const normalized: Record<string, number> = {};
-        let total = 0;
-        
-        if (data && Object.keys(data).length > 0) {
-          Object.entries(data).forEach(([key, count]) => {
-            normalized[key] = (normalized[key] || 0) + count;
-            total += count;
-          });
-        }
+        this.totalCount.set(data.totalMemories);
+        this.dominantEmotion.set(data.dominantEmotion);
+        this.activeStreak.set(data.activeStreak);
+        this.emotionStats.set(data.emotionStats);
+        this.auraGradient.set(data.auraGradient);
 
-        this.emotionCounts.set(normalized);
-        this.totalCount.set(total);
         if (!YouPage.dataLoadedOnceGlobally) {
           setTimeout(() => { this.shouldAnimateIntro = false; }, 3000);
         } else {
@@ -251,6 +172,7 @@ export class YouPage {
     this.userMemorySvc.getAllMemories(email).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (memories) => {
         if (memories && memories.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const normalizedMemories = memories.map((m: any) => ({
             ...m,
             createdAt: typeof m.createdAt === 'number'

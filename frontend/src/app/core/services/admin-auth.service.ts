@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AdminUserResponse, AdminUserUpdateRequest, AdminCreateUserRequest } from '../models/auth.model';
@@ -16,7 +17,7 @@ export class AdminAuthService {
     {
       id: 'd3b07384-d113-495d-a510-18e8df3141f2',
       username: 'admin',
-      email: 'admin@mirror.com',
+      email: 'admin@mirror.tech',
       role: 'ADMIN',
       isVerified: true,
       createdAt: '2026-05-20T10:00:00.000Z',
@@ -75,6 +76,9 @@ export class AdminAuthService {
   public getAllUsers(): Observable<AdminUserResponse[]> {
     return this.http.get<AdminUserResponse[]>(this.apiSvc.AUTH.ADMIN_USERS).pipe(
       catchError((error) => {
+        if (!environment.mock) {
+          return throwError(() => error);
+        }
         /* eslint-disable no-console */
         console.warn('Backend Auth-Service API is unreachable. Falling back to local high-fidelity mock data playground.', error);
         /* eslint-enable no-console */
@@ -85,7 +89,7 @@ export class AdminAuthService {
   }
 
   public getUserById(id: string): Observable<AdminUserResponse> {
-    if (this.isUsingMockFallback) {
+    if (this.isUsingMockFallback && environment.mock) {
       const user = this.mockUsers.find(u => u.id === id);
       if (user) return of({ ...user });
       return throwError(() => new Error('User not found in mock database'));
@@ -93,6 +97,9 @@ export class AdminAuthService {
 
     return this.http.get<AdminUserResponse>(`${this.apiSvc.AUTH.ADMIN_USERS}/${id}`).pipe(
       catchError((error) => {
+        if (!environment.mock) {
+          return throwError(() => error);
+        }
         const user = this.mockUsers.find(u => u.id === id);
         if (user) {
           this.isUsingMockFallback = true;
@@ -104,7 +111,7 @@ export class AdminAuthService {
   }
 
   public updateUser(id: string, request: AdminUserUpdateRequest): Observable<AdminUserResponse> {
-    if (this.isUsingMockFallback) {
+    if (this.isUsingMockFallback && environment.mock) {
       const index = this.mockUsers.findIndex(u => u.id === id);
       if (index !== -1) {
         const currentUser = this.mockUsers[index];
@@ -126,6 +133,9 @@ export class AdminAuthService {
 
     return this.http.put<AdminUserResponse>(`${this.apiSvc.AUTH.ADMIN_USERS}/${id}`, request).pipe(
       catchError((error) => {
+        if (!environment.mock) {
+          return throwError(() => error);
+        }
         const index = this.mockUsers.findIndex(u => u.id === id);
         if (index !== -1) {
           /* eslint-disable no-console */
@@ -152,7 +162,7 @@ export class AdminAuthService {
   }
 
   public createUser(request: AdminCreateUserRequest): Observable<AdminUserResponse> {
-    if (this.isUsingMockFallback) {
+    if (this.isUsingMockFallback && environment.mock) {
       const newUser: AdminUserResponse = {
         id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36),
         username: request.username,
@@ -170,6 +180,9 @@ export class AdminAuthService {
 
     return this.http.post<AdminUserResponse>(this.apiSvc.AUTH.ADMIN_USERS, request).pipe(
       catchError((error) => {
+        if (!environment.mock) {
+          return throwError(() => error);
+        }
         /* eslint-disable no-console */
         console.warn('Backend create failed. Creating in local mock data playground instead.', error);
         /* eslint-enable no-console */
@@ -192,7 +205,7 @@ export class AdminAuthService {
   }
 
   public deleteUser(id: string): Observable<void> {
-    if (this.isUsingMockFallback) {
+    if (this.isUsingMockFallback && environment.mock) {
       const index = this.mockUsers.findIndex(u => u.id === id);
       if (index !== -1) {
         this.mockUsers.splice(index, 1);
@@ -203,6 +216,9 @@ export class AdminAuthService {
 
     return this.http.delete<void>(`${this.apiSvc.AUTH.ADMIN_USERS}/${id}`).pipe(
       catchError((error) => {
+        if (!environment.mock) {
+          return throwError(() => error);
+        }
         const index = this.mockUsers.findIndex(u => u.id === id);
         if (index !== -1) {
           /* eslint-disable no-console */

@@ -28,7 +28,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   const mockRefreshToken = 'mock_refresh_token_abc';
   const mockRefreshedAccessToken = 'mock_jwt_access_token_xyz_refreshed';
 
-  const triggerErrorEmail = 'error@mirror.com';
+  const triggerErrorEmail = 'error@mirror.tech';
   const triggerErrorOtp = '000000';
   const defaultEmail = 'gdag@hdjs.com';
   const emailSeparator = '@';

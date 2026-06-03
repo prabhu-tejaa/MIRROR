@@ -19,7 +19,7 @@ public interface MemoryService {
     /**
      * Computes grouped emotional percentage statistics for the user dashboard.
      */
-    Map<String, Long> getEmotionalAnalytics(String userId);
+    com.mirror.memoryservice.dto.AnalyticsResponseDTO getEmotionalAnalytics(String userId);
 
     /**
      * Generates a context-aware empathetic AI reflection by combining past similar memories.

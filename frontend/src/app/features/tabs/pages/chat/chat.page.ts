@@ -96,7 +96,7 @@ export class ChatPage implements OnDestroy {
   private navCtrl = inject(NavController);
   private activeTypingIntervals: any[] = [];
 
-  public readonly isGuest = computed(() => this.authSvc.getEmail() === 'guest@mirror.com');
+  public readonly isGuest = computed(() => this.authSvc.getEmail() === 'guest@mirror.tech');
   public readonly isAdmin = computed(() => this.roleSvc.hasRole('ADMIN'));
 
   public getUsername(): string {
@@ -150,11 +150,11 @@ export class ChatPage implements OnDestroy {
     }
     const val = this.storageSvc.get(StorageKeys.GUEST_CHAT_COUNT);
     const current = val ? parseInt(val, 10) : 0;
-    
+
     if (current >= 5) {
       return false;
     }
-    
+
     this.storageSvc.set(StorageKeys.GUEST_CHAT_COUNT, (current + 1).toString());
     return true;
   }
@@ -241,9 +241,9 @@ export class ChatPage implements OnDestroy {
 
         // Pre-select a comforting female voice by default if available
         if (!this.selectedVoiceName() && voices.length > 0) {
-          const defaultFav = voices.find(v => 
-            v.name.toLowerCase().includes('samantha') || 
-            v.name.toLowerCase().includes('zira') || 
+          const defaultFav = voices.find(v =>
+            v.name.toLowerCase().includes('samantha') ||
+            v.name.toLowerCase().includes('zira') ||
             v.name.toLowerCase().includes('hazel') ||
             v.name.toLowerCase().includes('female')
           ) || voices[0];
@@ -278,7 +278,7 @@ export class ChatPage implements OnDestroy {
 
   public ngOnDestroy() {
     this.clearSpeechTimeout();
-    
+
     // Clear all active word-by-word streaming timers to prevent memory leaks on navigation
     this.activeTypingIntervals.forEach(clearInterval);
     this.activeTypingIntervals = [];
@@ -286,7 +286,7 @@ export class ChatPage implements OnDestroy {
     if (this.checkMidnightInterval) {
       clearInterval(this.checkMidnightInterval);
     }
-    
+
     // Stop any active speech synthesis on destroy
     window.speechSynthesis.cancel();
 
@@ -393,7 +393,7 @@ export class ChatPage implements OnDestroy {
 
   public ionViewDidEnter() {
     this.focusInput();
-    const currentEmail = this.authSvc.getEmail() || 'guest@mirror.com';
+    const currentEmail = this.authSvc.getEmail() || 'guest@mirror.tech';
     if (!(this.isInitialLoad || this.loadedEmail !== currentEmail)) {
       // Scroll multiple times to ensure we are at the absolute bottom
       // during and after tab transitions and input focus.
@@ -648,16 +648,16 @@ export class ChatPage implements OnDestroy {
     // Dynamic voice selection: Query system voices and find a premium, warm, or natural voice
     const voices = window.speechSynthesis.getVoices();
     console.log('[MIRROR TTS] Available voices on this device:', voices.map(v => `${v.name} (${v.lang})`));
-    
+
     // Direct priority lock: Seek Google UK English Female first, with robust comforting soft female fallbacks
     const selectedVoice = voices.find(v => v.name.toLowerCase().includes('google uk english female')) ||
-                          voices.find(v => v.name.toLowerCase().includes('google uk english')) ||
-                          voices.find(v => v.name.toLowerCase().includes('samantha')) ||
-                          voices.find(v => v.name.toLowerCase().includes('zira')) ||
-                          voices.find(v => v.name.toLowerCase().includes('hazel')) ||
-                          voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
-                          voices.find(v => v.lang.startsWith('en')) || 
-                          voices[0];
+      voices.find(v => v.name.toLowerCase().includes('google uk english')) ||
+      voices.find(v => v.name.toLowerCase().includes('samantha')) ||
+      voices.find(v => v.name.toLowerCase().includes('zira')) ||
+      voices.find(v => v.name.toLowerCase().includes('hazel')) ||
+      voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
+      voices.find(v => v.lang.startsWith('en')) ||
+      voices[0];
 
     if (selectedVoice) {
       console.log('[MIRROR TTS] Speaking using selected female voice:', selectedVoice.name);
@@ -669,7 +669,7 @@ export class ChatPage implements OnDestroy {
     utterance.rate = 0.95;
     // Warmer, more melodic and friendly frequency pitch
     utterance.pitch = 1.05;
-    
+
     utterance.onend = () => {
       if (this.currentlySpeakingId() === msgId) {
         this.currentlySpeakingId.set(null);
@@ -683,7 +683,7 @@ export class ChatPage implements OnDestroy {
     };
 
     this.currentlySpeakingId.set(msgId);
-    
+
     // A 100ms timeout prevents Android System WebView TTS engine from stalling
     // which happens when cancel() is followed immediately by speak()
     setTimeout(() => {
@@ -737,7 +737,7 @@ export class ChatPage implements OnDestroy {
 
     this.messages.update(prev => [...prev, userMsg]);
     this.chatInput.set('');
-    
+
     if (this.textInput?.nativeElement) {
       this.textInput.nativeElement.focus();
     }
@@ -766,20 +766,17 @@ export class ChatPage implements OnDestroy {
   }
 
   private loadChatHistory() {
-    const email = this.authSvc.getEmail() || 'guest@mirror.com';
+    const email = this.authSvc.getEmail() || 'guest@mirror.tech';
     this.loadedEmail = email;
-    
+
     // Only show the skeleton loader if it's the very first time we load the chat
     if (this.isInitialLoad) {
       this.isLoadingHistory.set(true);
     }
-    
+
     this.currentCursor = null;
     this.hasMoreHistory = true;
-    this.isInitialLoad = true;
-    // Reset aura colors while syncing (optional, or we could leave them until API returns)
-    // We do NOT clear this.messages here, so the screen doesn't visually flash empty!
-    
+
     // We only reset colors if it's the very first load to avoid flashing
     if (this.isInitialLoad) {
       this.currentEmotion.set('NEUTRAL');
@@ -828,7 +825,7 @@ export class ChatPage implements OnDestroy {
         this.isInitialLoad = false;
         ChatPage.initialChatLoadedGlobally = true;
         setTimeout(() => this.scrollToBottom('auto'), 50);
-        
+
         await this.toastSvc.showError('Failed to load chat history.');
       }
     });
@@ -839,7 +836,7 @@ export class ChatPage implements OnDestroy {
       return;
     }
 
-    const email = this.authSvc.getEmail() || 'guest@mirror.com';
+    const email = this.authSvc.getEmail() || 'guest@mirror.tech';
     this.isLoadingMore.set(true);
 
     this.chatSvc.getHistory(email, this.currentCursor, this.pageSize).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -919,14 +916,14 @@ export class ChatPage implements OnDestroy {
     this.messages.update(prev => [...prev, typingMsg]);
     setTimeout(() => this.scrollToBottom('smooth'), 50);
 
-    const email = this.authSvc.getEmail() || 'guest@mirror.com';
+    const email = this.authSvc.getEmail() || 'guest@mirror.tech';
     this.chatSvc.reflect(email, prompt).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.messages.update(prev => prev.filter(m => m.id !== typingId));
 
         const reflectionText = res.reflection || "Thank you for sharing your thoughts.";
         const { emotion, primary, secondary } = this.parseEmotionAndColors(res.emotion);
-        
+
         this.currentEmotion.set(emotion);
         this.currentPrimaryColor.set(primary);
         this.currentSecondaryColor.set(secondary);
@@ -961,7 +958,7 @@ export class ChatPage implements OnDestroy {
             clearInterval(streamInterval);
             this.activeTypingIntervals = this.activeTypingIntervals.filter(i => i !== streamInterval);
             this.isWaitingForResponse.set(false);
-            
+
             // Introduce a subtle 4 second cooldown to naturally pace the user
             // and dramatically reduce hitting the Gemini 15 RPM Free Tier limit.
             this.isResting.set(true);
@@ -976,13 +973,13 @@ export class ChatPage implements OnDestroy {
       error: async (err) => {
         console.error('Failed to generate backend reflection:', err);
         this.messages.update(prev => prev.filter(m => m.id !== typingId));
-        
+
         let errorMsg = '⚠️ [CONNECTION ERROR] Failed to connect to the MIRROR reflection service. Please ensure the backend is running and try again.';
-        
+
         const detailedMsg = err.error?.message || err.error || err.message || '';
-        const isConfigError = typeof detailedMsg === 'string' && 
+        const isConfigError = typeof detailedMsg === 'string' &&
           (detailedMsg.toLowerCase().includes('key is not configured') || detailedMsg.toLowerCase().includes('apikey'));
-        
+
         if (isConfigError) {
           errorMsg = '⚠️ [CONFIGURATION ERROR] The Gemini API Key is not configured. Please set the GEMINI_API_KEY environment variable in the backend to start live reflection and emotional tracking.';
         } else if (err.status === 500) {
@@ -1003,7 +1000,7 @@ export class ChatPage implements OnDestroy {
         this.isWaitingForResponse.set(false);
         setTimeout(() => this.scrollToBottom('smooth'), 50);
         this.focusInput();
-        
+
         await this.toastSvc.showError('Connection issue while communicating with MIRROR.');
       }
     });

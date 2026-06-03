@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, DestroyRef } from '@angular/core';
+import { Component, inject, OnInit, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -97,16 +97,21 @@ export class AdminAuthPage implements OnInit {
     this.location.back();
   }
 
+  private cdr = inject(ChangeDetectorRef);
+
   public loadUsers() {
     this.isLoading = true;
+    this.cdr.detectChanges();
     this.adminAuthSvc.getAllUsers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
         this.users = data;
         this.applyFilters();
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }

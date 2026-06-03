@@ -61,11 +61,11 @@ public class MemoryController {
      * Exposes emotional counts metrics for analytics telemetry plotting.
      */
     @GetMapping("/analytics")
-    public ResponseEntity<Map<String, Long>> getAnalytics(
+    public ResponseEntity<com.mirror.memoryservice.dto.AnalyticsResponseDTO> getAnalytics(
             java.security.Principal principal
     ) {
         String userId = principal.getName();
-        Map<String, Long> analytics = service.getEmotionalAnalytics(userId);
+        com.mirror.memoryservice.dto.AnalyticsResponseDTO analytics = service.getEmotionalAnalytics(userId);
         return ResponseEntity.ok(analytics);
     }
 

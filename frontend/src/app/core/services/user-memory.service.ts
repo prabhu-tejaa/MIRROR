@@ -10,6 +10,24 @@ export interface Reflection {
   sender?: string;
 }
 
+export interface EmotionStat {
+  key: string;
+  pillar: string;
+  name: string;
+  primaryColor: string;
+  secondaryColor: string;
+  count: number;
+  percentage: number;
+}
+
+export interface AnalyticsResponse {
+  totalMemories: number;
+  dominantEmotion: string;
+  activeStreak: number;
+  emotionStats: EmotionStat[];
+  auraGradient: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,8 +35,8 @@ export class UserMemoryService {
   private http = inject(HttpClient);
   private apiSvc = inject(ApiService);
 
-  public getAnalytics(_email: string): Observable<Record<string, number>> {
-    return this.http.get<Record<string, number>>(this.apiSvc.USER_MEMORY.ANALYTICS);
+  public getAnalytics(_email: string): Observable<AnalyticsResponse> {
+    return this.http.get<AnalyticsResponse>(this.apiSvc.USER_MEMORY.ANALYTICS);
   }
 
   public getAllMemories(_email: string): Observable<Reflection[]> {

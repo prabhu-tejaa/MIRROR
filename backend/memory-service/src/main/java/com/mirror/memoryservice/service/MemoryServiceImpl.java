@@ -65,21 +65,115 @@ public class MemoryServiceImpl implements MemoryService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
-    public Map<String, Long> getEmotionalAnalytics(String userId) {
-        Map<String, Long> analytics = new HashMap<>();
+    public com.mirror.memoryservice.dto.AnalyticsResponseDTO getEmotionalAnalytics(String userId) {
+        com.mirror.memoryservice.dto.AnalyticsResponseDTO response = new com.mirror.memoryservice.dto.AnalyticsResponseDTO();
+        List<com.mirror.memoryservice.dto.EmotionStatDTO> stats = new ArrayList<>();
+        long total = 0;
+
         try {
             List<Object[]> counts = repository.findEmotionCounts(userId);
             for (Object[] row : counts) {
                 if (row.length == 2 && row[0] != null) {
-                    String emotion = row[0].toString();
+                    String rawKey = row[0].toString();
                     Long count = ((Number) row[1]).longValue();
-                    analytics.put(emotion, count);
+                    
+                    com.mirror.memoryservice.dto.EmotionStatDTO stat = parseEmotionTag(rawKey);
+                    stat.setCount(count);
+                    stats.add(stat);
+                    total += count;
                 }
             }
         } catch (Exception e) {
             log.error("Error generating emotional analytics metrics: {}", e.getMessage(), e);
         }
-        return analytics;
+
+        // Calculate percentages, dominant emotion, etc.
+        String dominantEmotion = "CALM";
+        long maxCount = 0;
+        
+        for (com.mirror.memoryservice.dto.EmotionStatDTO stat : stats) {
+            if (total > 0) {
+                stat.setPercentage((int) Math.round(((double) stat.getCount() / total) * 100));
+            } else {
+                stat.setPercentage(0);
+            }
+            if (stat.getCount() > maxCount) {
+                maxCount = stat.getCount();
+                dominantEmotion = stat.getKey(); // Frontend uses raw key to find it
+            }
+        }
+        
+        // Sort by count descending
+        stats.sort((a, b) -> Long.compare(b.getCount(), a.getCount()));
+        
+        // Active streak calculation
+        int activeStreak = total == 0 ? 0 : Math.max(1, Math.min(12, (int) (total / 4) + 1));
+        
+        // Generate aura gradient
+        String auraGradient = generateAuraGradient(stats, total);
+
+        response.setTotalMemories(total);
+        response.setDominantEmotion(dominantEmotion);
+        response.setActiveStreak(activeStreak);
+        response.setEmotionStats(stats);
+        response.setAuraGradient(auraGradient);
+        
+        return response;
+    }
+
+    private com.mirror.memoryservice.dto.EmotionStatDTO parseEmotionTag(String rawTag) {
+        com.mirror.memoryservice.dto.EmotionStatDTO dto = new com.mirror.memoryservice.dto.EmotionStatDTO();
+        dto.setKey(rawTag);
+        
+        // Failsafe for completely broken or empty tags
+        if (rawTag == null || rawTag.isEmpty()) {
+            dto.setPillar("FEELINGS");
+            dto.setName("Neutral");
+            dto.setPrimaryColor("#7928ca");
+            dto.setSecondaryColor("#ff0080");
+            return dto;
+        }
+
+        String[] parts = rawTag.split("\\|");
+        
+        // We now enforce the strict LLM format: PILLAR|Emotion|PrimaryColor|SecondaryColor
+        if (parts.length >= 4) {
+            dto.setPillar(parts[0]);
+            dto.setName(parts[1]);
+            dto.setPrimaryColor(parts[2]);
+            dto.setSecondaryColor(parts[3]);
+        } else {
+            // Failsafe just in case the DB has malformed data despite strict LLM constraints
+            dto.setPillar("FEELINGS");
+            dto.setName(parts.length > 0 ? parts[0] : "Neutral");
+            dto.setPrimaryColor("#7928ca");
+            dto.setSecondaryColor("#ff0080");
+        }
+
+        return dto;
+    }
+
+    private String generateAuraGradient(List<com.mirror.memoryservice.dto.EmotionStatDTO> stats, long total) {
+        if (total == 0 || stats.isEmpty()) {
+            return "transparent";
+        }
+        
+        int currentPercent = 0;
+        List<String> gradientParts = new ArrayList<>();
+        
+        for (com.mirror.memoryservice.dto.EmotionStatDTO stat : stats) {
+            if (stat.getPercentage() > 0) {
+                int nextPercent = currentPercent + stat.getPercentage();
+                gradientParts.add(String.format("%s %d%% %d%%", stat.getPrimaryColor(), currentPercent, nextPercent));
+                currentPercent = nextPercent;
+            }
+        }
+        
+        if (currentPercent < 100 && !gradientParts.isEmpty()) {
+            gradientParts.add(String.format("%s %d%% 100%%", stats.get(0).getPrimaryColor(), currentPercent));
+        }
+        
+        return "conic-gradient(" + String.join(", ", gradientParts) + ")";
     }
 
     @Override

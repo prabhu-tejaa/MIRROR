@@ -1,6 +1,6 @@
 import { inject, Injector } from '@angular/core';
 import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from '@angular/common/http';
-import { catchError, throwError, switchMap, BehaviorSubject, filter, take } from 'rxjs';
+import { catchError, throwError, switchMap, BehaviorSubject, filter, take, finalize } from 'rxjs';
 import { TranslationService } from '../services/translation.service';
 import { ToastService } from '../services/toast.service';
 import { AuthService } from '../services/auth.service';
@@ -77,9 +77,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         if (!req.url.includes(apiSvc.AUTH.REFRESH) && !req.url.includes(apiSvc.AUTH.LOGIN)) {
           return handle401Error(req, next, injector);
         } else {
-          // If the refresh token itself fails, log the user out
+          // If the refresh token itself fails, clear the session locally
           const authSvc = injector.get(AuthService);
-          authSvc.logout();
+          authSvc.clearSession();
         }
       }
 
@@ -92,7 +92,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   );
 };
 
-function handle401Error(request: HttpRequest<any>, next: HttpHandlerFn, injector: Injector) {
+function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, injector: Injector) {
   const authSvc = injector.get(AuthService);
   const storageSvc = injector.get(StorageService);
   const refreshToken = storageSvc.get(StorageKeys.REFRESH_TOKEN);
@@ -102,33 +102,49 @@ function handle401Error(request: HttpRequest<any>, next: HttpHandlerFn, injector
     refreshTokenSubject.next(null);
 
     if (refreshToken) {
+      let completed = false;
       return authSvc.refresh(refreshToken).pipe(
-        switchMap((token: any) => {
+        catchError((err) => {
+          completed = true;
+          isRefreshing = false;
+          refreshTokenSubject.next('FAILED');
+          authSvc.clearSession();
+          return throwError(() => err);
+        }),
+        switchMap((token: { accessToken: string }) => {
+          completed = true;
           isRefreshing = false;
           refreshTokenSubject.next(token.accessToken);
           return next(addTokenHeader(request, token.accessToken));
         }),
-        catchError((err) => {
-          isRefreshing = false;
-          authSvc.logout();
-          return throwError(() => err);
+        finalize(() => {
+          if (!completed && isRefreshing) {
+            isRefreshing = false;
+            refreshTokenSubject.next('FAILED');
+          }
         })
       );
     } else {
       isRefreshing = false;
-      authSvc.logout();
+      refreshTokenSubject.next('FAILED');
+      authSvc.clearSession();
       return throwError(() => new Error('No refresh token available'));
     }
   } else {
     return refreshTokenSubject.pipe(
       filter(token => token !== null),
       take(1),
-      switchMap((token) => next(addTokenHeader(request, token)))
+      switchMap((token) => {
+        if (token === 'FAILED') {
+          return throwError(() => new Error('Token refresh failed'));
+        }
+        return next(addTokenHeader(request, token));
+      })
     );
   }
 }
 
-function addTokenHeader(request: HttpRequest<any>, token: string) {
+function addTokenHeader(request: HttpRequest<unknown>, token: string) {
   return request.clone({
     setHeaders: {
       Authorization: `Bearer ${token}`

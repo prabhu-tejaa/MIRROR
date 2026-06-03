@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject, NgZone, Injector } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Router, NavigationStart } from '@angular/router';
+import { SKIP_CANCEL } from '../interceptors/cancel.interceptor';
 import { Observable, tap, filter } from 'rxjs';
 import { RegisterRequest, LoginRequest, AuthResponse } from '../models/auth.model';
 import { ApiService } from './api.service';
@@ -161,7 +162,9 @@ export class AuthService {
   }
 
   public refresh(refreshToken: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.apiSvc.AUTH.REFRESH, { refreshToken }).pipe(
+    return this.http.post<AuthResponse>(this.apiSvc.AUTH.REFRESH, { refreshToken }, {
+      context: new HttpContext().set(SKIP_CANCEL, true)
+    }).pipe(
       tap((res) => this.saveSession(res))
     );
   }
@@ -183,7 +186,7 @@ export class AuthService {
     this.authSignal.set(true);
   }
 
-  private clearSession(): void {
+  public clearSession(): void {
     try {
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
@@ -212,13 +215,14 @@ export class AuthService {
 
 
   public logout(): void {
-    const token = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
-    this.clearSession();
-    if (token) {
-      this.logoutSession(token).subscribe({
+    const refreshToken = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
+    if (refreshToken) {
+      this.logoutSession(refreshToken).subscribe({
         next: () => {},
         error: () => {}
       });
+    } else {
+      this.clearSession();
     }
   }
 

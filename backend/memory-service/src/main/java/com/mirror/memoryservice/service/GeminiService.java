@@ -122,6 +122,11 @@ public class GeminiService {
             throw new IllegalStateException("Gemini API key is not configured. Please set the GEMINI_API_KEY environment variable.");
         }
 
+        // Construct content prompt (outside loop to allow mutation on retries)
+        String fullPromptText = "USER PROMPT: " + prompt + "\n\n" +
+                               "PAST RELEVANT MEMORIES CONTEXT:\n" + (pastContext != null ? pastContext : "None") + "\n\n" +
+                               "Please analyze the prompt and past context, generate an empathetic reflection, and tag the user's emotion.";
+
         int maxRetries = 3;
         int attempt = 0;
         Exception lastException = null;
@@ -133,21 +138,31 @@ public class GeminiService {
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
 
-                // Construct content prompt
-                String fullPromptText = "USER PROMPT: " + prompt + "\n\n" +
-                                       "PAST RELEVANT MEMORIES CONTEXT:\n" + (pastContext != null ? pastContext : "None") + "\n\n" +
-                                       "Please analyze the prompt and past context, generate an empathetic reflection, and tag the user's emotion.";
-
                 Map<String, Object> textPart = new HashMap<>();
                 textPart.put("text", fullPromptText);
 
                 Map<String, Object> contentsNode = new HashMap<>();
                 contentsNode.put("parts", Collections.singletonList(textPart));
 
-                // Set JSON response config
+                // Set JSON response config and strict schema
                 Map<String, Object> generationConfig = new HashMap<>();
                 generationConfig.put("responseMimeType", "application/json");
                 generationConfig.put("temperature", temperature);
+                
+                Map<String, Object> schema = new HashMap<>();
+                schema.put("type", "OBJECT");
+                
+                Map<String, Object> properties = new HashMap<>();
+                properties.put("reflection", Map.of("type", "STRING"));
+                properties.put("emotion", Map.of("type", "STRING"));
+                properties.put("pillar", Map.of("type", "STRING"));
+                properties.put("primaryColor", Map.of("type", "STRING"));
+                properties.put("secondaryColor", Map.of("type", "STRING"));
+                
+                schema.put("properties", properties);
+                schema.put("required", Arrays.asList("reflection", "emotion", "pillar", "primaryColor", "secondaryColor"));
+                
+                generationConfig.put("responseSchema", schema);
 
                 // System Instruction
                 Map<String, Object> systemPart = new HashMap<>();
@@ -181,7 +196,17 @@ public class GeminiService {
                                 String jsonResponseText = (String) parts.get(0).get("text");
                                 if (jsonResponseText != null) {
                                     String cleanedJson = sanitizeJsonText(jsonResponseText);
-                                    Map<String, String> parsed = parseJsonFields(cleanedJson);
+                                    Map<String, String> parsed;
+                                    try {
+                                        parsed = parseJsonFields(cleanedJson);
+                                    } catch (Exception ex) {
+                                        throw new RuntimeException("JSON_PARSE_ERROR: " + ex.getMessage(), ex);
+                                    }
+                                    
+                                    if (!parsed.containsKey("reflection") || !parsed.containsKey("emotion")) {
+                                        throw new RuntimeException("MISSING_KEYS: JSON missing required keys");
+                                    }
+                                    
                                     String pillar = parsed.getOrDefault("pillar", "FEELINGS");
                                     String rawEmotionText = parsed.getOrDefault("emotion", "NEUTRAL");
                                     String primaryColor = parsed.getOrDefault("primaryColor", "#a855f7");
@@ -207,6 +232,12 @@ public class GeminiService {
                         } catch (InterruptedException ie) {
                             Thread.currentThread().interrupt();
                         }
+                        continue;
+                    }
+                } else if (errMsg.contains("JSON_PARSE_ERROR") || errMsg.contains("MISSING_KEYS")) {
+                    log.warn("JSON parsing failed. Retrying attempt {}/{}...", attempt, maxRetries);
+                    if (attempt < maxRetries) {
+                        fullPromptText += "\n\nCRITICAL ERROR: Your previous response was invalid JSON or missed required keys. You MUST return a valid JSON object matching the exact schema requested.";
                         continue;
                     }
                 }
@@ -241,19 +272,11 @@ public class GeminiService {
     }
 
     /**
-     * Robust Jackson JSON parser
+     * Strict Jackson JSON parser (throws exception on failure to trigger retries)
      */
-    private Map<String, String> parseJsonFields(String json) {
+    private Map<String, String> parseJsonFields(String json) throws com.fasterxml.jackson.core.JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper()
             .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        try {
-            return mapper.readValue(json, new TypeReference<Map<String, String>>(){});
-        } catch (Exception parseEx) {
-            log.warn("Jackson JSON parsing failed. Returning default values. Input length: {}", json != null ? json.length() : 0);
-            Map<String, String> result = new HashMap<>();
-            result.put("reflection", "I am taking a moment to process your reflection.");
-            result.put("emotion", "NEUTRAL");
-            return result;
-        }
+        return mapper.readValue(json, new TypeReference<Map<String, String>>(){});
     }
 }
