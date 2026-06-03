@@ -11,7 +11,10 @@ import { cancelInterceptor } from './app/core/interceptors/cancel.interceptor';
 import { TranslationService } from './app/core/services/translation.service';
 
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
-
+import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
+import { chatReducer } from './app/features/tabs/pages/chat/data-access/store/chat.reducer';
+import { ChatEffects } from './app/features/tabs/pages/chat/data-access/store/chat.effects';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
@@ -52,6 +55,8 @@ bootstrapApplication(AppComponent, {
         return () => translationSvc.initTranslations('en');
       },
       multi: true
-    }
+    },
+    provideStore({ chat: chatReducer }),
+    provideEffects([ChatEffects])
   ],
 });

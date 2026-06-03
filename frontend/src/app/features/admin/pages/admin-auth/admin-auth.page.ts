@@ -11,7 +11,7 @@ import {
   IonSelect,
   IonSelectOption
 } from '@ionic/angular/standalone';
-import { AdminAuthService } from '../../../../core/services/admin-auth.service';
+import { AdminAuthService } from '../../data-access/admin-auth.service';
 import { AdminUserResponse } from '../../../../core/models/auth.model';
 import { ToastService } from '../../../../core/services/toast.service';
 import { UserEditModalComponent } from './user-edit-modal/user-edit-modal.component';

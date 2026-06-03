@@ -1,0 +1,229 @@
+.aura-visualization-area {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  flex: 1;
+
+  .aura-stage-container {
+    position: relative;
+    width: clamp(240px, 75vw, 380px);
+    height: clamp(240px, 75vw, 380px);
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .aura-orb {
+    position: absolute;
+    border-radius: 50%;
+    transition: all 1.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  .dominant-orb {
+    width: clamp(110px, 35vw, 160px);
+    height: clamp(110px, 35vw, 160px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 700;
+    font-size: clamp(14px, 4vw, 17px);
+    letter-spacing: 0.8px;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    animation: morphBlob 8s ease-in-out infinite alternate, glassyCoreAuroraIntro 3s ease-in-out forwards, glassyCoreAuroraLoop 16s ease-in-out infinite 3s;
+
+    &.animate-intro {
+      animation: fadeInSlow 2.5s ease-in-out forwards, morphBlob 8s ease-in-out infinite alternate, glassyCoreAuroraIntro 3s ease-in-out forwards, glassyCoreAuroraLoop 16s ease-in-out infinite 3s;
+    }
+
+    &.glassy-core {
+      background: rgba(255, 255, 255, 0.03) !important;
+      border: 1px solid rgba(255, 255, 255, 0.16) !important;
+      backdrop-filter: blur(25px) !important;
+      color: rgba(255, 255, 255, 0.95) !important;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: var(--dynamic-aura-gradient, conic-gradient(
+          from 0deg,
+          rgba(255, 215, 0, 0.85) 0deg,
+          rgba(46, 204, 113, 0.85) 90deg,
+          rgba(52, 152, 219, 0.85) 180deg,
+          rgba(155, 89, 182, 0.85) 270deg,
+          rgba(255, 215, 0, 0.85) 360deg
+        ));
+        filter: blur(24px);
+        animation: rotateOuter 8s linear infinite;
+        z-index: -1;
+      }
+    }
+
+    .orb-label {
+      text-transform: uppercase;
+      font-weight: 700;
+      max-width: 85%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .outer-orbs-wrapper {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    animation: rotateOuter 25s linear infinite;
+
+    &.animate-intro {
+      animation: fadeInSlow 2.5s ease-in-out forwards, rotateOuter 25s linear infinite;
+    }
+  }
+
+  .top-left-orb {
+    width: clamp(44px, 14vw, 62px);
+    height: clamp(44px, 14vw, 62px);
+    top: 5%;
+    left: 5%;
+    cursor: pointer;
+    transform: scale(var(--orb-scale, 1));
+    animation: morphBlob 5s ease-in-out infinite alternate;
+    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+  }
+
+  .top-right-orb {
+    width: clamp(42px, 13vw, 58px);
+    height: clamp(42px, 13vw, 58px);
+    top: 5%;
+    right: 5%;
+    cursor: pointer;
+    transform: scale(var(--orb-scale, 1));
+    animation: morphBlob 6s ease-in-out infinite alternate-reverse;
+    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+  }
+
+  .bottom-left-orb {
+    width: clamp(46px, 15vw, 66px);
+    height: clamp(46px, 15vw, 66px);
+    bottom: 5%;
+    left: 5%;
+    cursor: pointer;
+    transform: scale(var(--orb-scale, 1));
+    animation: morphBlob 7s ease-in-out infinite alternate;
+    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+  }
+
+  .bottom-right-orb {
+    width: clamp(40px, 12vw, 56px);
+    height: clamp(40px, 12vw, 56px);
+    bottom: 5%;
+    right: 5%;
+    cursor: pointer;
+    transform: scale(var(--orb-scale, 1));
+    animation: morphBlob 5.5s ease-in-out infinite alternate-reverse;
+    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+  }
+}
+
+.status-overlay {
+  position: absolute;
+  top: calc(50% + clamp(150px, 45vw, 210px));
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.empty-guidance-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 16px;
+  max-width: 300px;
+  backdrop-filter: blur(15px);
+  pointer-events: auto;
+  text-align: center;
+
+  h3 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0 0 12px;
+    font-size: 11px;
+    color: #797a95;
+    line-height: 1.4;
+  }
+
+  .btn-reflect-now {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 8px 18px;
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
+
+    &:active {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+.empty-state {
+  flex-direction: column;
+  height: auto;
+  gap: 12px;
+  margin: 10px 0;
+
+  .neutral-backdrop {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%);
+  }
+
+  .neutral-orb {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.25);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+  }
+}
+
+.syncing-indicator {
+  display: flex;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  animation: pulseOpacity 1.5s infinite ease-in-out;
+}

@@ -1,8 +1,10 @@
 package com.mirror.memoryservice.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class AnalyticsResponseDTO {
+public class AnalyticsResponseDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
     private long totalMemories;
     private String dominantEmotion;
     private int activeStreak;

@@ -1,0 +1,186 @@
+/* Route Proxy Mapping Table */
+.desktop-table-wrapper {
+  display: none;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.1);
+  
+  @media (min-width: 768px) {
+    display: block;
+  }
+}
+
+.gateway-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  
+  thead {
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    
+    th {
+      padding: 14px 18px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+    }
+    
+    .actions-header {
+      text-align: right;
+      padding-right: 32px;
+    }
+  }
+  
+  tbody {
+    tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: background-color 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.02);
+      }
+    }
+    
+    td {
+      padding: 16px 18px;
+      vertical-align: middle;
+      max-width: 250px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+
+.path-cell {
+  font-family: monospace;
+  font-weight: 600;
+  color: #c084fc;
+}
+
+.destination-cell {
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.service-lbl {
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 8px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.proxy-status {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #34d399;
+  letter-spacing: 0.3px;
+  
+  &.suspended {
+    color: #f87171;
+  }
+}
+
+.actions-cell {
+  text-align: right;
+  padding-right: 18px !important;
+  white-space: nowrap;
+  
+  .action-btn {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    margin: 0 2px;
+    font-size: 18px;
+    height: 36px;
+    
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+/* Mobile Route Mapping View */
+.mobile-list-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.route-mobile-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 14px 16px;
+    
+    .route-info {
+      h3 {
+        color: #c084fc;
+        font-family: monospace;
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0;
+      }
+      
+      p {
+        color: rgba(255, 255, 255, 0.4);
+        font-family: monospace;
+        font-size: 12px;
+        margin: 2px 0 0 0;
+      }
+    }
+    
+    .card-actions {
+      display: flex;
+      gap: 4px;
+      
+      ion-button {
+        --padding-start: 6px;
+        --padding-end: 6px;
+        margin: 0;
+        font-size: 18px;
+        height: 32px;
+      }
+    }
+  }
+  
+  .card-details {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      
+      .label {
+        color: rgba(255, 255, 255, 0.4);
+      }
+      
+      .val {
+        color: #ffffff;
+      }
+    }
+  }
+}

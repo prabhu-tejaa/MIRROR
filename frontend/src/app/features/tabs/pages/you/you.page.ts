@@ -1,12 +1,12 @@
 import { Component, ChangeDetectionStrategy, signal, inject, computed, DestroyRef, NgZone } from '@angular/core';
-import { AudioVisualizerService } from '../../../../core/services/audio-visualizer.service';
+import { AudioVisualizerService } from '../chat/data-access/audio-visualizer.service';
 import { CommonModule } from '@angular/common';
 import { IonContent } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ToastService } from '../../../../core/services/toast.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { UserMemoryService, Reflection, EmotionStat } from '../../../../core/services/user-memory.service';
+import { UserMemoryService, Reflection, EmotionStat } from '../chat/data-access/user-memory.service';
 import { environment } from '../../../../../environments/environment';
 
 @Component({

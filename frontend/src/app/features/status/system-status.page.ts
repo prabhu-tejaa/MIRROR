@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import { AdminGatewayService, ServiceHealth } from '../../core/services/admin-gateway.service';
+import { AdminGatewayService, ServiceHealth } from '../admin/data-access/admin-gateway.service';
 import { TranslationService } from '../../core/services/translation.service';
 import { addIcons } from 'ionicons';
 import { checkmarkCircleOutline, warningOutline, pulseOutline, refreshOutline } from 'ionicons/icons';

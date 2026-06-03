@@ -10,7 +10,7 @@ import { StorageService } from './storage.service';
 import { StorageKeys, getActiveSessionKey } from '../constants/storage.constants';
 import { RoutePaths } from '../constants/route.constants';
 import { environment } from '../../../environments/environment';
-import { AudioVisualizerService } from './audio-visualizer.service';
+import { AudioVisualizerService } from '../../features/tabs/pages/chat/data-access/audio-visualizer.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

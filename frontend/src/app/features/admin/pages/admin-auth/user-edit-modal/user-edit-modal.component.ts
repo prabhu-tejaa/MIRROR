@@ -12,7 +12,7 @@ import {
   IonToggle,
   ModalController 
 } from '@ionic/angular/standalone';
-import { AdminAuthService } from '../../../../../core/services/admin-auth.service';
+import { AdminAuthService } from '../../../data-access/admin-auth.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { AdminUserResponse, AdminUserUpdateRequest } from '../../../../../core/models/auth.model';
 

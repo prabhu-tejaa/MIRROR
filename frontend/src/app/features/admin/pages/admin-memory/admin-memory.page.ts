@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Router } from '@angular/router';
-import { AdminMemoryService, AdminMemoryRecord } from '../../../../core/services/admin-memory.service';
+import { AdminMemoryService, AdminMemoryRecord } from '../../data-access/admin-memory.service';
 import { addIcons } from 'ionicons';
 import { 
   arrowBackOutline, cloudUploadOutline, informationCircleOutline, 

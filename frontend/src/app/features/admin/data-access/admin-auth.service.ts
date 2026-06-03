@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../../environments/environment';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AdminUserResponse, AdminUserUpdateRequest, AdminCreateUserRequest } from '../models/auth.model';
-import { ApiService } from './api.service';
+import { AdminUserResponse, AdminUserUpdateRequest, AdminCreateUserRequest } from '../../../core/models/auth.model';
+import { ApiService } from '../../../core/services/api.service';
 
 @Injectable({
   providedIn: 'root'

@@ -39,6 +39,8 @@
     "@capacitor/network": "^8.0.1",
     "@capacitor/status-bar": "8.0.1",
     "@ionic/angular": "^8.0.0",
+    "@ngrx/effects": "^20.1.0",
+    "@ngrx/store": "^20.1.0",
     "canvas-confetti": "^1.9.4",
     "firebase": "^12.11.0",
     "ionicons": "^7.0.0",

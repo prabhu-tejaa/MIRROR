@@ -19,7 +19,7 @@ import {
   RouteMap, 
   BlockedIp, 
   LogEntry 
-} from '../../../../core/services/admin-gateway.service';
+} from '../../data-access/admin-gateway.service';
 
 import { addIcons } from 'ionicons';
 import { 

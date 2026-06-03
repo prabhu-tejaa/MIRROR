@@ -1,6 +1,9 @@
 package com.mirror.memoryservice.dto;
 
-public class EmotionStatDTO {
+import java.io.Serializable;
+
+public class EmotionStatDTO implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String key;
     private String pillar;
     private String name;
