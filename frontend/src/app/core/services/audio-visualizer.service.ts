@@ -88,6 +88,20 @@ export class AudioVisualizerService implements OnDestroy {
     }, stepTime);
   }
 
+  public stopAudio(): void {
+    if (this.audioObj) {
+      this.audioObj.pause();
+      this.audioObj.src = '';
+    }
+    this.isPlaying.set(false);
+    this.isLoadingAudio.set(false);
+    this.cancelAnalysisLoop();
+    if (this.fadeInterval) {
+      clearInterval(this.fadeInterval);
+      this.fadeInterval = null;
+    }
+  }
+
   public togglePlay(audioUrl: string) {
     if (this.isLoadingAudio()) return;
 
@@ -127,6 +141,8 @@ export class AudioVisualizerService implements OnDestroy {
 
         this.audioObj.src = audioUrl;
         this.audioObj.loop = true;
+      } else {
+        this.audioObj.src = audioUrl;
       }
       
       this.isLoadingAudio.set(true);

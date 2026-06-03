@@ -157,6 +157,10 @@ export class OtpPage implements OnInit, OnDestroy {
       this.focusBox(index + 1);
     }
     this.cdr.markForCheck();
+
+    if (this.otpForm.valid && !this.isLoading) {
+      this.onVerify();
+    }
   }
 
   private revealDigit(index: number): void {
@@ -217,6 +221,10 @@ export class OtpPage implements OnInit, OnDestroy {
     const nextFocusIndex = Math.min(numericData.length, 5);
     this.focusBox(nextFocusIndex);
     this.cdr.markForCheck();
+
+    if (this.otpForm.valid && !this.isLoading) {
+      this.onVerify();
+    }
   }
 
   private focusBox(index: number): void {
@@ -285,6 +293,7 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   public onVerify(): void {
+    if (this.isLoading) return;
     this.isSubmitted = true;
     this.errorMessage = '';
     this.cdr.markForCheck();

@@ -22,6 +22,7 @@ public class GlobalExceptionHandler {
         errorResponse.put("error", "Internal Server Error");
         errorResponse.put("message", ex.getMessage() != null ? ex.getMessage() : "An unexpected error occurred");
         errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.put("errorCode", determineErrorCode(ex));
         
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -33,7 +34,30 @@ public class GlobalExceptionHandler {
         errorResponse.put("error", "Bad Request");
         errorResponse.put("message", ex.getMessage());
         errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+        errorResponse.put("errorCode", "BAD_REQUEST");
         
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MemoryProcessingException.class)
+    public ResponseEntity<Map<String, Object>> handleMemoryProcessingException(MemoryProcessingException ex) {
+        log.error("Memory processing error: ", ex);
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", "Internal Server Error");
+        errorResponse.put("message", ex.getMessage());
+        errorResponse.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorResponse.put("errorCode", "MEMORY_PROCESSING_ERROR");
+        
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private String determineErrorCode(Exception ex) {
+        if (ex.getMessage() != null) {
+            String msg = ex.getMessage().toLowerCase();
+            if (msg.contains("gemini")) return "AI_SERVICE_ERROR";
+            if (msg.contains("database")) return "DATABASE_ERROR";
+            if (msg.contains("jwt")) return "UNAUTHORIZED";
+        }
+        return "INTERNAL_SERVER_ERROR";
     }
 }

@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, inject, NgZone } from '@angular/core';
+import { Injectable, signal, computed, inject, NgZone, Injector } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router, NavigationStart } from '@angular/router';
 import { Observable, tap, filter } from 'rxjs';
@@ -9,6 +9,7 @@ import { StorageService } from './storage.service';
 import { StorageKeys, getActiveSessionKey } from '../constants/storage.constants';
 import { RoutePaths } from '../constants/route.constants';
 import { environment } from '../../../environments/environment';
+import { AudioVisualizerService } from './audio-visualizer.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -18,6 +19,7 @@ export class AuthService {
   private router = inject(Router);
   private storageSvc = inject(StorageService);
   private ngZone = inject(NgZone);
+  private injector = inject(Injector);
   private lastValidationTime = 0;
   private isValidating = false;
 
@@ -182,6 +184,18 @@ export class AuthService {
   }
 
   private clearSession(): void {
+    try {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      const audioSvc = this.injector.get(AudioVisualizerService);
+      if (audioSvc) {
+        audioSvc.stopAudio();
+      }
+    } catch {
+      // Ignore injection errors if services aren't ready
+    }
+
     const email = this.getEmail();
     if (email) {
       this.storageSvc.remove(getActiveSessionKey(email));
