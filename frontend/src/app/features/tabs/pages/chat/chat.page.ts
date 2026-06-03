@@ -166,6 +166,7 @@ export class ChatPage implements OnDestroy {
   public readonly chatInput = signal<string>('');
   public readonly isRecording = signal<boolean>(false);
   public readonly isWaitingForResponse = signal<boolean>(false);
+  public readonly isResting = signal<boolean>(false);
 
   // Pagination state
   public readonly isLoadingHistory = signal<boolean>(false);
@@ -951,7 +952,14 @@ export class ChatPage implements OnDestroy {
             clearInterval(streamInterval);
             this.activeTypingIntervals = this.activeTypingIntervals.filter(i => i !== streamInterval);
             this.isWaitingForResponse.set(false);
-            this.focusInput();
+            
+            // Introduce a subtle 4 second cooldown to naturally pace the user
+            // and dramatically reduce hitting the Gemini 15 RPM Free Tier limit.
+            this.isResting.set(true);
+            setTimeout(() => {
+              this.isResting.set(false);
+              this.focusInput();
+            }, 4000);
           }
         }, 15);
         this.activeTypingIntervals.push(streamInterval);

@@ -110,18 +110,18 @@
       <div class="bottom-ambient-glow"></div>
       <div class="bottom-ambient-glow-secondary"></div>
       <div class="entry-capsule">
-        <button class="voice-btn" [class.recording]="isRecording()" [class.disabled]="isWaitingForResponse()" [disabled]="isWaitingForResponse()" (click)="toggleRecording()"
+        <button class="voice-btn" [class.recording]="isRecording()" [class.disabled]="isWaitingForResponse() || isResting()" [disabled]="isWaitingForResponse() || isResting()" (click)="toggleRecording()"
           [aria-label]="isRecording() ? 'Stop voice input' : 'Start voice input'">
           <ion-icon [name]="isRecording() ? 'stop-circle-outline' : 'mic-outline'" class="mic-icon"></ion-icon>
           <span class="record-ring" *ngIf="isRecording()"></span>
         </button>
 
-        <input type="text" placeholder="Speak or type..." [ngModel]="chatInput()"
+        <input type="text" [placeholder]="isResting() ? 'Aura is resting...' : 'Speak or type...'" [ngModel]="chatInput()"
           (ngModelChange)="chatInput.set($event)" (keypress)="handleKeyPress($event)"
           (focus)="moveCursorToEnd($event)" (click)="moveCursorToEnd($event)" #textInput
-          aria-label="Chat input message" />
+          aria-label="Chat input message" [disabled]="isResting()" />
 
-        <button class="send-btn" [class.disabled]="!chatInput().trim() || isWaitingForResponse()" [disabled]="!chatInput().trim() || isWaitingForResponse()"
+        <button class="send-btn" [class.disabled]="!chatInput().trim() || isWaitingForResponse() || isResting()" [disabled]="!chatInput().trim() || isWaitingForResponse() || isResting()"
           (click)="triggerSend()" aria-label="Send message">
           <ion-icon name="send-outline"></ion-icon>
         </button>

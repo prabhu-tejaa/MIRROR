@@ -41,6 +41,7 @@ public class GeminiService {
      * Converts a text string into a 768-dimensional float embedding vector.
      * Throws an exception if the API Key is missing or the request fails.
      */
+    @org.springframework.cache.annotation.Cacheable(value = "embeddings", key = "#text")
     public float[] getEmbedding(String text) {
         if (text == null) {
             text = "";
