@@ -1,8 +1,8 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, filter } from 'rxjs/operators';
 import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { StarfieldComponent } from './shared/starfield/starfield.component';
 import { NoInternetComponent } from './shared/no-internet/no-internet.component';
@@ -40,5 +40,13 @@ export class AppComponent {
   );
 
   constructor() {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationStart)
+    ).subscribe(() => {
+      const activeElement = document.activeElement as HTMLElement;
+      if (activeElement && typeof activeElement.blur === 'function') {
+        activeElement.blur();
+      }
+    });
   }
 }
