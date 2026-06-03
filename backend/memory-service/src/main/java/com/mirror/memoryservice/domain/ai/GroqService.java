@@ -25,7 +25,6 @@ public class GroqService {
 
     private static final Logger log = LoggerFactory.getLogger(GroqService.class);
 
-    // Injected from application.yaml → resolved from env vars GROQ_API_KEY / GROQ_API_URL / GROQ_MODEL
     @Value("${groq.api.key}")
     private String apiKey;
 
@@ -35,11 +34,9 @@ public class GroqService {
     @Value("${groq.model.text}")
     private String textModel;
 
-    // Shared temperature config — lives in app-level settings
     @Value("${app.ai.temperature:0.7}")
     private double temperature;
 
-    // Shared, thread-safe — instantiated once at startup
     private final ObjectMapper objectMapper;
     private final RestClient restClient;
     private final PromptService promptService;
@@ -52,14 +49,12 @@ public class GroqService {
 
         org.springframework.http.client.SimpleClientHttpRequestFactory factory =
             new org.springframework.http.client.SimpleClientHttpRequestFactory();
-        factory.setConnectTimeout(15_000); // 15 seconds
-        factory.setReadTimeout(30_000);    // 30 seconds
+        factory.setConnectTimeout(15_000);
+        factory.setReadTimeout(30_000);
         this.restClient = RestClient.builder().requestFactory(factory).build();
     }
 
-    /**
-     * Validates config at startup — fail fast if env vars missing.
-     */
+    
     @PostConstruct
     public void validateConfig() {
         if (apiKey == null || apiKey.isBlank()) {
@@ -77,11 +72,6 @@ public class GroqService {
         log.info("[GroqService] Initialized. Model: {}, URL: {}", textModel, apiUrl);
     }
 
-    /**
-     * Generates context-aware reflections and emotional tags using Groq.
-     * Returns a map with keys: reflection, emotion (encoded as PILLAR|emotion|primary|secondary).
-     * Throws RuntimeException on unrecoverable errors — caller must handle.
-     */
     public Map<String, String> generateReflectionAndEmotion(String prompt, String pastContext) {
         if (prompt == null || prompt.isBlank()) {
             return Map.of(
@@ -109,13 +99,12 @@ public class GroqService {
                 int statusCode = e.getStatusCode().value();
 
                 if (statusCode == 429) {
-                    // Daily/minute quota — retrying is pointless for daily quota
                     log.error("[GroqService] Rate limit hit (429). No further retries.");
                     throw new RuntimeException(
                         "RATE_LIMIT_EXCEEDED: Groq API rate limit reached. Please try again shortly.", e);
                 }
                 log.error("[GroqService] HTTP client error {} on attempt {}.", statusCode, attempt, e);
-                break; // Other 4xx (400, 401, 403) — don't retry
+                break; 
 
             } catch (HttpServerErrorException e) {
                 lastException = e;
@@ -152,14 +141,12 @@ public class GroqService {
             }
         }
 
-        // All retries exhausted — throw so GlobalExceptionHandler returns proper HTTP error
         String failureMsg = lastException != null && lastException.getMessage() != null
                             ? lastException.getMessage()
                             : (lastException != null ? lastException.getClass().getSimpleName() : "Unknown Error");
         throw new RuntimeException("AI_SERVICE_ERROR: " + failureMsg, lastException);
     }
 
-    // ── Private helpers ──────────────────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
     private Map<String, String> callGroqApi(String systemPrompt, String userContent)
@@ -213,7 +200,6 @@ public class GroqService {
         Map<String, String> parsed = objectMapper.readValue(
             jsonContent, new TypeReference<Map<String, String>>() {});
 
-        // Check both KEY existence AND non-null, non-blank values
         String reflection = parsed.get("reflection");
         String emotion    = parsed.get("emotion");
 
@@ -222,13 +208,11 @@ public class GroqService {
                 "JSON has null/blank required fields. reflection=" + reflection + ", emotion=" + emotion);
         }
 
-        // Build safe defaults for optional fields
         String pillar        = nonBlankOrDefault(parsed.get("pillar"),         "FEELINGS");
         String rawEmotion    = nonBlankOrDefault(parsed.get("emotion"),         "NEUTRAL");
         String primaryColor  = nonBlankOrDefault(parsed.get("primaryColor"),    "#a855f7");
         String secondaryColor= nonBlankOrDefault(parsed.get("secondaryColor"),  "#06b6d4");
 
-        // Encode pillar and colors into the emotion field (same contract as original GeminiService)
         parsed.put("emotion", pillar + "|" + rawEmotion + "|" + primaryColor + "|" + secondaryColor);
         return parsed;
     }
@@ -266,7 +250,6 @@ public class GroqService {
         }
     }
 
-    /** Sentinel exception to distinguish JSON parsing failures from network errors in retry logic. */
     private static class MissingKeysException extends Exception {
         MissingKeysException(String message) { super("MISSING_KEYS: " + message); }
     }

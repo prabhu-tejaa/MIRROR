@@ -35,7 +35,6 @@ public class TelemetryService {
     private final AtomicInteger whitelistedCount = new AtomicInteger(0);
 
     public TelemetryService() {
-        // Removed hardcoded demo data to ensure runtime consistency
     }
 
     public boolean isRateLimited(String ip) {

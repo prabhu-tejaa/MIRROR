@@ -25,9 +25,6 @@ public class MemoryController {
         this.objectMapper = objectMapper;
     }
 
-    /**
-     * Queues a new memory for the user. Processing happens asynchronously.
-     */
     @PostMapping("/save")
     public ResponseEntity<String> saveMemory(
             java.security.Principal principal,
@@ -44,10 +41,6 @@ public class MemoryController {
         }
     }
 
-    /**
-     * Semantic reflection endpoint. Takes prompt, performs semantic pgvector cosine search
-     * on user context memories, and returns structured context reflection + emotion tag.
-     */
     @PostMapping("/reflect")
     public ResponseEntity<Map<String, String>> reflect(
             java.security.Principal principal,
@@ -58,9 +51,6 @@ public class MemoryController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Exposes emotional counts metrics for analytics telemetry plotting.
-     */
     @GetMapping("/analytics")
     public ResponseEntity<com.mirror.memoryservice.domain.admin.AnalyticsResponseDTO> getAnalytics(
             java.security.Principal principal
@@ -70,9 +60,6 @@ public class MemoryController {
         return ResponseEntity.ok(analytics);
     }
 
-    /**
-     * List all memories for the authenticated user.
-     */
     @GetMapping("/all")
     public ResponseEntity<List<Memory>> getAll(
             java.security.Principal principal
@@ -82,10 +69,6 @@ public class MemoryController {
         return ResponseEntity.ok(memories);
     }
 
-    /**
-     * Cursor-based paginated chat history endpoint. Returns messages in newest-first order
-     * with total count, hasMore flag, and nextCursor for infinite scroll support.
-     */
     @GetMapping("/history")
     public ResponseEntity<Map<String, Object>> getHistory(
             java.security.Principal principal,
@@ -97,9 +80,6 @@ public class MemoryController {
         return ResponseEntity.ok(result);
     }
 
-    /**
-     * Simple keep-alive diagnostic endpoint.
-     */
     @GetMapping("/keepalive")
     public String keepAlive(
             java.security.Principal principal

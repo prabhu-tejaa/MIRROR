@@ -30,17 +30,11 @@ public class AdminMemoryController {
         this.geminiService = geminiService;
     }
 
-    /**
-     * Get all memories across all users for admin management.
-     */
     @GetMapping("/all")
     public ResponseEntity<List<Memory>> getAllMemories() {
         return ResponseEntity.ok(memoryService.getAllMemoriesAdmin());
     }
 
-    /**
-     * Delete a specific memory by ID.
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteMemory(@PathVariable Long id) {
         try {
@@ -52,10 +46,6 @@ public class AdminMemoryController {
         }
     }
 
-    /**
-     * Upload mock data via CSV to populate the database.
-     * Expects CSV with headers: userId, content, emotion
-     */
     @PostMapping("/upload")
     public ResponseEntity<String> uploadMockData(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
@@ -68,7 +58,6 @@ public class AdminMemoryController {
             boolean isFirstLine = true;
             
             while ((line = reader.readLine()) != null) {
-                // Skip header
                 if (isFirstLine) {
                     isFirstLine = false;
                     continue;
@@ -80,7 +69,6 @@ public class AdminMemoryController {
                     String content = parts[1].trim();
                     String emotion = parts[2].trim();
                     
-                    // Automatically generate embeddings for the mock data during upload
                     float[] embedding = geminiService.getEmbedding(content);
                     memoryService.saveMemory(userId, content, emotion, "user", embedding);
                     count++;
@@ -93,9 +81,6 @@ public class AdminMemoryController {
             return ResponseEntity.internalServerError().body("Error processing file: " + e.getMessage());
         }
     }
-    /**
-     * Create a new memory record.
-     */
     @PostMapping
     public ResponseEntity<String> createMemory(@RequestBody MemoryRequest request) {
         try {
@@ -108,9 +93,6 @@ public class AdminMemoryController {
         }
     }
 
-    /**
-     * Update an existing memory record.
-     */
     @PutMapping("/{id}")
     public ResponseEntity<String> updateMemory(@PathVariable Long id, @RequestBody MemoryRequest request) {
         try {

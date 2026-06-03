@@ -37,7 +37,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 username = jwtUtil.extractUsername(jwt);
                 role = jwtUtil.extractRole(jwt);
             } catch (Exception e) {
-                // Ignore, will remain unauthenticated
             }
         }
 

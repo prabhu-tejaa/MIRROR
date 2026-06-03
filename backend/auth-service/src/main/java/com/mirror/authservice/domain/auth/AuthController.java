@@ -99,7 +99,6 @@ public class AuthController {
 
     @GetMapping("/keepalive")
     public ResponseEntity<?> keepAlive() {
-        // Calling count via service layer to respect layered boundaries
         long count = authService.getAllUsers().size();
         return ResponseEntity.ok(Map.of(
             "status", "awake",

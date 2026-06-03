@@ -29,10 +29,6 @@ public class GeminiService {
         this.restClient = RestClient.builder().requestFactory(factory).build();
     }
 
-    /**
-     * Converts a text string into a 768-dimensional float embedding vector.
-     * Throws an exception if the API Key is missing or the request fails.
-     */
     @org.springframework.cache.annotation.Cacheable(value = "embeddings", key = "#text")
     public float[] getEmbedding(String text) {
         if (text == null) {
@@ -49,7 +45,6 @@ public class GeminiService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
-            // Construct payload
             Map<String, Object> parts = new HashMap<>();
             parts.put("text", text);
 

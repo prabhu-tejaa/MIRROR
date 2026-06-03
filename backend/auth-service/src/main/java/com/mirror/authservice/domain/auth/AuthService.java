@@ -110,7 +110,6 @@ public class AuthService {
     }
 
     private AuthResponse generateSessionTokens(User user) {
-        // Delete all previous refresh tokens to ensure only one active session exists
         refreshTokenRepository.deleteByUser(user);
 
         String accessToken = jwtUtil.generateAccessToken(user);
@@ -265,8 +264,6 @@ public class AuthService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        // Must delete refresh tokens & OTP tokens first — they have a FK to the user.
-        // Failing to clear these children violates foreign key constraints and prevents deletion (500).
         refreshTokenRepository.deleteByUser(user);
         otpTokenRepository.deleteByUser(user);
 

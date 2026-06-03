@@ -229,13 +229,16 @@ export class AuthService {
 
   public logout(): void {
     const refreshToken = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
-    if (refreshToken) {
-      this.logoutSession(refreshToken).subscribe({
+
+    // Always clear the local session and navigate immediately — don't wait for API
+    this.clearSession();
+
+    // Fire the backend logout in the background to invalidate the refresh token on the server
+    if (refreshToken && !environment.mock) {
+      this.http.post(this.apiSvc.AUTH.LOGOUT, { refreshToken }, { responseType: 'text' }).subscribe({
         next: () => {},
         error: () => {}
       });
-    } else {
-      this.clearSession();
     }
   }
 

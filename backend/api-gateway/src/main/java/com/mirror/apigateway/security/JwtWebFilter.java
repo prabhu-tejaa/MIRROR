@@ -31,7 +31,7 @@ public class JwtWebFilter implements WebFilter {
             try {
                 if (jwtUtil.validateToken(token)) {
                     String username = jwtUtil.extractUsername(token);
-                    String role = jwtUtil.extractRole(token); // We need to add this to JwtUtil
+                    String role = jwtUtil.extractRole(token); 
                     
                     String springRole = (role != null && role.startsWith("ROLE_")) ? role : "ROLE_" + role;
                     
@@ -42,7 +42,6 @@ public class JwtWebFilter implements WebFilter {
                     return chain.filter(exchange).contextWrite(ReactiveSecurityContextHolder.withSecurityContext(Mono.just(context)));
                 }
             } catch (Exception e) {
-                // Ignore, will remain unauthenticated
             }
         }
         

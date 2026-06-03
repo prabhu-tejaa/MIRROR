@@ -29,8 +29,8 @@ public class MemoryServiceImpl implements MemoryService {
     private static final String CACHE_EMOTION_ANALYTICS = "emotionAnalytics";
 
     private final MemoryRepository repository;
-    private final GeminiService geminiService;   // used for embeddings only
-    private final GroqService groqService;        // used for text generation
+    private final GeminiService geminiService;
+    private final GroqService groqService;
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
 
@@ -93,7 +93,6 @@ public class MemoryServiceImpl implements MemoryService {
             log.error("Error generating emotional analytics metrics: {}", e.getMessage(), e);
         }
 
-        // Calculate percentages, dominant emotion, etc.
         String dominantEmotion = "CALM";
         long maxCount = 0;
         
@@ -105,17 +104,14 @@ public class MemoryServiceImpl implements MemoryService {
             }
             if (stat.getCount() > maxCount) {
                 maxCount = stat.getCount();
-                dominantEmotion = stat.getKey(); // Frontend uses raw key to find it
+                dominantEmotion = stat.getKey();
             }
         }
         
-        // Sort by count descending
         stats.sort((a, b) -> Long.compare(b.getCount(), a.getCount()));
         
-        // Active streak calculation
         int activeStreak = total == 0 ? 0 : Math.max(1, Math.min(12, (int) (total / 4) + 1));
         
-        // Generate aura gradient
         String auraGradient = generateAuraGradient(stats, total);
 
         response.setTotalMemories(total);
@@ -131,7 +127,6 @@ public class MemoryServiceImpl implements MemoryService {
         com.mirror.memoryservice.domain.admin.EmotionStatDTO dto = new com.mirror.memoryservice.domain.admin.EmotionStatDTO();
         dto.setKey(rawTag);
         
-        // Failsafe for completely broken or empty tags
         if (rawTag == null || rawTag.isEmpty()) {
             dto.setPillar("FEELINGS");
             dto.setName("Neutral");
@@ -142,14 +137,12 @@ public class MemoryServiceImpl implements MemoryService {
 
         String[] parts = rawTag.split("\\|");
         
-        // We now enforce the strict LLM format: PILLAR|Emotion|PrimaryColor|SecondaryColor
         if (parts.length >= 4) {
             dto.setPillar(parts[0]);
             dto.setName(parts[1]);
             dto.setPrimaryColor(parts[2]);
             dto.setSecondaryColor(parts[3]);
         } else {
-            // Failsafe just in case the DB has malformed data despite strict LLM constraints
             dto.setPillar("FEELINGS");
             dto.setName(parts.length > 0 ? parts[0] : "Neutral");
             dto.setPrimaryColor("#7928ca");
@@ -184,10 +177,8 @@ public class MemoryServiceImpl implements MemoryService {
 
     @Override
     public Map<String, String> generateReflection(String userId, String prompt) {
-        // 1. Retrieve similar past memories (Cosine Similarity Search)
         List<Memory> pastMemories = getSimilarMemories(userId, prompt, 5);
         
-        // 2. Build semantic RAG context
         StringBuilder contextBuilder = new StringBuilder();
         if (!pastMemories.isEmpty()) {
             for (int i = 0; i < pastMemories.size(); i++) {
@@ -198,10 +189,8 @@ public class MemoryServiceImpl implements MemoryService {
             contextBuilder.append("No past memories recorded yet.");
         }
 
-        // 3. Generate empathetic reflection + emotion tag using Groq (llama-3.3-70b-versatile)
         Map<String, String> aiResponse = groqService.generateReflectionAndEmotion(prompt, contextBuilder.toString());
         
-        // 4. Async background save using RabbitMQ
         try {
             String detectedEmotion = aiResponse.getOrDefault("emotion", "NEUTRAL");
             String reflectionText = aiResponse.getOrDefault("reflection", "");
@@ -264,7 +253,6 @@ public class MemoryServiceImpl implements MemoryService {
     public void updateMemory(Long id, String userId, String content, String emotion) {
         Memory memory = repository.findById(id).orElseThrow(() -> new MemoryNotFoundException("Memory " + id + " not found"));
         
-        // If content changes, regenerate embedding
         if (!memory.getContent().equals(content)) {
             float[] newEmbedding = geminiService.getEmbedding(content);
             String embeddingStr = "[" + java.util.stream.IntStream.range(0, newEmbedding.length)
@@ -285,9 +273,6 @@ public class MemoryServiceImpl implements MemoryService {
         return repository.findAll();
     }
 
-    /**
-     * Converts a float[] vector array into standard Postgres pgvector string format: [0.1,0.2,...]
-     */
     private String formatVectorForSql(float[] vector) {
         if (vector == null || vector.length == 0) {
             return null;

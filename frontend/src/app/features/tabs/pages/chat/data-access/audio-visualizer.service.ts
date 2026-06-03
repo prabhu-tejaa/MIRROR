@@ -19,6 +19,8 @@ export class AudioVisualizerService implements OnDestroy {
   private source: MediaElementAudioSourceNode | null = null;
   private animationFrameId: number | null = null;
   private fadeInterval: ReturnType<typeof setInterval> | null = null;
+  private duckInterval: ReturnType<typeof setInterval> | null = null;
+  private isDucked = false;
 
   private ngZone = inject(NgZone);
 
@@ -88,6 +90,67 @@ export class AudioVisualizerService implements OnDestroy {
     }, stepTime);
   }
 
+  public duckVolume(targetVolume = 0.18): void {
+    if (!this.audioObj || !this.isPlaying()) return;
+    this.isDucked = true;
+
+    if (this.duckInterval) {
+      clearInterval(this.duckInterval);
+      this.duckInterval = null;
+    }
+
+    const steps = 20;
+    const duration = 400;
+    const stepTime = duration / steps;
+    const currentVol = this.audioObj.volume;
+    const volumeStep = (currentVol - targetVolume) / steps;
+
+    this.duckInterval = setInterval(() => {
+      if (!this.audioObj) {
+        if (this.duckInterval) clearInterval(this.duckInterval);
+        return;
+      }
+      let newVol = this.audioObj.volume - volumeStep;
+      if (newVol <= targetVolume) {
+        newVol = targetVolume;
+        if (this.duckInterval) clearInterval(this.duckInterval);
+        this.duckInterval = null;
+      }
+      this.audioObj.volume = newVol;
+    }, stepTime);
+  }
+
+  public restoreVolume(): void {
+    if (!this.audioObj || !this.isDucked) return;
+    this.isDucked = false;
+
+    if (this.duckInterval) {
+      clearInterval(this.duckInterval);
+      this.duckInterval = null;
+    }
+
+    const steps = 25;
+    const duration = 600;
+    const stepTime = duration / steps;
+    const targetVolume = 1;
+    const currentVol = this.audioObj.volume;
+    const volumeStep = (targetVolume - currentVol) / steps;
+
+    this.duckInterval = setInterval(() => {
+      if (!this.audioObj) {
+        if (this.duckInterval) clearInterval(this.duckInterval);
+        return;
+      }
+      let newVol = this.audioObj.volume + volumeStep;
+      if (newVol >= targetVolume) {
+        newVol = targetVolume;
+        if (this.duckInterval) clearInterval(this.duckInterval);
+        this.duckInterval = null;
+      }
+      this.audioObj.volume = newVol;
+    }, stepTime);
+  }
+
   public stopAudio(): void {
     if (this.audioObj) {
       this.audioObj.pause();
@@ -100,6 +163,11 @@ export class AudioVisualizerService implements OnDestroy {
       clearInterval(this.fadeInterval);
       this.fadeInterval = null;
     }
+    if (this.duckInterval) {
+      clearInterval(this.duckInterval);
+      this.duckInterval = null;
+    }
+    this.isDucked = false;
   }
 
   public togglePlay(audioUrl: string) {
@@ -254,6 +322,10 @@ export class AudioVisualizerService implements OnDestroy {
     if (this.fadeInterval) {
       clearInterval(this.fadeInterval);
       this.fadeInterval = null;
+    }
+    if (this.duckInterval) {
+      clearInterval(this.duckInterval);
+      this.duckInterval = null;
     }
     if (this.audioObj) {
       this.audioObj.pause();

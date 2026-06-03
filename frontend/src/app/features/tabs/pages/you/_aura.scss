@@ -14,6 +14,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    will-change: transform;
   }
 
   .aura-orb {
@@ -36,6 +37,9 @@
     letter-spacing: 0.8px;
     color: #ffffff;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+    touch-action: none;
+    user-select: none;
+    will-change: transform;
     animation: morphBlob 8s ease-in-out infinite alternate, glassyCoreAuroraIntro 3s ease-in-out forwards, glassyCoreAuroraLoop 16s ease-in-out infinite 3s;
 
     &.animate-intro {
@@ -75,8 +79,6 @@
       font-weight: 700;
       max-width: 85%;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
   }
 
@@ -96,10 +98,14 @@
     height: clamp(44px, 14vw, 62px);
     top: 5%;
     left: 5%;
-    cursor: pointer;
-    transform: scale(var(--orb-scale, 1));
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    will-change: transform;
+    transform: translate(var(--orb-drag-x, 0px), var(--orb-drag-y, 0px)) scale(var(--orb-scale, 1));
     animation: morphBlob 5s ease-in-out infinite alternate;
-    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+    &:hover { transform: translate(var(--orb-drag-x, 0px), var(--orb-drag-y, 0px)) scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+    &:active { cursor: grabbing; }
   }
 
   .top-right-orb {
@@ -107,10 +113,14 @@
     height: clamp(42px, 13vw, 58px);
     top: 5%;
     right: 5%;
-    cursor: pointer;
-    transform: scale(var(--orb-scale, 1));
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    will-change: transform;
+    transform: translate(var(--orb-drag-x, 0px), var(--orb-drag-y, 0px)) scale(var(--orb-scale, 1));
     animation: morphBlob 6s ease-in-out infinite alternate-reverse;
-    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+    &:hover { transform: translate(var(--orb-drag-x, 0px), var(--orb-drag-y, 0px)) scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+    &:active { cursor: grabbing; }
   }
 
   .bottom-left-orb {
@@ -118,10 +128,14 @@
     height: clamp(46px, 15vw, 66px);
     bottom: 5%;
     left: 5%;
-    cursor: pointer;
-    transform: scale(var(--orb-scale, 1));
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    will-change: transform;
+    transform: translate(var(--orb-drag-x, 0px), var(--orb-drag-y, 0px)) scale(var(--orb-scale, 1));
     animation: morphBlob 7s ease-in-out infinite alternate;
-    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+    &:hover { transform: translate(var(--orb-drag-x, 0px), var(--orb-drag-y, 0px)) scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+    &:active { cursor: grabbing; }
   }
 
   .bottom-right-orb {
@@ -129,10 +143,14 @@
     height: clamp(40px, 12vw, 56px);
     bottom: 5%;
     right: 5%;
-    cursor: pointer;
-    transform: scale(var(--orb-scale, 1));
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    will-change: transform;
+    transform: translate(var(--orb-drag-x, 0px), var(--orb-drag-y, 0px)) scale(var(--orb-scale, 1));
     animation: morphBlob 5.5s ease-in-out infinite alternate-reverse;
-    &:hover { transform: scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+    &:hover { transform: translate(var(--orb-drag-x, 0px), var(--orb-drag-y, 0px)) scale(calc(var(--orb-scale, 1) + 0.15)) !important; filter: brightness(1.2); }
+    &:active { cursor: grabbing; }
   }
 }
 

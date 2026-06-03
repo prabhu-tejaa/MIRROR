@@ -4,11 +4,11 @@
 
     <!-- 2. Dynamic Stage (Always shown, adapts to state) -->
     <div class="aura-visualization-area">
-      <div class="aura-stage-container" [class.animate-intro]="shouldAnimateIntro">
+      <div class="aura-stage-container" #auraStage [class.animate-intro]="shouldAnimateIntro">
         
         <!-- Center Orb (Always Glassy Core 代表 Core Self) -->
-        <div class="aura-orb dominant-orb glassy-core" [class.animate-intro]="shouldAnimateIntro" [style.--dynamic-aura-gradient]="auraGradient()" (click)="totalCount() > 0 && isAllEmotionsOpen.set(true)" [style.cursor]="totalCount() > 0 ? 'pointer' : 'default'">
-          <span class="orb-label">{{ username() }}</span>
+        <div class="aura-orb dominant-orb glassy-core" [class.animate-intro]="shouldAnimateIntro" [style.--dynamic-aura-gradient]="auraGradient()" (pointerdown)="onCenterPointerDown($event)" (click)="!hasDragged && totalCount() > 0 && isAllEmotionsOpen.set(true)" [style.cursor]="totalCount() > 0 ? 'grab' : 'default'">
+          <span class="orb-label">{{ displayUsername() }}</span>
         </div>
 
         <!-- N Outer Orbs floating and playing around dynamically (Top 4) -->
@@ -16,7 +16,8 @@
           <div *ngFor="let stat of topOrbs(); let i = index; trackBy: trackByKey"
                class="aura-orb"
                [ngClass]="orbClasses[i]"
-               (click)="selectEmotion(stat.key)"
+               (pointerdown)="onOrbPointerDown($event, i)"
+               (click)="!hasDragged && selectEmotion(stat.key)"
                [style.--orb-scale]="getEmotionScale(stat.key)"
                [style.background]="stat.primaryColor"
                [style.box-shadow]="'0 0 28px ' + stat.primaryColor">

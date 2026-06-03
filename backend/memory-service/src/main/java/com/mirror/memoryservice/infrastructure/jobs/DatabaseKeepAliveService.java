@@ -18,8 +18,6 @@ public class DatabaseKeepAliveService {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Ping the database every 4 minutes (240,000 milliseconds)
-    // This prevents serverless databases like Neon from going to sleep
     @Scheduled(fixedRate = 240000)
     public void keepDatabaseAwake() {
         try {

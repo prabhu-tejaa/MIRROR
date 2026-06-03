@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, no-console */
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { AudioVisualizerService } from './audio-visualizer.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,6 +8,8 @@ import { Injectable, signal } from '@angular/core';
 export class TextToSpeechService {
   public availableVoices = signal<SpeechSynthesisVoice[]>([]);
   public currentlySpeakingId = signal<string | null>(null);
+
+  private audioVisualizer = inject(AudioVisualizerService);
 
   constructor() {
     this.preCacheVoices();
@@ -52,6 +55,8 @@ export class TextToSpeechService {
     if (this.currentlySpeakingId() === msgId) {
       window.speechSynthesis.cancel();
       this.currentlySpeakingId.set(null);
+      // Restore music volume since we cancelled
+      this.audioVisualizer.restoreVolume();
       return;
     }
 
@@ -83,15 +88,22 @@ export class TextToSpeechService {
       if (this.currentlySpeakingId() === msgId) {
         this.currentlySpeakingId.set(null);
       }
+      // Always restore music volume when speech ends
+      this.audioVisualizer.restoreVolume();
     };
     utterance.onerror = (e) => {
       console.error('Speech synthesis error:', e);
       if (this.currentlySpeakingId() === msgId) {
         this.currentlySpeakingId.set(null);
       }
+      // Restore music volume on error too
+      this.audioVisualizer.restoreVolume();
     };
 
     this.currentlySpeakingId.set(msgId);
+
+    // Duck music volume before speaking
+    this.audioVisualizer.duckVolume(0.18);
 
     setTimeout(() => {
       window.speechSynthesis.speak(utterance);
@@ -102,6 +114,8 @@ export class TextToSpeechService {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
       this.currentlySpeakingId.set(null);
+      // Restore music when TTS is cancelled externally
+      this.audioVisualizer.restoreVolume();
     }
   }
 }

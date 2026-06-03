@@ -23,7 +23,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     }
 
     public static class Config {
-        // Configuration properties can be added here
     }
 
     @Override
@@ -31,7 +30,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
 
-            // Check for Authorization header
             if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                 return onError(exchange, "Missing authorization header", HttpStatus.UNAUTHORIZED);
             }
@@ -48,13 +46,10 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     return onError(exchange, "Expired or invalid token", HttpStatus.UNAUTHORIZED);
                 }
 
-                // Extract email
                 String email = jwtUtil.extractEmail(token);
                 if (email == null) {
-                    email = jwtUtil.extractUsername(token); // Fallback to subject
+                    email = jwtUtil.extractUsername(token); 
                 }
-
-                // Mutate the request: remove existing X-User-Email (prevent spoofing) and inject the real one from JWT
                 ServerHttpRequest mutatedRequest = request.mutate()
                         .headers(httpHeaders -> httpHeaders.remove("X-User-Email"))
                         .header("X-User-Email", email)

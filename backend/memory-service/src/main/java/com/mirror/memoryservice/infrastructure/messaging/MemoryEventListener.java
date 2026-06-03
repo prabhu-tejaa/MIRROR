@@ -19,8 +19,8 @@ public class MemoryEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(MemoryEventListener.class);
     private final MemoryService memoryService;
-    private final GeminiService geminiService;  // embeddings only
-    private final GroqService groqService;       // text generation
+    private final GeminiService geminiService;
+    private final GroqService groqService;
     private final ObjectMapper objectMapper;
 
     public MemoryEventListener(MemoryService memoryService, GeminiService geminiService, GroqService groqService, ObjectMapper objectMapper) {
@@ -52,13 +52,10 @@ public class MemoryEventListener {
             com.mirror.memoryservice.domain.ai.ReflectionSaveEvent event = objectMapper.readValue(message, com.mirror.memoryservice.domain.ai.ReflectionSaveEvent.class);
             log.info("Processing async reflection background save for user: {}", event.userId());
             
-            // 1. Calculate embedding for the user prompt
             float[] promptEmbedding = geminiService.getEmbedding(event.prompt());
             
-            // 2. Save the user prompt (with embedding)
             memoryService.saveMemory(event.userId(), event.prompt(), event.emotion(), "user", promptEmbedding);
             
-            // 3. Save the mirror reflection (without embedding)
             memoryService.saveMemory(event.userId(), event.reflection(), event.emotion(), "mirror", null);
             
             log.info("Successfully processed and saved background reflection for user: {}", event.userId());

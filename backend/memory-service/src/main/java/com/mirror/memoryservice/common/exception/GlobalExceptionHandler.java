@@ -18,7 +18,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleAllExceptions(Exception ex) {
-        // Propagate rate-limit errors with correct HTTP status
         String message = ex.getMessage() != null ? ex.getMessage() : "";
         if (message.startsWith("RATE_LIMIT_EXCEEDED:")) {
             log.warn("AI quota exceeded: {}", message);

@@ -34,7 +34,6 @@ public class PromptService {
     }
 
     public String getSystemPrompt() {
-        // Here you can later connect to a database to fetch fine-tuned prompts dynamically!
         return systemPrompt;
     }
 }

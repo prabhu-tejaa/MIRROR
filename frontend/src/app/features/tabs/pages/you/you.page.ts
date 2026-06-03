@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, inject, computed, DestroyRef, NgZone } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, computed, DestroyRef, NgZone, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { AudioVisualizerService } from '../chat/data-access/audio-visualizer.service';
 import { CommonModule } from '@angular/common';
 import { IonContent } from '@ionic/angular/standalone';
@@ -17,7 +17,7 @@ import { environment } from '../../../../../environments/environment';
   imports: [CommonModule, IonContent],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class YouPage {
+export class YouPage implements OnDestroy {
   private userMemorySvc = inject(UserMemoryService);
   private authSvc = inject(AuthService);
   private router = inject(Router);
@@ -26,6 +26,18 @@ export class YouPage {
   private ngZone = inject(NgZone);
 
   private audioVisualizerSvc = inject(AudioVisualizerService);
+
+  @ViewChild('auraStage') private stageRef!: ElementRef<HTMLElement>;
+
+  // ── Drag & spring-physics (all plain objects — no signals needed for RAF perf) ──
+  private readonly SPRING_K = 0.065;
+  private readonly DAMPING   = 0.76;
+  private orbOffsets  = Array.from({ length: 4 }, () => ({ x: 0, y: 0 }));
+  private orbVels     = Array.from({ length: 4 }, () => ({ x: 0, y: 0 }));
+  private stageOff    = { x: 0, y: 0 };
+  private stageVel    = { x: 0, y: 0 };
+  private rafId: number | null = null;
+  public  hasDragged  = false;
 
   // Initialize signals from cached values in the service if available
   private initialAnalytics = this.userMemorySvc.getAnalyticsCached();
@@ -69,6 +81,24 @@ export class YouPage {
 
   public username = computed(() => {
     return this.authSvc.getUserId() || 'Soul';
+  });
+
+  public readonly displayUsername = computed(() => {
+    const name = this.authSvc.getUserId() || 'Soul';
+    const MAX = 12;
+
+    if (name.length <= MAX) return name;
+
+    if (name.includes(' ')) {
+      const cutIdx = name.lastIndexOf(' ', MAX);
+      if (cutIdx > 0) {
+        return name.substring(0, cutIdx);
+      }
+      return name.substring(0, MAX) + '...';
+    }
+
+    // Single long word → character truncate with ellipsis
+    return name.substring(0, MAX) + '...';
   });
 
   public readonly topOrbs = computed(() => {
@@ -203,5 +233,144 @@ export class YouPage {
         this.toastSvc.showInfo('Could not load past reflections.');
       }
     });
+  }
+
+  // ── Outer-orb individual drag ────────────────────────────────────────────────
+  public onOrbPointerDown(e: PointerEvent, index: number): void {
+    const el = e.currentTarget as HTMLElement;
+    el.setPointerCapture(e.pointerId);
+    this.hasDragged = false;
+    let lastX = e.clientX, lastY = e.clientY;
+    this.cancelSpring();
+
+    // Grab wrapper reference once so onMove can read its live rotation matrix
+    const wrapper = this.stageRef?.nativeElement?.querySelector<HTMLElement>('.outer-orbs-wrapper');
+
+    const onMove = (ev: PointerEvent) => {
+      const dx = ev.clientX - lastX;
+      const dy = ev.clientY - lastY;
+      lastX = ev.clientX; lastY = ev.clientY;
+
+      // Convert screen-space drag into the wrapper's local (rotated) coordinate space
+      let localDx = dx, localDy = dy;
+      if (wrapper) {
+        const m = new DOMMatrix(getComputedStyle(wrapper).transform);
+        const angle = -Math.atan2(m.b, m.a);
+        localDx = dx * Math.cos(angle) - dy * Math.sin(angle);
+        localDy = dx * Math.sin(angle) + dy * Math.cos(angle);
+      }
+
+      this.orbOffsets[index].x += localDx;
+      this.orbOffsets[index].y += localDy;
+      this.orbVels[index].x = localDx;
+      this.orbVels[index].y = localDy;
+      if (Math.abs(this.orbOffsets[index].x) + Math.abs(this.orbOffsets[index].y) > 4) this.hasDragged = true;
+      el.style.setProperty('--orb-drag-x', `${this.orbOffsets[index].x}px`);
+      el.style.setProperty('--orb-drag-y', `${this.orbOffsets[index].y}px`);
+    };
+
+    const onUp = () => {
+      el.removeEventListener('pointermove', onMove as EventListener);
+      el.removeEventListener('pointerup', onUp);
+      this.startSpring();
+    };
+
+    el.addEventListener('pointermove', onMove as EventListener);
+    el.addEventListener('pointerup', onUp);
+  }
+
+  // ── Center-orb drag → whole stage moves ──────────────────────────────────────
+  public onCenterPointerDown(e: PointerEvent): void {
+    const el = e.currentTarget as HTMLElement;
+    el.setPointerCapture(e.pointerId);
+    this.hasDragged = false;
+    let lastX = e.clientX, lastY = e.clientY;
+    this.cancelSpring();
+
+    const onMove = (ev: PointerEvent) => {
+      const dx = ev.clientX - lastX;
+      const dy = ev.clientY - lastY;
+      lastX = ev.clientX; lastY = ev.clientY;
+      this.stageOff.x += dx;
+      this.stageOff.y += dy;
+      this.stageVel.x = dx;
+      this.stageVel.y = dy;
+      if (Math.abs(this.stageOff.x) + Math.abs(this.stageOff.y) > 4) this.hasDragged = true;
+      const stageEl = this.stageRef?.nativeElement;
+      if (stageEl) stageEl.style.transform = `translate(${this.stageOff.x}px,${this.stageOff.y}px)`;
+    };
+
+    const onUp = () => {
+      el.removeEventListener('pointermove', onMove as EventListener);
+      el.removeEventListener('pointerup', onUp);
+      this.startSpring();
+    };
+
+    el.addEventListener('pointermove', onMove as EventListener);
+    el.addEventListener('pointerup', onUp);
+  }
+
+  // ── Spring-physics loop (RAF outside Angular zone for max perf) ──────────────
+  private startSpring(): void {
+    if (this.rafId !== null) return;
+    const K = this.SPRING_K;
+    const D = this.DAMPING;
+
+    this.ngZone.runOutsideAngular(() => {
+      const tick = () => {
+        let active = false;
+        const stageEl = this.stageRef?.nativeElement;
+
+        // — stage spring —
+        this.stageVel.x = this.stageVel.x * D + (0 - this.stageOff.x) * K;
+        this.stageVel.y = this.stageVel.y * D + (0 - this.stageOff.y) * K;
+        this.stageOff.x += this.stageVel.x;
+        this.stageOff.y += this.stageVel.y;
+        if (Math.abs(this.stageOff.x) > 0.15 || Math.abs(this.stageOff.y) > 0.15) {
+          active = true;
+          if (stageEl) stageEl.style.transform = `translate(${this.stageOff.x}px,${this.stageOff.y}px)`;
+        } else {
+          this.stageOff.x = this.stageOff.y = this.stageVel.x = this.stageVel.y = 0;
+          if (stageEl) stageEl.style.transform = '';
+        }
+
+        // — orb springs —
+        const orbEls = stageEl
+          ? Array.from(stageEl.querySelectorAll<HTMLElement>('.outer-orbs-wrapper .aura-orb'))
+          : [];
+
+        for (let i = 0; i < this.orbOffsets.length; i++) {
+          const o = this.orbOffsets[i];
+          const v = this.orbVels[i];
+          if (o.x === 0 && o.y === 0 && v.x === 0 && v.y === 0) continue;
+          v.x = v.x * D + (0 - o.x) * K;
+          v.y = v.y * D + (0 - o.y) * K;
+          o.x += v.x;
+          o.y += v.y;
+          const orbEl = orbEls[i];
+          if (Math.abs(o.x) > 0.15 || Math.abs(o.y) > 0.15) {
+            active = true;
+            if (orbEl) {
+              orbEl.style.setProperty('--orb-drag-x', `${o.x}px`);
+              orbEl.style.setProperty('--orb-drag-y', `${o.y}px`);
+            }
+          } else {
+            o.x = o.y = v.x = v.y = 0;
+            if (orbEl) { orbEl.style.removeProperty('--orb-drag-x'); orbEl.style.removeProperty('--orb-drag-y'); }
+          }
+        }
+
+        this.rafId = active ? requestAnimationFrame(tick) : null;
+      };
+      this.rafId = requestAnimationFrame(tick);
+    });
+  }
+
+  private cancelSpring(): void {
+    if (this.rafId !== null) { cancelAnimationFrame(this.rafId); this.rafId = null; }
+  }
+
+  public ngOnDestroy(): void {
+    this.cancelSpring();
   }
 }
