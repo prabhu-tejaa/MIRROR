@@ -22,7 +22,7 @@ public class Memory {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 255)
     private String emotion;
 
     @Column(nullable = false, length = 50)

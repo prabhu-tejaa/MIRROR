@@ -7,7 +7,7 @@ import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
 import { StarfieldComponent } from './shared/starfield/starfield.component';
 import { NoInternetComponent } from './shared/no-internet/no-internet.component';
 import { ScrollAssistantComponent } from './shared/scroll-assistant/scroll-assistant.component';
-import { TranslatePipe } from './shared/pipes/translate.pipe';
+
 import { ConnectionService } from './core/services/connection.service';
 import { AnalyticsService } from './core/services/analytics.service';
 import { HttpCancelService } from './core/services/http-cancel.service';
@@ -23,8 +23,7 @@ import { PresenceService } from './core/services/presence.service';
     IonRouterOutlet,
     StarfieldComponent,
     NoInternetComponent,
-    ScrollAssistantComponent,
-    TranslatePipe
+    ScrollAssistantComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -166,21 +166,35 @@ export class YouPage {
   }
 
   public parseEmotionTag(rawTag: string) {
-    if (!rawTag) return { name: 'Calm', primaryColor: '#2ecc71', secondaryColor: 'rgba(46, 204, 113, 0.4)' };
+    if (!rawTag) return { pillar: 'FEELINGS', name: 'Calm', primaryColor: '#2ecc71', secondaryColor: 'rgba(46, 204, 113, 0.4)' };
     const parts = rawTag.split('|');
-    const name = parts[0] || rawTag;
     
-    // Legacy mapping fallback for static old tags if they don't have hex codes
-    let primaryColor = parts[1];
-    let secondaryColor = parts[2];
+    let pillar = 'FEELINGS';
+    let name = rawTag;
+    let primaryColor: string | undefined;
+    let secondaryColor: string | undefined;
 
+    if (parts.length === 4) {
+      pillar = parts[0];
+      name = parts[1];
+      primaryColor = parts[2];
+      secondaryColor = parts[3];
+    } else if (parts.length === 3) {
+      name = parts[0];
+      primaryColor = parts[1];
+      secondaryColor = parts[2];
+    } else {
+      name = parts[0] || rawTag;
+    }
+
+    // Legacy mapping fallback for static old tags if they don't have hex codes
     if (!primaryColor || !secondaryColor) {
       const colors = getEmotionColors(name);
       primaryColor = colors.primary;
       secondaryColor = colors.secondary;
     }
 
-    return { name, primaryColor, secondaryColor };
+    return { pillar, name, primaryColor, secondaryColor };
   }
 
   public togglePlay() {

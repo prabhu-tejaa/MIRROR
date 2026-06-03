@@ -182,11 +182,12 @@ public class GeminiService {
                                 if (jsonResponseText != null) {
                                     String cleanedJson = sanitizeJsonText(jsonResponseText);
                                     Map<String, String> parsed = parseJsonFields(cleanedJson);
+                                    String pillar = parsed.getOrDefault("pillar", "FEELINGS");
                                     String rawEmotionText = parsed.getOrDefault("emotion", "NEUTRAL");
                                     String primaryColor = parsed.getOrDefault("primaryColor", "#a855f7");
                                     String secondaryColor = parsed.getOrDefault("secondaryColor", "#06b6d4");
-                                    // Encode colors into the emotion field dynamically
-                                    parsed.put("emotion", rawEmotionText + "|" + primaryColor + "|" + secondaryColor);
+                                    // Encode pillar and colors into the emotion field dynamically
+                                    parsed.put("emotion", pillar + "|" + rawEmotionText + "|" + primaryColor + "|" + secondaryColor);
                                     return parsed;
                                 }
                             }
