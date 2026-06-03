@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -26,6 +26,7 @@ export class AdminMemoryPage implements OnInit {
   private toastSvc = inject(ToastService);
   private adminMemorySvc = inject(AdminMemoryService);
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
 
   public activeTab: 'UPLOAD' | 'MANAGE' = 'MANAGE';
   public isUploading = false;
@@ -63,9 +64,11 @@ export class AdminMemoryPage implements OnInit {
       next: (records: AdminMemoryRecord[]) => {
         this.dbRecords = records;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.isLoading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -88,9 +91,11 @@ export class AdminMemoryPage implements OnInit {
           this.isUploading = false;
           this.toastSvc.showSuccess(res);
           this.loadRecords();
+          this.cdr.detectChanges();
         },
         error: () => {
           this.isUploading = false;
+          this.cdr.detectChanges();
         }
       });
     }

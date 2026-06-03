@@ -37,12 +37,7 @@
         <h1 class="greeting-title">
           <span class="greeting-time-text">{{ getGreeting() }},</span>
           <span class="username-highlight">
-            <span *ngFor="let char of getUsername().split(''); let i = index" 
-                  class="wobble-char" 
-                  [style.animation-delay]="(i * 0.08) + 's'">
-              <ng-container *ngIf="char === ' '">&nbsp;</ng-container>
-              <ng-container *ngIf="char !== ' '">{{ char }}</ng-container>
-            </span>
+            {{ getUsername() }}
           </span>
         </h1>
         <p class="greeting-subtitle">

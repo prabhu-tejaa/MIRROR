@@ -174,7 +174,8 @@ export class ChatPage implements OnDestroy {
   private currentCursor: string | null = null;
   private readonly pageSize = 20;
   private hasMoreHistory = true;
-  private isInitialLoad = true;
+  private static initialChatLoadedGlobally = false;
+  private isInitialLoad = !ChatPage.initialChatLoadedGlobally;
   private loadedEmail: string | null = null;
 
 
@@ -387,10 +388,7 @@ export class ChatPage implements OnDestroy {
   }
 
   public ionViewWillEnter() {
-    const currentEmail = this.authSvc.getEmail() || 'guest@mirror.com';
-    if (this.isInitialLoad || this.loadedEmail !== currentEmail) {
-      this.loadChatHistory();
-    }
+    this.loadChatHistory();
   }
 
   public ionViewDidEnter() {
@@ -770,16 +768,24 @@ export class ChatPage implements OnDestroy {
   private loadChatHistory() {
     const email = this.authSvc.getEmail() || 'guest@mirror.com';
     this.loadedEmail = email;
-    this.isLoadingHistory.set(true);
+    
+    // Only show the skeleton loader if it's the very first time we load the chat
+    if (this.isInitialLoad) {
+      this.isLoadingHistory.set(true);
+    }
+    
     this.currentCursor = null;
     this.hasMoreHistory = true;
     this.isInitialLoad = true;
+    // Reset aura colors while syncing (optional, or we could leave them until API returns)
+    // We do NOT clear this.messages here, so the screen doesn't visually flash empty!
     
-    // Reset state for the new/loading user
-    this.messages.set([]);
-    this.currentEmotion.set('NEUTRAL');
-    this.currentPrimaryColor.set('#a855f7');
-    this.currentSecondaryColor.set('#06b6d4');
+    // We only reset colors if it's the very first load to avoid flashing
+    if (this.isInitialLoad) {
+      this.currentEmotion.set('NEUTRAL');
+      this.currentPrimaryColor.set('#a855f7');
+      this.currentSecondaryColor.set('#06b6d4');
+    }
 
     this.chatSvc.getHistory(email, null, this.pageSize).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
@@ -791,13 +797,14 @@ export class ChatPage implements OnDestroy {
               id: m.id.toString(),
               sender: m.sender || 'user',
               text: m.content,
-              timestamp: new Date(m.createdAt || new Date()),
+              timestamp: typeof m.createdAt === 'number' ? new Date(m.createdAt > 9999999999 ? m.createdAt : m.createdAt * 1000) : new Date(m.createdAt || new Date()),
               emotion,
               primaryColor: primary,
               secondaryColor: secondary
             };
           });
-          this.messages.update(prev => [...loadedMessages, ...prev]);
+          // Since this is the main history load (cursor is null), we completely replace the existing messages
+          this.messages.set(loadedMessages);
 
           // Set current active emotion and colors from the last mirrored message
           const lastMirror = [...loadedMessages].reverse().find(m => m.sender === 'mirror');
@@ -812,12 +819,14 @@ export class ChatPage implements OnDestroy {
         }
         this.isLoadingHistory.set(false);
         this.isInitialLoad = false;
+        ChatPage.initialChatLoadedGlobally = true;
         setTimeout(() => this.scrollToBottom('auto'), 50);
       },
       error: async (err) => {
         console.error('Failed to load chat history from backend:', err);
         this.isLoadingHistory.set(false);
         this.isInitialLoad = false;
+        ChatPage.initialChatLoadedGlobally = true;
         setTimeout(() => this.scrollToBottom('auto'), 50);
         
         await this.toastSvc.showError('Failed to load chat history.');
@@ -847,7 +856,7 @@ export class ChatPage implements OnDestroy {
               id: m.id.toString(),
               sender: m.sender || 'user',
               text: m.content,
-              timestamp: new Date(m.createdAt || new Date()),
+              timestamp: typeof m.createdAt === 'number' ? new Date(m.createdAt > 9999999999 ? m.createdAt : m.createdAt * 1000) : new Date(m.createdAt || new Date()),
               emotion,
               primaryColor: primary,
               secondaryColor: secondary

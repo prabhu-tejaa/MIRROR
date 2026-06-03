@@ -4,10 +4,13 @@ server:
 spring:
   application:
     name: memory-service
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
   flyway:
     baseline-on-migrate: true
     baseline-version: 3
-    table: memory_flyway_schema_history_v2
+    table: memory_flyway_schema_history
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}

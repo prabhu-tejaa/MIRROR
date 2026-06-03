@@ -32,6 +32,13 @@ ion-content {
   gap: 10px;
 }
 
+// Global pause when tab is inactive to save GPU/CPU
+.animations-paused {
+  *, *::before, *::after {
+    animation-play-state: paused !important;
+  }
+}
+
 // 1. Header Styles (Sized down)
 .mind-header {
   h1 {
@@ -97,7 +104,7 @@ ion-content {
     // Synced core animation blends glassy core colors when outer orbs sweep inside!
     animation: morphBlob 8s ease-in-out infinite alternate, glassyCoreAuroraIntro 3s ease-in-out forwards, glassyCoreAuroraLoop 16s ease-in-out infinite 3s;
 
-    .animate-intro & {
+    &.animate-intro {
       animation: fadeInSlow 2.5s ease-in-out forwards, morphBlob 8s ease-in-out infinite alternate, glassyCoreAuroraIntro 3s ease-in-out forwards, glassyCoreAuroraLoop 16s ease-in-out infinite 3s;
     }
 
@@ -146,8 +153,8 @@ ion-content {
     height: 100%;
     animation: rotateOuter 25s linear infinite;
 
-    .animate-intro & {
-      animation: fadeInSlow 2s ease-in-out forwards, rotateOuter 25s linear infinite;
+    &.animate-intro {
+      animation: fadeInSlow 2.5s ease-in-out forwards, rotateOuter 25s linear infinite;
     }
   }
 

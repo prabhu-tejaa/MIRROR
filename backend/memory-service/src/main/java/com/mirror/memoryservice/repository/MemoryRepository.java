@@ -18,7 +18,7 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
     @Modifying
     @Transactional
     @Query(value = "INSERT INTO memories (user_id, content, emotion, sender, embedding, created_at) " +
-                   "VALUES (:userId, :content, :emotion, :sender, CAST(:embedding AS vector), CURRENT_TIMESTAMP)", nativeQuery = true)
+                   "VALUES (:userId, :content, :emotion, :sender, CASE WHEN :embedding IS NULL THEN NULL ELSE CAST(:embedding AS vector) END, CURRENT_TIMESTAMP)", nativeQuery = true)
     void saveMemoryWithEmbedding(
         @Param("userId") String userId, 
         @Param("content") String content, 

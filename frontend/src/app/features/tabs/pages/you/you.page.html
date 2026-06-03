@@ -1,5 +1,5 @@
 <ion-content [fullscreen]="true" [scrollY]="true">
-  <div class="mind-space-wrapper">
+  <div class="mind-space-wrapper" [class.animations-paused]="!isTabActive()">
     
 
     <!-- 2. Dynamic Stage (Always shown, adapts to state) -->
@@ -7,12 +7,12 @@
       <div class="aura-stage-container" [class.animate-intro]="shouldAnimateIntro">
         
         <!-- Center Orb (Always Glassy Core 代表 Core Self) -->
-        <div class="aura-orb dominant-orb glassy-core" [style.--dynamic-aura-gradient]="auraGradient()" (click)="totalCount() > 0 && isAllEmotionsOpen.set(true)" [style.cursor]="totalCount() > 0 ? 'pointer' : 'default'">
+        <div class="aura-orb dominant-orb glassy-core" [class.animate-intro]="shouldAnimateIntro" [style.--dynamic-aura-gradient]="auraGradient()" (click)="totalCount() > 0 && isAllEmotionsOpen.set(true)" [style.cursor]="totalCount() > 0 ? 'pointer' : 'default'">
           <span class="orb-label">{{ username() }}</span>
         </div>
 
         <!-- N Outer Orbs floating and playing around dynamically (Top 4) -->
-        <div class="outer-orbs-wrapper" *ngIf="totalCount() > 0">
+        <div class="outer-orbs-wrapper" *ngIf="totalCount() > 0" [class.animate-intro]="shouldAnimateIntro">
           <div *ngFor="let stat of topOrbs(); let i = index"
                class="aura-orb"
                [ngClass]="orbClasses[i]"

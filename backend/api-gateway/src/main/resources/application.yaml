@@ -48,7 +48,7 @@ spring:
         - id: memory-service-route
           uri: http://localhost:8081
           predicates:
-            - Path=/api/memory/**
+            - Path=/api/memory/**,/api/admin/memory/**
           filters:
             - AuthenticationFilter
             - name: RequestRateLimiter
@@ -121,7 +121,7 @@ spring:
         - id: memory-service-route
           uri: ${MEMORY_SERVICE_URL}
           predicates:
-            - Path=/api/memory/**
+            - Path=/api/memory/**,/api/admin/memory/**
           filters:
             - AuthenticationFilter
             - name: RequestRateLimiter

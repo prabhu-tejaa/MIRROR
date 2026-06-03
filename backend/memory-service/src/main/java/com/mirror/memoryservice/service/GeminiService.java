@@ -122,81 +122,106 @@ public class GeminiService {
             throw new IllegalStateException("Gemini API key is not configured. Please set the GEMINI_API_KEY environment variable.");
         }
 
-        try {
-            String url = apiUrl + "/models/gemini-2.5-flash:generateContent?key=" + apiKey;
+        int maxRetries = 3;
+        int attempt = 0;
+        Exception lastException = null;
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+        while (attempt < maxRetries) {
+            try {
+                String url = apiUrl + "/models/gemini-2.5-flash:generateContent?key=" + apiKey;
 
-            // Construct content prompt
-            String fullPromptText = "USER PROMPT: " + prompt + "\n\n" +
-                                   "PAST RELEVANT MEMORIES CONTEXT:\n" + (pastContext != null ? pastContext : "None") + "\n\n" +
-                                   "Please analyze the prompt and past context, generate an empathetic reflection, and tag the user's emotion.";
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
 
-            Map<String, Object> textPart = new HashMap<>();
-            textPart.put("text", fullPromptText);
+                // Construct content prompt
+                String fullPromptText = "USER PROMPT: " + prompt + "\n\n" +
+                                       "PAST RELEVANT MEMORIES CONTEXT:\n" + (pastContext != null ? pastContext : "None") + "\n\n" +
+                                       "Please analyze the prompt and past context, generate an empathetic reflection, and tag the user's emotion.";
 
-            Map<String, Object> contentsNode = new HashMap<>();
-            contentsNode.put("parts", Collections.singletonList(textPart));
+                Map<String, Object> textPart = new HashMap<>();
+                textPart.put("text", fullPromptText);
 
-            // Set JSON response config
-            Map<String, Object> generationConfig = new HashMap<>();
-            generationConfig.put("responseMimeType", "application/json");
-            generationConfig.put("temperature", temperature);
+                Map<String, Object> contentsNode = new HashMap<>();
+                contentsNode.put("parts", Collections.singletonList(textPart));
 
-            // System Instruction
-            Map<String, Object> systemPart = new HashMap<>();
-            String finalSystemPrompt = promptService.getSystemPrompt();
-            systemPart.put("text", finalSystemPrompt);
+                // Set JSON response config
+                Map<String, Object> generationConfig = new HashMap<>();
+                generationConfig.put("responseMimeType", "application/json");
+                generationConfig.put("temperature", temperature);
 
-            Map<String, Object> systemInstruction = new HashMap<>();
-            systemInstruction.put("parts", Collections.singletonList(systemPart));
+                // System Instruction
+                Map<String, Object> systemPart = new HashMap<>();
+                String finalSystemPrompt = promptService.getSystemPrompt();
+                systemPart.put("text", finalSystemPrompt);
 
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("contents", Collections.singletonList(contentsNode));
-            payload.put("generationConfig", generationConfig);
-            payload.put("systemInstruction", systemInstruction);
+                Map<String, Object> systemInstruction = new HashMap<>();
+                systemInstruction.put("parts", Collections.singletonList(systemPart));
 
-            ResponseEntity<Map> response = restClient.post()
-                    .uri(url)
-                    .headers(h -> h.addAll(headers))
-                    .body(payload)
-                    .retrieve()
-                    .toEntity(Map.class);
+                Map<String, Object> payload = new HashMap<>();
+                payload.put("contents", Collections.singletonList(contentsNode));
+                payload.put("generationConfig", generationConfig);
+                payload.put("systemInstruction", systemInstruction);
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                Map<String, Object> body = response.getBody();
-                List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
-                if (candidates != null && !candidates.isEmpty()) {
-                    Map<String, Object> firstCandidate = candidates.get(0);
-                    Map<String, Object> contentNode = (Map<String, Object>) firstCandidate.get("content");
-                    if (contentNode != null) {
-                        List<Map<String, Object>> parts = (List<Map<String, Object>>) contentNode.get("parts");
-                        if (parts != null && !parts.isEmpty()) {
-                            String jsonResponseText = (String) parts.get(0).get("text");
-                            if (jsonResponseText != null) {
-                                String cleanedJson = sanitizeJsonText(jsonResponseText);
-                                Map<String, String> parsed = parseJsonFields(cleanedJson);
-                                String rawEmotionText = parsed.getOrDefault("emotion", "NEUTRAL");
-                                String primaryColor = parsed.getOrDefault("primaryColor", "#a855f7");
-                                String secondaryColor = parsed.getOrDefault("secondaryColor", "#06b6d4");
-                                // Encode colors into the emotion field dynamically
-                                parsed.put("emotion", rawEmotionText + "|" + primaryColor + "|" + secondaryColor);
-                                return parsed;
+                ResponseEntity<Map> response = restClient.post()
+                        .uri(url)
+                        .headers(h -> h.addAll(headers))
+                        .body(payload)
+                        .retrieve()
+                        .toEntity(Map.class);
+
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    Map<String, Object> body = response.getBody();
+                    List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
+                    if (candidates != null && !candidates.isEmpty()) {
+                        Map<String, Object> firstCandidate = candidates.get(0);
+                        Map<String, Object> contentNode = (Map<String, Object>) firstCandidate.get("content");
+                        if (contentNode != null) {
+                            List<Map<String, Object>> parts = (List<Map<String, Object>>) contentNode.get("parts");
+                            if (parts != null && !parts.isEmpty()) {
+                                String jsonResponseText = (String) parts.get(0).get("text");
+                                if (jsonResponseText != null) {
+                                    String cleanedJson = sanitizeJsonText(jsonResponseText);
+                                    Map<String, String> parsed = parseJsonFields(cleanedJson);
+                                    String rawEmotionText = parsed.getOrDefault("emotion", "NEUTRAL");
+                                    String primaryColor = parsed.getOrDefault("primaryColor", "#a855f7");
+                                    String secondaryColor = parsed.getOrDefault("secondaryColor", "#06b6d4");
+                                    // Encode colors into the emotion field dynamically
+                                    parsed.put("emotion", rawEmotionText + "|" + primaryColor + "|" + secondaryColor);
+                                    return parsed;
+                                }
                             }
                         }
                     }
                 }
+                throw new RuntimeException("Gemini Reflection response was invalid or missing expected payload fields.");
+            } catch (Exception e) {
+                lastException = e;
+                attempt++;
+                String errMsg = e.getMessage() != null ? e.getMessage() : "";
+                if (errMsg.contains("503") || errMsg.contains("429")) {
+                    log.warn("Gemini API overloaded (503/429). Retrying attempt {}/{}...", attempt, maxRetries);
+                    if (attempt < maxRetries) {
+                        try {
+                            Thread.sleep(1500L * attempt);
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                        }
+                        continue;
+                    }
+                }
+                log.error("Failed to query Gemini Reflection API after {} attempts.", attempt, e);
+                break;
             }
-            throw new RuntimeException("Gemini Reflection response was invalid or missing expected payload fields.");
-        } catch (Exception e) {
-            log.error("Failed to query Gemini Reflection API.", e);
-            // Graceful fallback response instead of standard 500 crash
-            Map<String, String> fallback = new HashMap<>();
-            fallback.put("reflection", "I am having a brief moment of quiet thought. Let's reset and share your next reflection when you are ready.");
-            fallback.put("emotion", "Calm Vibe|#a855f7|#06b6d4");
-            return fallback;
         }
+        
+        // Return the actual technical error to the user instead of a conversational fallback
+        Map<String, String> fallback = new HashMap<>();
+        String actualError = lastException != null && lastException.getMessage() != null 
+                             ? lastException.getMessage() 
+                             : (lastException != null ? lastException.toString() : "Unknown Error");
+        fallback.put("reflection", "⚠️ I encountered an API error and couldn't process your reflection. Technical details: " + actualError);
+        fallback.put("emotion", "API Error|#ff4444|#aa0000");
+        return fallback;
     }
 
     /**

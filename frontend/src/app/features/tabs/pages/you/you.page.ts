@@ -39,6 +39,7 @@ export class YouPage {
   public readonly scale4 = this.audioVisualizerSvc.scale4;
 
   public isLoading = signal<boolean>(false);
+  public isTabActive = signal<boolean>(true);
   public selectedEmotion = signal<string | null>(null);
   public isAllEmotionsOpen = signal<boolean>(false);
   public emotionCounts = signal<Record<string, number>>({});
@@ -143,7 +144,12 @@ export class YouPage {
   constructor() {}
 
   public ionViewWillEnter() {
+    this.isTabActive.set(true);
     this.fetchAnalytics();
+  }
+
+  public ionViewDidLeave() {
+    this.isTabActive.set(false);
   }
 
   public selectEmotion(emotionKey: string | null) {
@@ -181,14 +187,14 @@ export class YouPage {
     this.audioVisualizerSvc.togglePlay(this.groovesaladUrl);
   }
 
-  private dataLoadedOnce = false;
-  public shouldAnimateIntro = true;
+  private static dataLoadedOnceGlobally = false;
+  public shouldAnimateIntro = !YouPage.dataLoadedOnceGlobally;
 
   private fetchAnalytics() {
     const email = this.authSvc.getEmail() || 'guest@mirror.com';
     
     // Only trigger the visual "Syncing Aura..." loader on the very first visit
-    if (!this.dataLoadedOnce) {
+    if (!YouPage.dataLoadedOnceGlobally) {
       this.isLoading.set(true);
     }
 
@@ -205,20 +211,23 @@ export class YouPage {
           });
         }
 
-        // Always override with real backend data, even if total is 0
         this.emotionCounts.set(normalized);
         this.totalCount.set(total);
-        if (!this.dataLoadedOnce) {
+        if (!YouPage.dataLoadedOnceGlobally) {
           setTimeout(() => { this.shouldAnimateIntro = false; }, 3000);
+        } else {
+          this.shouldAnimateIntro = false;
         }
-        this.dataLoadedOnce = true;
+        YouPage.dataLoadedOnceGlobally = true;
         this.isLoading.set(false);
       },
       error: async (_err) => {
-        if (!this.dataLoadedOnce) {
+        if (!YouPage.dataLoadedOnceGlobally) {
           setTimeout(() => { this.shouldAnimateIntro = false; }, 3000);
+        } else {
+          this.shouldAnimateIntro = false;
         }
-        this.dataLoadedOnce = true;
+        YouPage.dataLoadedOnceGlobally = true;
         this.isLoading.set(false);
         this.toastSvc.showError('Failed to sync your aura. Please try again.');
       }
@@ -228,7 +237,13 @@ export class YouPage {
     this.userMemorySvc.getAllMemories(email).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (memories) => {
         if (memories && memories.length > 0) {
-          this.reflectionsList.set(memories.filter(m => m.sender === 'user'));
+          const normalizedMemories = memories.map((m: any) => ({
+            ...m,
+            createdAt: typeof m.createdAt === 'number'
+              ? new Date(m.createdAt < 9999999999 ? m.createdAt * 1000 : m.createdAt).toISOString()
+              : String(m.createdAt)
+          }));
+          this.reflectionsList.set((normalizedMemories as Reflection[]).filter(m => m.sender === 'user'));
         }
       },
       error: async () => {
