@@ -1,6 +1,6 @@
-@import 'header';
-@import 'telemetry-grid';
-@import 'service-registry';
-@import 'routes-table';
-@import 'security';
-@import 'console';
+@use 'header';
+@use 'telemetry-grid';
+@use 'service-registry';
+@use 'routes-table';
+@use 'security';
+@use 'console';

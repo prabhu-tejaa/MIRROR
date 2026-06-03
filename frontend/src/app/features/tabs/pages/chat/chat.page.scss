@@ -1,9 +1,9 @@
-@import 'animations';
-@import 'themes';
-@import 'header';
-@import 'messages';
-@import 'input';
-@import 'welcome';
+@use 'animations';
+@use 'themes';
+@use 'header';
+@use 'messages';
+@use 'input';
+@use 'welcome';
 
 .chat-content-container {
   --background: #0d0b18;
