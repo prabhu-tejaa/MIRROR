@@ -1,6 +1,7 @@
 package com.mirror.memoryservice.infrastructure.messaging;
 import com.mirror.memoryservice.domain.ai.ReflectionSaveEvent;
 import com.mirror.memoryservice.domain.ai.GeminiService;
+import com.mirror.memoryservice.domain.ai.GroqService;
 import com.mirror.memoryservice.domain.memory.MemoryService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,12 +19,14 @@ public class MemoryEventListener {
 
     private static final Logger log = LoggerFactory.getLogger(MemoryEventListener.class);
     private final MemoryService memoryService;
-    private final GeminiService geminiService;
+    private final GeminiService geminiService;  // embeddings only
+    private final GroqService groqService;       // text generation
     private final ObjectMapper objectMapper;
 
-    public MemoryEventListener(MemoryService memoryService, GeminiService geminiService, ObjectMapper objectMapper) {
+    public MemoryEventListener(MemoryService memoryService, GeminiService geminiService, GroqService groqService, ObjectMapper objectMapper) {
         this.memoryService = memoryService;
         this.geminiService = geminiService;
+        this.groqService = groqService;
         this.objectMapper = objectMapper;
     }
 
@@ -34,7 +37,7 @@ public class MemoryEventListener {
             log.info("Processing async memory save for user: {}", event.userId());
             
             float[] embedding = geminiService.getEmbedding(event.content());
-            Map<String, String> sentiment = geminiService.generateReflectionAndEmotion(event.content(), null);
+            Map<String, String> sentiment = groqService.generateReflectionAndEmotion(event.content(), null);
             String emotion = sentiment.getOrDefault("emotion", "NEUTRAL");
             
             memoryService.saveMemory(event.userId(), event.content(), emotion, "user", embedding);

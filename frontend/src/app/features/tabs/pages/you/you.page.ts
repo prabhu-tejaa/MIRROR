@@ -27,6 +27,10 @@ export class YouPage {
 
   private audioVisualizerSvc = inject(AudioVisualizerService);
 
+  // Initialize signals from cached values in the service if available
+  private initialAnalytics = this.userMemorySvc.getAnalyticsCached();
+  private initialMemories = this.userMemorySvc.getMemoriesCached();
+
   // Ambient Sound Player Properties
   public readonly isPlaying = this.audioVisualizerSvc.isPlaying;
   public readonly isLoadingAudio = this.audioVisualizerSvc.isLoadingAudio;
@@ -41,12 +45,24 @@ export class YouPage {
   public isTabActive = signal<boolean>(true);
   public selectedEmotion = signal<string | null>(null);
   public isAllEmotionsOpen = signal<boolean>(false);
-  public totalCount = signal<number>(0);
-  public dominantEmotion = signal<string>('CALM');
-  public activeStreak = signal<number>(0);
-  public emotionStats = signal<EmotionStat[]>([]);
-  public auraGradient = signal<string>('transparent');
-  public reflectionsList = signal<Reflection[]>([]);
+  public totalCount = signal<number>(this.initialAnalytics?.totalMemories ?? 0);
+  public dominantEmotion = signal<string>(this.initialAnalytics?.dominantEmotion ?? 'CALM');
+  public activeStreak = signal<number>(this.initialAnalytics?.activeStreak ?? 0);
+  public emotionStats = signal<EmotionStat[]>(this.initialAnalytics?.emotionStats ?? []);
+  public auraGradient = signal<string>(this.initialAnalytics?.auraGradient ?? 'transparent');
+  public reflectionsList = signal<Reflection[]>(
+    this.initialMemories 
+      ? this.initialMemories
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .map((m: any) => ({
+            ...m,
+            createdAt: typeof m.createdAt === 'number'
+              ? new Date(m.createdAt < 9999999999 ? m.createdAt * 1000 : m.createdAt).toISOString()
+              : String(m.createdAt)
+          }))
+          .filter(m => m.sender === 'user')
+      : []
+  );
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private readonly groovesaladUrl = (environment as any).grooveSaladUrl || 'https://ice1.somafm.com/groovesalad-128-mp3';
@@ -128,41 +144,42 @@ export class YouPage {
     this.audioVisualizerSvc.togglePlay(this.groovesaladUrl);
   }
 
-  private static dataLoadedOnceGlobally = false;
-  public shouldAnimateIntro = !YouPage.dataLoadedOnceGlobally;
+  public shouldAnimateIntro = !this.userMemorySvc.isDataLoadedOnce();
 
   private fetchAnalytics() {
     const email = this.authSvc.getEmail() || 'guest@mirror.tech';
 
     // Only trigger the visual "Syncing Aura..." loader on the very first visit
-    if (!YouPage.dataLoadedOnceGlobally) {
+    if (!this.userMemorySvc.isDataLoadedOnce()) {
       this.isLoading.set(true);
     }
 
     // 1. Fetch live metrics counts in the background
     this.userMemorySvc.getAnalytics(email).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (data) => {
-        this.totalCount.set(data.totalMemories);
-        this.dominantEmotion.set(data.dominantEmotion);
-        this.activeStreak.set(data.activeStreak);
-        this.emotionStats.set(data.emotionStats);
-        this.auraGradient.set(data.auraGradient);
+        if (data) {
+          this.totalCount.set(data.totalMemories ?? this.totalCount() ?? 0);
+          this.dominantEmotion.set(data.dominantEmotion || this.dominantEmotion() || 'CALM');
+          this.activeStreak.set(data.activeStreak ?? this.activeStreak() ?? 0);
+          this.emotionStats.set(data.emotionStats || this.emotionStats() || []);
+          this.auraGradient.set(data.auraGradient || this.auraGradient() || 'transparent');
+        }
 
-        if (!YouPage.dataLoadedOnceGlobally) {
+        if (!this.userMemorySvc.isDataLoadedOnce()) {
           setTimeout(() => { this.shouldAnimateIntro = false; }, 3000);
         } else {
           this.shouldAnimateIntro = false;
         }
-        YouPage.dataLoadedOnceGlobally = true;
+        this.userMemorySvc.setDataLoadedOnce(true);
         this.isLoading.set(false);
       },
       error: async (_err) => {
-        if (!YouPage.dataLoadedOnceGlobally) {
+        if (!this.userMemorySvc.isDataLoadedOnce()) {
           setTimeout(() => { this.shouldAnimateIntro = false; }, 3000);
         } else {
           this.shouldAnimateIntro = false;
         }
-        YouPage.dataLoadedOnceGlobally = true;
+        this.userMemorySvc.setDataLoadedOnce(true);
         this.isLoading.set(false);
         this.toastSvc.showError('Failed to sync your aura. Please try again.');
       }

@@ -8,9 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.nio.charset.StandardCharsets;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 @Service
 public class GeminiService {
@@ -23,14 +20,9 @@ public class GeminiService {
     @Value("${gemini.api.url}")
     private String apiUrl;
 
-    @Value("${gemini.generation.temperature:0.7}")
-    private double temperature;
-
     private final RestClient restClient;
-    private final PromptService promptService;
 
-    public GeminiService(PromptService promptService) {
-        this.promptService = promptService;
+    public GeminiService() {
         org.springframework.http.client.SimpleClientHttpRequestFactory factory = new org.springframework.http.client.SimpleClientHttpRequestFactory();
         factory.setConnectTimeout(10000); // 10 seconds
         factory.setReadTimeout(15000); // 15 seconds
@@ -104,179 +96,5 @@ public class GeminiService {
             log.error("Failed to query Gemini Embeddings API.", e);
             throw new RuntimeException("Failed to query Gemini Embeddings API: " + e.getMessage(), e);
         }
-    }
-
-    /**
-     * Generates context-aware reflections and emotional tags by feeding the prompt and past similar memories into Gemini.
-     * Automatically requests structured JSON response mapping.
-     */
-    public Map<String, String> generateReflectionAndEmotion(String prompt, String pastContext) {
-        if (prompt == null || prompt.trim().isEmpty()) {
-            Map<String, String> result = new HashMap<>();
-            result.put("reflection", "Please enter some text so I can reflect with you.");
-            result.put("emotion", "NEUTRAL");
-            return result;
-        }
-
-        if (apiKey == null || apiKey.trim().isEmpty()) {
-            throw new IllegalStateException("Gemini API key is not configured. Please set the GEMINI_API_KEY environment variable.");
-        }
-
-        // Construct content prompt (outside loop to allow mutation on retries)
-        String fullPromptText = "USER PROMPT: " + prompt + "\n\n" +
-                               "PAST RELEVANT MEMORIES CONTEXT:\n" + (pastContext != null ? pastContext : "None") + "\n\n" +
-                               "Please analyze the prompt and past context, generate an empathetic reflection, and tag the user's emotion.";
-
-        int maxRetries = 3;
-        int attempt = 0;
-        Exception lastException = null;
-
-        while (attempt < maxRetries) {
-            try {
-                String url = apiUrl + "/models/gemini-2.5-flash:generateContent?key=" + apiKey;
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-
-                Map<String, Object> textPart = new HashMap<>();
-                textPart.put("text", fullPromptText);
-
-                Map<String, Object> contentsNode = new HashMap<>();
-                contentsNode.put("parts", Collections.singletonList(textPart));
-
-                // Set JSON response config and strict schema
-                Map<String, Object> generationConfig = new HashMap<>();
-                generationConfig.put("responseMimeType", "application/json");
-                generationConfig.put("temperature", temperature);
-                
-                Map<String, Object> schema = new HashMap<>();
-                schema.put("type", "OBJECT");
-                
-                Map<String, Object> properties = new HashMap<>();
-                properties.put("reflection", Map.of("type", "STRING"));
-                properties.put("emotion", Map.of("type", "STRING"));
-                properties.put("pillar", Map.of("type", "STRING"));
-                properties.put("primaryColor", Map.of("type", "STRING"));
-                properties.put("secondaryColor", Map.of("type", "STRING"));
-                
-                schema.put("properties", properties);
-                schema.put("required", Arrays.asList("reflection", "emotion", "pillar", "primaryColor", "secondaryColor"));
-                
-                generationConfig.put("responseSchema", schema);
-
-                // System Instruction
-                Map<String, Object> systemPart = new HashMap<>();
-                String finalSystemPrompt = promptService.getSystemPrompt();
-                systemPart.put("text", finalSystemPrompt);
-
-                Map<String, Object> systemInstruction = new HashMap<>();
-                systemInstruction.put("parts", Collections.singletonList(systemPart));
-
-                Map<String, Object> payload = new HashMap<>();
-                payload.put("contents", Collections.singletonList(contentsNode));
-                payload.put("generationConfig", generationConfig);
-                payload.put("systemInstruction", systemInstruction);
-
-                ResponseEntity<Map> response = restClient.post()
-                        .uri(url)
-                        .headers(h -> h.addAll(headers))
-                        .body(payload)
-                        .retrieve()
-                        .toEntity(Map.class);
-
-                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                    Map<String, Object> body = response.getBody();
-                    List<Map<String, Object>> candidates = (List<Map<String, Object>>) body.get("candidates");
-                    if (candidates != null && !candidates.isEmpty()) {
-                        Map<String, Object> firstCandidate = candidates.get(0);
-                        Map<String, Object> contentNode = (Map<String, Object>) firstCandidate.get("content");
-                        if (contentNode != null) {
-                            List<Map<String, Object>> parts = (List<Map<String, Object>>) contentNode.get("parts");
-                            if (parts != null && !parts.isEmpty()) {
-                                String jsonResponseText = (String) parts.get(0).get("text");
-                                if (jsonResponseText != null) {
-                                    String cleanedJson = sanitizeJsonText(jsonResponseText);
-                                    Map<String, String> parsed;
-                                    try {
-                                        parsed = parseJsonFields(cleanedJson);
-                                    } catch (Exception ex) {
-                                        throw new RuntimeException("JSON_PARSE_ERROR: " + ex.getMessage(), ex);
-                                    }
-                                    
-                                    if (!parsed.containsKey("reflection") || !parsed.containsKey("emotion")) {
-                                        throw new RuntimeException("MISSING_KEYS: JSON missing required keys");
-                                    }
-                                    
-                                    String pillar = parsed.getOrDefault("pillar", "FEELINGS");
-                                    String rawEmotionText = parsed.getOrDefault("emotion", "NEUTRAL");
-                                    String primaryColor = parsed.getOrDefault("primaryColor", "#a855f7");
-                                    String secondaryColor = parsed.getOrDefault("secondaryColor", "#06b6d4");
-                                    // Encode pillar and colors into the emotion field dynamically
-                                    parsed.put("emotion", pillar + "|" + rawEmotionText + "|" + primaryColor + "|" + secondaryColor);
-                                    return parsed;
-                                }
-                            }
-                        }
-                    }
-                }
-                throw new RuntimeException("Gemini Reflection response was invalid or missing expected payload fields.");
-            } catch (Exception e) {
-                lastException = e;
-                attempt++;
-                String errMsg = e.getMessage() != null ? e.getMessage() : "";
-                if (errMsg.contains("503") || errMsg.contains("429")) {
-                    log.warn("Gemini API overloaded (503/429). Retrying attempt {}/{}...", attempt, maxRetries);
-                    if (attempt < maxRetries) {
-                        try {
-                            Thread.sleep(1500L * attempt);
-                        } catch (InterruptedException ie) {
-                            Thread.currentThread().interrupt();
-                        }
-                        continue;
-                    }
-                } else if (errMsg.contains("JSON_PARSE_ERROR") || errMsg.contains("MISSING_KEYS")) {
-                    log.warn("JSON parsing failed. Retrying attempt {}/{}...", attempt, maxRetries);
-                    if (attempt < maxRetries) {
-                        fullPromptText += "\n\nCRITICAL ERROR: Your previous response was invalid JSON or missed required keys. You MUST return a valid JSON object matching the exact schema requested.";
-                        continue;
-                    }
-                }
-                log.error("Failed to query Gemini Reflection API after {} attempts.", attempt, e);
-                break;
-            }
-        }
-        
-        // Return the actual technical error to the user instead of a conversational fallback
-        Map<String, String> fallback = new HashMap<>();
-        String actualError = lastException != null && lastException.getMessage() != null 
-                             ? lastException.getMessage() 
-                             : (lastException != null ? lastException.toString() : "Unknown Error");
-        fallback.put("reflection", "⚠️ I encountered an API error and couldn't process your reflection. Technical details: " + actualError);
-        fallback.put("emotion", "API Error|#ff4444|#aa0000");
-        return fallback;
-    }
-
-    /**
-     * Sanitizes Markdown code block wrappers from AI responses
-     */
-    private String sanitizeJsonText(String text) {
-        if (text == null) {
-            return "{}";
-        }
-        String cleaned = text.trim();
-        if (cleaned.startsWith("```")) {
-            cleaned = cleaned.replaceAll("^```(?:json)?", "");
-            cleaned = cleaned.replaceAll("```$", "");
-        }
-        return cleaned.trim();
-    }
-
-    /**
-     * Strict Jackson JSON parser (throws exception on failure to trigger retries)
-     */
-    private Map<String, String> parseJsonFields(String json) throws com.fasterxml.jackson.core.JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper()
-            .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        return mapper.readValue(json, new TypeReference<Map<String, String>>(){});
     }
 }

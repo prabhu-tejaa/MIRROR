@@ -83,7 +83,13 @@
       }
     },
     {
-      "files": ["src/app/core/services/analytics.service.ts"],
+      "files": [
+        "src/app/core/services/analytics.service.ts",
+        "src/app/core/services/auth.service.ts",
+        "src/app/core/guards/admin.guard.ts",
+        "src/app/core/guards/auth.guard.ts",
+        "src/app/core/interceptors/error.interceptor.ts"
+      ],
       "rules": {
         "no-console": "off"
       }

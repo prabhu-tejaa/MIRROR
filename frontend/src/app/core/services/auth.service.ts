@@ -11,6 +11,7 @@ import { StorageKeys, getActiveSessionKey } from '../constants/storage.constants
 import { RoutePaths } from '../constants/route.constants';
 import { environment } from '../../../environments/environment';
 import { AudioVisualizerService } from '../../features/tabs/pages/chat/data-access/audio-visualizer.service';
+import { UserMemoryService } from '../../features/tabs/pages/chat/data-access/user-memory.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -91,7 +92,10 @@ export class AuthService {
     }
 
     const activeSessionId = this.storageSvc.get(getActiveSessionKey(email));
-    if (activeSessionId && activeSessionId !== this.getSessionInstanceId()) {
+    const sessionInstanceId = this.getSessionInstanceId();
+    
+    if (activeSessionId && activeSessionId !== sessionInstanceId) {
+      console.warn('[AuthService] Session instance ID mismatch. Logging out!', { activeSessionId, sessionInstanceId });
       this.logout();
       return;
     }
@@ -103,21 +107,26 @@ export class AuthService {
 
     const refreshToken = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
     if (!environment.mock && refreshToken) {
+      console.log('[AuthService] Initiating background session validation via API...');
       this.isValidating = true;
       this.lastValidationTime = Date.now();
       
       this.http.post<{ valid: boolean }>(this.apiSvc.AUTH.VALIDATE, { refreshToken }).subscribe({
         next: (res) => {
           this.isValidating = false;
+          console.log('[AuthService] Session validation result:', res);
           if (res && res.valid === false) {
+            console.warn('[AuthService] Session marked invalid by backend. Logging out!');
             this.logout();
           }
         },
         error: (err) => {
           this.isValidating = false;
+          console.error('[AuthService] Session validation API error:', err);
           // Only log out for explicit auth failures (401/403).
           // Do NOT log out on transient 5xx server errors, connection timeouts, or offline status
           if (err && (err.status === 401 || err.status === 403)) {
+            console.warn('[AuthService] Explicit validation failure (401/403). Logging out!');
             this.logout();
           }
         }
@@ -194,6 +203,10 @@ export class AuthService {
       const audioSvc = this.injector.get(AudioVisualizerService);
       if (audioSvc) {
         audioSvc.stopAudio();
+      }
+      const userMemorySvc = this.injector.get(UserMemoryService);
+      if (userMemorySvc) {
+        userMemorySvc.clearCache();
       }
     } catch {
       // Ignore injection errors if services aren't ready

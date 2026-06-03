@@ -1,5 +1,6 @@
 package com.mirror.memoryservice.domain.memory;
 import com.mirror.memoryservice.domain.ai.GeminiService;
+import com.mirror.memoryservice.domain.ai.GroqService;
 import com.mirror.memoryservice.domain.admin.EmotionStatDTO;
 import com.mirror.memoryservice.domain.admin.AnalyticsResponseDTO;
 
@@ -28,13 +29,15 @@ public class MemoryServiceImpl implements MemoryService {
     private static final String CACHE_EMOTION_ANALYTICS = "emotionAnalytics";
 
     private final MemoryRepository repository;
-    private final GeminiService geminiService;
+    private final GeminiService geminiService;   // used for embeddings only
+    private final GroqService groqService;        // used for text generation
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
 
-    public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService, RabbitTemplate rabbitTemplate, ObjectMapper objectMapper) {
+    public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService, GroqService groqService, RabbitTemplate rabbitTemplate, ObjectMapper objectMapper) {
         this.repository = repository;
         this.geminiService = geminiService;
+        this.groqService = groqService;
         this.rabbitTemplate = rabbitTemplate;
         this.objectMapper = objectMapper;
     }
@@ -195,8 +198,8 @@ public class MemoryServiceImpl implements MemoryService {
             contextBuilder.append("No past memories recorded yet.");
         }
 
-        // 3. Generate empathetic reflection + emotion tag using Gemini
-        Map<String, String> aiResponse = geminiService.generateReflectionAndEmotion(prompt, contextBuilder.toString());
+        // 3. Generate empathetic reflection + emotion tag using Groq (llama-3.3-70b-versatile)
+        Map<String, String> aiResponse = groqService.generateReflectionAndEmotion(prompt, contextBuilder.toString());
         
         // 4. Async background save using RabbitMQ
         try {

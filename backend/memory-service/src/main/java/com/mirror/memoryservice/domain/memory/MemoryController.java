@@ -5,7 +5,6 @@ import com.mirror.memoryservice.domain.admin.AnalyticsResponseDTO;
 import com.mirror.memoryservice.domain.memory.Memory;
 
 import com.mirror.memoryservice.domain.memory.MemoryService;
-import com.mirror.memoryservice.domain.ai.GeminiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

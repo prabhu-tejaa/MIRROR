@@ -27,6 +27,11 @@ describe('YouPage', () => {
   const userMemorySvcStub = {
     getAnalytics: jasmine.createSpy('getAnalytics').and.returnValue(NEVER),
     getAllMemories: jasmine.createSpy('getAllMemories').and.returnValue(NEVER),
+    getAnalyticsCached: jasmine.createSpy('getAnalyticsCached').and.returnValue(null),
+    getMemoriesCached: jasmine.createSpy('getMemoriesCached').and.returnValue(null),
+    isDataLoadedOnce: jasmine.createSpy('isDataLoadedOnce').and.returnValue(false),
+    setDataLoadedOnce: jasmine.createSpy('setDataLoadedOnce'),
+    clearCache: jasmine.createSpy('clearCache'),
   };
   const audioVisualizerSvcStub = {
     isPlaying: signal(false),

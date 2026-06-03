@@ -11,6 +11,36 @@ export class TranslationService implements OnDestroy {
   private translations = signal<Record<string, string | unknown>>({});
   private sub?: Subscription;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private readonly fallbackTranslations: Record<string, any> = {
+    "TABS": {
+      "YOU": "You",
+      "CHAT": "Chat",
+      "PROFILE": "Profile"
+    },
+    "LOGIN": {
+      "TITLE": "Welcome",
+      "TAGLINE": "Reflect. Discover. Grow.",
+      "BUTTON_SIGNIN": "Sign In",
+      "PLACEHOLDER_EMAIL": "Email Address",
+      "PLACEHOLDER_PASSWORD": "Password",
+      "SIGNUP_LINK": "Sign Up",
+      "FORGOT_LINK": "Forgot Password?"
+    },
+    "SIGNUP": {
+      "TITLE": "Create Account",
+      "TAGLINE": "Begin your journey.",
+      "BUTTON_CREATE": "Create Account"
+    },
+    "PROFILE": {
+      "ACCOUNT": "Account",
+      "EMAIL": "Email",
+      "ABOUT": "About",
+      "ADMIN_VIEW": "Admin View",
+      "LOGOUT": "Log Out"
+    }
+  };
+
   constructor() {
   }
 
@@ -30,7 +60,10 @@ export class TranslationService implements OnDestroy {
             resolve(true);
           },
           error: (_err) => {
-            resolve(false);
+            // Set the fallback translations so the app still bootstraps and displays basic UI
+            this.translations.set(this.fallbackTranslations);
+            // Still resolve true so bootstrap succeeds
+            resolve(true);
           }
         });
     });
@@ -45,6 +78,7 @@ export class TranslationService implements OnDestroy {
       .subscribe({
         next: (data) => this.translations.set(data),
         error: (_err) => {
+          this.translations.set(this.fallbackTranslations);
         }
       });
   }

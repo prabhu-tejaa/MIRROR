@@ -18,6 +18,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleAllExceptions(Exception ex) {
+        // Propagate rate-limit errors with correct HTTP status
+        String message = ex.getMessage() != null ? ex.getMessage() : "";
+        if (message.startsWith("RATE_LIMIT_EXCEEDED:")) {
+            log.warn("AI quota exceeded: {}", message);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Rate Limit Exceeded");
+            errorResponse.put("message", message.replace("RATE_LIMIT_EXCEEDED: ", ""));
+            errorResponse.put("status", HttpStatus.TOO_MANY_REQUESTS.value());
+            errorResponse.put("errorCode", "RATE_LIMIT_EXCEEDED");
+            return new ResponseEntity<>(errorResponse, HttpStatus.TOO_MANY_REQUESTS);
+        }
         log.error("Unhandled exception caught in GlobalExceptionHandler: ", ex);
         Map<String, Object> errorResponse = new HashMap<>();
         errorResponse.put("error", "Internal Server Error");
@@ -55,6 +66,7 @@ public class GlobalExceptionHandler {
     private String determineErrorCode(Exception ex) {
         if (ex.getMessage() != null) {
             String msg = ex.getMessage().toLowerCase();
+            if (msg.contains("rate_limit_exceeded") || msg.contains("quota")) return "RATE_LIMIT_EXCEEDED";
             if (msg.contains("gemini")) return "AI_SERVICE_ERROR";
             if (msg.contains("database")) return "DATABASE_ERROR";
             if (msg.contains("jwt")) return "UNAUTHORIZED";

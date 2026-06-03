@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, NavigationStart } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet, IonContent, IonRefresher, IonRefresherContent } from '@ionic/angular/standalone';
 import { StarfieldComponent } from './shared/starfield/starfield.component';
 import { NoInternetComponent } from './shared/no-internet/no-internet.component';
 import { ScrollAssistantComponent } from './shared/scroll-assistant/scroll-assistant.component';
@@ -21,6 +21,9 @@ import { PresenceService } from './core/services/presence.service';
     CommonModule,
     IonApp,
     IonRouterOutlet,
+    IonContent,
+    IonRefresher,
+    IonRefresherContent,
     StarfieldComponent,
     NoInternetComponent,
     ScrollAssistantComponent
@@ -47,5 +50,12 @@ export class AppComponent {
         activeElement.blur();
       }
     });
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public handleGlobalRefresh(_event: any): void {
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   }
 }

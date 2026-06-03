@@ -1,8 +1,14 @@
 <ion-app>
-  
   <app-starfield [nebulaGlow]="false"></app-starfield>
-  <ion-router-outlet [animated]="false"></ion-router-outlet>
+  
+  <ion-content [fullscreen]="true" [scrollY]="true" force-overscroll="true" style="--background: transparent; height: 100%;">
+    <ion-refresher slot="fixed" (ionRefresh)="handleGlobalRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
-<app-no-internet [isVisible]="(isOffline$ | async) || false"></app-no-internet>
-<app-scroll-assistant></app-scroll-assistant>
+    <ion-router-outlet [animated]="false"></ion-router-outlet>
+  </ion-content>
+
+  <app-no-internet [isVisible]="(isOffline$ | async) || false"></app-no-internet>
+  <app-scroll-assistant></app-scroll-assistant>
 </ion-app>

@@ -126,8 +126,12 @@ export class ChatInteractionService {
         const detailedMsg = err.error?.message || err.error || err.message || '';
         const isConfigError = typeof detailedMsg === 'string' &&
           (detailedMsg.toLowerCase().includes('key is not configured') || detailedMsg.toLowerCase().includes('apikey'));
+        const isRateLimitError = err.status === 429 ||
+          (typeof detailedMsg === 'string' && (detailedMsg.toLowerCase().includes('quota') || detailedMsg.toLowerCase().includes('rate_limit')));
 
-        if (isConfigError) {
+        if (isRateLimitError) {
+          errorMsg = '⚠️ [QUOTA EXCEEDED] The AI service has reached its daily free-tier limit. MIRROR will be back tomorrow once the quota resets. Consider upgrading the Gemini API plan for uninterrupted access.';
+        } else if (isConfigError) {
           errorMsg = '⚠️ [CONFIGURATION ERROR] The Gemini API Key is not configured. Please set the GEMINI_API_KEY environment variable in the backend to start live reflection and emotional tracking.';
         } else if (err.status === 500) {
           errorMsg = `⚠️ [REFLECTION ERROR] The reflection service encountered a technical issue: ${detailedMsg || 'Internal Server Error'}.`;

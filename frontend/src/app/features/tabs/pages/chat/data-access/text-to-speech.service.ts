@@ -14,15 +14,37 @@ export class TextToSpeechService {
 
   private preCacheVoices() {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
+      let voicesLoaded = false;
+
       const loadVoices = () => {
+        if (voicesLoaded) return;
         const voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-        this.availableVoices.set(voices);
+        if (voices.length > 0) {
+          voicesLoaded = true;
+          this.availableVoices.set(voices);
+          // Unbind to prevent any potential infinite loops or multiple fires in Mobile Chrome
+          if (window.speechSynthesis.removeEventListener) {
+            window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+          } else {
+            window.speechSynthesis.onvoiceschanged = null;
+          }
+        }
       };
 
-      loadVoices();
-      window.speechSynthesis.onvoiceschanged = () => {
+      const handleVoicesChanged = () => {
         loadVoices();
       };
+
+      // Try initial load
+      loadVoices();
+
+      if (!voicesLoaded) {
+        if (window.speechSynthesis.addEventListener) {
+          window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+        } else {
+          window.speechSynthesis.onvoiceschanged = handleVoicesChanged;
+        }
+      }
     }
   }
 

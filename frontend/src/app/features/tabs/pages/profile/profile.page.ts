@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  IonContent,
-  IonList, IonItem, IonLabel, IonIcon, IonNote, IonFooter,
+  IonContent, IonFooter,
+  IonList, IonItem, IonLabel, IonIcon, IonNote,
   NavController, AlertController
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';

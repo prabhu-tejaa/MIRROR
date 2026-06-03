@@ -13,8 +13,7 @@ ion-content {
 .profile-page-inner {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  min-height: 100%;
+  min-height: 100.2%; /* Slightly taller than 100% to enable refresher pull-down */
   width: 100%;
   max-width: 100%;
   margin: 0;

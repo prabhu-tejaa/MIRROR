@@ -5,6 +5,77 @@ import { delay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ApiService } from '../services/api.service';
 
+// Module-scoped state for mock data persistence in mock mode
+let mockUsersList = [
+  {
+    id: 'd3b07384-d113-495d-a510-18e8df3141f2',
+    username: 'admin',
+    email: 'admin@mirror.tech',
+    role: 'ADMIN',
+    isVerified: true,
+    createdAt: '2026-05-20T10:00:00.000Z',
+    updatedAt: '2026-05-24T18:00:00.000Z',
+    failedAttempts: 0,
+    lockedUntil: null
+  },
+  {
+    id: '7b80a6b7-ca2a-4a64-b816-56ffad7d159a',
+    username: 'prabhu_teja',
+    email: 'prabhuteja@vit.edu',
+    role: 'ADMIN',
+    isVerified: true,
+    createdAt: '2026-05-22T14:30:00.000Z',
+    updatedAt: '2026-05-23T11:20:00.000Z',
+    failedAttempts: 0,
+    lockedUntil: null
+  },
+  {
+    id: 'f9d3a778-d0cc-402a-9e1e-28b3a0eef4b8',
+    username: 'sarah_jones',
+    email: 'sarah@example.com',
+    role: 'USER',
+    isVerified: true,
+    createdAt: '2026-05-23T09:15:00.000Z',
+    updatedAt: '2026-05-23T09:15:00.000Z',
+    failedAttempts: 0,
+    lockedUntil: null
+  }
+];
+
+let mockMemoryRecords = [
+  { id: '1', userId: 'admin', content: 'Mock memory 1: Had a great coding session today.', emotion: 'JOY|#ffb700|#ff5e00', sender: 'user', createdAt: new Date(Date.now() - 3600000).toISOString() },
+  { id: '2', userId: 'sarah_jones', content: 'Mock memory 2: Stressed about exams.', emotion: 'ANXIOUS|#a855f7|#06b6d4', sender: 'user', createdAt: new Date(Date.now() - 7200000).toISOString() },
+  { id: '3', userId: 'alex_developer', content: 'Mock memory 3: Feeling very calm and focused.', emotion: 'CALM|#10b981|#06b6d4', sender: 'user', createdAt: new Date(Date.now() - 10800000).toISOString() }
+];
+
+let mockBlockedIps = [
+  { ip: '192.168.1.50', reason: 'Brute force attempts', blockedAt: new Date(Date.now() - 86400000).toISOString() },
+  { ip: '10.0.0.99', reason: 'DDoS threshold trigger', blockedAt: new Date(Date.now() - 3600000).toISOString() }
+];
+
+const mockHealthStats = [
+  { name: 'auth-service', port: 8080, status: 'ONLINE', latency: 45, color: '#10b981' },
+  { name: 'memory-service', port: 8081, status: 'ONLINE', latency: 60, color: '#10b981' },
+  { name: 'api-gateway', port: 8060, status: 'ONLINE', latency: 12, color: '#10b981' }
+];
+
+const mockRoutes = [
+  { id: 'auth-service-route', path: '/api/auth/**', destination: 'http://localhost:8080', service: 'auth-service', active: true },
+  { id: 'memory-service-route', path: '/api/memory/**', destination: 'http://localhost:8081', service: 'memory-service', active: true }
+];
+
+const mockLogs = [
+  { timestamp: new Date(Date.now() - 1000).toISOString(), method: 'GET', path: '/api/memory/analytics', status: 200, latency: 15, service: 'memory-service' },
+  { timestamp: new Date(Date.now() - 3000).toISOString(), method: 'POST', path: '/api/auth/login', status: 200, latency: 45, service: 'auth-service' },
+  { timestamp: new Date(Date.now() - 6000).toISOString(), method: 'GET', path: '/api/admin/memory/all', status: 200, latency: 22, service: 'memory-service' }
+];
+
+const mockGatewayStats = {
+  totalRequestsToday: 48512,
+  whitelistedCount: 4,
+  globalRateLimit: 120
+};
+
 export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   if (!environment.mock) {
     return next(req);
@@ -221,7 +292,48 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
 
   if (url.includes(apiSvc.USER_MEMORY.ANALYTICS)) {
     const mockAnalytics = {
-      JOY: 35, SAD: 10, ANXIOUS: 25, CALM: 30
+      totalMemories: 5,
+      dominantEmotion: 'JOY',
+      activeStreak: 4,
+      emotionStats: [
+        {
+          key: 'JOY',
+          pillar: 'Joyful',
+          name: 'Joy',
+          primaryColor: '#ffb700',
+          secondaryColor: 'rgba(255, 183, 0, 0.4)',
+          count: 2,
+          percentage: 40
+        },
+        {
+          key: 'CALM',
+          pillar: 'Peaceful',
+          name: 'Calm',
+          primaryColor: '#10b981',
+          secondaryColor: 'rgba(16, 185, 129, 0.4)',
+          count: 1,
+          percentage: 20
+        },
+        {
+          key: 'ANXIOUS',
+          pillar: 'Anxious',
+          name: 'Anxious',
+          primaryColor: '#a855f7',
+          secondaryColor: 'rgba(168, 85, 247, 0.4)',
+          count: 1,
+          percentage: 20
+        },
+        {
+          key: 'SAD',
+          pillar: 'Sadness',
+          name: 'Sadness',
+          primaryColor: '#00ffd5',
+          secondaryColor: 'rgba(0, 255, 213, 0.4)',
+          count: 1,
+          percentage: 20
+        }
+      ],
+      auraGradient: 'conic-gradient(#ffb700 0% 40%, #10b981 40% 60%, #a855f7 60% 80%, #00ffd5 80% 100%)'
     };
     return of(new HttpResponse({ status: 200, body: mockAnalytics })).pipe(delay(500));
   }
@@ -235,6 +347,166 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
       { content: 'Figured out the JWT authentication bug! Let\'s go!', emotion: 'JOY', createdAt: new Date(Date.now() - 3600000 * 96).toISOString(), sender: 'user' }
     ];
     return of(new HttpResponse({ status: 200, body: mockAll })).pipe(delay(500));
+  }
+
+  // --- Admin User Management Mock Handlers ---
+  if (url.includes('/api/auth/admin/users/')) {
+    const id = url.substring(url.lastIndexOf('/') + 1);
+    if (req.method === 'PUT') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const body = req.body as any;
+      const index = mockUsersList.findIndex(u => u.id === id);
+      if (index !== -1) {
+        mockUsersList[index] = {
+          ...mockUsersList[index],
+          ...body,
+          updatedAt: new Date().toISOString()
+        };
+        return of(new HttpResponse({ status: 200, body: mockUsersList[index] })).pipe(delay(300));
+      }
+    }
+    if (req.method === 'DELETE') {
+      mockUsersList = mockUsersList.filter(u => u.id !== id);
+      return of(new HttpResponse({ status: 200, body: null })).pipe(delay(300));
+    }
+  }
+
+  if (url.includes('/api/auth/admin/users')) {
+    if (req.method === 'GET') {
+      return of(new HttpResponse({ status: 200, body: mockUsersList })).pipe(delay(300));
+    }
+    if (req.method === 'POST') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const body = req.body as any;
+      const newUser = {
+        id: Math.random().toString(36).substring(7),
+        username: body.username,
+        email: body.email,
+        role: body.role || 'USER',
+        isVerified: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        failedAttempts: 0,
+        lockedUntil: null
+      };
+      mockUsersList = [...mockUsersList, newUser];
+      return of(new HttpResponse({ status: 201, body: newUser })).pipe(delay(300));
+    }
+  }
+
+  // --- Admin Memory Service Mock Handlers ---
+  if (url.includes('/api/admin/memory/all')) {
+    return of(new HttpResponse({ status: 200, body: mockMemoryRecords })).pipe(delay(300));
+  }
+
+  if (url.includes('/api/admin/memory/upload')) {
+    return of(new HttpResponse({ status: 200, body: 'Successfully imported 15 mock records into database.' })).pipe(delay(500));
+  }
+
+  const isSpecificMemory = url.includes('/api/admin/memory/') && !url.endsWith('/all') && !url.endsWith('/upload');
+  if (isSpecificMemory) {
+    const id = url.substring(url.lastIndexOf('/') + 1);
+    if (req.method === 'PUT') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const body = req.body as any;
+      const index = mockMemoryRecords.findIndex(r => r.id === id);
+      if (index !== -1) {
+        mockMemoryRecords[index] = {
+          ...mockMemoryRecords[index],
+          ...body
+        };
+        return of(new HttpResponse({ status: 200, body: 'Memory updated successfully.' })).pipe(delay(300));
+      }
+    }
+    if (req.method === 'DELETE') {
+      mockMemoryRecords = mockMemoryRecords.filter(r => r.id !== id);
+      return of(new HttpResponse({ status: 200, body: 'Memory deleted successfully.' })).pipe(delay(300));
+    }
+  }
+
+  if (url.endsWith('/api/admin/memory') && req.method === 'POST') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const body = req.body as any;
+    const newRecord = {
+      id: Math.random().toString(36).substring(7),
+      userId: body.userId,
+      content: body.content,
+      emotion: body.emotion,
+      sender: 'user',
+      createdAt: new Date().toISOString()
+    };
+    mockMemoryRecords = [newRecord, ...mockMemoryRecords];
+    return of(new HttpResponse({ status: 200, body: 'Memory created successfully.' })).pipe(delay(300));
+  }
+
+  // --- Admin API Gateway Mock Handlers ---
+  if (url.includes('/api/gateway/admin/health')) {
+    return of(new HttpResponse({ status: 200, body: mockHealthStats })).pipe(delay(200));
+  }
+
+  if (url.includes('/api/gateway/admin/routes/toggle')) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const body = req.body as any;
+    const route = mockRoutes.find(r => r.id === body.id);
+    if (route) {
+      route.active = body.active;
+    }
+    return of(new HttpResponse({ status: 200, body: null })).pipe(delay(200));
+  }
+
+  if (url.includes('/api/gateway/admin/routes')) {
+    return of(new HttpResponse({ status: 200, body: mockRoutes })).pipe(delay(200));
+  }
+
+  if (url.includes('/api/gateway/admin/blocked-ips/')) {
+    if (req.method === 'DELETE') {
+      const ip = url.substring(url.lastIndexOf('/') + 1);
+      mockBlockedIps = mockBlockedIps.filter(item => item.ip !== ip);
+      mockGatewayStats.whitelistedCount++;
+      return of(new HttpResponse({ status: 200, body: null })).pipe(delay(200));
+    }
+  }
+
+  if (url.includes('/api/gateway/admin/blocked-ips')) {
+    if (req.method === 'GET') {
+      return of(new HttpResponse({ status: 200, body: mockBlockedIps })).pipe(delay(200));
+    }
+    if (req.method === 'POST') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const body = req.body as any;
+      const newBlocked = {
+        ip: body.ip,
+        reason: body.reason || 'Manual block',
+        blockedAt: new Date().toISOString()
+      };
+      mockBlockedIps = [...mockBlockedIps, newBlocked];
+      mockGatewayStats.whitelistedCount = Math.max(0, mockGatewayStats.whitelistedCount - 1);
+      return of(new HttpResponse({ status: 200, body: null })).pipe(delay(200));
+    }
+  }
+
+  if (url.includes('/api/gateway/admin/rate-limit')) {
+    if (req.method === 'GET') {
+      return of(new HttpResponse({ status: 200, body: { limit: mockGatewayStats.globalRateLimit } })).pipe(delay(200));
+    }
+    if (req.method === 'POST') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const body = req.body as any;
+      mockGatewayStats.globalRateLimit = body.limit;
+      return of(new HttpResponse({ status: 200, body: null })).pipe(delay(200));
+    }
+  }
+
+  if (url.includes('/api/gateway/admin/logs')) {
+    return of(new HttpResponse({ status: 200, body: mockLogs })).pipe(delay(200));
+  }
+
+  if (url.includes('/api/gateway/admin/stats')) {
+    return of(new HttpResponse({ status: 200, body: mockGatewayStats })).pipe(delay(200));
+  }
+
+  if (url.includes('/api/gateway/public/health')) {
+    return of(new HttpResponse({ status: 200, body: mockHealthStats })).pipe(delay(200));
   }
 
   return next(req);

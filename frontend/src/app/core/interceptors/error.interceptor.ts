@@ -72,11 +72,19 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
+      console.warn('[ErrorInterceptor] Caught HTTP error:', {
+        url: req.url,
+        status: error.status,
+        message: error.message
+      });
+
       if (error.status === 401) {
         const apiSvc = injector.get(ApiService);
         if (!req.url.includes(apiSvc.AUTH.REFRESH) && !req.url.includes(apiSvc.AUTH.LOGIN)) {
+          console.log('[ErrorInterceptor] 401 on non-auth route. Attempting token refresh...');
           return handle401Error(req, next, injector);
         } else {
+          console.warn('[ErrorInterceptor] 401 on refresh or login route. Clearing session!');
           // If the refresh token itself fails, clear the session locally
           const authSvc = injector.get(AuthService);
           authSvc.clearSession();
@@ -103,8 +111,10 @@ function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, inje
 
     if (refreshToken) {
       let completed = false;
+      console.log('[ErrorInterceptor] Refreshing access token...');
       return authSvc.refresh(refreshToken).pipe(
         catchError((err) => {
+          console.error('[ErrorInterceptor] Refresh token request failed. Clearing session!', err);
           completed = true;
           isRefreshing = false;
           refreshTokenSubject.next('FAILED');
@@ -112,6 +122,7 @@ function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, inje
           return throwError(() => err);
         }),
         switchMap((token: { accessToken: string }) => {
+          console.log('[ErrorInterceptor] Refresh token request succeeded. Retrying failed request with new access token.');
           completed = true;
           isRefreshing = false;
           refreshTokenSubject.next(token.accessToken);
@@ -125,6 +136,7 @@ function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, inje
         })
       );
     } else {
+      console.warn('[ErrorInterceptor] No refresh token available. Clearing session!');
       isRefreshing = false;
       refreshTokenSubject.next('FAILED');
       authSvc.clearSession();
