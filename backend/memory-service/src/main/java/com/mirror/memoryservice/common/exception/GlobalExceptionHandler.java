@@ -1,5 +1,5 @@
 package com.mirror.memoryservice.common.exception;
-import com.mirror.memoryservice.domain.memory.Memory;
+import com.mirror.memoryservice.memory.model.Memory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
