@@ -116,15 +116,7 @@ export class ChatPage implements OnDestroy {
       const trigger = this.chatState.scrollToBottomTrigger();
       if (trigger > 0) {
         const behavior = this.initialScrollCompleted ? 'smooth' : 'auto';
-        this.scrollToBottom(behavior);
-        setTimeout(() => this.scrollToBottom(behavior), 50);
-        setTimeout(() => this.scrollToBottom(behavior), 150);
-        setTimeout(() => {
-          this.scrollToBottom(behavior);
-          if (!this.initialScrollCompleted) {
-            this.initialScrollCompleted = true;
-          }
-        }, 300);
+        this.triggerDynamicScrollToBottom(behavior);
       }
     });
 
@@ -178,13 +170,7 @@ export class ChatPage implements OnDestroy {
     this.focusInput();
     const currentEmail = this.authSvc.getEmail() || 'guest@mirror.tech';
     if (!(this.chatState.isInitialLoad() || this.chatState.loadedEmail() !== currentEmail)) {
-      this.scrollToBottom('auto');
-      setTimeout(() => this.scrollToBottom('auto'), 50);
-      setTimeout(() => this.scrollToBottom('auto'), 150);
-      setTimeout(() => {
-        this.scrollToBottom('auto');
-        this.initialScrollCompleted = true;
-      }, 300);
+      this.triggerDynamicScrollToBottom('auto');
     }
     this.setupScrollListener();
   }
@@ -210,6 +196,29 @@ export class ChatPage implements OnDestroy {
       const el = this.streamScroll.nativeElement;
       el.scrollTo({ top: el.scrollHeight, behavior });
     }
+  }
+
+  private triggerDynamicScrollToBottom(behavior: ScrollBehavior = 'smooth') {
+    const el = this.streamScroll?.nativeElement;
+    if (!el) return;
+
+    // Immediately try to scroll
+    el.scrollTo({ top: el.scrollHeight, behavior });
+
+    // Set up a temporary MutationObserver to dynamically catch DOM updates
+    const observer = new MutationObserver(() => {
+      el.scrollTo({ top: el.scrollHeight, behavior });
+    });
+
+    observer.observe(el, { childList: true, subtree: true, characterData: true });
+
+    // Disconnect safely after rendering is guaranteed to have settled
+    setTimeout(() => {
+      observer.disconnect();
+      if (!this.initialScrollCompleted) {
+        this.initialScrollCompleted = true;
+      }
+    }, 1000);
   }
 
   public focusInput() {
