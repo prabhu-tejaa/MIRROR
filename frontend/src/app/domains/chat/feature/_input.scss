@@ -68,7 +68,13 @@
 .entry-capsule {
   position: relative;
   z-index: 5;
-  background: rgba(18, 16, 32, 0.65);
+  // Dynamic background tinted with the current AI emotion colors
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--emotion-color-primary, transparent) 12%, rgba(18, 16, 32, 0.65)),
+    color-mix(in srgb, var(--emotion-color-secondary, transparent) 12%, rgba(18, 16, 32, 0.65))
+  );
+
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.08);
