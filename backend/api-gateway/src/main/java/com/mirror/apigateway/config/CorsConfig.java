@@ -21,6 +21,7 @@ public class CorsConfig {
             "http://192.168.1.101:8100",
             "http://localhost",
             "capacitor://localhost",
+            "https://localhost",
             "https://projectmirror.tech"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
