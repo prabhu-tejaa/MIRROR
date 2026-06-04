@@ -41,11 +41,13 @@ export class ResetPasswordPage implements OnInit {
   public readonly alertCircleOutline = alertCircleOutline;
 
   private email: string = '';
+  private token: string = '';
 
   constructor() {
     addIcons({ eye, eyeOff, alertCircleOutline });
     this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params: Params) => {
       this.email = (params['email'] as string) || '';
+      this.token = (params['token'] as string) || '';
     });
   }
 
@@ -74,7 +76,7 @@ export class ResetPasswordPage implements OnInit {
 
       const { password } = this.resetForm.value;
 
-      this.authSvc.resetPassword(this.email, password).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      this.authSvc.resetPassword(this.email, password, this.token).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.isLoading = false;
           this.cdr.markForCheck();

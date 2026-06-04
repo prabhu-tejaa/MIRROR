@@ -68,4 +68,32 @@ public class JwtUtil {
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
+
+    public String generateResetToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("purpose", "password_reset");
+        claims.put("email", user.getEmail());
+        claims.put("pwdHashId", Integer.toHexString(user.getPasswordHash().hashCode()));
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(user.getUsername())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // 15 mins
+                .signWith(SECRET_KEY)
+                .compact();
+    }
+
+    public boolean validateResetToken(String token, User user) {
+        try {
+            Claims claims = extractAllClaims(token);
+            String expectedHashId = Integer.toHexString(user.getPasswordHash().hashCode());
+            return "password_reset".equals(claims.get("purpose")) &&
+                   user.getEmail().equals(claims.get("email")) &&
+                   expectedHashId.equals(claims.get("pwdHashId")) &&
+                   !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

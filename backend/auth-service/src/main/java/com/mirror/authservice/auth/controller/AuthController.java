@@ -60,16 +60,25 @@ public class AuthController {
 
     @PostMapping("/forgot-password/verify")
     public ResponseEntity<String> verifyForgotPasswordOtp(@RequestBody OtpVerifyRequest request) {
-        authService.verifyForgotPasswordOtp(request.email(), request.code());
-        return ResponseEntity.ok("OTP verified successfully. You may now reset your password.");
+        if (request.email() == null || request.email().trim().isEmpty() || request.code() == null || request.code().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Email and code cannot be empty.");
+        }
+        String token = authService.verifyForgotPasswordOtp(request.email(), request.code());
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping("/forgot-password/reset")
     public ResponseEntity<String> resetPassword(@RequestBody PasswordResetRequest request) {
+        if (request.email() == null || request.email().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Email cannot be empty.");
+        }
         if (request.password() == null || request.password().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Password cannot be empty.");
         }
-        authService.resetPassword(request.email(), request.password());
+        if (request.token() == null || request.token().trim().isEmpty()) {
+            return ResponseEntity.badRequest().body("Reset token is missing.");
+        }
+        authService.resetPassword(request.email(), request.password(), request.token());
         return ResponseEntity.ok("Password reset successfully. Please proceed to login.");
     }
 

@@ -177,8 +177,8 @@ export class AuthService {
     return this.http.post(this.apiSvc.AUTH.FORGOT_PASSWORD_VERIFY, { email, code }, { responseType: 'text' });
   }
 
-  public resetPassword(email: string, password?: string): Observable<string> {
-    return this.http.post(this.apiSvc.AUTH.FORGOT_PASSWORD_RESET, { email, password }, { responseType: 'text' });
+  public resetPassword(email: string, password?: string, token?: string): Observable<string> {
+    return this.http.post(this.apiSvc.AUTH.FORGOT_PASSWORD_RESET, { email, password, token }, { responseType: 'text' });
   }
 
   public refresh(refreshToken: string): Observable<AuthResponse> {

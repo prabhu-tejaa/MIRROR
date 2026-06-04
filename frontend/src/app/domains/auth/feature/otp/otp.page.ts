@@ -306,7 +306,7 @@ export class OtpPage implements OnInit, OnDestroy {
 
       if (this.flowContext === 'reset') {
         this.authSvc.verifyForgotPasswordOtp(this.email, code).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-          next: () => {
+          next: (token: string) => {
             const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
             const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
             if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
@@ -316,7 +316,7 @@ export class OtpPage implements OnInit, OnDestroy {
               this.isLoading = false;
               this.cdr.markForCheck();
               this.navCtrl.navigateRoot('/reset-password', {
-                queryParams: { email: this.email, code: code },
+                queryParams: { email: this.email, token: token },
                 animation: getCrossfadeAnimation(this.animationCtrl)
               });
             }, 1000);

@@ -132,10 +132,14 @@ public class AuthService {
     }
 
     @Transactional
-    public void resetPassword(String email, String newRawPassword) {
+    public void resetPassword(String email, String newRawPassword, String resetToken) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (!jwtUtil.validateResetToken(resetToken, user)) {
+            throw new RuntimeException("Invalid or expired password reset token.");
+        }
+        
         String encryptedPassword = passwordEncoder.encode(newRawPassword);
         user.setPasswordHash(encryptedPassword);
 
@@ -249,13 +253,14 @@ public class AuthService {
     }
 
     @Transactional
-    public void verifyForgotPasswordOtp(String email, String code) {
+    public String verifyForgotPasswordOtp(String email, String code) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
         boolean isValid = otpService.verifyOtp(user, code);
         if (!isValid) {
             throw new InvalidOtpException("Invalid or expired OTP.");
         }
+        return jwtUtil.generateResetToken(user);
     }
 
     @Transactional

@@ -22,8 +22,8 @@ public class GatewaySecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/otp/**", "/api/auth/forgot-password/**", "/api/auth/refresh").permitAll()
-                        .anyExchange().permitAll()
+                        .pathMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/otp/**", "/api/auth/forgot-password/**", "/api/auth/refresh", "/actuator/health").permitAll()
+                        .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtWebFilter, SecurityWebFiltersOrder.AUTHENTICATION);
         return http.build();
