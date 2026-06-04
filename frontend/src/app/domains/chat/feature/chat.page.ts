@@ -62,6 +62,8 @@ export class ChatPage implements OnDestroy {
   private isSpeechToggleInFlight = false;
   private scrollListenerAttached = false;
   private initialScrollCompleted = false;
+  private scrollObserver?: MutationObserver;
+  private scrollObserverTimeout?: any;
 
   @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLTextAreaElement>;
@@ -185,9 +187,11 @@ export class ChatPage implements OnDestroy {
         scrollEl.addEventListener('scroll', () => {
           if (!this.initialScrollCompleted) return;
           
-          const isAtTop = scrollEl.scrollTop <= 10;
           const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
-          const isAtBottom = maxScroll > 0 && scrollEl.scrollTop >= (maxScroll - 10);
+          if (maxScroll <= 0) return; // Do not auto-load if the screen isn't even full yet
+
+          const isAtTop = scrollEl.scrollTop <= 10;
+          const isAtBottom = scrollEl.scrollTop >= (maxScroll - 10);
 
           if (isAtTop && !isAtBottom && this.chatState.hasMoreHistory() && !this.isLoadingMore() && !this.chatState.isInitialLoad()) {
             this.store.dispatch(ChatActions.loadMoreHistory());
@@ -208,19 +212,28 @@ export class ChatPage implements OnDestroy {
     const el = this.streamScroll?.nativeElement;
     if (!el) return;
 
-    // Immediately try to scroll
-    el.scrollTo({ top: el.scrollHeight, behavior });
+    const doScroll = () => {
+      const maxScroll = el.scrollHeight - el.clientHeight;
+      const distance = maxScroll - el.scrollTop;
+      // If we are already near the bottom (like during AI streaming), use 'auto' to lock perfectly without jitter
+      const actualBehavior = (distance < 100) ? 'auto' : behavior;
+      el.scrollTo({ top: el.scrollHeight, behavior: actualBehavior });
+    };
 
-    // Set up a temporary MutationObserver to dynamically catch DOM updates
-    const observer = new MutationObserver(() => {
-      el.scrollTo({ top: el.scrollHeight, behavior });
-    });
+    doScroll();
 
-    observer.observe(el, { childList: true, subtree: true, characterData: true });
+    if (this.scrollObserver) {
+      clearTimeout(this.scrollObserverTimeout);
+    } else {
+      this.scrollObserver = new MutationObserver(() => {
+        doScroll();
+      });
+      this.scrollObserver.observe(el, { childList: true, subtree: true, characterData: true });
+    }
 
-    // Disconnect safely after rendering is guaranteed to have settled
-    setTimeout(() => {
-      observer.disconnect();
+    this.scrollObserverTimeout = setTimeout(() => {
+      this.scrollObserver?.disconnect();
+      this.scrollObserver = undefined;
       if (!this.initialScrollCompleted) {
         this.initialScrollCompleted = true;
       }
