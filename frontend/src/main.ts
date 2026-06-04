@@ -31,8 +31,14 @@ class GlobalErrorHandler implements ErrorHandler {
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
-import { chatReducer } from './app/features/tabs/pages/chat/data-access/store/chat.reducer';
-import { ChatEffects } from './app/features/tabs/pages/chat/data-access/store/chat.effects';
+import { chatReducer } from './app/domains/chat/data-access/store/chat.reducer';
+import { ChatEffects } from './app/domains/chat/data-access/store/chat.effects';
+import { authReducer } from './app/domains/auth/data-access/store/auth.reducer';
+import { AuthEffects } from './app/domains/auth/data-access/store/auth.effects';
+import { youReducer } from './app/domains/you/data-access/store/you.reducer';
+import { YouEffects } from './app/domains/you/data-access/store/you.effects';
+import { adminReducer } from './app/domains/admin/data-access/store/admin.reducer';
+import { AdminEffects } from './app/domains/admin/data-access/store/admin.effects';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
@@ -75,7 +81,7 @@ bootstrapApplication(AppComponent, {
       },
       multi: true
     },
-    provideStore({ chat: chatReducer }),
-    provideEffects([ChatEffects])
+    provideStore({ chat: chatReducer, auth: authReducer, you: youReducer, admin: adminReducer }),
+    provideEffects([ChatEffects, AuthEffects, YouEffects, AdminEffects])
   ],
 });

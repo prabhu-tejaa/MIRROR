@@ -3,7 +3,7 @@ import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from
 import { catchError, throwError, switchMap, BehaviorSubject, filter, take, finalize } from 'rxjs';
 import { TranslationService } from '../services/translation.service';
 import { ToastService } from '../services/toast.service';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../domains/auth/data-access/auth.service';
 import { StorageService } from '../services/storage.service';
 import { ApiService } from '../services/api.service';
 import { StorageKeys } from '../constants/storage.constants';

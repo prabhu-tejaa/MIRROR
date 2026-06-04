@@ -1,6 +1,6 @@
 import { Injectable, inject, effect } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { AuthService } from './auth.service';
+import { AuthService } from '../../domains/auth/data-access/auth.service';
 import { environment } from '../../../environments/environment';
 import { initializeApp, getApps } from 'firebase/app';
 import { getDatabase, ref, onValue, set, onDisconnect } from 'firebase/database';

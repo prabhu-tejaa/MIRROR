@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
-import { guestGuard } from './core/guards/guest.guard';
+import { authGuard } from './domains/auth/data-access/auth.guard';
+import { guestGuard } from './domains/auth/data-access/guest.guard';
 import { adminGuard } from './core/guards/admin.guard';
 import { overlayGuard } from './core/guards/overlay.guard';
 
@@ -13,60 +13,60 @@ export const routes: Routes = [
   {
     path: 'login',
     canActivate: [guestGuard],
-    loadComponent: () => import('./features/auth/pages/login/login.page').then((m) => m.LoginPage),
+    loadComponent: () => import('./domains/auth/feature/login/login.page').then((m) => m.LoginPage),
   },
   {
     path: '',
     canActivate: [authGuard],
-    loadChildren: () => import('./features/tabs/tabs.routes').then((m) => m.routes),
+    loadChildren: () => import('./shell/tabs/tabs.routes').then((m) => m.routes),
   },
   {
     path: 'signup',
     canActivate: [guestGuard],
-    loadComponent: () => import('./features/auth/pages/signup/signup.page').then(m => m.SignupPage)
+    loadComponent: () => import('./domains/auth/feature/signup/signup.page').then(m => m.SignupPage)
   },
   {
     path: 'otp',
     canActivate: [guestGuard],
-    loadComponent: () => import('./features/auth/pages/otp/otp.page').then(m => m.OtpPage)
+    loadComponent: () => import('./domains/auth/feature/otp/otp.page').then(m => m.OtpPage)
   },
   {
     path: 'forgot-password',
     canActivate: [guestGuard],
-    loadComponent: () => import('./features/auth/pages/forgot-password/forgot-password.page').then(m => m.ForgotPasswordPage)
+    loadComponent: () => import('./domains/auth/feature/forgot-password/forgot-password.page').then(m => m.ForgotPasswordPage)
   },
   {
     path: 'reset-password',
     canActivate: [guestGuard],
-    loadComponent: () => import('./features/auth/pages/reset-password/reset-password.page').then(m => m.ResetPasswordPage)
+    loadComponent: () => import('./domains/auth/feature/reset-password/reset-password.page').then(m => m.ResetPasswordPage)
   },
   {
     path: 'admin',
     canActivate: [authGuard, adminGuard],
     canDeactivate: [overlayGuard],
-    loadComponent: () => import('./features/admin/pages/admin-dashboard/admin-dashboard.page').then(m => m.AdminDashboardPage)
+    loadComponent: () => import('./domains/admin/feature/admin-dashboard/admin-dashboard.page').then(m => m.AdminDashboardPage)
   },
   {
     path: 'admin/auth-service',
     canActivate: [authGuard, adminGuard],
     canDeactivate: [overlayGuard],
-    loadComponent: () => import('./features/admin/pages/admin-auth/admin-auth.page').then(m => m.AdminAuthPage)
+    loadComponent: () => import('./domains/admin/feature/admin-auth/admin-auth.page').then(m => m.AdminAuthPage)
   },
   {
     path: 'admin/api-gateway',
     canActivate: [authGuard, adminGuard],
     canDeactivate: [overlayGuard],
-    loadComponent: () => import('./features/admin/pages/admin-gateway/admin-gateway.page').then(m => m.AdminGatewayPage)
+    loadComponent: () => import('./domains/admin/feature/admin-gateway/admin-gateway.page').then(m => m.AdminGatewayPage)
   },
   {
     path: 'admin/memory-service',
     canActivate: [authGuard, adminGuard],
     canDeactivate: [overlayGuard],
-    loadComponent: () => import('./features/admin/pages/admin-memory/admin-memory.page').then(m => m.AdminMemoryPage)
+    loadComponent: () => import('./domains/admin/feature/admin-memory/admin-memory.page').then(m => m.AdminMemoryPage)
   },
   {
     path: 'status',
-    loadComponent: () => import('./features/status/system-status.page').then(m => m.SystemStatusPage)
+    loadComponent: () => import('./domains/status/feature/system-status.page').then(m => m.SystemStatusPage)
   },
   {
     path: '**',

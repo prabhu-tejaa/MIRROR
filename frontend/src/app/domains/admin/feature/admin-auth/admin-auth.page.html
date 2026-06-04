@@ -1,0 +1,105 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <!-- Custom Space-themed Header matching Dashboard -->
+  <div class="dashboard-nav">
+    <button class="back-circle-btn" (click)="goBack()" title="Back to Dashboard">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+
+    <div class="nav-title-text">Auth Service</div>
+
+    <div class="nav-right-group">
+      <button class="refresh-circle-btn" (click)="loadUsers()" title="Refresh Users">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="glass-container">
+    <div class="header-section">
+      <div class="header-top-row">
+        <div class="title-with-icon">
+          <ion-icon name="people-outline" class="title-icon"></ion-icon>
+          <h2>User Management</h2>
+        </div>
+        <ion-button class="add-user-btn" (click)="addUser()">
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+          Add User
+        </ion-button>
+      </div>
+      <p>Manage user accounts, roles, verification statuses and credentials.</p>
+    </div>
+
+    <!-- Telemetry & Analytics Dashboard row -->
+    <div class="telemetry-grid">
+      <div class="telemetry-card">
+        <div class="card-icon-wrapper blue">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <span class="value">
+            <ng-container *ngIf="!isLoading(); else spinnerTemplate">
+              {{ (users() || []).length }}
+            </ng-container>
+          </span>
+          <span class="label">Total Accounts</span>
+        </div>
+      </div>
+
+      <div class="telemetry-card">
+        <div class="card-icon-wrapper green">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <span class="value">
+            <ng-container *ngIf="!isLoading(); else spinnerTemplate">
+              {{ getVerifiedCount() }}
+            </ng-container>
+          </span>
+          <span class="label">Verified Profiles</span>
+        </div>
+      </div>
+
+      <div class="telemetry-card">
+        <div class="card-icon-wrapper red">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <span class="value">
+            <ng-container *ngIf="!isLoading(); else spinnerTemplate">
+              {{ getLockedCount() }}
+            </ng-container>
+          </span>
+          <span class="label">Locked Out</span>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #spinnerTemplate>
+      <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
+    </ng-template>
+
+    <!-- Search and Filters -->
+    <div class="search-filter-bar">
+      <ion-searchbar 
+        [ngModel]="searchQuery()" 
+        (ionInput)="updateSearch($event)" 
+        placeholder="Search by username or email..." 
+        class="glass-searchbar">
+      </ion-searchbar>
+      
+      <ion-select class="glass-select" [ngModel]="roleFilter()" (ionChange)="updateRoleFilter($event)" label="" [interface]="'popover'" [interfaceOptions]="{ cssClass: 'role-select-popover' }">
+        <ion-select-option value="ALL">All Roles</ion-select-option>
+        <ion-select-option value="USER">User</ion-select-option>
+        <ion-select-option value="ADMIN">Admin</ion-select-option>
+      </ion-select>
+    </div>
+
+    <app-admin-user-list
+      [users]="filteredUsers()"
+      [isLoading]="isLoading()"
+      (edit)="editUser($event)"
+      (delete)="deleteUser($event)"
+      (unlock)="unlockUser($event)">
+    </app-admin-user-list>
+  </div>
+</ion-content>
