@@ -21,9 +21,22 @@ export class ChatEffects {
   private parseEmotionAndColors(rawEmotion: string | undefined): { emotion: string, primary: string, secondary: string } {
     if (!rawEmotion) return { emotion: 'NEUTRAL', primary: '#a855f7', secondary: '#06b6d4' };
     const parts = rawEmotion.split('|');
-    const emotionText = parts[0]?.trim() || 'NEUTRAL';
-    let primary = parts[1]?.trim() || '';
-    let secondary = parts[2]?.trim() || '';
+    
+    let emotionText = 'NEUTRAL';
+    let primary = '';
+    let secondary = '';
+
+    if (parts.length >= 4) {
+      // Pillar | Emotion | Primary | Secondary
+      emotionText = parts[1]?.trim() || 'NEUTRAL';
+      primary = parts[2]?.trim() || '';
+      secondary = parts[3]?.trim() || '';
+    } else {
+      // Emotion | Primary | Secondary (Legacy)
+      emotionText = parts[0]?.trim() || 'NEUTRAL';
+      primary = parts[1]?.trim() || '';
+      secondary = parts[2]?.trim() || '';
+    }
     
     const isValidColor = (c: string) => c && (c.startsWith('#') || c.startsWith('rgb') || c.startsWith('hsl'));
     
