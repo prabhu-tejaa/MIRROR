@@ -10,6 +10,21 @@ import { errorInterceptor } from './app/core/interceptors/error.interceptor';
 import { cancelInterceptor } from './app/core/interceptors/cancel.interceptor';
 import { TranslationService } from './app/core/services/translation.service';
 
+import { ErrorHandler } from '@angular/core';
+
+class GlobalErrorHandler implements ErrorHandler {
+  handleError(error: any): void {
+    const chunkFailedMessage = /Loading chunk [\w\d\-\.]+ failed/;
+    const dynamicImportFailed = /Failed to fetch dynamically imported module/;
+    if (chunkFailedMessage.test(error.message) || dynamicImportFailed.test(error?.message) || dynamicImportFailed.test(error?.toString())) {
+      console.warn('Chunk load failed. Reloading window...');
+      window.location.reload();
+    } else {
+      console.error(error);
+    }
+  }
+}
+
 import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
@@ -40,6 +55,7 @@ if (environment.production) {
 
 bootstrapApplication(AppComponent, {
   providers: [
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular({
       scrollPadding: true,
