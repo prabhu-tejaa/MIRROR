@@ -15,6 +15,7 @@ export interface Reflection {
   emotion: string;
   createdAt: string;
   sender?: string;
+  originalEmotionName?: string;
 }
 
 export interface AnalyticsResponse {

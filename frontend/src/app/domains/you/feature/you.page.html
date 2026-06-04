@@ -70,8 +70,11 @@
           </div>
           <div class="popup-scroller">
             <div class="popup-card" *ngFor="let item of filteredReflections(); trackBy: trackByCreatedAt">
-              <span class="card-time">{{ item.createdAt | date:'shortTime' }} • {{ item.createdAt | date:'mediumDate' }}</span>
-              <p class="card-text">"{{ item.content }}"</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="card-time" style="margin-bottom: 0;">{{ item.createdAt | date:'shortTime' }} • {{ item.createdAt | date:'mediumDate' }}</span>
+                <span *ngIf="item.originalEmotionName" [style.color]="getSelectedEmotionStat(selectedEmotion()).primaryColor" style="font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; border: 1px solid currentColor;">{{ item.originalEmotionName }}</span>
+              </div>
+              <p class="card-text" style="margin-top: 0;">"{{ item.content }}"</p>
             </div>
             <div class="empty-popup-logs" *ngIf="filteredReflections().length === 0">
               <p class="no-memories-text">No reflections recorded for this emotion state yet.</p>

@@ -27,6 +27,9 @@ public class Memory {
     @Column(name = "embedding", columnDefinition = "vector(768)")
     private String embedding;
 
+    @Transient
+    private String originalEmotionName;
+
     private Instant createdAt = Instant.now();
 
     public Memory() {}
@@ -55,4 +58,6 @@ public class Memory {
     public void setEmbedding(String embedding) { this.embedding = embedding; }
     public Instant getCreatedAt() { return createdAt; }
     public void setCreatedAt(Instant createdAt) { this.createdAt = createdAt; }
+    public String getOriginalEmotionName() { return originalEmotionName; }
+    public void setOriginalEmotionName(String originalEmotionName) { this.originalEmotionName = originalEmotionName; }
 }

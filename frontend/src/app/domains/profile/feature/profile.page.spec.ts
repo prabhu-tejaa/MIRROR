@@ -9,6 +9,7 @@ import { RoleService } from '../../../core/services/role.service';
 import { TranslationService } from '../../../core/services/translation.service';
 import { NavController, AlertController } from '@ionic/angular';
 import { signal } from '@angular/core';
+import { provideMockStore } from '@ngrx/store/testing';
 
 describe('ProfilePage', () => {
   let component: ProfilePage;
@@ -44,6 +45,18 @@ describe('ProfilePage', () => {
         { provide: TranslationService, useValue: translationSvcStub },
         { provide: NavController, useValue: navCtrlStub },
         { provide: AlertController, useValue: alertCtrlStub },
+        provideMockStore({
+          initialState: {
+            auth: {
+              isAuthenticated: false,
+              email: null,
+              username: null,
+              roles: [],
+              loading: false,
+              error: null
+            }
+          }
+        }),
       ]
     }).compileComponents();
 

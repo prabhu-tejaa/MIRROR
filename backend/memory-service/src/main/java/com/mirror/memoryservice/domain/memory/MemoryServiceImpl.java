@@ -71,27 +71,86 @@ public class MemoryServiceImpl implements MemoryService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
-    public com.mirror.memoryservice.domain.admin.AnalyticsResponseDTO getEmotionalAnalytics(String userId) {
-        com.mirror.memoryservice.domain.admin.AnalyticsResponseDTO response = new com.mirror.memoryservice.domain.admin.AnalyticsResponseDTO();
-        List<com.mirror.memoryservice.domain.admin.EmotionStatDTO> stats = new ArrayList<>();
-        long total = 0;
+    private static class EmotionGroupingResult {
+        List<com.mirror.memoryservice.domain.admin.EmotionStatDTO> groupedStats;
+        Map<String, String> mapping;
+        long total;
+    }
 
-        try {
-            List<Object[]> counts = repository.findEmotionCounts(userId);
-            for (Object[] row : counts) {
-                if (row.length == 2 && row[0] != null) {
-                    String rawKey = row[0].toString();
-                    Long count = ((Number) row[1]).longValue();
-                    
-                    com.mirror.memoryservice.domain.admin.EmotionStatDTO stat = parseEmotionTag(rawKey);
-                    stat.setCount(count);
-                    stats.add(stat);
-                    total += count;
+    private int[] parseColorToRgb(String color) {
+        if (color == null) return new int[]{0,0,0};
+        if (color.startsWith("#") && color.length() >= 7) {
+            try {
+                return new int[]{
+                    Integer.valueOf(color.substring(1, 3), 16),
+                    Integer.valueOf(color.substring(3, 5), 16),
+                    Integer.valueOf(color.substring(5, 7), 16)
+                };
+            } catch (Exception e) {}
+        }
+        return new int[]{0,0,0};
+    }
+
+    private double colorDistance(String c1, String c2) {
+        int[] rgb1 = parseColorToRgb(c1);
+        int[] rgb2 = parseColorToRgb(c2);
+        return Math.sqrt(Math.pow(rgb1[0] - rgb2[0], 2) + Math.pow(rgb1[1] - rgb2[1], 2) + Math.pow(rgb1[2] - rgb2[2], 2));
+    }
+
+    private EmotionGroupingResult getGroupedEmotions(String userId) {
+        List<Object[]> counts = repository.findEmotionCounts(userId);
+        List<com.mirror.memoryservice.domain.admin.EmotionStatDTO> rawStats = new ArrayList<>();
+        long total = 0;
+        
+        for (Object[] row : counts) {
+            if (row.length == 2 && row[0] != null) {
+                String rawKey = row[0].toString();
+                Long count = ((Number) row[1]).longValue();
+                com.mirror.memoryservice.domain.admin.EmotionStatDTO stat = parseEmotionTag(rawKey);
+                stat.setCount(count);
+                rawStats.add(stat);
+                total += count;
+            }
+        }
+        
+        rawStats.sort((a, b) -> Long.compare(b.getCount(), a.getCount()));
+        
+        List<com.mirror.memoryservice.domain.admin.EmotionStatDTO> groupedStats = new ArrayList<>();
+        Map<String, String> mapping = new HashMap<>();
+        int COLOR_THRESHOLD = 60;
+        
+        for (com.mirror.memoryservice.domain.admin.EmotionStatDTO stat : rawStats) {
+            boolean merged = false;
+            for (com.mirror.memoryservice.domain.admin.EmotionStatDTO group : groupedStats) {
+                if (colorDistance(stat.getPrimaryColor(), group.getPrimaryColor()) < COLOR_THRESHOLD) {
+                    mapping.put(stat.getKey(), group.getKey());
+                    group.setCount(group.getCount() + stat.getCount());
+                    merged = true;
+                    break;
                 }
             }
-        } catch (Exception e) {
-            log.error("Error generating emotional analytics metrics: {}", e.getMessage(), e);
+            if (!merged) {
+                groupedStats.add(stat);
+                mapping.put(stat.getKey(), stat.getKey());
+            }
         }
+        
+        EmotionGroupingResult result = new EmotionGroupingResult();
+        result.groupedStats = groupedStats;
+        result.mapping = mapping;
+        result.total = total;
+        return result;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
+    public com.mirror.memoryservice.domain.admin.AnalyticsResponseDTO getEmotionalAnalytics(String userId) {
+        com.mirror.memoryservice.domain.admin.AnalyticsResponseDTO response = new com.mirror.memoryservice.domain.admin.AnalyticsResponseDTO();
+        
+        EmotionGroupingResult grouping = getGroupedEmotions(userId);
+        List<com.mirror.memoryservice.domain.admin.EmotionStatDTO> stats = grouping.groupedStats;
+        long total = grouping.total;
 
         String dominantEmotion = "CALM";
         long maxCount = 0;
@@ -207,16 +266,30 @@ public class MemoryServiceImpl implements MemoryService {
         return aiResponse;
     }
 
+    private List<Memory> mapMemoriesWithGroupedEmotions(String userId, List<Memory> memories) {
+        Map<String, String> mapping = getGroupedEmotions(userId).mapping;
+        List<Memory> mapped = new ArrayList<>();
+        for (Memory m : memories) {
+            Memory newMem = new Memory(m.getId(), m.getUserId(), m.getContent(), m.getEmotion(), m.getSender(), m.getEmbedding(), m.getCreatedAt());
+            newMem.setEmotion(mapping.getOrDefault(m.getEmotion(), m.getEmotion()));
+            newMem.setOriginalEmotionName(parseEmotionTag(m.getEmotion()).getName());
+            mapped.add(newMem);
+        }
+        return mapped;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<Memory> getAllMemories(String userId) {
-        return repository.findAllByUserIdOrderByCreatedAtDescIdDesc(userId);
+        List<Memory> memories = repository.findAllByUserIdOrderByCreatedAtDescIdDesc(userId);
+        return mapMemoriesWithGroupedEmotions(userId, memories);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> getMemoriesPaginated(String userId, Long cursor, int size) {
         List<Memory> memories = repository.findMemoriesKeysetPaginated(userId, size, cursor);
+        memories = mapMemoriesWithGroupedEmotions(userId, memories);
         
         Long total = null;
         if (cursor == null) {
