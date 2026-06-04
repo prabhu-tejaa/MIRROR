@@ -114,7 +114,7 @@
         <textarea placeholder="Speak or type..." [ngModel]="chatInput()"
           (ngModelChange)="chatInput.set($event); adjustTextareaHeight()" (keydown)="handleKeyDown($event)"
           (focus)="moveCursorToEnd($event)" (click)="moveCursorToEnd($event)" #textInput
-          aria-label="Chat input message" [disabled]="isWaitingForResponse()" rows="1"></textarea>
+          aria-label="Chat input message" rows="1"></textarea>
 
         <button class="send-btn" [class.disabled]="!chatInput().trim() || isWaitingForResponse()" [disabled]="!chatInput().trim() || isWaitingForResponse()"
           (click)="triggerSend()" aria-label="Send message">

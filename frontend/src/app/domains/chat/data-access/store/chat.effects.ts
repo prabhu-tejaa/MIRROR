@@ -21,10 +21,13 @@ export class ChatEffects {
   private parseEmotionAndColors(rawEmotion: string | undefined): { emotion: string, primary: string, secondary: string } {
     if (!rawEmotion) return { emotion: 'NEUTRAL', primary: '#a855f7', secondary: '#06b6d4' };
     const parts = rawEmotion.split('|');
-    const emotionText = parts[0] || 'NEUTRAL';
-    let primary = parts[1] || '';
-    let secondary = parts[2] || '';
-    if (!primary || !secondary) {
+    const emotionText = parts[0]?.trim() || 'NEUTRAL';
+    let primary = parts[1]?.trim() || '';
+    let secondary = parts[2]?.trim() || '';
+    
+    const isValidColor = (c: string) => c && (c.startsWith('#') || c.startsWith('rgb') || c.startsWith('hsl'));
+    
+    if (!isValidColor(primary) || !isValidColor(secondary)) {
       const colors = getEmotionColors(emotionText);
       primary = colors.primary;
       secondary = colors.secondary;
