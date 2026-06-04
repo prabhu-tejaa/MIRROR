@@ -256,7 +256,13 @@ export class ChatEffects {
 
         const startTime = Date.now();
         let lastTick = startTime;
-        const charsPerMs = 3 / 15;
+        
+        // Base speed slowed down
+        const baseSpeed = 1.2 / 15; 
+        const waveFreq = 1 / 300;
+        const waveAmp = 4;
+        
+        let maxCharIdxSeen = 0;
 
         return interval(15).pipe(
           map(() => {
@@ -264,14 +270,20 @@ export class ChatEffects {
             const delta = now - lastTick;
             lastTick = now;
 
-            // If the browser throttles the timer (e.g. > 100ms delta), the tab was backgrounded.
-            // Skip the animation entirely to prevent it from continuing when user returns.
             if (delta > 100) {
               return text.length;
             }
 
             const elapsed = now - startTime;
-            let currentCharIdx = Math.floor(elapsed * charsPerMs);
+            
+            // Wavy organic typing speed (always progresses forward, but speeds up and slows down)
+            const rawProgress = (elapsed * baseSpeed) + (Math.sin(elapsed * waveFreq) * waveAmp);
+            let currentCharIdx = Math.floor(rawProgress);
+            
+            // Ensure it never un-types
+            if (currentCharIdx < maxCharIdxSeen) currentCharIdx = maxCharIdxSeen;
+            maxCharIdxSeen = currentCharIdx;
+
             if (currentCharIdx > text.length) {
               currentCharIdx = text.length;
             }
@@ -281,8 +293,18 @@ export class ChatEffects {
           takeWhile((charIdx) => charIdx < text.length, true),
           mergeMap((charIdx) => {
             if (charIdx < text.length) {
+              const actualText = text.slice(0, charIdx);
+              const remaining = text.length - charIdx;
+              const scrambleLen = Math.min(3, remaining);
+              // Added wavy symbols
+              const etherealChars = "~〰✧✦⋆·°*:.";
+              let scramble = "";
+              for (let i = 0; i < scrambleLen; i++) {
+                scramble += etherealChars.charAt(Math.floor(Math.random() * etherealChars.length));
+              }
+              
               return [
-                ChatActions.updateMessage({ id: typingId, changes: { text: text.slice(0, charIdx) } }),
+                ChatActions.updateMessage({ id: typingId, changes: { text: actualText + scramble } }),
                 ChatActions.triggerScrollToBottom()
               ];
             } else {

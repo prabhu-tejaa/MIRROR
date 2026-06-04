@@ -121,7 +121,11 @@
              [style.--bar1-scale]="scale1()"
              [style.--bar2-scale]="scale2()"
              [style.--bar3-scale]="scale3()"
-             [style.--bar4-scale]="scale4()">
+             [style.--bar4-scale]="scale4()"
+             [style.--color-1]="topOrbs()[0]?.primaryColor || '#ffffff'"
+             [style.--color-2]="topOrbs()[1]?.primaryColor || '#ffffff'"
+             [style.--color-3]="topOrbs()[2]?.primaryColor || '#ffffff'"
+             [style.--color-4]="topOrbs()[3]?.primaryColor || '#ffffff'">
           <span class="spec-bar bar-1"></span>
           <span class="spec-bar bar-2"></span>
           <span class="spec-bar bar-3"></span>

@@ -18,14 +18,15 @@
 }
 
 .emotion-text-selectors {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  width: 100%;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 8px 14px;
-  max-width: 440px;
-  margin-bottom: 16px; // Sit just a bit above bottom nav
-  padding-right: 60px; // Shift right side elements left to clear music button
-  position: relative;
+  padding-right: 70px; // Shift right side elements left to clear music button
   z-index: 10;
   
   &.play-fade-in {

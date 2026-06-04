@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, NavigationStart } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { IonApp, IonRouterOutlet, IonContent, IonRefresher, IonRefresherContent } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet, IonContent } from '@ionic/angular/standalone';
 import { StarfieldComponent } from './shared/starfield/starfield.component';
 import { NoInternetComponent } from './shared/no-internet/no-internet.component';
 import { ScrollAssistantComponent } from './shared/scroll-assistant/scroll-assistant.component';
@@ -22,8 +22,6 @@ import { PresenceService } from './core/services/presence.service';
     IonApp,
     IonRouterOutlet,
     IonContent,
-    IonRefresher,
-    IonRefresherContent,
     StarfieldComponent,
     NoInternetComponent,
     ScrollAssistantComponent

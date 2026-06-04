@@ -160,35 +160,45 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 2.2px;
+  gap: 2.5px;
   width: 20px;
   height: 18px;
   color: rgba(255, 255, 255, 0.85);
 
+  @keyframes blockyWaveReveal {
+    0% { clip-path: inset(85% 0 0 0); }
+    100% { clip-path: inset(5% 0 0 0); }
+  }
+
   .spec-bar {
-    width: 2.5px;
+    width: 3.5px;
     height: 100%;
-    background-color: currentColor;
-    border-radius: 1.5px;
-    transform-origin: bottom center !important;
-    animation: bounceWave 0.8s ease-in-out infinite alternate;
-    transition: transform 0.1s cubic-bezier(0.25, 0.8, 0.25, 1.15); // Dynamic springy groove!
+    background-color: transparent;
+    background-image: repeating-linear-gradient(
+      to top,
+      currentColor 0px,
+      currentColor 3px,
+      transparent 3px,
+      transparent 4.5px
+    );
+    border-radius: 0;
+    animation: blockyWaveReveal 0.8s steps(6, end) infinite alternate;
     
-    &.bar-1 { animation-delay: 0.15s; animation-duration: 0.65s; }
-    &.bar-2 { animation-delay: 0.35s; animation-duration: 0.85s; }
-    &.bar-3 { animation-delay: 0.0s; animation-duration: 0.55s; }
-    &.bar-4 { animation-delay: 0.5s; animation-duration: 0.75s; }
+    &.bar-1 { color: var(--color-1, currentColor); animation-delay: 0.15s; animation-duration: 0.65s; }
+    &.bar-2 { color: var(--color-2, currentColor); animation-delay: 0.35s; animation-duration: 0.85s; }
+    &.bar-3 { color: var(--color-3, currentColor); animation-delay: 0.0s; animation-duration: 0.55s; }
+    &.bar-4 { color: var(--color-4, currentColor); animation-delay: 0.5s; animation-duration: 0.75s; }
   }
 
   // Seamless override when real-time Web Audio analyzer variables are present
   &[style*="--bar1-scale"] {
     .spec-bar {
       animation: none !important;
-      
-      &.bar-1 { transform: scaleY(var(--bar1-scale)); }
-      &.bar-2 { transform: scaleY(var(--bar2-scale)); }
-      &.bar-3 { transform: scaleY(var(--bar3-scale)); }
-      &.bar-4 { transform: scaleY(var(--bar4-scale)); }
+      // Convert the 0-1 scale to a clip-path inset percentage (1 = 0% inset, 0 = 100% inset)
+      &.bar-1 { clip-path: inset(calc(100% - (var(--bar1-scale) * 100%)) 0 0 0); }
+      &.bar-2 { clip-path: inset(calc(100% - (var(--bar2-scale) * 100%)) 0 0 0); }
+      &.bar-3 { clip-path: inset(calc(100% - (var(--bar3-scale) * 100%)) 0 0 0); }
+      &.bar-4 { clip-path: inset(calc(100% - (var(--bar4-scale) * 100%)) 0 0 0); }
     }
   }
 }

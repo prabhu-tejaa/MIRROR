@@ -82,24 +82,6 @@
 
     <!-- Suggestions panel removed per user preference -->
 
-    <!-- Active Recording Overlay Simulator (within layout) -->
-    <div class="voice-active-overlay" *ngIf="isRecording()">
-      <div class="waveform">
-        <div class="bar bar-1"></div>
-        <div class="bar bar-2"></div>
-        <div class="bar bar-3"></div>
-        <div class="bar bar-4"></div>
-        <div class="bar bar-5"></div>
-        <div class="bar bar-6"></div>
-        <div class="bar bar-7"></div>
-        <div class="bar bar-8"></div>
-      </div>
-      <div class="voice-status-container">
-        <p class="voice-transcription-status">LISTENING & TRANSCRIBING...</p>
-        <p class="voice-transcription-substatus">Tap the red stop button or speak to automatically finish.</p>
-      </div>
-    </div>
-
     <!-- Entry Control Capsule -->
     <div class="entry-capsule-container">
       <div class="bottom-ambient-glow"></div>
@@ -107,11 +89,14 @@
       <div class="entry-capsule">
         <button class="voice-btn" [class.recording]="isRecording()" [class.disabled]="isWaitingForResponse()" [disabled]="isWaitingForResponse()" (click)="toggleRecording()"
           [aria-label]="isRecording() ? 'Stop voice input' : 'Start voice input'">
-          <ion-icon [name]="isRecording() ? 'stop-circle-outline' : 'mic-outline'" class="mic-icon"></ion-icon>
+          <ion-icon name="mic-outline" class="mic-icon" *ngIf="!isRecording()"></ion-icon>
+          <div class="mini-equalizer" *ngIf="isRecording()">
+            <span></span><span></span><span></span><span></span>
+          </div>
           <span class="record-ring" *ngIf="isRecording()"></span>
         </button>
 
-        <textarea placeholder="Speak or type..." [ngModel]="chatInput()"
+        <textarea [placeholder]="isRecording() ? 'Listening & transcribing...' : 'Speak or type...'" [ngModel]="chatInput()"
           (ngModelChange)="chatInput.set($event); adjustTextareaHeight()" (keydown)="handleKeyDown($event)"
           (focus)="moveCursorToEnd($event)" (click)="moveCursorToEnd($event)" #textInput
           aria-label="Chat input message" rows="1"></textarea>

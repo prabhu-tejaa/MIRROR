@@ -41,13 +41,11 @@
     touch-action: none;
     user-select: none;
     will-change: transform;
-    animation: morphBlob 8s ease-in-out infinite alternate, glassyCoreAuroraIntro 3s ease-in-out forwards, glassyCoreAuroraLoop 16s ease-in-out infinite 3s;
+    animation: morphBlob 8s ease-in-out infinite alternate, glassyCoreAuroraLoop 16s ease-in-out infinite 3s;
 
     &.animate-intro {
-      animation: morphBlob 8s ease-in-out infinite alternate, glassyCoreAuroraIntro 3s ease-in-out forwards, glassyCoreAuroraLoop 16s ease-in-out infinite 3s;
-
       &.glassy-core::before {
-        animation: rotateOuter 8s linear infinite, igniteAuraClip 4.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+        animation: rotateOuter 8s linear infinite, igniteAuraDeepSwell 5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
       }
     }
 
@@ -75,7 +73,9 @@
           rgba(155, 89, 182, 0.85) 270deg,
           rgba(255, 215, 0, 0.85) 360deg
         ));
+        
         filter: blur(24px);
+        // Base state without intro animation
         animation: rotateOuter 8s linear infinite;
         z-index: -1;
       }

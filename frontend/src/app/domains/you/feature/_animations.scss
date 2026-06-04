@@ -322,13 +322,20 @@
   }
 }
 
-@keyframes igniteAuraClip {
+@keyframes igniteAuraDeepSwell {
   0% {
-    clip-path: circle(0% at 50% 50%);
     opacity: 0;
+    scale: 0.6;
+    filter: blur(40px) saturate(200%) brightness(0.4); // Very dark, deep, highly saturated start
+  }
+  60% {
+    opacity: 0.7;
+    scale: 0.9;
+    filter: blur(30px) saturate(150%) brightness(1.1); // Soft glowing swell, no harsh overexposure
   }
   100% {
-    clip-path: circle(75% at 50% 50%);
     opacity: 1;
+    scale: 1;
+    filter: blur(24px) saturate(100%) brightness(1); // Final natural aura
   }
 }
