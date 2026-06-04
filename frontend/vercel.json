@@ -1,7 +1,7 @@
 {
   "version": 2,
   "public": true,
-  "outputDirectory": "dist/frontend/browser",
+  "outputDirectory": "frontend/dist/frontend/browser",
   "rewrites": [
     {
       "source": "/(.*)",
