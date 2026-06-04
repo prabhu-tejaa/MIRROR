@@ -191,11 +191,7 @@
     }
   }
 
-  // Bind the bottom console glow to the AI primary color beautifully
-  .bottom-ambient-glow {
-    background: var(--emotion-color-primary, #7928ca) !important;
-    opacity: 0.25 !important;
-  }
+
 
   // Style individual mirror messages with AI-colored soft glow borders
   .message-wrapper.mirror-message {
