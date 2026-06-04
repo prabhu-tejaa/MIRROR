@@ -44,7 +44,7 @@ export class AppComponent {
   private appRef = inject(ApplicationRef);
 
   @HostListener('document:visibilitychange')
-  onVisibilityChange() {
+  public onVisibilityChange(): void {
     if (document.visibilityState === 'visible') {
       // Force change detection when user returns to the tab.
       // This fixes issues where background HTTP requests complete but the UI (like loading dots)
