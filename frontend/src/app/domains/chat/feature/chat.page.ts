@@ -126,9 +126,10 @@ export class ChatPage implements OnDestroy {
         const scrollEl = this.streamScroll?.nativeElement;
         if (scrollEl) {
           const prevScrollHeight = scrollEl.scrollHeight;
+          const prevScrollTop = scrollEl.scrollTop;
           setTimeout(() => {
             const newScrollHeight = scrollEl.scrollHeight;
-            scrollEl.scrollTop = newScrollHeight - prevScrollHeight;
+            scrollEl.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
           }, 50);
         }
       }
@@ -183,10 +184,15 @@ export class ChatPage implements OnDestroy {
         this.scrollListenerAttached = true;
         scrollEl.addEventListener('scroll', () => {
           if (!this.initialScrollCompleted) return;
-          if (scrollEl.scrollTop <= 60 && this.chatState.hasMoreHistory() && !this.isLoadingMore() && !this.chatState.isInitialLoad()) {
+          
+          const isAtTop = scrollEl.scrollTop <= 10;
+          const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
+          const isAtBottom = maxScroll > 0 && scrollEl.scrollTop >= (maxScroll - 10);
+
+          if (isAtTop && !isAtBottom && this.chatState.hasMoreHistory() && !this.isLoadingMore() && !this.chatState.isInitialLoad()) {
             this.store.dispatch(ChatActions.loadMoreHistory());
           }
-        });
+        }, { passive: true });
       }
     }, 300);
   }
