@@ -1,16 +1,17 @@
 import { Injectable, inject, effect } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { AuthService } from '../../domains/auth/data-access/auth.service';
+import { RoleService } from './role.service';
+import { Store } from '@ngrx/store';
+import { selectIsAuthenticated, selectUsername } from '../../domains/auth/data-access/store/auth.selectors';
 import { environment } from '../../../environments/environment';
 import { initializeApp, getApps } from 'firebase/app';
 import { getDatabase, ref, onValue, set, onDisconnect } from 'firebase/database';
-import { RoleService } from './role.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PresenceService {
-  private authService = inject(AuthService);
+  private store = inject(Store);
   private roleService = inject(RoleService);
   
   private onlineUsersSubject = new BehaviorSubject<number>(0);
@@ -23,8 +24,8 @@ export class PresenceService {
     this.initFirebase();
     
     effect(() => {
-      const isAuthenticated = this.authService.isAuthenticated();
-      const userId = this.authService.getUserId();
+      const isAuthenticated = this.store.selectSignal(selectIsAuthenticated)();
+      const userId = this.store.selectSignal(selectUsername)();
       
       if (isAuthenticated && userId) {
         this.currentUserId = userId;

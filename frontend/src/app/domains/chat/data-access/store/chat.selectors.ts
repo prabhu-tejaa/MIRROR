@@ -26,3 +26,9 @@ export const selectTodayMessages = createSelector(selectMessages, (messages) => 
 
 export const selectScrollToBottomTrigger = createSelector(selectChatState, (state) => state.scrollToBottomTrigger);
 export const selectMaintainScrollTrigger = createSelector(selectChatState, (state) => state.maintainScrollTrigger);
+
+export const selectCurrentCursor = createSelector(selectChatState, (state) => state.currentCursor);
+export const selectHasMoreHistory = createSelector(selectChatState, (state) => state.hasMoreHistory);
+export const selectInitialChatLoadedGlobally = createSelector(selectChatState, (state) => state.initialChatLoadedGlobally);
+export const selectIsInitialLoad = createSelector(selectChatState, (state) => state.isInitialLoad);
+export const selectLoadedEmail = createSelector(selectChatState, (state) => state.loadedEmail);

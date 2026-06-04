@@ -24,8 +24,6 @@ import { VoiceRecognitionService } from '../data-access/voice-recognition.servic
 import { TextToSpeechService } from '../data-access/text-to-speech.service';
 import { ChatStateService } from '../data-access/chat-state.service';
 import { Message } from '../data-access/chat-state.models';
-import { ChatHistoryService } from '../data-access/chat-history.service';
-import { ChatInteractionService } from '../data-access/chat-interaction.service';
 
 @Component({
   selector: 'app-chat',
@@ -59,16 +57,14 @@ export class ChatPage implements OnDestroy {
   public voiceRecognitionSvc = inject(VoiceRecognitionService);
   public ttsSvc = inject(TextToSpeechService);
   public chatState = inject(ChatStateService);
-  public chatHistory = inject(ChatHistoryService);
-  public chatInteraction = inject(ChatInteractionService);
 
   private initialInputText = '';
   private isSpeechToggleInFlight = false;
   private scrollListenerAttached = false;
+  private initialScrollCompleted = false;
 
-  // View Child
   @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
-  @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLInputElement>;
+  @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLTextAreaElement>;
 
   // Public Properties for HTML Template
   public readonly isGuest = computed(() => this.authSvc.getEmail() === 'guest@mirror.tech');
@@ -112,15 +108,23 @@ export class ChatPage implements OnDestroy {
       } else {
         this.chatInput.update((curr: string) => curr ? `${curr} ${update.text}` : update.text);
       }
+      setTimeout(() => this.adjustTextareaHeight(), 0);
     });
 
     // React to UI layout triggers from state service
     effect(() => {
       const trigger = this.chatState.scrollToBottomTrigger();
       if (trigger > 0) {
-        setTimeout(() => this.scrollToBottom('smooth'), 50);
-        setTimeout(() => this.scrollToBottom('smooth'), 150);
-        setTimeout(() => this.scrollToBottom('smooth'), 300);
+        const behavior = this.initialScrollCompleted ? 'smooth' : 'auto';
+        this.scrollToBottom(behavior);
+        setTimeout(() => this.scrollToBottom(behavior), 50);
+        setTimeout(() => this.scrollToBottom(behavior), 150);
+        setTimeout(() => {
+          this.scrollToBottom(behavior);
+          if (!this.initialScrollCompleted) {
+            this.initialScrollCompleted = true;
+          }
+        }, 300);
       }
     });
 
@@ -135,6 +139,15 @@ export class ChatPage implements OnDestroy {
             scrollEl.scrollTop = newScrollHeight - prevScrollHeight;
           }, 50);
         }
+      }
+    });
+
+    effect(() => {
+      const isLoading = this.isLoadingHistory();
+      if (!isLoading) {
+        setTimeout(() => {
+          this.initialScrollCompleted = true;
+        }, 500);
       }
     });
   }
@@ -152,17 +165,26 @@ export class ChatPage implements OnDestroy {
   }
 
   public ionViewWillEnter() {
-    this.chatHistory.loadChatHistory();
+    const currentEmail = this.authSvc.getEmail() || 'guest@mirror.tech';
+    if (!this.chatState.initialChatLoadedGlobally() || this.chatState.loadedEmail() !== currentEmail) {
+      this.initialScrollCompleted = false;
+      this.store.dispatch(ChatActions.loadChatHistory());
+    } else {
+      this.initialScrollCompleted = true;
+    }
   }
 
   public ionViewDidEnter() {
     this.focusInput();
     const currentEmail = this.authSvc.getEmail() || 'guest@mirror.tech';
-    if (!(this.chatState.isInitialLoad || this.chatState.loadedEmail !== currentEmail)) {
+    if (!(this.chatState.isInitialLoad() || this.chatState.loadedEmail() !== currentEmail)) {
       this.scrollToBottom('auto');
       setTimeout(() => this.scrollToBottom('auto'), 50);
       setTimeout(() => this.scrollToBottom('auto'), 150);
-      setTimeout(() => this.scrollToBottom('auto'), 300);
+      setTimeout(() => {
+        this.scrollToBottom('auto');
+        this.initialScrollCompleted = true;
+      }, 300);
     }
     this.setupScrollListener();
   }
@@ -174,8 +196,9 @@ export class ChatPage implements OnDestroy {
       if (scrollEl) {
         this.scrollListenerAttached = true;
         scrollEl.addEventListener('scroll', () => {
-          if (scrollEl.scrollTop <= 60 && this.chatState.hasMoreHistory && !this.isLoadingMore() && !this.chatState.isInitialLoad) {
-            this.chatHistory.loadMoreHistory();
+          if (!this.initialScrollCompleted) return;
+          if (scrollEl.scrollTop <= 60 && this.chatState.hasMoreHistory() && !this.isLoadingMore() && !this.chatState.isInitialLoad()) {
+            this.store.dispatch(ChatActions.loadMoreHistory());
           }
         });
       }
@@ -203,7 +226,7 @@ export class ChatPage implements OnDestroy {
   }
 
   public moveCursorToEnd(event: Event) {
-    const input = event.target as HTMLInputElement;
+    const input = event.target as HTMLTextAreaElement;
     if (input) {
       setTimeout(() => {
         const len = input.value.length;
@@ -233,12 +256,23 @@ export class ChatPage implements OnDestroy {
       return;
     }
     this.chatInput.set('');
+    setTimeout(() => this.adjustTextareaHeight(), 0);
     this.focusInput();
-    this.chatInteraction.sendMessage(chipText, () => this.focusInput());
+    this.store.dispatch(ChatActions.postMessage({ text: chipText }));
+    this.focusInput();
   }
 
-  public handleKeyPress(event: KeyboardEvent) {
-    if (event.key === 'Enter') {
+  public adjustTextareaHeight() {
+    if (this.textInput?.nativeElement) {
+      const textarea = this.textInput.nativeElement;
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }
+
+  public handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
       this.triggerSend();
     }
   }
@@ -251,8 +285,10 @@ export class ChatPage implements OnDestroy {
         return;
       }
       this.chatInput.set('');
+      setTimeout(() => this.adjustTextareaHeight(), 0);
       this.focusInput();
-      this.chatInteraction.sendMessage(input, () => this.focusInput());
+      this.store.dispatch(ChatActions.postMessage({ text: input }));
+      this.focusInput();
     }
   }
 

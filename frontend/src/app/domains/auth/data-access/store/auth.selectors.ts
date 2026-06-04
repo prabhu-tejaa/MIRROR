@@ -27,3 +27,13 @@ export const selectAuthError = createSelector(
   selectAuthState,
   (state) => state.error
 );
+
+export const selectUserRoles = createSelector(
+  selectAuthState,
+  (state) => state.roles
+);
+
+export const selectIsAdmin = createSelector(
+  selectUserRoles,
+  (roles) => roles.includes('ADMIN')
+);

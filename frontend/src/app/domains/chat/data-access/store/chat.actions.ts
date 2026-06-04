@@ -16,6 +16,27 @@ export const setMessages = createAction('[Chat] Set Messages', props<{ messages:
 export const addMessage = createAction('[Chat] Add Message', props<{ message: Message }>());
 export const updateMessage = createAction('[Chat] Update Message', props<{ id: string; changes: Partial<Message> }>());
 
+export const loadChatHistory = createAction('[Chat] Load Chat History');
+export const loadChatHistorySuccess = createAction(
+  '[Chat] Load Chat History Success',
+  props<{ messages: Message[]; nextCursor: string | null; hasMore: boolean; loadedEmail: string }>()
+);
+export const loadChatHistoryFailure = createAction('[Chat] Load Chat History Failure', props<{ error: unknown }>());
+
+export const loadMoreHistory = createAction('[Chat] Load More History');
+export const loadMoreHistorySuccess = createAction(
+  '[Chat] Load More History Success',
+  props<{ messages: Message[]; nextCursor: string | null; hasMore: boolean }>()
+);
+export const loadMoreHistoryFailure = createAction('[Chat] Load More History Failure', props<{ error: unknown }>());
+
+export const postMessage = createAction('[Chat] Post Message', props<{ text: string }>());
+export const postMessageSuccess = createAction(
+  '[Chat] Post Message Success',
+  props<{ typingId: string; text: string; emotion: string; primary: string; secondary: string }>()
+);
+export const postMessageFailure = createAction('[Chat] Post Message Failure', props<{ typingId: string; errorMsg: string }>());
+
 // Loading & UI Actions
 export const setWaitingForResponse = createAction('[Chat] Set Waiting For Response', props<{ isWaiting: boolean }>());
 export const setResting = createAction('[Chat] Set Resting', props<{ isResting: boolean }>());

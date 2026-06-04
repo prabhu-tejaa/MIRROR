@@ -30,20 +30,6 @@ export class ApiService {
     } as const;
   }
 
-  public get ADMIN_GATEWAY() {
-    return {
-      HEALTH: '/api/gateway/admin/health',
-      ROUTES: '/api/gateway/admin/routes',
-      ROUTES_TOGGLE: '/api/gateway/admin/routes/toggle',
-      BLOCKED_IPS: '/api/gateway/admin/blocked-ips',
-      UNBLOCK_IP: (ip: string) => `/api/gateway/admin/blocked-ips/${ip}`,
-      RATE_LIMIT: '/api/gateway/admin/rate-limit',
-      LOGS: '/api/gateway/admin/logs',
-      STATS: '/api/gateway/admin/stats',
-      PUBLIC_HEALTH: '/api/gateway/public/health'
-    } as const;
-  }
-
   public get USER_MEMORY() {
     return {
       HISTORY: '/api/memory/history',

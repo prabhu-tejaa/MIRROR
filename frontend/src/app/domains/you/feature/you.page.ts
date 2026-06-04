@@ -1,12 +1,12 @@
-import { Component, ChangeDetectionStrategy, signal, inject, computed, DestroyRef, NgZone, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, inject, computed, effect, DestroyRef, NgZone, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { AudioVisualizerService } from '../../chat/data-access/audio-visualizer.service';
 import { CommonModule } from '@angular/common';
 import { IonContent } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 
 import { ToastService } from '../../../core/services/toast.service';
-import { AuthService } from '../../auth/data-access/auth.service';
 import { Store } from '@ngrx/store';
+import { selectUserEmail, selectUsername } from '../../auth/data-access/store/auth.selectors';
 import { YouActions } from '../data-access/store/you.actions';
 import { selectAnalytics, selectMemories, selectDataLoadedOnce, selectLoadingAnalytics } from '../data-access/store/you.selectors';
 import { environment } from '../../../../environments/environment';
@@ -21,7 +21,6 @@ import { environment } from '../../../../environments/environment';
 })
 export class YouPage implements OnDestroy {
   private store = inject(Store);
-  private authSvc = inject(AuthService);
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private toastSvc = inject(ToastService);
@@ -70,11 +69,11 @@ export class YouPage implements OnDestroy {
   private readonly groovesaladUrl = (environment as any).grooveSaladUrl || 'https://ice1.somafm.com/groovesalad-128-mp3';
 
   public username = computed(() => {
-    return this.authSvc.getUserId() || 'Soul';
+    return this.store.selectSignal(selectUsername)() || 'Soul';
   });
 
   public readonly displayUsername = computed(() => {
-    const name = this.authSvc.getUserId() || 'Soul';
+    const name = this.store.selectSignal(selectUsername)() || 'Soul';
     const MAX = 12;
 
     if (name.length <= MAX) return name;
@@ -122,22 +121,31 @@ export class YouPage implements OnDestroy {
     return 0.7 + (stat.percentage / 100) * 0.9;
   }
 
-  constructor() { }
+  private introAnimated = false;
+
+  constructor() {
+    const initiallyLoaded = this.dataLoadedOnce();
+    effect(() => {
+      const count = this.totalCount();
+      if (count > 0 && !initiallyLoaded && !this.introAnimated) {
+        this.introAnimated = true;
+        this.shouldAnimateIntro = true;
+        this.isFirstVisit = true;
+        setTimeout(() => {
+          this.shouldAnimateIntro = false;
+          this.isFirstVisit = false;
+        }, 4500);
+      }
+    });
+  }
 
   public ionViewWillEnter() {
     this.isTabActive.set(true);
-    const email = this.authSvc.getEmail() || 'guest@mirror.tech';
-    this.store.dispatch(YouActions.loadAnalytics({ email }));
-    this.store.dispatch(YouActions.loadMemories({ email }));
+    const email = this.store.selectSignal(selectUserEmail)() || 'guest@mirror.tech';
     
-    // Only animate intro if data wasn't already loaded
     if (!this.dataLoadedOnce()) {
-      this.shouldAnimateIntro = true;
-      this.isFirstVisit = true;
-      setTimeout(() => { 
-        this.shouldAnimateIntro = false; 
-        this.isFirstVisit = false;
-      }, 3000);
+      this.store.dispatch(YouActions.loadAnalytics({ email }));
+      this.store.dispatch(YouActions.loadMemories({ email }));
     }
   }
 

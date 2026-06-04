@@ -7,8 +7,9 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { logOutOutline, personCircleOutline, mailOutline, shieldCheckmarkOutline, chevronForwardOutline, informationCircleOutline } from 'ionicons/icons';
+import { Store } from '@ngrx/store';
+import { selectUserEmail, selectUsername, selectIsAdmin } from '../../auth/data-access/store/auth.selectors';
 import { AuthService } from '../../auth/data-access/auth.service';
-import { RoleService } from '../../../core/services/role.service';
 import { TranslationService } from '../../../core/services/translation.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import confetti from 'canvas-confetti';
@@ -27,14 +28,14 @@ import confetti from 'canvas-confetti';
 })
 export class ProfilePage {
   private authSvc = inject(AuthService);
-  private roleSvc = inject(RoleService);
+  private store = inject(Store);
   private navCtrl = inject(NavController);
   private alertCtrl = inject(AlertController);
   private translationSvc = inject(TranslationService);
 
-  public readonly userId = computed(() => this.authSvc.getUserId() ?? 'User');
-  public readonly userEmail = computed(() => this.authSvc.getEmail() ?? 'Email');
-  public readonly isAdmin = computed(() => this.roleSvc.hasRole('ADMIN'));
+  public readonly userId = computed(() => this.store.selectSignal(selectUsername)() ?? 'User');
+  public readonly userEmail = computed(() => this.store.selectSignal(selectUserEmail)() ?? 'Email');
+  public readonly isAdmin = this.store.selectSignal(selectIsAdmin);
 
   constructor() {
     addIcons({ logOutOutline, personCircleOutline, mailOutline, shieldCheckmarkOutline, chevronForwardOutline, informationCircleOutline });

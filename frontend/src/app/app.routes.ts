@@ -53,20 +53,10 @@ export const routes: Routes = [
     loadComponent: () => import('./domains/admin/feature/admin-auth/admin-auth.page').then(m => m.AdminAuthPage)
   },
   {
-    path: 'admin/api-gateway',
-    canActivate: [authGuard, adminGuard],
-    canDeactivate: [overlayGuard],
-    loadComponent: () => import('./domains/admin/feature/admin-gateway/admin-gateway.page').then(m => m.AdminGatewayPage)
-  },
-  {
     path: 'admin/memory-service',
     canActivate: [authGuard, adminGuard],
     canDeactivate: [overlayGuard],
     loadComponent: () => import('./domains/admin/feature/admin-memory/admin-memory.page').then(m => m.AdminMemoryPage)
-  },
-  {
-    path: 'status',
-    loadComponent: () => import('./domains/status/feature/system-status.page').then(m => m.SystemStatusPage)
   },
   {
     path: '**',

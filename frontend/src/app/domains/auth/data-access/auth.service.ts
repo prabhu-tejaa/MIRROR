@@ -38,14 +38,21 @@ export class AuthService {
   }
 
   constructor() {
-    const hasToken = !!this.storageSvc.get(StorageKeys.ACCESS_TOKEN);
+    const token = this.storageSvc.get(StorageKeys.ACCESS_TOKEN);
+    const hasToken = !!token;
     const email = this.storageSvc.get(StorageKeys.EMAIL);
     const username = this.storageSvc.get(StorageKeys.USERNAME);
     
+    let roles: string[] = [];
+    if (token) {
+      roles = this.extractRolesFromToken(token, username || '');
+    }
+
     this.store.dispatch(AuthActions.setAuthenticated({ 
       isAuthenticated: hasToken, 
       email: email || undefined, 
-      username: username || undefined 
+      username: username || undefined,
+      roles
     }));
 
     this.setupStorageListener();
@@ -189,7 +196,15 @@ export class AuthService {
   }
 
   private saveSession(response: AuthResponse): void {
+    const roles = this.extractRolesFromToken(response.accessToken, response.username || '');
     this.store.dispatch(AuthActions.loginSuccess({ response }));
+    // Dispatch setAuthenticated again to ensure roles are populated since loginSuccess doesn't have roles payload natively right now
+    this.store.dispatch(AuthActions.setAuthenticated({
+      isAuthenticated: true,
+      email: response.email || undefined,
+      username: response.username,
+      roles
+    }));
   }
 
   public clearSession(): void {
@@ -234,5 +249,36 @@ export class AuthService {
 
   public getAccessToken(): string | null {
     return this.storageSvc.get(StorageKeys.ACCESS_TOKEN);
+  }
+
+  private extractRolesFromToken(token: string, username: string): string[] {
+    if (token.startsWith('mock_jwt_access_token')) {
+      if (username.toLowerCase().startsWith('admin')) {
+        return ['ADMIN'];
+      }
+      return ['USER'];
+    }
+
+    try {
+      const parts = token.split('.');
+      if (parts.length === 3) {
+        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+        const roles = payload.roles || payload.role || payload.authorities || [];
+        const normalizeRole = (r: unknown): string => {
+          const str = String(r).toUpperCase();
+          return str.startsWith('ROLE_') ? str.substring(5) : str;
+        };
+
+        if (Array.isArray(roles)) {
+          return roles.map(normalizeRole);
+        } else if (typeof roles === 'string') {
+          return [normalizeRole(roles)];
+        }
+      }
+    } catch {
+    }
+
+    return ['USER'];
   }
 }

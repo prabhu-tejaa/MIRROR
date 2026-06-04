@@ -9,7 +9,7 @@ export const AuthActions = createActionGroup({
     'Login Failure': props<{ error: unknown }>(),
     'Logout': emptyProps(),
     'Logout Success': emptyProps(),
-    'Set Authenticated': props<{ isAuthenticated: boolean, email?: string, username?: string }>(),
+    'Set Authenticated': props<{ isAuthenticated: boolean, email?: string, username?: string, roles?: string[] }>(),
     'Clear Session': emptyProps(),
   }
 });

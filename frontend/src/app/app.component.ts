@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, ApplicationRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, NavigationStart } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -40,6 +40,18 @@ export class AppComponent {
   public isOffline$: Observable<boolean> = this.connectionService.isOnline$.pipe(
     map(online => !online)
   );
+
+  private appRef = inject(ApplicationRef);
+
+  @HostListener('document:visibilitychange')
+  onVisibilityChange() {
+    if (document.visibilityState === 'visible') {
+      // Force change detection when user returns to the tab.
+      // This fixes issues where background HTTP requests complete but the UI (like loading dots)
+      // gets stuck because NgZone drops the tick while the tab is hidden.
+      this.appRef.tick();
+    }
+  }
 
   constructor() {
     this.router.events.pipe(

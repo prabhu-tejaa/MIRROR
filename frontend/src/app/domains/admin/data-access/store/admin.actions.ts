@@ -1,7 +1,6 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
 import { AdminUserResponse, AdminUserUpdateRequest, AdminCreateUserRequest } from '../../../auth/data-access/auth.model';
 import { AdminMemoryRecord } from '../admin-memory.service';
-import { ServiceHealth, RouteMap, BlockedIp, LogEntry, TelemetryStats } from '../admin-gateway.service';
 
 export const AdminActions = createActionGroup({
   source: 'Admin',
@@ -41,39 +40,5 @@ export const AdminActions = createActionGroup({
     'Upload Mock Data': props<{ file: File }>(),
     'Upload Mock Data Success': props<{ message: string }>(),
     'Upload Mock Data Failure': props<{ error: unknown }>(),
-    
-    'Load Gateway Health': emptyProps(),
-    'Load Gateway Health Success': props<{ health: ServiceHealth[] }>(),
-    'Load Gateway Health Failure': props<{ error: unknown }>(),
-
-    'Load Gateway Routes': emptyProps(),
-    'Load Gateway Routes Success': props<{ routes: RouteMap[] }>(),
-    'Load Gateway Routes Failure': props<{ error: unknown }>(),
-
-    'Toggle Route': props<{ id: string, active: boolean }>(),
-    'Toggle Route Success': props<{ route: RouteMap }>(),
-    'Toggle Route Failure': props<{ error: unknown }>(),
-
-    'Load Blocked IPs': emptyProps(),
-    'Load Blocked IPs Success': props<{ ips: BlockedIp[] }>(),
-    'Load Blocked IPs Failure': props<{ error: unknown }>(),
-
-    'Unblock IP': props<{ ip: string }>(),
-    'Unblock IP Success': props<{ ip: string }>(),
-    'Unblock IP Failure': props<{ error: unknown }>(),
-
-    'Load Gateway Logs': emptyProps(),
-    'Load Gateway Logs Success': props<{ logs: LogEntry[] }>(),
-    'Load Gateway Logs Failure': props<{ error: unknown }>(),
-
-    'Load Gateway Stats': emptyProps(),
-    'Load Gateway Stats Success': props<{ stats: TelemetryStats }>(),
-    'Load Gateway Stats Failure': props<{ error: unknown }>(),
-
-    'Update Rate Limit': props<{ limit: number }>(),
-    'Update Rate Limit Success': props<{ limit: number }>(),
-    'Update Rate Limit Failure': props<{ error: unknown }>(),
-
-    'Load All Telemetry': emptyProps(),
   }
 });

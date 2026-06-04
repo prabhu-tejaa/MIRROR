@@ -89,8 +89,7 @@ export class LoginPage implements OnInit {
     this.errorMessage = '';
     this.cdr.markForCheck();
 
-    // TEMPORARY: Bypassing form validation for easier testing
-    if (true || this.loginForm.valid) {
+    if (this.loginForm.valid) {
       this.isLoading = true;
       this.cdr.markForCheck();
 

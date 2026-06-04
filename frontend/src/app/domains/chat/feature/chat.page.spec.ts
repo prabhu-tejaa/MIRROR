@@ -11,8 +11,6 @@ import { RoleService } from '../../../core/services/role.service';
 import { VoiceRecognitionService } from '../data-access/voice-recognition.service';
 import { TextToSpeechService } from '../data-access/text-to-speech.service';
 import { ChatStateService } from '../data-access/chat-state.service';
-import { ChatHistoryService } from '../data-access/chat-history.service';
-import { ChatInteractionService } from '../data-access/chat-interaction.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { NavController, AlertController } from '@ionic/angular';
 import { signal } from '@angular/core';
@@ -57,17 +55,10 @@ describe('ChatPage', () => {
     maintainScrollTrigger: signal(0),
     fetchDynamicQuote: jasmine.createSpy('fetchDynamicQuote'),
     checkGuestLimit: jasmine.createSpy('checkGuestLimit').and.returnValue(true),
-    isInitialLoad: false,
-    loadedEmail: null,
-    hasMoreHistory: true,
+    isInitialLoad: signal(false),
+    loadedEmail: signal<string | null>(null),
+    hasMoreHistory: signal(true),
     destroy: jasmine.createSpy('destroy'),
-  };
-  const chatHistorySvcStub = {
-    loadChatHistory: jasmine.createSpy('loadChatHistory'),
-    loadMoreHistory: jasmine.createSpy('loadMoreHistory'),
-  };
-  const chatInteractionSvcStub = {
-    sendMessage: jasmine.createSpy('sendMessage'),
   };
   const toastSvcStub = {
     showError: jasmine.createSpy('showError'),
@@ -93,8 +84,6 @@ describe('ChatPage', () => {
         { provide: VoiceRecognitionService, useValue: voiceRecognitionSvcStub },
         { provide: TextToSpeechService, useValue: ttsSvcStub },
         { provide: ChatStateService, useValue: chatStateSvcStub },
-        { provide: ChatHistoryService, useValue: chatHistorySvcStub },
-        { provide: ChatInteractionService, useValue: chatInteractionSvcStub },
         { provide: ToastService, useValue: toastSvcStub },
         { provide: NavController, useValue: navCtrlStub },
         { provide: AlertController, useValue: alertCtrlStub },

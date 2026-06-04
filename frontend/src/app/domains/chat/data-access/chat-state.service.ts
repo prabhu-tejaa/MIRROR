@@ -32,17 +32,17 @@ export class ChatStateService {
   public messages = this.store.selectSignal(ChatSelectors.selectMessages);
   public todayMessages = this.store.selectSignal(ChatSelectors.selectTodayMessages);
 
-  // Internal Pagination State
-  public currentCursor: string | null = null;
+  // Pagination & Load State backed by NgRx
+  public currentCursor = this.store.selectSignal(ChatSelectors.selectCurrentCursor);
+  public hasMoreHistory = this.store.selectSignal(ChatSelectors.selectHasMoreHistory);
+  public initialChatLoadedGlobally = this.store.selectSignal(ChatSelectors.selectInitialChatLoadedGlobally);
+  public isInitialLoad = this.store.selectSignal(ChatSelectors.selectIsInitialLoad);
+  public loadedEmail = this.store.selectSignal(ChatSelectors.selectLoadedEmail);
+
   public readonly pageSize = 20;
-  public hasMoreHistory = true;
-  public initialChatLoadedGlobally = false;
-  public isInitialLoad = !this.initialChatLoadedGlobally;
-  public loadedEmail: string | null = null;
   
   private checkMidnightInterval: any = null;
   private currentDayOfMonth = new Date().getDate();
-  public activeTypingIntervals: number[] = [];
 
   public scrollToBottomTrigger = this.store.selectSignal(ChatSelectors.selectScrollToBottomTrigger);
   public maintainScrollTrigger = this.store.selectSignal(ChatSelectors.selectMaintainScrollTrigger);
@@ -75,8 +75,6 @@ export class ChatStateService {
   }
 
   public destroy() {
-    this.activeTypingIntervals.forEach(clearInterval);
-    this.activeTypingIntervals = [];
     if (this.checkMidnightInterval) {
       clearInterval(this.checkMidnightInterval);
     }

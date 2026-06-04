@@ -321,3 +321,14 @@
     border-color: rgba(155, 89, 182, 0.3) !important;
   }
 }
+
+@keyframes igniteAuraClip {
+  0% {
+    clip-path: circle(0% at 50% 50%);
+    opacity: 0;
+  }
+  100% {
+    clip-path: circle(75% at 50% 50%);
+    opacity: 1;
+  }
+}

@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { ApiService } from '../../../core/services/api.service';
+import { SKIP_CANCEL } from '../../../core/interceptors/cancel.interceptor';
+import { timeout } from 'rxjs/operators';
 
 export interface ChatMessage {
   id: string;
@@ -33,8 +35,11 @@ export class ChatService {
     return this.http.post<any>(this.apiSvc.USER_MEMORY.REFLECT, prompt, {
       headers: { 
         'Content-Type': 'text/plain' 
-      }
-    });
+      },
+      context: new HttpContext().set(SKIP_CANCEL, true)
+    }).pipe(
+      timeout(30000)
+    );
   }
 
   public getRandomQuote(): Observable<any> {

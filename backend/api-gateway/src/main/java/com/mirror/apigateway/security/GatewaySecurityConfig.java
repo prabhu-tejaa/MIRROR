@@ -23,7 +23,6 @@ public class GatewaySecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/otp/**", "/api/auth/forgot-password/**", "/api/auth/refresh").permitAll()
-                        .pathMatchers("/api/gateway/admin/**").hasRole("ADMIN")
                         .anyExchange().permitAll()
                 )
                 .addFilterAt(jwtWebFilter, SecurityWebFiltersOrder.AUTHENTICATION);
