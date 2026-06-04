@@ -7,12 +7,12 @@
       <div class="aura-stage-container" #auraStage [class.animate-intro]="shouldAnimateIntro">
         
         <!-- Center Orb (Always Glassy Core 代表 Core Self) -->
-        <div class="aura-orb dominant-orb glassy-core" [class.animate-intro]="shouldAnimateIntro" [style.--dynamic-aura-gradient]="auraGradient()" [style.--aura-opacity]="totalCount() > 0 && !isLoading() ? 1 : 0" (pointerdown)="onCenterPointerDown($event)" (click)="!hasDragged && totalCount() > 0 && isAllEmotionsOpen.set(true)" [style.cursor]="totalCount() > 0 ? 'grab' : 'default'">
+        <div class="aura-orb dominant-orb glassy-core" [class.animate-intro]="shouldAnimateIntro" [style.--dynamic-aura-gradient]="auraGradient()" [style.--aura-opacity]="totalCount() > 0 ? 1 : 0" (pointerdown)="onCenterPointerDown($event)" (click)="!hasDragged && totalCount() > 0 && isAllEmotionsOpen.set(true)" [style.cursor]="totalCount() > 0 ? 'grab' : 'default'">
           <span class="orb-label">{{ displayUsername() }}</span>
         </div>
 
         <!-- N Outer Orbs floating and playing around dynamically (Top 4) -->
-        <div class="outer-orbs-wrapper" [class.play-fade-in]="isFirstVisit" *ngIf="totalCount() > 0 && !isLoading()">
+        <div class="outer-orbs-wrapper" [class.play-fade-in]="isFirstVisit" *ngIf="totalCount() > 0">
           <div *ngFor="let stat of topOrbs(); let i = index; trackBy: trackByKey"
                class="aura-orb cursor-pointer"
                [ngClass]="orbClasses[i]"
@@ -45,7 +45,7 @@
     </div>
 
     <!-- 3. Dynamic Text Selectors (Colors of Emotions) - Show top 4 synced with orbs -->
-    <div class="emotion-text-selectors" [class.play-fade-in]="isFirstVisit" *ngIf="totalCount() > 0 && !isLoading()">
+    <div class="emotion-text-selectors" [class.play-fade-in]="isFirstVisit" *ngIf="totalCount() > 0">
       <button 
         *ngFor="let stat of topOrbs(); trackBy: trackByKey" 
         class="emotion-text-btn"
