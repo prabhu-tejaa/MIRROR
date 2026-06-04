@@ -68,9 +68,6 @@ public class MemoryServiceImpl implements MemoryService {
         }
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    @Cacheable(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
     private static class EmotionGroupingResult {
         List<com.mirror.memoryservice.domain.admin.EmotionStatDTO> groupedStats;
         Map<String, String> mapping;
