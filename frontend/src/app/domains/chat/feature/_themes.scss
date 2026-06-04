@@ -1,3 +1,27 @@
+@property --emotion-color-primary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --emotion-color-secondary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --bubble-color-primary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
+@property --bubble-color-secondary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: transparent;
+}
+
 .chat-content-container.cyberpunk {
   --background: #090514;
 
@@ -160,13 +184,18 @@
 }
 
 .chat-content-container {
+  transition: --emotion-color-primary 1.8s cubic-bezier(0.25, 0.8, 0.25, 1),
+              --emotion-color-secondary 1.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+
   // Smooth transitions when AI-generated variables shift
   .glow-orb,
   .bottom-ambient-glow,
   .bottom-ambient-glow-secondary,
   .logo-icon,
   .message-bubble {
-    transition: all 1.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transition: all 1.8s cubic-bezier(0.25, 0.8, 0.25, 1),
+                --bubble-color-primary 1.8s cubic-bezier(0.25, 0.8, 0.25, 1),
+                --bubble-color-secondary 1.8s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
   // 🌌 HIGH-FIDELITY DYNAMIC GLOWS (Bound to AI Hex Codes!)

@@ -81,7 +81,7 @@ public class GroqService {
         }
 
         String userContent = buildUserContent(prompt, pastContext);
-        String systemPrompt = buildSystemPrompt();
+        String systemPrompt = buildSystemPrompt(pastContext);
 
         int maxRetries = 3;
         int attempt = 0;
@@ -225,16 +225,20 @@ public class GroqService {
                "reflection, emotion, pillar, primaryColor, secondaryColor.";
     }
 
-    private String buildSystemPrompt() {
-        return promptService.getSystemPrompt() +
+    private String buildSystemPrompt(String pastContext) {
+        Map<String, Object> context = new HashMap<>();
+        boolean hasPastMemories = pastContext != null && !pastContext.isBlank() && !pastContext.equalsIgnoreCase("None");
+        context.put("hasPastMemories", hasPastMemories);
+
+        return promptService.renderSystemPrompt(context) +
             "\n\nCRITICAL INSTRUCTION: You MUST respond ONLY with a valid JSON object. " +
             "No markdown, no code blocks, no prose — just raw JSON. " +
             "Required keys and formats:\n" +
             "  \"reflection\"   : empathetic response string (non-null, non-empty)\n" +
             "  \"emotion\"      : single emotion word e.g. CALM, JOY, ANXIOUS (non-null)\n" +
             "  \"pillar\"       : one of FEELINGS, GROWTH, RELATIONSHIPS, CREATIVITY, PRODUCTIVITY, HEALTH, LEARNING\n" +
-            "  \"primaryColor\" : valid hex color string e.g. #a855f7\n" +
-            "  \"secondaryColor\": valid hex color string e.g. #06b6d4\n" +
+            "  \"primaryColor\" : valid hex color string (invent any color!)\n" +
+            "  \"secondaryColor\": valid hex color string (invent any color!)\n" +
             "All five keys are REQUIRED. Null values are NOT acceptable.";
     }
 
