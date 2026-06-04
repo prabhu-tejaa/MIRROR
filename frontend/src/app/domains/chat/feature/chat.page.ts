@@ -188,7 +188,8 @@ export class ChatPage implements OnDestroy {
           if (!this.initialScrollCompleted) return;
           
           const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
-          if (maxScroll <= 0) return; // Do not auto-load if the screen isn't even full yet
+          // Do not auto-load if the screen isn't even full yet
+          if (maxScroll <= 0) return; 
 
           const isAtTop = scrollEl.scrollTop <= 10;
           const isAtBottom = scrollEl.scrollTop >= (maxScroll - 10);
