@@ -18,6 +18,7 @@ import {
 } from 'ionicons/icons';
 import { AuthService } from '../../auth/data-access/auth.service';
 import { RoleService } from '../../../core/services/role.service';
+import { ToastService } from '../../../core/services/toast.service';
 import { Capacitor } from '@capacitor/core';
 
 import { VoiceRecognitionService } from '../data-access/voice-recognition.service';
@@ -50,6 +51,7 @@ export class ChatPage implements OnDestroy {
   private authSvc = inject(AuthService);
   private roleSvc = inject(RoleService);
   private alertCtrl = inject(AlertController);
+  private toastSvc = inject(ToastService);
   private navCtrl = inject(NavController);
   private destroyRef = inject(DestroyRef);
   private store = inject(Store);
@@ -184,6 +186,16 @@ export class ChatPage implements OnDestroy {
       const scrollEl = this.streamScroll?.nativeElement;
       if (scrollEl) {
         this.scrollListenerAttached = true;
+        
+        // Permanent mutation observer to catch DOM changes before paint
+        const mo = new MutationObserver(() => {
+          if (!this.initialScrollCompleted && scrollEl) {
+            const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
+            scrollEl.scrollTop = maxScroll;
+          }
+        });
+        mo.observe(scrollEl, { childList: true, subtree: true, characterData: true });
+
         scrollEl.addEventListener('scroll', () => {
           if (!this.initialScrollCompleted) return;
           
@@ -213,24 +225,40 @@ export class ChatPage implements OnDestroy {
     const el = this.streamScroll?.nativeElement;
     if (!el) return;
 
+    let hasUsedSmooth = false;
+
     const doScroll = () => {
       const maxScroll = el.scrollHeight - el.clientHeight;
       const distance = maxScroll - el.scrollTop;
-      // If we are already near the bottom (like during AI streaming), use 'auto' to lock perfectly without jitter
-      const actualBehavior = (distance < 100) ? 'auto' : behavior;
+      
+      let actualBehavior = behavior;
+      
+      // If we are already near the bottom, lock to auto to avoid jitter
+      if (distance < 100) {
+        actualBehavior = 'auto';
+      } else if (behavior === 'smooth') {
+        // Only trigger smooth scroll once per sequence to prevent stuttering
+        if (hasUsedSmooth) {
+          actualBehavior = 'auto';
+        } else {
+          hasUsedSmooth = true;
+        }
+      }
+
       el.scrollTo({ top: el.scrollHeight, behavior: actualBehavior });
     };
 
     doScroll();
 
     if (this.scrollObserver) {
+      this.scrollObserver.disconnect();
       clearTimeout(this.scrollObserverTimeout);
-    } else {
-      this.scrollObserver = new MutationObserver(() => {
-        doScroll();
-      });
-      this.scrollObserver.observe(el, { childList: true, subtree: true, characterData: true });
     }
+
+    this.scrollObserver = new MutationObserver(() => {
+      doScroll();
+    });
+    this.scrollObserver.observe(el, { childList: true, subtree: true, characterData: true });
 
     this.scrollObserverTimeout = setTimeout(() => {
       this.scrollObserver?.disconnect();
@@ -238,7 +266,7 @@ export class ChatPage implements OnDestroy {
       if (!this.initialScrollCompleted) {
         this.initialScrollCompleted = true;
       }
-    }, 1000);
+    }, 800);
   }
 
   public focusInput() {
@@ -306,9 +334,13 @@ export class ChatPage implements OnDestroy {
     }
   }
 
-  public triggerSend() {
+  public async triggerSend() {
     const input = this.chatInput().trim();
     if (input && !this.isWaitingForResponse()) {
+      if (input.length > 2000) {
+        await this.toastSvc.showError('Your message is too long. Please keep it under 2,000 characters.');
+        return;
+      }
       if (!this.chatState.checkGuestLimit()) {
         this.showSignupPopup();
         return;
