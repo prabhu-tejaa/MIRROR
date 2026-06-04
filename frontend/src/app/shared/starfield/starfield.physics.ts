@@ -56,8 +56,9 @@ export class StarfieldPhysics {
       }
 
       if (
-        star.x < -margin || star.x > width + margin ||
-        star.y < -margin || star.y > height + margin
+        targetShape === 'none' &&
+        (star.x < -margin || star.x > width + margin ||
+        star.y < -margin || star.y > height + margin)
       ) {
         Object.assign(star, StarfieldPhysics.createStar(false, width, height, config));
       }

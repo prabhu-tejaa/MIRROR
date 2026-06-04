@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
 import { adminGuard } from './core/guards/admin.guard';
+import { overlayGuard } from './core/guards/overlay.guard';
 
 export const routes: Routes = [
   {
@@ -42,21 +43,25 @@ export const routes: Routes = [
   {
     path: 'admin',
     canActivate: [authGuard, adminGuard],
+    canDeactivate: [overlayGuard],
     loadComponent: () => import('./features/admin/pages/admin-dashboard/admin-dashboard.page').then(m => m.AdminDashboardPage)
   },
   {
     path: 'admin/auth-service',
     canActivate: [authGuard, adminGuard],
+    canDeactivate: [overlayGuard],
     loadComponent: () => import('./features/admin/pages/admin-auth/admin-auth.page').then(m => m.AdminAuthPage)
   },
   {
     path: 'admin/api-gateway',
     canActivate: [authGuard, adminGuard],
+    canDeactivate: [overlayGuard],
     loadComponent: () => import('./features/admin/pages/admin-gateway/admin-gateway.page').then(m => m.AdminGatewayPage)
   },
   {
     path: 'admin/memory-service',
     canActivate: [authGuard, adminGuard],
+    canDeactivate: [overlayGuard],
     loadComponent: () => import('./features/admin/pages/admin-memory/admin-memory.page').then(m => m.AdminMemoryPage)
   },
   {

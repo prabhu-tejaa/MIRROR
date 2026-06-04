@@ -69,50 +69,45 @@ export class ChatInteractionService {
     this.chatSvc.reflect(email, prompt).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         // Remove typing message: we need an action to remove message, or update it
-        // Or we just update the messages list manually using selectSignal value and setMessages.
-        // Better: let's get current messages and filter.
-        const currentMessages = this.chatState.messages();
-        this.store.dispatch(ChatActions.setMessages({ messages: currentMessages.filter(m => m.id !== typingId) }));
-
         const reflectionText = res.reflection || "Thank you for sharing your thoughts.";
         const { emotion, primary, secondary } = this.parseEmotionAndColors(res.emotion);
 
         this.store.dispatch(ChatActions.setEmotion({ emotion }));
         this.store.dispatch(ChatActions.setColors({ primary, secondary }));
 
-        const replyId = Math.random().toString(36).substring(7);
-        const mirrorReply: Message = {
-          id: replyId,
-          sender: 'mirror',
-          text: '',
-          timestamp: new Date(),
-          emotion,
-          primaryColor: primary,
-          secondaryColor: secondary,
-          isCurrentSession: true
-        };
+        this.store.dispatch(ChatActions.updateMessage({
+          id: typingId,
+          changes: {
+            text: '',
+            isTyping: false,
+            emotion,
+            primaryColor: primary,
+            secondaryColor: secondary
+          }
+        }));
 
-        this.store.dispatch(ChatActions.addMessage({ message: mirrorReply }));
+        const startTime = Date.now();
+        const charsPerMs = 3 / 15;
 
-        let currentCharIdx = 0;
         const streamInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          let currentCharIdx = Math.floor(elapsed * charsPerMs);
+          
+          if (currentCharIdx > reflectionText.length) {
+            currentCharIdx = reflectionText.length;
+          }
+
           if (currentCharIdx < reflectionText.length) {
-            currentCharIdx += 3;
-            if (currentCharIdx > reflectionText.length) currentCharIdx = reflectionText.length;
             const streamedText = reflectionText.slice(0, currentCharIdx);
             
-            this.store.dispatch(ChatActions.updateMessage({ id: replyId, changes: { text: streamedText } }));
+            this.store.dispatch(ChatActions.updateMessage({ id: typingId, changes: { text: streamedText } }));
             this.store.dispatch(ChatActions.triggerScrollToBottom());
           } else {
+            this.store.dispatch(ChatActions.updateMessage({ id: typingId, changes: { text: reflectionText } }));
             clearInterval(streamInterval);
             this.chatState.activeTypingIntervals = this.chatState.activeTypingIntervals.filter(i => i !== streamInterval);
             this.store.dispatch(ChatActions.setWaitingForResponse({ isWaiting: false }));
-
-            this.store.dispatch(ChatActions.setResting({ isResting: true }));
-            setTimeout(() => {
-              this.store.dispatch(ChatActions.setResting({ isResting: false }));
-              if (onRestDone) onRestDone();
-            }, 4000);
+            if (onRestDone) onRestDone();
           }
         }, 15) as unknown as number;
         this.chatState.activeTypingIntervals.push(streamInterval);

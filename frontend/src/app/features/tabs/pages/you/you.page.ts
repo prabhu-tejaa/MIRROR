@@ -30,10 +30,8 @@ export class YouPage implements OnDestroy {
   @ViewChild('auraStage') private stageRef!: ElementRef<HTMLElement>;
 
   // ── Drag & spring-physics (all plain objects — no signals needed for RAF perf) ──
-  private readonly SPRING_K = 0.065;
-  private readonly DAMPING   = 0.76;
-  private orbOffsets  = Array.from({ length: 4 }, () => ({ x: 0, y: 0 }));
-  private orbVels     = Array.from({ length: 4 }, () => ({ x: 0, y: 0 }));
+  private readonly springK = 0.065;
+  private readonly damping   = 0.76;
   private stageOff    = { x: 0, y: 0 };
   private stageVel    = { x: 0, y: 0 };
   private rafId: number | null = null;
@@ -57,6 +55,7 @@ export class YouPage implements OnDestroy {
   public isTabActive = signal<boolean>(true);
   public selectedEmotion = signal<string | null>(null);
   public isAllEmotionsOpen = signal<boolean>(false);
+  public openedFromAllEmotions = signal<boolean>(false);
   public totalCount = signal<number>(this.initialAnalytics?.totalMemories ?? 0);
   public dominantEmotion = signal<string>(this.initialAnalytics?.dominantEmotion ?? 'CALM');
   public activeStreak = signal<number>(this.initialAnalytics?.activeStreak ?? 0);
@@ -145,12 +144,34 @@ export class YouPage implements OnDestroy {
 
   public selectEmotion(emotionKey: string | null) {
     this.selectedEmotion.set(emotionKey === this.selectedEmotion() ? null : emotionKey);
+    this.openedFromAllEmotions.set(false);
   }
 
   public selectFromAllEmotions(emotionKey: string) {
-    this.selectEmotion(emotionKey);
-    this.isAllEmotionsOpen.set(false);
+    this.selectedEmotion.set(emotionKey);
+    // Leave isAllEmotionsOpen true so that navigating back is seamless
+    this.openedFromAllEmotions.set(true);
   }
+
+  public goBackToAllEmotions() {
+    this.selectedEmotion.set(null);
+    this.openedFromAllEmotions.set(false);
+    // isAllEmotionsOpen is already true, so the view swaps automatically
+  }
+
+  public closeModals() {
+    this.selectedEmotion.set(null);
+    this.isAllEmotionsOpen.set(false);
+    this.openedFromAllEmotions.set(false);
+  }
+
+  public modalBorderColor = computed(() => {
+    const emotion = this.selectedEmotion();
+    if (emotion) {
+      return this.getSelectedEmotionStat(emotion).primaryColor;
+    }
+    return 'rgba(255, 255, 255, 0.2)';
+  });
 
   public trackByKey(index: number, item: { key: string }): string {
     return item.key;
@@ -175,6 +196,7 @@ export class YouPage implements OnDestroy {
   }
 
   public shouldAnimateIntro = !this.userMemorySvc.isDataLoadedOnce();
+  public isFirstVisit = !this.userMemorySvc.isDataLoadedOnce();
 
   private fetchAnalytics() {
     const email = this.authSvc.getEmail() || 'guest@mirror.tech';
@@ -235,50 +257,6 @@ export class YouPage implements OnDestroy {
     });
   }
 
-  // ── Outer-orb individual drag ────────────────────────────────────────────────
-  public onOrbPointerDown(e: PointerEvent, index: number): void {
-    const el = e.currentTarget as HTMLElement;
-    el.setPointerCapture(e.pointerId);
-    this.hasDragged = false;
-    let lastX = e.clientX, lastY = e.clientY;
-    this.cancelSpring();
-
-    // Grab wrapper reference once so onMove can read its live rotation matrix
-    const wrapper = this.stageRef?.nativeElement?.querySelector<HTMLElement>('.outer-orbs-wrapper');
-
-    const onMove = (ev: PointerEvent) => {
-      const dx = ev.clientX - lastX;
-      const dy = ev.clientY - lastY;
-      lastX = ev.clientX; lastY = ev.clientY;
-
-      // Convert screen-space drag into the wrapper's local (rotated) coordinate space
-      let localDx = dx, localDy = dy;
-      if (wrapper) {
-        const m = new DOMMatrix(getComputedStyle(wrapper).transform);
-        const angle = -Math.atan2(m.b, m.a);
-        localDx = dx * Math.cos(angle) - dy * Math.sin(angle);
-        localDy = dx * Math.sin(angle) + dy * Math.cos(angle);
-      }
-
-      this.orbOffsets[index].x += localDx;
-      this.orbOffsets[index].y += localDy;
-      this.orbVels[index].x = localDx;
-      this.orbVels[index].y = localDy;
-      if (Math.abs(this.orbOffsets[index].x) + Math.abs(this.orbOffsets[index].y) > 4) this.hasDragged = true;
-      el.style.setProperty('--orb-drag-x', `${this.orbOffsets[index].x}px`);
-      el.style.setProperty('--orb-drag-y', `${this.orbOffsets[index].y}px`);
-    };
-
-    const onUp = () => {
-      el.removeEventListener('pointermove', onMove as EventListener);
-      el.removeEventListener('pointerup', onUp);
-      this.startSpring();
-    };
-
-    el.addEventListener('pointermove', onMove as EventListener);
-    el.addEventListener('pointerup', onUp);
-  }
-
   // ── Center-orb drag → whole stage moves ──────────────────────────────────────
   public onCenterPointerDown(e: PointerEvent): void {
     const el = e.currentTarget as HTMLElement;
@@ -313,8 +291,8 @@ export class YouPage implements OnDestroy {
   // ── Spring-physics loop (RAF outside Angular zone for max perf) ──────────────
   private startSpring(): void {
     if (this.rafId !== null) return;
-    const K = this.SPRING_K;
-    const D = this.DAMPING;
+    const K = this.springK;
+    const D = this.damping;
 
     this.ngZone.runOutsideAngular(() => {
       const tick = () => {
@@ -332,32 +310,6 @@ export class YouPage implements OnDestroy {
         } else {
           this.stageOff.x = this.stageOff.y = this.stageVel.x = this.stageVel.y = 0;
           if (stageEl) stageEl.style.transform = '';
-        }
-
-        // — orb springs —
-        const orbEls = stageEl
-          ? Array.from(stageEl.querySelectorAll<HTMLElement>('.outer-orbs-wrapper .aura-orb'))
-          : [];
-
-        for (let i = 0; i < this.orbOffsets.length; i++) {
-          const o = this.orbOffsets[i];
-          const v = this.orbVels[i];
-          if (o.x === 0 && o.y === 0 && v.x === 0 && v.y === 0) continue;
-          v.x = v.x * D + (0 - o.x) * K;
-          v.y = v.y * D + (0 - o.y) * K;
-          o.x += v.x;
-          o.y += v.y;
-          const orbEl = orbEls[i];
-          if (Math.abs(o.x) > 0.15 || Math.abs(o.y) > 0.15) {
-            active = true;
-            if (orbEl) {
-              orbEl.style.setProperty('--orb-drag-x', `${o.x}px`);
-              orbEl.style.setProperty('--orb-drag-y', `${o.y}px`);
-            }
-          } else {
-            o.x = o.y = v.x = v.y = 0;
-            if (orbEl) { orbEl.style.removeProperty('--orb-drag-x'); orbEl.style.removeProperty('--orb-drag-y'); }
-          }
         }
 
         this.rafId = active ? requestAnimationFrame(tick) : null;

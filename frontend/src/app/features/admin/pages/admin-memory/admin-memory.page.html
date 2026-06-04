@@ -1,9 +1,14 @@
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="memory-nav">
+  <div class="dashboard-nav">
     <button class="back-circle-btn" (click)="goBack()">
       <ion-icon name="arrow-back-outline"></ion-icon>
     </button>
-    <h2>Memory Service</h2>
+    <div class="nav-title-text">Memory Service</div>
+    <div class="nav-right-group">
+      <button *ngIf="activeTab === 'MANAGE'" class="refresh-circle-btn" (click)="loadRecords()" title="Refresh Database">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button>
+    </div>
   </div>
 
   <div class="tabs-container">
@@ -29,7 +34,7 @@
     <div class="table-header-actions" style="justify-content: space-between; align-items: center;">
       <div class="search-container">
         <ion-icon name="search-outline"></ion-icon>
-        <input type="text" placeholder="Search records by email or emotion..." [(ngModel)]="searchQuery" class="custom-search">
+        <input type="text" placeholder="Search by username or email..." [(ngModel)]="searchQuery" (ngModelChange)="updateGroups()" class="custom-search">
       </div>
       <button class="create-btn" (click)="addRecord()">
         <ion-icon name="add-circle-outline"></ion-icon>
@@ -43,49 +48,69 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="!isLoading && filteredRecords.length === 0" class="empty-state">
+    <div *ngIf="!isLoading && cachedGroups.length === 0" class="empty-state">
       <ion-icon name="server-outline" class="empty-icon"></ion-icon>
       <h3>No Memories Found</h3>
       <p>The database is currently empty. Try uploading mock data or adding a record.</p>
     </div>
 
-    <div class="table-container" *ngIf="!isLoading && filteredRecords.length > 0">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Emotion</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let record of filteredRecords">
-            <td>#{{ record.id }}</td>
-            <td>{{ record.userId }}</td>
-            <td>
-              <div class="memory-emotion">
-                <span class="emotion-badge" [ngClass]="record.emotion.toLowerCase()">{{ record.emotion }}</span>
-              </div>
-            </td>
-            <td>{{ record.createdAt | date:'short' }}</td>
-            <td>
-              <button class="action-btn edit" (click)="editRecord(record.id)" title="Edit">
-                <ion-icon name="create-outline"></ion-icon>
-              </button>
-              <button class="action-btn delete" (click)="deleteRecord(record.id)" title="Delete">
-                <ion-icon name="trash-outline"></ion-icon>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div *ngIf="!isLoading && cachedGroups.length > 0" class="accordion-container">
+      <div class="user-group" *ngFor="let group of cachedGroups; trackBy: trackByUserId">
+        
+        <div class="user-group-header" (click)="toggleUser(group.userId)" [class.expanded]="expandedUserId === group.userId">
+          <div class="header-info">
+            <ion-icon name="mail-outline"></ion-icon>
+            <h3>{{ group.userId }}</h3>
+            <span class="badge">{{ group.records.length }} Memories</span>
+          </div>
+          <ion-icon [name]="expandedUserId === group.userId ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+        </div>
+
+        <div class="user-group-content" *ngIf="expandedUserId === group.userId">
+          
+          <div class="inner-search-bar">
+            <ion-icon name="search-outline"></ion-icon>
+            <input type="text" placeholder="Search my memory..." [(ngModel)]="memorySearchQuery" class="custom-search">
+          </div>
+
+          <div class="table-container table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Emotion</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let record of getFilteredMemories(group.records)">
+                  <td>#{{ record.id }}</td>
+                  <td>
+                    <div class="memory-emotion">
+                      <span class="emotion-badge" [ngClass]="getCleanEmotion(record.emotion).toLowerCase()">{{ getCleanEmotion(record.emotion) }}</span>
+                    </div>
+                  </td>
+                  <td>{{ record.createdAt | date:'short' }}</td>
+                  <td>
+                    <button class="action-btn edit" (click)="editRecord(record.id)" title="Edit">
+                      <ion-icon name="create-outline"></ion-icon>
+                    </button>
+                    <button class="action-btn delete" (click)="deleteRecord(record.id)" title="Delete">
+                      <ion-icon name="trash-outline"></ion-icon>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Add/Edit Record Modal -->
-  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="glassy-modal">
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()" class="glassy-modal memory-modal">
     <ng-template>
       <ion-header class="glassy-modal-header">
         <ion-toolbar>
@@ -97,7 +122,7 @@
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <ion-content class="ion-padding glassy-modal-content">
+      <div class="ion-padding glassy-modal-content modal-body-scroll">
         <div class="modal-form-wrapper">
           
           <div class="user-overview">
@@ -146,7 +171,7 @@
             </div>
           </form>
         </div>
-      </ion-content>
+      </div>
     </ng-template>
   </ion-modal>
 

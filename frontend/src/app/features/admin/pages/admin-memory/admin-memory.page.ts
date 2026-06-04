@@ -10,7 +10,8 @@ import {
   arrowBackOutline, cloudUploadOutline, informationCircleOutline, 
   addCircleOutline, createOutline, trashOutline, saveOutline, 
   checkmarkCircleOutline, searchOutline, closeOutline, serverOutline,
-  mailOutline, documentTextOutline, heartHalfOutline
+  mailOutline, documentTextOutline, heartHalfOutline,
+  chevronDownOutline, chevronUpOutline, refreshOutline
 } from 'ionicons/icons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -35,14 +36,48 @@ export class AdminMemoryPage implements OnInit {
   
   public dbRecords: AdminMemoryRecord[] = [];
 
-  public get filteredRecords() {
-    if (!this.searchQuery) return this.dbRecords;
-    const lowerQuery = this.searchQuery.toLowerCase();
-    return this.dbRecords.filter(r => 
-      r.userId?.toLowerCase().includes(lowerQuery) || 
-      r.content?.toLowerCase().includes(lowerQuery) ||
+  public memorySearchQuery = '';
+  public cachedGroups: { userId: string, records: AdminMemoryRecord[] }[] = [];
+
+  public updateGroups() {
+    const groups = new Map<string, AdminMemoryRecord[]>();
+    for (const r of this.dbRecords) {
+      const u = r.userId || 'Unknown';
+      if (!groups.has(u)) groups.set(u, []);
+      groups.get(u)!.push(r);
+    }
+    
+    let allGroups = Array.from(groups.entries()).map(([userId, records]) => ({ userId, records }));
+    
+    if (this.searchQuery) {
+      const lowerQuery = this.searchQuery.toLowerCase();
+      allGroups = allGroups.filter(g => g.userId.toLowerCase().includes(lowerQuery));
+    }
+    this.cachedGroups = allGroups;
+  }
+
+  public expandedUserId: string | null = null;
+  public toggleUser(userId: string) {
+    this.expandedUserId = this.expandedUserId === userId ? null : userId;
+    this.memorySearchQuery = '';
+  }
+
+  public trackByUserId(index: number, group: { userId: string }): string {
+    return group.userId;
+  }
+
+  public getFilteredMemories(records: AdminMemoryRecord[]) {
+    if (!this.memorySearchQuery) return records;
+    const lowerQuery = this.memorySearchQuery.toLowerCase();
+    return records.filter(r => 
+      r.content?.toLowerCase().includes(lowerQuery) || 
       r.emotion?.toLowerCase().includes(lowerQuery)
     );
+  }
+
+  public getCleanEmotion(emotionRaw: string): string {
+    if (!emotionRaw) return 'UNKNOWN';
+    return emotionRaw.split('|')[0];
   }
 
   constructor() {
@@ -50,7 +85,8 @@ export class AdminMemoryPage implements OnInit {
       arrowBackOutline, cloudUploadOutline, informationCircleOutline,
       addCircleOutline, createOutline, trashOutline, saveOutline,
       checkmarkCircleOutline, searchOutline, closeOutline, serverOutline,
-      mailOutline, documentTextOutline, heartHalfOutline
+      mailOutline, documentTextOutline, heartHalfOutline,
+      chevronDownOutline, chevronUpOutline, refreshOutline
     });
   }
 
@@ -63,6 +99,7 @@ export class AdminMemoryPage implements OnInit {
     this.adminMemorySvc.getAllMemories().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (records: AdminMemoryRecord[]) => {
         this.dbRecords = records;
+        this.updateGroups();
         this.isLoading = false;
         this.cdr.detectChanges();
       },

@@ -92,5 +92,10 @@ export class TabsPage {
   public isActive(tab: string): boolean {
     return this.currentUrl.includes('/tabs/' + tab);
   }
+
+  public navigateTab(tab: string): void {
+    if (this.isActive(tab)) return;
+    this.router.navigate(['/tabs', tab], { replaceUrl: true });
+  }
 }
 

@@ -192,15 +192,15 @@
   height: 140px;
   border-radius: 50%;
   background: radial-gradient(ellipse at center,
-      rgba(49, 46, 129, 0.45) 0%,
-      rgba(99, 102, 241, 0.28) 45%,
+      var(--emotion-color-primary) 0%,
+      var(--emotion-color-secondary) 45%,
       rgba(71, 85, 105, 0.18) 70%,
       transparent 90%);
   filter: blur(24px);
   pointer-events: none;
   z-index: 1;
   animation: bottomGlowBreathPrimary 30s infinite linear;
-  opacity: 0.90;   
+  opacity: 0.35;   
 
   @media (min-width: 768px) {
     width: calc(100% + 48px);
@@ -218,15 +218,15 @@
   height: 120px;
   border-radius: 50%;
   background: radial-gradient(ellipse at center,
-      rgba(99, 102, 241, 0.32) 0%,
-      rgba(49, 46, 129, 0.22) 45%,
+      var(--emotion-color-secondary) 0%,
+      var(--emotion-color-primary) 45%,
       rgba(71, 85, 105, 0.14) 70%,
       transparent 90%);
   filter: blur(28px);
   pointer-events: none;
   z-index: 1;
   animation: bottomGlowBreathSecondary 40s infinite linear;
-  opacity: 0.80;
+  opacity: 0.25;
 
   @media (min-width: 768px) {
     width: calc(100% + 48px);

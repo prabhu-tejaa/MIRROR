@@ -24,9 +24,11 @@
   gap: 8px 14px;
   max-width: 440px;
   margin-bottom: 16px; // Sit just a bit above bottom nav
-  padding-right: 60px; // Shift right side elements left to clear room for the music button!
+  padding-right: 60px; // Shift right side elements left to clear music button
+  position: relative;
+  z-index: 10;
   
-  &.animate-intro {
+  &.play-fade-in {
     animation: fadeInSlow 2.5s ease-in-out forwards;
   }
 

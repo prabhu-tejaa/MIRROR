@@ -117,7 +117,11 @@ export class ChatPage implements OnDestroy {
     // React to UI layout triggers from state service
     effect(() => {
       const trigger = this.chatState.scrollToBottomTrigger();
-      if (trigger > 0) this.scrollToBottom('smooth');
+      if (trigger > 0) {
+        setTimeout(() => this.scrollToBottom('smooth'), 50);
+        setTimeout(() => this.scrollToBottom('smooth'), 150);
+        setTimeout(() => this.scrollToBottom('smooth'), 300);
+      }
     });
 
     effect(() => {

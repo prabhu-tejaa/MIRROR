@@ -13,13 +13,16 @@ import { TranslationService } from './app/core/services/translation.service';
 import { ErrorHandler } from '@angular/core';
 
 class GlobalErrorHandler implements ErrorHandler {
-  handleError(error: any): void {
+  public handleError(error: unknown): void {
     const chunkFailedMessage = /Loading chunk [\w\d\-\.]+ failed/;
     const dynamicImportFailed = /Failed to fetch dynamically imported module/;
-    if (chunkFailedMessage.test(error.message) || dynamicImportFailed.test(error?.message) || dynamicImportFailed.test(error?.toString())) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (chunkFailedMessage.test((error as any)?.message) || dynamicImportFailed.test((error as any)?.message) || dynamicImportFailed.test((error as any)?.toString())) {
+      // eslint-disable-next-line no-console
       console.warn('Chunk load failed. Reloading window...');
       window.location.reload();
     } else {
+      // eslint-disable-next-line no-console
       console.error(error);
     }
   }

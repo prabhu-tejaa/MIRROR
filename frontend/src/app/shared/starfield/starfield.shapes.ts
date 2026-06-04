@@ -16,7 +16,11 @@ export class StarfieldShapeGenerator {
 
     const CX = width / 2;
     const CY = height / 2;
-    const S = Math.min(width, height) / 45;
+    let S = Math.min(width, height) / 45;
+
+    if (height > width) {
+      S = width / 34;
+    }
 
     for (let i = 0; i < stars.length; i++) {
       const star = stars[i];
@@ -30,6 +34,8 @@ export class StarfieldShapeGenerator {
           xBase = 16 * Math.pow(Math.sin(t), 3);
           yBase = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
           yBase *= -1;
+          // Make the outline thinner and more elegant
+          rScale = 0.92 + Math.random() * 0.15; 
           break;
         }
         case 'circle': {

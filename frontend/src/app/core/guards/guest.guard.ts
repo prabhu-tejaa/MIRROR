@@ -10,5 +10,5 @@ export const guestGuard: CanActivateFn = () => {
     return true;
   }
 
-  return router.createUrlTree(['/tabs/you']);
+  return router.createUrlTree(['/tabs/chat']);
 };
