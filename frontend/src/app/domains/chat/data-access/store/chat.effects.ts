@@ -27,12 +27,10 @@ export class ChatEffects {
     let secondary = '';
 
     if (parts.length >= 4) {
-      // Pillar | Emotion | Primary | Secondary
       emotionText = parts[1]?.trim() || 'NEUTRAL';
       primary = parts[2]?.trim() || '';
       secondary = parts[3]?.trim() || '';
     } else {
-      // Emotion | Primary | Secondary (Legacy)
       emotionText = parts[0]?.trim() || 'NEUTRAL';
       primary = parts[1]?.trim() || '';
       secondary = parts[2]?.trim() || '';
@@ -118,8 +116,7 @@ export class ChatEffects {
             return from(actionsToDispatch);
           }),
           catchError((err) => {
-            // eslint-disable-next-line no-console
-            console.error('Failed to load chat history from backend:', err);
+
             this.toastSvc.showError('Failed to load chat history.');
             return of(ChatActions.loadChatHistoryFailure({ error: err }));
           })
@@ -169,8 +166,7 @@ export class ChatEffects {
             ]);
           }),
           catchError((err) => {
-            // eslint-disable-next-line no-console
-            console.error('Failed to load more history:', err);
+
             this.toastSvc.showError('Failed to load older messages.');
             return of(ChatActions.loadMoreHistoryFailure({ error: err }));
           })
@@ -203,7 +199,6 @@ export class ChatEffects {
           isCurrentSession: true
         };
 
-        // Dispatch initial loading states immediately
         this.store.dispatch(ChatActions.addMessage({ message: userMsg }));
         this.store.dispatch(ChatActions.addMessage({ message: typingMsg }));
         this.store.dispatch(ChatActions.triggerScrollToBottom());
@@ -224,8 +219,7 @@ export class ChatEffects {
             });
           }),
           catchError((err) => {
-            // eslint-disable-next-line no-console
-            console.error('Failed to generate backend reflection:', err);
+
             let errorMsg = '⚠️ [CONNECTION ERROR] Failed to connect to the MIRROR reflection service. Please ensure the backend is running and try again.';
             const detailedMsg = err.error?.message || err.error || err.message || '';
             const isConfigError = typeof detailedMsg === 'string' &&
@@ -270,7 +264,6 @@ export class ChatEffects {
         const startTime = Date.now();
         let lastTick = startTime;
         
-        // Base speed slowed down
         const baseSpeed = 1.2 / 15; 
         const waveFreq = 1 / 300;
         const waveAmp = 4;
@@ -289,11 +282,9 @@ export class ChatEffects {
 
             const elapsed = now - startTime;
             
-            // Wavy organic typing speed (always progresses forward, but speeds up and slows down)
             const rawProgress = (elapsed * baseSpeed) + (Math.sin(elapsed * waveFreq) * waveAmp);
             let currentCharIdx = Math.floor(rawProgress);
             
-            // Ensure it never un-types
             if (currentCharIdx < maxCharIdxSeen) currentCharIdx = maxCharIdxSeen;
             maxCharIdxSeen = currentCharIdx;
 
@@ -309,7 +300,6 @@ export class ChatEffects {
               const actualText = text.slice(0, charIdx);
               const remaining = text.length - charIdx;
               const scrambleLen = Math.min(3, remaining);
-              // Added wavy symbols
               const etherealChars = "~〰✧✦⋆·°*:.";
               let scramble = "";
               for (let i = 0; i < scrambleLen; i++) {

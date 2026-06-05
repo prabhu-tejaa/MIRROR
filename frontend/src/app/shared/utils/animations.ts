@@ -1,12 +1,6 @@
 import { Animation, AnimationController } from '@ionic/angular';
 
-/**
- * Creates a crossfade transition animation builder using the provided Ionic AnimationController.
- * This animation lasts 400ms with an ease-in-out curve.
- * 
- * @param animationCtrl The Ionic AnimationController instance
- * @returns An animation builder function suitable for Ionic navigation options
- */
+
 export function getCrossfadeAnimation(
   animationCtrl: AnimationController
 ): (baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement; leavingEl?: HTMLElement }) => Animation {

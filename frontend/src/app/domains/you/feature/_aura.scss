@@ -75,7 +75,6 @@
         ));
         
         filter: blur(24px);
-        // Base state without intro animation
         animation: rotateOuter 8s linear infinite;
         z-index: -1;
       }

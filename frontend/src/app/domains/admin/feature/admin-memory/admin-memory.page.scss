@@ -424,7 +424,6 @@
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* Glassy Modal Specific Styles */
 .memory-modal {
   --height: auto !important;
 }
@@ -662,7 +661,6 @@
     height: 48px;
     margin-bottom: 16px;
 
-    /* Force SVG paths/circles to be white regardless of Ionic theme overrides */
     &::part(ellipse),
     &::part(circle) {
       stroke: #ffffff !important;

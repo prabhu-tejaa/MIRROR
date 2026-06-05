@@ -21,7 +21,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       let errorMessage = defaultErrorMessage;
 
-      // 1. Try mapping explicit errorCode
       if (error.error && error.error.errorCode) {
         const lookupKey = `BACKEND_ERRORS.${error.error.errorCode}`;
         const translatedError = translationSvc.translate(lookupKey);
@@ -30,7 +29,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
-      // 2. If not found, try mapping raw error message string
       if (errorMessage === defaultErrorMessage) {
         let rawMessage = '';
         if (error.error) {
@@ -54,7 +52,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
-      // 3. Fallback to generic HTTP status code message
       if (errorMessage === defaultErrorMessage && error.status > 0) {
         const httpStatusKey = `HTTP_ERRORS.${error.status}`;
         const translatedHttpError = translationSvc.translate(httpStatusKey);
@@ -63,7 +60,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }
       }
 
-      // 4. Fallback to connection lost or default message
       if (errorMessage === defaultErrorMessage) {
         if (error.status === 0) {
           errorMessage = translationSvc.translate('ERRORS.CONNECTION_LOST') || 'Network connection lost. Please check your internet connection.';
@@ -85,7 +81,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
           return handle401Error(req, next, injector);
         } else {
           console.warn('[ErrorInterceptor] 401 on refresh or login route. Clearing session!');
-          // If the refresh token itself fails, clear the session locally
           const authSvc = injector.get(AuthService);
           authSvc.clearSession();
         }

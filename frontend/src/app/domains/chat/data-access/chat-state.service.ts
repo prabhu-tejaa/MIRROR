@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, no-console */
 import { Injectable, inject } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AuthService } from '../../auth/data-access/auth.service';
@@ -17,7 +16,6 @@ export class ChatStateService {
   private storageSvc = inject(StorageService);
   private store = inject(Store);
 
-  // State Signals (Backed by NgRx)
   public activeQuote = this.store.selectSignal(ChatSelectors.selectActiveQuote);
   public activeStyle = this.store.selectSignal(ChatSelectors.selectActiveStyle);
   public currentEmotion = this.store.selectSignal(ChatSelectors.selectCurrentEmotion);
@@ -32,7 +30,6 @@ export class ChatStateService {
   public messages = this.store.selectSignal(ChatSelectors.selectMessages);
   public todayMessages = this.store.selectSignal(ChatSelectors.selectTodayMessages);
 
-  // Pagination & Load State backed by NgRx
   public currentCursor = this.store.selectSignal(ChatSelectors.selectCurrentCursor);
   public hasMoreHistory = this.store.selectSignal(ChatSelectors.selectHasMoreHistory);
   public initialChatLoadedGlobally = this.store.selectSignal(ChatSelectors.selectInitialChatLoadedGlobally);
@@ -41,7 +38,7 @@ export class ChatStateService {
 
   public readonly pageSize = 20;
   
-  private checkMidnightInterval: any = null;
+  private checkMidnightInterval: ReturnType<typeof setInterval> | null = null;
   private currentDayOfMonth = new Date().getDate();
 
   public scrollToBottomTrigger = this.store.selectSignal(ChatSelectors.selectScrollToBottomTrigger);
@@ -69,7 +66,6 @@ export class ChatStateService {
       const day = new Date().getDate();
       if (day !== this.currentDayOfMonth) {
         this.currentDayOfMonth = day;
-        // In NgRx, you'd dispatch an action like "Midnight Crossed" to re-evaluate computed state if necessary
       }
     }, 60000) as unknown as number;
   }

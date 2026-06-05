@@ -35,7 +35,6 @@ export const authReducer = createReducer(
     isAuthenticated: true,
     email: response.email || null,
     username: response.username,
-    // roles will be populated by an effect or dispatch later if needed, but for now we expect them in setAuthenticated/login logic
     error: null,
     loading: false
   })),

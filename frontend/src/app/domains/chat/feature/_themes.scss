@@ -187,7 +187,6 @@
   transition: --emotion-color-primary 1.8s cubic-bezier(0.25, 0.8, 0.25, 1),
               --emotion-color-secondary 1.8s cubic-bezier(0.25, 0.8, 0.25, 1);
 
-  // Smooth transitions when AI-generated variables shift
   .glow-orb,
   .bottom-ambient-glow,
   .bottom-ambient-glow-secondary,
@@ -198,7 +197,6 @@
                 --bubble-color-secondary 1.8s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
-  // 🌌 HIGH-FIDELITY DYNAMIC GLOWS (Bound to AI Hex Codes!)
   .ambient-glows {
     .orb-1 {
       background: var(--emotion-color-primary, #7928ca) !important;
@@ -212,14 +210,11 @@
 
 
 
-  // Style individual mirror messages with AI-colored soft glow borders
   .message-wrapper.mirror-message {
     .message-bubble {
-      // Dynamic borders and custom highlights based on bubble color variables
       border: 1px solid var(--bubble-color-primary, rgba(255, 255, 255, 0.08)) !important;
       box-shadow: 0 0 15px var(--bubble-color-primary, transparent) !important;
       
-      // Add a tiny decorative subtle aura
       &::before {
         content: '';
         position: absolute;

@@ -5,7 +5,6 @@ import { delay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ApiService } from '../services/api.service';
 
-// Module-scoped state for mock data persistence in mock mode
 let mockUsersList = [
   {
     id: 'd3b07384-d113-495d-a510-18e8df3141f2',
@@ -349,12 +348,10 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     return of(new HttpResponse({ status: 200, body: mockAll })).pipe(delay(500));
   }
 
-  // --- Admin User Management Mock Handlers ---
   if (url.includes('/api/auth/admin/users/')) {
     const id = url.substring(url.lastIndexOf('/') + 1);
     if (req.method === 'PUT') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const body = req.body as any;
+      const body = req.body as { username?: string, email?: string, role?: string, isVerified?: boolean, lockedUntil?: string | null, failedAttempts?: number };
       const index = mockUsersList.findIndex(u => u.id === id);
       if (index !== -1) {
         mockUsersList[index] = {
@@ -376,8 +373,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
       return of(new HttpResponse({ status: 200, body: mockUsersList })).pipe(delay(300));
     }
     if (req.method === 'POST') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const body = req.body as any;
+      const body = req.body as { username: string, email: string, role?: string };
       const newUser = {
         id: Math.random().toString(36).substring(7),
         username: body.username,
@@ -394,7 +390,6 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     }
   }
 
-  // --- Admin Memory Service Mock Handlers ---
   if (url.includes('/api/admin/memory/all')) {
     return of(new HttpResponse({ status: 200, body: mockMemoryRecords })).pipe(delay(300));
   }
@@ -407,8 +402,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   if (isSpecificMemory) {
     const id = url.substring(url.lastIndexOf('/') + 1);
     if (req.method === 'PUT') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const body = req.body as any;
+      const body = req.body as { content?: string, emotion?: string };
       const index = mockMemoryRecords.findIndex(r => r.id === id);
       if (index !== -1) {
         mockMemoryRecords[index] = {
@@ -425,8 +419,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   if (url.endsWith('/api/admin/memory') && req.method === 'POST') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const body = req.body as any;
+    const body = req.body as { userId: string, content: string, emotion: string };
     const newRecord = {
       id: Math.random().toString(36).substring(7),
       userId: body.userId,
@@ -439,14 +432,12 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
     return of(new HttpResponse({ status: 200, body: 'Memory created successfully.' })).pipe(delay(300));
   }
 
-  // --- Admin API Gateway Mock Handlers ---
   if (url.includes('/api/gateway/admin/health')) {
     return of(new HttpResponse({ status: 200, body: mockHealthStats })).pipe(delay(200));
   }
 
   if (url.includes('/api/gateway/admin/routes/toggle')) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const body = req.body as any;
+    const body = req.body as { id: string, active: boolean };
     const route = mockRoutes.find(r => r.id === body.id);
     if (route) {
       route.active = body.active;
@@ -472,8 +463,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
       return of(new HttpResponse({ status: 200, body: mockBlockedIps })).pipe(delay(200));
     }
     if (req.method === 'POST') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const body = req.body as any;
+      const body = req.body as { ip: string, reason?: string };
       const newBlocked = {
         ip: body.ip,
         reason: body.reason || 'Manual block',
@@ -490,8 +480,7 @@ export const mockInterceptor: HttpInterceptorFn = (req, next) => {
       return of(new HttpResponse({ status: 200, body: { limit: mockGatewayStats.globalRateLimit } })).pipe(delay(200));
     }
     if (req.method === 'POST') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const body = req.body as any;
+      const body = req.body as { limit: number };
       mockGatewayStats.globalRateLimit = body.limit;
       return of(new HttpResponse({ status: 200, body: null })).pipe(delay(200));
     }

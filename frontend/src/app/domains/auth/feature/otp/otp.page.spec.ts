@@ -53,7 +53,6 @@ describe('OtpPage', () => {
   });
 
   afterEach(() => {
-    // OTP page starts a timer — clear it to avoid leaking intervals
     component.ngOnDestroy();
   });
 

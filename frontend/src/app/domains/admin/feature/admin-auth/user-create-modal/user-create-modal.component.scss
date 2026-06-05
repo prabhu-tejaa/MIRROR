@@ -36,7 +36,6 @@
   padding: 10px 0;
 }
 
-/* User Overview Header inside modal */
 .user-overview {
   display: flex;
   align-items: center;
@@ -84,7 +83,6 @@
   }
 }
 
-/* Forms */
 .modal-form {
   display: flex;
   flex-direction: column;
@@ -121,7 +119,6 @@
   }
 }
 
-/* Input Styles */
 .glass-input {
   width: 100%;
   background: rgba(255, 255, 255, 0.05);
@@ -148,7 +145,6 @@
   }
 }
 
-/* Custom Select Dropdown Styles */
 .glass-select {
   color-scheme: dark;
   width: 100%;
@@ -191,7 +187,6 @@
   pointer-events: none;
 }
 
-/* Info Note */
 .create-info-note {
   display: flex;
   align-items: flex-start;
@@ -220,7 +215,6 @@
   }
 }
 
-/* Action Buttons */
 .modal-actions {
   display: flex;
   align-items: center;

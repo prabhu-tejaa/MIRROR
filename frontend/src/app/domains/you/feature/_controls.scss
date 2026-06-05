@@ -26,7 +26,7 @@
   justify-content: center;
   flex-wrap: wrap;
   gap: 8px 14px;
-  padding-right: 70px; // Shift right side elements left to clear music button
+  padding-right: 70px;
   z-index: 10;
   
   &.play-fade-in {

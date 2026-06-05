@@ -30,7 +30,6 @@ export class YouPage implements OnDestroy {
 
   @ViewChild('auraStage') private stageRef!: ElementRef<HTMLElement>;
 
-  // ── Drag & spring-physics (all plain objects — no signals needed for RAF perf) ──
   private readonly springK = 0.065;
   private readonly damping   = 0.76;
   private stageOff    = { x: 0, y: 0 };
@@ -42,7 +41,6 @@ export class YouPage implements OnDestroy {
   private initialMemories = this.store.selectSignal(selectMemories);
   private dataLoadedOnce = this.store.selectSignal(selectDataLoadedOnce);
 
-  // Ambient Sound Player Properties
   public readonly isPlaying = this.audioVisualizerSvc.isPlaying;
   public readonly isLoadingAudio = this.audioVisualizerSvc.isLoadingAudio;
   public readonly isRealtimeSync = this.audioVisualizerSvc.isRealtimeSync;
@@ -65,8 +63,7 @@ export class YouPage implements OnDestroy {
   public auraGradient = computed(() => this.initialAnalytics()?.auraGradient ?? 'transparent');
   public reflectionsList = computed(() => this.initialMemories() ?? []);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private readonly groovesaladUrl = (environment as any).grooveSaladUrl || 'https://ice1.somafm.com/groovesalad-128-mp3';
+  private readonly groovesaladUrl = (environment as Record<string, unknown>)['grooveSaladUrl'] as string || 'https://ice1.somafm.com/groovesalad-128-mp3';
 
   public username = computed(() => {
     return this.store.selectSignal(selectUsername)() || 'Soul';
@@ -86,7 +83,6 @@ export class YouPage implements OnDestroy {
       return name.substring(0, MAX) + '...';
     }
 
-    // Single long word → character truncate with ellipsis
     return name.substring(0, MAX) + '...';
   });
 
@@ -101,7 +97,6 @@ export class YouPage implements OnDestroy {
     'bottom-right-orb'
   ];
 
-  // Computed timeline reflections for the selected emotion
   public readonly filteredReflections = computed(() => {
     const selected = this.selectedEmotion();
     if (!selected) return [];
@@ -117,7 +112,6 @@ export class YouPage implements OnDestroy {
     const stat = stats.find(s => s.key === emotionKey);
     if (!stat) return 0.7;
 
-    // Scale from 0.7 (0%) up to 1.6 (100%)
     return 0.7 + (stat.percentage / 100) * 0.9;
   }
 
@@ -160,14 +154,12 @@ export class YouPage implements OnDestroy {
 
   public selectFromAllEmotions(emotionKey: string) {
     this.selectedEmotion.set(emotionKey);
-    // Leave isAllEmotionsOpen true so that navigating back is seamless
     this.openedFromAllEmotions.set(true);
   }
 
   public goBackToAllEmotions() {
     this.selectedEmotion.set(null);
     this.openedFromAllEmotions.set(false);
-    // isAllEmotionsOpen is already true, so the view swaps automatically
   }
 
   public closeModals() {
@@ -209,7 +201,6 @@ export class YouPage implements OnDestroy {
   public shouldAnimateIntro = false;
   public isFirstVisit = false;
 
-  // ── Center-orb drag → whole stage moves ──────────────────────────────────────
   public onCenterPointerDown(e: PointerEvent): void {
     const el = e.currentTarget as HTMLElement;
     el.setPointerCapture(e.pointerId);
@@ -240,7 +231,6 @@ export class YouPage implements OnDestroy {
     el.addEventListener('pointerup', onUp);
   }
 
-  // ── Spring-physics loop (RAF outside Angular zone for max perf) ──────────────
   private startSpring(): void {
     if (this.rafId !== null) return;
     const K = this.springK;
@@ -251,7 +241,6 @@ export class YouPage implements OnDestroy {
         let active = false;
         const stageEl = this.stageRef?.nativeElement;
 
-        // — stage spring —
         this.stageVel.x = this.stageVel.x * D + (0 - this.stageOff.x) * K;
         this.stageVel.y = this.stageVel.y * D + (0 - this.stageOff.y) * K;
         this.stageOff.x += this.stageVel.x;

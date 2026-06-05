@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -26,13 +25,13 @@ export class ChatService {
   private http = inject(HttpClient);
   private apiSvc = inject(ApiService);
 
-  public getHistory(email: string, cursor: string | null, size: number): Observable<any> {
+  public getHistory(email: string, cursor: string | null, size: number): Observable<{ messages: unknown[], hasMore: boolean, nextCursor: string | null }> {
     const cursorParam = cursor ? `&cursor=${cursor}` : '';
-    return this.http.get<any>(`${this.apiSvc.USER_MEMORY.HISTORY}?size=${size}${cursorParam}`);
+    return this.http.get<{ messages: unknown[], hasMore: boolean, nextCursor: string | null }>(`${this.apiSvc.USER_MEMORY.HISTORY}?size=${size}${cursorParam}`);
   }
 
-  public reflect(email: string, prompt: string): Observable<any> {
-    return this.http.post<any>(this.apiSvc.USER_MEMORY.REFLECT, prompt, {
+  public reflect(email: string, prompt: string): Observable<{ reflection: string, emotion: string }> {
+    return this.http.post<{ reflection: string, emotion: string }>(this.apiSvc.USER_MEMORY.REFLECT, prompt, {
       headers: { 
         'Content-Type': 'text/plain' 
       },
@@ -42,7 +41,7 @@ export class ChatService {
     );
   }
 
-  public getRandomQuote(): Observable<any> {
-    return this.http.get<any>((environment as any).quoteApiUrl || 'https://dummyjson.com/quotes/random');
+  public getRandomQuote(): Observable<{ quote: string, author: string }> {
+    return this.http.get<{ quote: string, author: string }>((environment as Record<string, unknown>)['quoteApiUrl'] as string || 'https://dummyjson.com/quotes/random');
   }
 }

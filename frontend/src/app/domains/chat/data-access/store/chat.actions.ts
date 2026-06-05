@@ -1,16 +1,13 @@
 import { createAction, props } from '@ngrx/store';
 import { Message, Quote } from '../chat-state.models';
 
-// Quote Actions
 export const loadDynamicQuote = createAction('[Chat] Load Dynamic Quote');
 export const setDynamicQuote = createAction('[Chat] Set Dynamic Quote', props<{ quote: Quote }>());
 
-// Style & Emotion Actions
 export const setStyle = createAction('[Chat] Set Style', props<{ style: 'cyberpunk' | 'aurora' }>());
 export const setEmotion = createAction('[Chat] Set Emotion', props<{ emotion: string }>());
 export const setColors = createAction('[Chat] Set Colors', props<{ primary: string; secondary: string }>());
 
-// Message Actions
 export const loadHistory = createAction('[Chat] Load History', props<{ reset: boolean }>());
 export const setMessages = createAction('[Chat] Set Messages', props<{ messages: Message[] }>());
 export const addMessage = createAction('[Chat] Add Message', props<{ message: Message }>());
@@ -37,7 +34,6 @@ export const postMessageSuccess = createAction(
 );
 export const postMessageFailure = createAction('[Chat] Post Message Failure', props<{ typingId: string; errorMsg: string }>());
 
-// Loading & UI Actions
 export const setWaitingForResponse = createAction('[Chat] Set Waiting For Response', props<{ isWaiting: boolean }>());
 export const setResting = createAction('[Chat] Set Resting', props<{ isResting: boolean }>());
 export const setLoadingHistory = createAction('[Chat] Set Loading History', props<{ isLoading: boolean }>());

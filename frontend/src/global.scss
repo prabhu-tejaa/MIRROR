@@ -34,22 +34,38 @@ ion-content {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
+  background: transparent !important;
+  -webkit-appearance: none !important;
 }
 
-html, body {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  display: none !important;
+}
+
+html, body, * {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
 ion-content::part(scroll) {
   scroll-behavior: smooth !important;
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 
   &::-webkit-scrollbar {
     display: none !important;
     width: 0 !important;
     height: 0 !important;
+    background: transparent !important;
+    -webkit-appearance: none !important;
+  }
+  
+  &::-webkit-scrollbar-track,
+  &::-webkit-scrollbar-thumb {
+    background: transparent !important;
+    display: none !important;
   }
 }
 
@@ -125,7 +141,7 @@ ion-content::part(scroll) {
   }
 
   .alert-action-btn {
-    color: #a5f3fc !important; /* cyan-200 neon */
+    color: #a5f3fc !important;
     font-weight: 700 !important;
   }
 }

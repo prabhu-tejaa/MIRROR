@@ -50,7 +50,6 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnChanges, OnD
   public ngAfterViewInit(): void {
     const config: StarfieldConfig = this.getConfig();
     
-    // Run engine fully outside Angular to avoid change detection on every frame
     this.ngZone.runOutsideAngular(() => {
       this.engine = new StarfieldEngine(this.canvasRef.nativeElement, config);
     });

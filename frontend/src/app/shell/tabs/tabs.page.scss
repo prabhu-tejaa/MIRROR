@@ -61,12 +61,10 @@ ion-tab-button[tab="you"] {
   }
 }
 
-/* Toggle button hidden on mobile — only shown in desktop sidebar */
 .sidebar-toggle-btn {
   display: none;
 }
 
-/* ── Desktop sidebar: 1024px+ ── */
 @media (min-width: 1024px) {
   ion-tabs {
     display: flex;
@@ -78,7 +76,6 @@ ion-tab-button[tab="you"] {
     left: 0;
     top: 0;
     bottom: 0;
-    /* Default: slim icon-only sidebar */
     width: 64px;
     height: 100% !important;
     flex-direction: column;
@@ -89,11 +86,9 @@ ion-tab-button[tab="you"] {
     padding: 12px 0 24px;
     gap: 4px;
     z-index: 100;
-    /* Smooth expand/collapse */
     transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
 
-    /* Expanded state */
     &.sidebar-expanded {
       width: 200px;
       align-items: flex-start;
@@ -101,7 +96,6 @@ ion-tab-button[tab="you"] {
     }
   }
 
-  /* Toggle button — at the top of the sidebar */
   .sidebar-toggle-btn {
     display: flex;
     align-items: center;
@@ -119,8 +113,6 @@ ion-tab-button[tab="you"] {
     outline: none;
     margin-bottom: 12px;
     
-    /* Center of 40px button is 20px. 
-       margin-left 10px makes the center exactly 30px from left edge */
     margin-left: 10px;
     align-self: flex-start;
 
@@ -136,7 +128,6 @@ ion-tab-button[tab="you"] {
   }
 
   ion-tab-button {
-    /* Set outer dimensions to allow pill-shaped selected background */
     width: calc(100% - 12px);
     margin: 0 6px;
     height: 48px;
@@ -145,15 +136,11 @@ ion-tab-button[tab="you"] {
     padding: 0;
     transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     
-    /* Use shadow part to structure the internal layout cleanly */
     &::part(native) {
       display: flex;
       flex-direction: row;
       justify-content: flex-start;
       align-items: center;
-      /* 12px padding left + 6px outer margin = 18px from edge. 
-         24px icon / 2 = 12px. 
-         Center of icon is 18 + 12 = 30px from left edge. Perfectly aligned with toggle! */
       padding: 0 12px;
       gap: 12px;
     }
@@ -162,7 +149,6 @@ ion-tab-button[tab="you"] {
       font-size: 24px;
       flex-shrink: 0;
       transition: filter 0.2s ease;
-      /* Prevent Ionic from pushing icon around */
       margin: 0 !important;
     }
 
@@ -174,7 +160,6 @@ ion-tab-button[tab="you"] {
       margin-top: 0;
       
       opacity: 0;
-      /* Collapse width when slim */
       width: 0;
       overflow: hidden;
       white-space: nowrap;
@@ -190,21 +175,18 @@ ion-tab-button[tab="you"] {
     }
   }
 
-  /* In expanded state — just fade in and expand the label */
   ion-tab-bar.sidebar-expanded ion-tab-button {
     ion-label {
       opacity: 1;
-      width: 120px; /* Expand enough to fit text */
+      width: 120px;
     }
   }
 
-  /* Push the profile tab to the bottom of the sidebar */
   ion-tab-button.profile-tab-btn {
     margin-top: auto;
-    margin-bottom: 24px; /* Pull it up from the very bottom edge */
+    margin-bottom: 24px;
   }
 
-  /* Content area offset (removed margin-left so page backgrounds extend full screen behind the sidebar) */
   ::ng-deep ion-router-outlet {
     margin-left: 0 !important;
   }
@@ -213,7 +195,6 @@ ion-tab-button[tab="you"] {
     margin-left: 0 !important;
   }
 
-  /* Full screen page content padding offsets to keep content clear of the dynamic sidebar */
   ::ng-deep .chat-wrapper,
   ::ng-deep .profile-page-inner,
   ::ng-deep app-explore-container {
@@ -248,6 +229,3 @@ ion-tab-button[tab="you"] {
     }
   }
 }
-
-/* ── Large desktop 1280px: TS will set .sidebar-expanded by default, 
-      we don't need any special CSS overrides here anymore ── */

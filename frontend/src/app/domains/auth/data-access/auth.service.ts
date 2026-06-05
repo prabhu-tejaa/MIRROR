@@ -120,7 +120,6 @@ export class AuthService {
       return;
     }
 
-    // Cooldown check (10 seconds) and check if validation is already in flight
     if (this.isValidating || Date.now() - this.lastValidationTime < 10000) {
       return;
     }
@@ -139,8 +138,6 @@ export class AuthService {
         },
         error: (err) => {
           this.isValidating = false;
-          // Only log out for explicit auth failures (401/403).
-          // Do NOT log out on transient 5xx server errors, connection timeouts, or offline status
           if (err && (err.status === 401 || err.status === 403)) {
             this.logout();
           }
@@ -198,7 +195,6 @@ export class AuthService {
   private saveSession(response: AuthResponse): void {
     const roles = this.extractRolesFromToken(response.accessToken, response.username || '');
     this.store.dispatch(AuthActions.loginSuccess({ response }));
-    // Dispatch setAuthenticated again to ensure roles are populated since loginSuccess doesn't have roles payload natively right now
     this.store.dispatch(AuthActions.setAuthenticated({
       isAuthenticated: true,
       email: response.email || undefined,
@@ -217,7 +213,6 @@ export class AuthService {
         audioSvc.stopAudio();
       }
     } catch {
-      // Ignore injection errors if services aren't ready
     }
 
     this.store.dispatch(AuthActions.clearSession());
@@ -227,10 +222,8 @@ export class AuthService {
   public logout(): void {
     const refreshToken = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
 
-    // Always clear the local session and navigate immediately — don't wait for API
     this.clearSession();
 
-    // Fire the backend logout in the background to invalidate the refresh token on the server
     if (refreshToken && !environment.mock) {
       this.http.post(this.apiSvc.AUTH.LOGOUT, { refreshToken }, { responseType: 'text' }).subscribe({
         next: () => {},

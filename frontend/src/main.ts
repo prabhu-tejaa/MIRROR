@@ -16,14 +16,12 @@ class GlobalErrorHandler implements ErrorHandler {
   public handleError(error: unknown): void {
     const chunkFailedMessage = /Loading chunk [\w\d\-\.]+ failed/;
     const dynamicImportFailed = /Failed to fetch dynamically imported module/;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (chunkFailedMessage.test((error as any)?.message) || dynamicImportFailed.test((error as any)?.message) || dynamicImportFailed.test((error as any)?.toString())) {
-      // eslint-disable-next-line no-console
-      console.warn('Chunk load failed. Reloading window...');
+    const errMessage = error instanceof Error ? error.message : String(error);
+    if (chunkFailedMessage.test(errMessage) || dynamicImportFailed.test(errMessage)) {
+
       window.location.reload();
     } else {
-      // eslint-disable-next-line no-console
-      console.error(error);
+
     }
   }
 }
@@ -43,22 +41,9 @@ import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 
-// Run the console configuration before bootstrapping the app
 if (environment.production) {
-  /* eslint-disable no-console */
-  console.clear();
 
-  const titleStyles = 'color: red; font-size: 40px; font-weight: bold; -webkit-text-stroke: 1px black;';
-  const textStyles = 'color: #333; font-size: 16px; font-weight: bold;';
 
-  console.log('%cSecurity Warning!', titleStyles);
-  console.log(
-    '%cThis area is reserved for authorized developers only. Executing unauthorized commands here violates security policies and can compromise your data security.',
-    textStyles
-  );
-  /* eslint-enable no-console */
-
-  // Disable subsequent standard logs so user logs are hidden
   window.console.log = () => {};
 }
 

@@ -79,9 +79,7 @@ export class AdminAuthService {
         if (!environment.mock) {
           return throwError(() => error);
         }
-        /* eslint-disable no-console */
-        console.warn('Backend Auth-Service API is unreachable. Falling back to local high-fidelity mock data playground.', error);
-        /* eslint-enable no-console */
+
         this.isUsingMockFallback = true;
         return of([...this.mockUsers]);
       })
@@ -138,9 +136,7 @@ export class AdminAuthService {
         }
         const index = this.mockUsers.findIndex(u => u.id === id);
         if (index !== -1) {
-          /* eslint-disable no-console */
-          console.warn('Backend update failed. Applying updates to local mock data playground instead.', error);
-          /* eslint-enable no-console */
+
           this.isUsingMockFallback = true;
           const currentUser = this.mockUsers[index];
           const updatedUser: AdminUserResponse = {
@@ -183,9 +179,7 @@ export class AdminAuthService {
         if (!environment.mock) {
           return throwError(() => error);
         }
-        /* eslint-disable no-console */
-        console.warn('Backend create failed. Creating in local mock data playground instead.', error);
-        /* eslint-enable no-console */
+
         this.isUsingMockFallback = true;
         const newUser: AdminUserResponse = {
           id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36),
@@ -221,9 +215,7 @@ export class AdminAuthService {
         }
         const index = this.mockUsers.findIndex(u => u.id === id);
         if (index !== -1) {
-          /* eslint-disable no-console */
-          console.warn('Backend delete failed. Deleting from local mock data playground instead.', error);
-          /* eslint-enable no-console */
+
           this.isUsingMockFallback = true;
           this.mockUsers.splice(index, 1);
           return of(undefined);

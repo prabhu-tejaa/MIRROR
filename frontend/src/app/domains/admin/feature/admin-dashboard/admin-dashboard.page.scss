@@ -2,7 +2,6 @@ ion-content {
   --background: transparent;
 }
 
-/* Custom Navigation Bar */
 .dashboard-nav {
   display: flex;
   align-items: center;
@@ -63,7 +62,6 @@ ion-content {
   }
 }
 
-/* Glowing Presence Pill */
 .live-presence-pill {
   display: flex;
   align-items: center;
@@ -107,7 +105,6 @@ ion-content {
   }
 }
 
-/* Right-side nav group: Online pill on same line */
 .nav-right-group {
   display: flex;
   align-items: center;
@@ -120,14 +117,12 @@ ion-content {
   100% { opacity: 0.6; transform: scale(0.9); }
 }
 
-/* Content Container Layout */
 .dashboard-layout-container {
   max-width: 900px;
   margin: 0 auto;
   padding: 0 16px 40px 16px;
 }
 
-/* Intro Section styling */
 .intro-section {
   margin-bottom: 40px;
   
@@ -148,7 +143,6 @@ ion-content {
   }
 }
 
-/* Grid Layout */
 .services-grid {
   display: flex;
   justify-content: center;
@@ -159,7 +153,6 @@ ion-content {
   margin-top: 10vh;
 }
 
-/* Service Card Styling */
 .service-card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -294,7 +287,6 @@ ion-content {
   }
 }
 
-/* Custom Inline Card Header and Pure White Styling */
 .card-header-row {
   display: flex;
   align-items: center;

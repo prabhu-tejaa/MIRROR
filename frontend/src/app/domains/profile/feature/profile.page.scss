@@ -9,11 +9,10 @@ ion-content {
   }
 }
 
-/* ── Page wrapper — single column on all screen sizes ── */
 .profile-page-inner {
   display: flex;
   flex-direction: column;
-  min-height: 100.2%; /* Slightly taller than 100% to enable refresher pull-down */
+  min-height: 100.2%;
   width: 100%;
   max-width: 100%;
   margin: 0;
@@ -21,7 +20,6 @@ ion-content {
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
 }
 
-/* ── Hero: compact row — avatar small, name beside it ── */
 .profile-hero {
   display: flex;
   flex-direction: row;
@@ -47,7 +45,6 @@ ion-content {
   }
 }
 
-/* ── Content area: fills remainder of the column ── */
 .profile-content-area {
   display: flex;
   flex-direction: column;
@@ -170,7 +167,6 @@ ion-footer {
   }
 }
 
-/* ── Tablet: 768px+ — just wider ── */
 @media (min-width: 768px) {
   .profile-page-inner {
     max-width: 100%;
@@ -199,7 +195,6 @@ ion-footer {
   }
 }
 
-/* ── Desktop: 1024px+ — wider content, email truncation relaxed ── */
 @media (min-width: 1024px) {
   .profile-page-inner {
     max-width: 100%;

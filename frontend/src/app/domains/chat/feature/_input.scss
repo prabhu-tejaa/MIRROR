@@ -68,7 +68,6 @@
 .entry-capsule {
   position: relative;
   z-index: 5;
-  // Dynamic background tinted with the current AI emotion colors
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--emotion-color-primary, transparent) 12%, rgba(18, 16, 32, 0.65)),
@@ -104,7 +103,7 @@
     position: relative;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     outline: none;
-    margin-bottom: 0px; // align perfectly with textarea padding
+    margin-bottom: 0px;
 
     .mic-icon {
       font-size: 20px;

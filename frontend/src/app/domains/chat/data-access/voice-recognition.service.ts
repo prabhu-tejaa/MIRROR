@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, no-console */
 import { Injectable, inject, signal } from '@angular/core';
 import { AlertController } from '@ionic/angular/standalone';
 import { Capacitor } from '@capacitor/core';
@@ -14,13 +13,24 @@ export class VoiceRecognitionService {
 
   public isRecording = signal<boolean>(false);
   
-  // Emit transcribed text changes
   public transcriptionUpdate = new Subject<{text: string, isPartial: boolean}>();
 
-  private nativeListenerHandle: any = null;
-  private nativeStateListenerHandle: any = null;
-  private speechTimeout: any = null;
-  private recognition: any = null;
+  private nativeListenerHandle: import('@capacitor/core').PluginListenerHandle | null = null;
+  private nativeStateListenerHandle: import('@capacitor/core').PluginListenerHandle | null = null;
+  private speechTimeout: ReturnType<typeof setTimeout> | null = null;
+  private recognition: {
+    continuous: boolean;
+    interimResults: boolean;
+    lang: string;
+    onstart: (() => void) | null;
+    onspeechstart: (() => void) | null;
+    onspeechend: (() => void) | null;
+    onresult: ((event: { results: { transcript: string }[][] }) => void) | null;
+    onerror: (() => void) | null;
+    onend: (() => void) | null;
+    stop: () => void;
+    start: () => void;
+  } | null = null;
 
   constructor() {
     this.initSpeechRecognition();
@@ -35,15 +45,15 @@ export class VoiceRecognitionService {
 
   private initSpeechRecognition() {
     if (this.isNative) {
-      SpeechRecognition.available().then(result => {
-        console.log('Native speech recognition availability:', result.available);
-      }).catch(err => {
-        console.error('Error checking native speech availability:', err);
-      });
-      return;
+      SpeechRecognition.available().then(() => {
+        
+      }).catch(() => {
+        
+      });return;
     }
 
-    const SpeechRecognitionCtor = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const globalWindow = window as unknown as { SpeechRecognition: new () => NonNullable<typeof this.recognition>; webkitSpeechRecognition: new () => NonNullable<typeof this.recognition> };
+    const SpeechRecognitionCtor = globalWindow.SpeechRecognition || globalWindow.webkitSpeechRecognition;
     if (SpeechRecognitionCtor) {
       this.recognition = new SpeechRecognitionCtor();
       this.recognition.continuous = false;
@@ -56,9 +66,9 @@ export class VoiceRecognitionService {
         this.speechTimeout = setTimeout(() => {
           if (this.isRecording()) {
             try {
-              this.recognition.stop();
-            } catch (e) {
-              console.error('Speech recognition stop error in safety timeout:', e);
+              this.recognition!.stop();
+            } catch {
+
             }
           }
         }, 4000);
@@ -73,15 +83,15 @@ export class VoiceRecognitionService {
         this.speechTimeout = setTimeout(() => {
           if (this.isRecording()) {
             try {
-              this.recognition.stop();
-            } catch (e) {
-              console.error('Speech recognition stop error in speechend timeout:', e);
+              this.recognition!.stop();
+            } catch {
+
             }
           }
         }, 2000);
       };
 
-      this.recognition.onresult = (event: any) => {
+      this.recognition.onresult = (event: { results: { transcript: string }[][] }) => {
         this.clearSpeechTimeout();
         const transcript = event.results[0][0].transcript;
         if (transcript) {
@@ -89,9 +99,9 @@ export class VoiceRecognitionService {
         }
       };
 
-      this.recognition.onerror = (event: any) => {
+      this.recognition.onerror = () => {
         this.clearSpeechTimeout();
-        console.error('Speech recognition error:', event.error);
+
         this.isRecording.set(false);
       };
 
@@ -183,8 +193,7 @@ export class VoiceRecognitionService {
         }
       }, 10000);
 
-    } catch (error) {
-      console.error('Error in native speech recognition:', error);
+    } catch {
       this.isRecording.set(false);
       this.clearSpeechTimeout();
     }
@@ -195,8 +204,8 @@ export class VoiceRecognitionService {
     this.isRecording.set(false);
     try {
       await SpeechRecognition.stop();
-    } catch (e) {
-      console.error('Error calling SpeechRecognition.stop():', e);
+    } catch {
+
     }
     if (this.nativeListenerHandle) {
       await this.nativeListenerHandle.remove();
@@ -229,15 +238,14 @@ export class VoiceRecognitionService {
       this.isRecording.set(false);
       try {
         this.recognition.stop();
-      } catch (e) {
-        console.error('Error stopping speech recognition:', e);
+      } catch {
+
       }
     } else {
       try {
         this.isRecording.set(true);
         this.recognition.start();
-      } catch (e) {
-        console.error('Error starting speech recognition:', e);
+      } catch {
         this.isRecording.set(false);
       }
     }
@@ -249,8 +257,8 @@ export class VoiceRecognitionService {
     } else if (this.recognition) {
       try {
         this.recognition.stop();
-      } catch (e) {
-        console.error('Error stopping browser recognition on destroy:', e);
+      } catch {
+
       }
     }
   }

@@ -10,7 +10,6 @@ ion-content {
   color: #f5f6fa;
 }
 
-// Custom Scrollbar styling
 ::-webkit-scrollbar {
   width: 4px;
   height: 4px;
@@ -28,16 +27,16 @@ ion-content {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  min-height: 100.2%; /* Slightly taller than 100% to enable refresher pull-down */
+  min-height: 100.2%;
   padding: 12px 16px 16px;
   box-sizing: border-box;
   text-align: center;
   position: relative;
-  background: transparent; // Starry field preserved
+  background: transparent;
   gap: 10px;
 }
 
-// Global pause when tab is inactive to save GPU/CPU
+
 .animations-paused {
   *, *::before, *::after {
     animation-play-state: paused !important;

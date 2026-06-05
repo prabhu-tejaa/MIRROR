@@ -1,6 +1,6 @@
 .music-floating-system {
   position: absolute;
-  bottom: 20px; // Pinned directly at the very bottom right
+  bottom: 20px;
   right: 24px;
   z-index: 95;
   display: flex;
@@ -12,8 +12,8 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05); // Glassy transparent frosted glass
-    border: 1px solid rgba(255, 255, 255, 0.16); // Clean white border
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -26,7 +26,7 @@
       width: 22px;
       height: 22px;
       display: block;
-      color: rgba(255, 255, 255, 0.85); // Glassy white music icon
+      color: rgba(255, 255, 255, 0.85);
       filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.25));
     }
 
@@ -51,8 +51,8 @@
 
   .floating-music-popover {
     width: 210px;
-    background: rgba(255, 255, 255, 0.04); // Glassy transparent frosted glass
-    border: 1px solid rgba(255, 255, 255, 0.15); // High-end thin glass border
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 16px;
     padding: 12px;
     backdrop-filter: blur(25px);
@@ -190,11 +190,9 @@
     &.bar-4 { color: var(--color-4, currentColor); animation-delay: 0.5s; animation-duration: 0.75s; }
   }
 
-  // Seamless override when real-time Web Audio analyzer variables are present
   &[style*="--bar1-scale"] {
     .spec-bar {
       animation: none !important;
-      // Convert the 0-1 scale to a clip-path inset percentage (1 = 0% inset, 0 = 100% inset)
       &.bar-1 { clip-path: inset(calc(100% - (var(--bar1-scale) * 100%)) 0 0 0); }
       &.bar-2 { clip-path: inset(calc(100% - (var(--bar2-scale) * 100%)) 0 0 0); }
       &.bar-3 { clip-path: inset(calc(100% - (var(--bar3-scale) * 100%)) 0 0 0); }

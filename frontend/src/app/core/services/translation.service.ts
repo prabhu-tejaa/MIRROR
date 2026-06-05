@@ -11,8 +11,7 @@ export class TranslationService implements OnDestroy {
   private translations = signal<Record<string, string | unknown>>({});
   private sub?: Subscription;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private readonly fallbackTranslations: Record<string, any> = {
+  private readonly fallbackTranslations: Record<string, Record<string, string>> = {
     "TABS": {
       "YOU": "You",
       "CHAT": "Chat",
@@ -60,9 +59,7 @@ export class TranslationService implements OnDestroy {
             resolve(true);
           },
           error: (_err) => {
-            // Set the fallback translations so the app still bootstraps and displays basic UI
             this.translations.set(this.fallbackTranslations);
-            // Still resolve true so bootstrap succeeds
             resolve(true);
           }
         });

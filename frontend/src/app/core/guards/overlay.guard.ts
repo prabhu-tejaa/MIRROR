@@ -6,8 +6,6 @@ export const overlayGuard: CanDeactivateFn<unknown> = async () => {
   const router = inject(Router);
   const navigation = router.getCurrentNavigation();
   
-  // Only intercept browser back button presses (popstate). 
-  // Allow programmatic navigations (like logout) to proceed.
   if (navigation?.trigger !== 'popstate') {
     return true;
   }
@@ -26,7 +24,6 @@ export const overlayGuard: CanDeactivateFn<unknown> = async () => {
   
   if (topOverlay) {
     await topOverlay.dismiss();
-    // Prevent route navigation so the user stays on the current page
     return false; 
   }
   

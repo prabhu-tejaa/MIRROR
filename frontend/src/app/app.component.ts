@@ -44,9 +44,6 @@ export class AppComponent {
   @HostListener('document:visibilitychange')
   public onVisibilityChange(): void {
     if (document.visibilityState === 'visible') {
-      // Force change detection when user returns to the tab.
-      // This fixes issues where background HTTP requests complete but the UI (like loading dots)
-      // gets stuck because NgZone drops the tick while the tab is hidden.
       this.appRef.tick();
     }
   }
@@ -62,8 +59,7 @@ export class AppComponent {
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public handleGlobalRefresh(_event: any): void {
+  public handleGlobalRefresh(_event: Event): void {
     setTimeout(() => {
       window.location.reload();
     }, 500);

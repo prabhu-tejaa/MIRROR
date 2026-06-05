@@ -28,7 +28,6 @@ export const initialState: AdminState = {
 export const adminReducer = createReducer(
   initialState,
   
-  // Users
   on(AdminActions.loadUsers, (state) => ({ ...state, usersLoading: true, error: null })),
   on(AdminActions.loadUsersSuccess, (state, { users }) => ({ ...state, users, usersLoading: false })),
   on(AdminActions.loadUsersFailure, (state, { error }) => ({ ...state, error, usersLoading: false })),
@@ -37,7 +36,6 @@ export const adminReducer = createReducer(
   on(AdminActions.updateUserSuccess, (state, { user }) => ({ ...state, users: state.users.map(u => u.id === user.id ? user : u) })),
   on(AdminActions.deleteUserSuccess, (state, { id }) => ({ ...state, users: state.users.filter(u => u.id !== id) })),
   
-  // Memories
   on(AdminActions.loadMemories, (state) => ({ ...state, memoriesLoading: true, error: null })),
   on(AdminActions.loadMemoriesSuccess, (state, { memories }) => ({ ...state, memories, memoriesLoading: false })),
   on(AdminActions.loadMemoriesFailure, (state, { error }) => ({ ...state, error, memoriesLoading: false })),

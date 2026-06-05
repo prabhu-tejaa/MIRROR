@@ -1,4 +1,3 @@
-/* Loading & Empty States */
 .loading-state, .empty-state {
   display: flex;
   flex-direction: column;
@@ -15,7 +14,6 @@
     height: 48px;
     margin-bottom: 16px;
 
-    /* Force SVG paths/circles to be white regardless of Ionic theme overrides */
     &::part(ellipse),
     &::part(circle) {
       stroke: #ffffff !important;
@@ -49,7 +47,6 @@
   }
 }
 
-/* Desktop Table View */
 .desktop-table-wrapper {
   display: none;
   overflow-x: auto;
@@ -142,7 +139,6 @@
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }
 
-/* Badges styling */
 .role-badge {
   display: inline-flex;
   align-items: center;
@@ -216,7 +212,6 @@
   }
 }
 
-/* Mobile List View */
 .mobile-list-wrapper {
   display: flex;
   flex-direction: column;
@@ -309,7 +304,6 @@
   }
 }
 
-/* Double status stacking layout */
 .status-stack {
   display: flex;
   flex-direction: row;
@@ -321,7 +315,6 @@
   }
 }
 
-/* Custom Red Locked Badge */
 .locked-badge {
   background: rgba(239, 68, 68, 0.08) !important;
   color: #f87171 !important;
@@ -333,7 +326,6 @@
   }
 }
 
-/* Unlock golden action button */
 .unlock-btn {
   --color: #fbbf24 !important;
   

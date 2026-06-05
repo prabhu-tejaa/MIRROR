@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, no-console */
 import { Component, ChangeDetectionStrategy, signal, computed, inject, ViewChild, ElementRef, OnDestroy, effect, DestroyRef } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { CommonModule } from '@angular/common';
@@ -65,18 +64,16 @@ export class ChatPage implements OnDestroy {
   private scrollListenerAttached = false;
   private initialScrollCompleted = false;
   private scrollObserver?: MutationObserver;
-  private scrollObserverTimeout?: any;
+  private scrollObserverTimeout?: ReturnType<typeof setTimeout>;
 
   @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLTextAreaElement>;
 
-  // Public Properties for HTML Template
   public readonly isGuest = computed(() => this.authSvc.getEmail() === 'guest@mirror.tech');
   public readonly isAdmin = computed(() => this.roleSvc.hasRole('ADMIN'));
   
   public readonly chatInput = signal<string>('');
   
-  // Aliases to services for the template
   public readonly activeQuote = this.chatState.activeQuote;
   public readonly activeStyle = this.chatState.activeStyle;
   public readonly currentEmotion = this.chatState.currentEmotion;
@@ -115,7 +112,6 @@ export class ChatPage implements OnDestroy {
       setTimeout(() => this.adjustTextareaHeight(), 0);
     });
 
-    // React to UI layout triggers from state service
     effect(() => {
       const trigger = this.chatState.scrollToBottomTrigger();
       if (trigger > 0) {
@@ -187,7 +183,6 @@ export class ChatPage implements OnDestroy {
       if (scrollEl) {
         this.scrollListenerAttached = true;
         
-        // Permanent mutation observer to catch DOM changes before paint
         const mo = new MutationObserver(() => {
           if (!this.initialScrollCompleted && scrollEl) {
             const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
@@ -200,7 +195,6 @@ export class ChatPage implements OnDestroy {
           if (!this.initialScrollCompleted) return;
           
           const maxScroll = scrollEl.scrollHeight - scrollEl.clientHeight;
-          // Do not auto-load if the screen isn't even full yet
           if (maxScroll <= 0) return; 
 
           const isAtTop = scrollEl.scrollTop <= 10;
@@ -233,11 +227,9 @@ export class ChatPage implements OnDestroy {
       
       let actualBehavior = behavior;
       
-      // If we are already near the bottom, lock to auto to avoid jitter
       if (distance < 100) {
         actualBehavior = 'auto';
       } else if (behavior === 'smooth') {
-        // Only trigger smooth scroll once per sequence to prevent stuttering
         if (hasUsedSmooth) {
           actualBehavior = 'auto';
         } else {

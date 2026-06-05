@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, no-console */
 import { Injectable, inject, signal } from '@angular/core';
 import { AudioVisualizerService } from './audio-visualizer.service';
 
@@ -25,7 +24,6 @@ export class TextToSpeechService {
         if (voices.length > 0) {
           voicesLoaded = true;
           this.availableVoices.set(voices);
-          // Unbind to prevent any potential infinite loops or multiple fires in Mobile Chrome
           if (window.speechSynthesis.removeEventListener) {
             window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
           } else {
@@ -38,7 +36,6 @@ export class TextToSpeechService {
         loadVoices();
       };
 
-      // Try initial load
       loadVoices();
 
       if (!voicesLoaded) {
@@ -55,7 +52,6 @@ export class TextToSpeechService {
     if (this.currentlySpeakingId() === msgId) {
       window.speechSynthesis.cancel();
       this.currentlySpeakingId.set(null);
-      // Restore music volume since we cancelled
       this.audioVisualizer.restoreVolume();
       return;
     }
@@ -65,7 +61,7 @@ export class TextToSpeechService {
     const utterance = new SpeechSynthesisUtterance(text);
 
     const voices = window.speechSynthesis.getVoices();
-    console.log('[MIRROR TTS] Available voices on this device:', voices.map(v => `${v.name} (${v.lang})`));
+
 
     const selectedVoice = voices.find(v => v.name.toLowerCase().includes('google uk english female')) ||
       voices.find(v => v.name.toLowerCase().includes('google uk english')) ||
@@ -77,7 +73,7 @@ export class TextToSpeechService {
       voices[0];
 
     if (selectedVoice) {
-      console.log('[MIRROR TTS] Speaking using selected female voice:', selectedVoice.name);
+
       utterance.voice = selectedVoice;
     }
 
@@ -88,21 +84,18 @@ export class TextToSpeechService {
       if (this.currentlySpeakingId() === msgId) {
         this.currentlySpeakingId.set(null);
       }
-      // Always restore music volume when speech ends
       this.audioVisualizer.restoreVolume();
     };
-    utterance.onerror = (e) => {
-      console.error('Speech synthesis error:', e);
+    utterance.onerror = () => {
+
       if (this.currentlySpeakingId() === msgId) {
         this.currentlySpeakingId.set(null);
       }
-      // Restore music volume on error too
       this.audioVisualizer.restoreVolume();
     };
 
     this.currentlySpeakingId.set(msgId);
 
-    // Duck music volume before speaking
     this.audioVisualizer.duckVolume(0.18);
 
     setTimeout(() => {
@@ -114,7 +107,6 @@ export class TextToSpeechService {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
       this.currentlySpeakingId.set(null);
-      // Restore music when TTS is cancelled externally
       this.audioVisualizer.restoreVolume();
     }
   }
