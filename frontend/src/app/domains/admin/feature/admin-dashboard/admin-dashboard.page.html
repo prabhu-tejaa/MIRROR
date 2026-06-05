@@ -1,12 +1,10 @@
-<ion-content [fullscreen]="true" class="ion-padding">
-  <!-- Custom Space-themed Header -->
+<ion-content class="ion-padding" [fullscreen]="true">
   <div class="dashboard-nav">
-    <button class="back-circle-btn" (click)="goBack()" title="Back to Profile">
+    <button class="back-circle-btn" title="Back to Profile" (click)="goBack()">
       <ion-icon name="arrow-back-outline"></ion-icon>
     </button>
 
-    <!-- Right side: Live Presence pill inline -->
-    <div class="nav-right-group" *ngIf="{ count: (onlineUsersCount$ | async) ?? 0 } as state">
+    <div *ngIf="{ count: (onlineUsersCount$ | async) ?? 0 } as state" class="nav-right-group">
       <div class="live-presence-pill" [class.offline]="state.count === 0">
         <span class="presence-dot"></span>
         <span class="presence-label">{{ state.count }} Online</span>
@@ -16,29 +14,8 @@
   </div>
 
   <div class="dashboard-layout-container">
-    <!-- Service Flows Grid -->
     <div class="services-grid">
 
-      <!-- API Gateway Card
-      <div class="service-card active" routerLink="/admin/api-gateway">
-        <div class="card-top">
-          <div class="icon-box gateway-icon">
-            <ion-icon name="pulse-outline"></ion-icon>
-          </div>
-        </div>
-        
-        <div class="card-body">
-          <h3>API Gateway</h3>
-          <p>Orchestrate active routing maps, monitor latency telemetry, check registry status, and view live traffic logs.</p>
-        </div>
-        
-        <div class="card-footer">
-          <span class="action-text">Stream Logs & Telemetry</span>
-          <ion-icon name="chevron-forward-outline" class="arrow-icon"></ion-icon>
-        </div>
-      </div> -->
-
-      <!-- Auth Service Card -->
       <div class="service-card active" (click)="navigateTo('/admin/auth-service')">
         <div class="card-header-row">
           <div class="card-title-group">
@@ -49,7 +26,6 @@
 
       </div>
 
-      <!-- Memory Service Card -->
       <div class="service-card active" (click)="navigateTo('/admin/memory-service')">
         <div class="card-header-row">
           <div class="card-title-group">

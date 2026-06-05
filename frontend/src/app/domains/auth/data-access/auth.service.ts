@@ -1,35 +1,36 @@
-import { Injectable, inject, NgZone, Injector } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
+import { Injectable, inject, NgZone, Injector } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
-import { SKIP_CANCEL } from '../../../core/interceptors/cancel.interceptor';
-import { Observable, tap, filter } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { AuthActions } from './store/auth.actions';
-import { selectIsAuthenticated } from './store/auth.selectors';
-import { RegisterRequest, LoginRequest, AuthResponse } from './auth.model';
-import { ApiService } from '../../../core/services/api.service';
-import { TranslationService } from '../../../core/services/translation.service';
-import { StorageService } from '../../../core/services/storage.service';
-import { StorageKeys, getActiveSessionKey } from '../../../core/constants/storage.constants';
+import { Observable, tap, filter } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
+import { StorageKeys, getActiveSessionKey } from '../../../core/constants/storage.constants';
+import { SKIP_CANCEL } from '../../../core/interceptors/cancel.interceptor';
+import { ApiService } from '../../../core/services/api.service';
+import { StorageService } from '../../../core/services/storage.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { AudioVisualizerService } from '../../chat/data-access/audio-visualizer.service';
+
+import { RegisterRequest, LoginRequest, AuthResponse } from './auth.model';
+import { AuthActions } from './store/auth.actions';
+import { selectIsAuthenticated } from './store/auth.selectors';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private http = inject(HttpClient);
-  private apiSvc = inject(ApiService);
-  private translationSvc = inject(TranslationService);
-  private router = inject(Router);
-  private storageSvc = inject(StorageService);
-  private ngZone = inject(NgZone);
-  private injector = inject(Injector);
-  private lastValidationTime = 0;
-  private isValidating = false;
-  private store = inject(Store);
+  private http: HttpClient = inject(HttpClient);
+  private apiSvc: ApiService = inject(ApiService);
+  private translationSvc: TranslationService = inject(TranslationService);
+  private router: Router = inject(Router);
+  private storageSvc: StorageService = inject(StorageService);
+  private ngZone: NgZone = inject(NgZone);
+  private injector: Injector = inject(Injector);
+  private lastValidationTime: number = 0;
+  private isValidating: boolean = false;
+  private store: Store<unknown> = inject(Store);
 
   private getSessionInstanceId(): string {
-    let id = this.storageSvc.get(StorageKeys.SESSION_INSTANCE_ID);
+    let id: string | null = this.storageSvc.get(StorageKeys.SESSION_INSTANCE_ID);
     if (!id) {
       id = Math.random().toString(36).substring(2) + Date.now().toString(36);
       this.storageSvc.set(StorageKeys.SESSION_INSTANCE_ID, id);
@@ -38,10 +39,10 @@ export class AuthService {
   }
 
   constructor() {
-    const token = this.storageSvc.get(StorageKeys.ACCESS_TOKEN);
-    const hasToken = !!token;
-    const email = this.storageSvc.get(StorageKeys.EMAIL);
-    const username = this.storageSvc.get(StorageKeys.USERNAME);
+    const token: string | null = this.storageSvc.get(StorageKeys.ACCESS_TOKEN);
+    const hasToken: boolean = !!token;
+    const email: string | null = this.storageSvc.get(StorageKeys.EMAIL);
+    const username: string | null = this.storageSvc.get(StorageKeys.USERNAME);
     
     let roles: string[] = [];
     if (token) {
@@ -61,11 +62,11 @@ export class AuthService {
   }
 
   private setupStorageListener(): void {
-    window.addEventListener('storage', (event) => {
+    window.addEventListener('storage', (event: StorageEvent) => {
       if (event.key && event.key.startsWith('mirror_active_session_')) {
-        const email = this.getEmail();
+        const email: string | null = this.getEmail();
         if (email && event.key === getActiveSessionKey(email)) {
-          const activeSessionId = event.newValue;
+          const activeSessionId: string | null = event.newValue;
           if (activeSessionId && activeSessionId !== this.getSessionInstanceId()) {
             this.logout();
           }
@@ -106,43 +107,58 @@ export class AuthService {
   }
 
   private checkSessionValidity(): void {
-    const email = this.getEmail();
-    if (!email || !this.isAuthenticated()) {
+    const email: string | null = this.getEmail();
+    if (!this.shouldValidateSession(email)) {
       return;
     }
 
-    const activeSessionId = this.storageSvc.get(getActiveSessionKey(email));
-    const sessionInstanceId = this.getSessionInstanceId();
-    
-    if (activeSessionId && activeSessionId !== sessionInstanceId) {
-
+    if (this.hasActiveSessionMismatch(email as string)) {
       this.logout();
       return;
     }
 
+    this.validateSessionWithBackend();
+  }
+
+  private shouldValidateSession(email: string | null): boolean {
+    return !!email && this.isAuthenticated();
+  }
+
+  private hasActiveSessionMismatch(email: string): boolean {
+    const activeSessionId: string | null = this.storageSvc.get(getActiveSessionKey(email));
+    const sessionInstanceId: string = this.getSessionInstanceId();
+    return !!activeSessionId && activeSessionId !== sessionInstanceId;
+  }
+
+  private validateSessionWithBackend(): void {
     if (this.isValidating || Date.now() - this.lastValidationTime < 10000) {
       return;
     }
 
-    const refreshToken = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
+    const refreshToken: string | null = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
     if (!environment.mock && refreshToken) {
       this.isValidating = true;
       this.lastValidationTime = Date.now();
       
       this.http.post<{ valid: boolean }>(this.apiSvc.AUTH.VALIDATE, { refreshToken }).subscribe({
-        next: (res) => {
-          this.isValidating = false;
-          if (res && res.valid === false) {
-            this.logout();
-          }
-        },
-        error: (err) => {
-          this.isValidating = false;
-          if (err && (err.status === 401 || err.status === 403)) {
-            this.logout();
-          }
-        }
+        next: (res: { valid: boolean; }) => this.handleValidationSuccess(res),
+        error: (err: unknown) => this.handleValidationError(err)
       });
+    }
+  }
+
+  private handleValidationSuccess(res: { valid: boolean; }): void {
+    this.isValidating = false;
+    if (res && res.valid === false) {
+      this.logout();
+    }
+  }
+
+  private handleValidationError(err: unknown): void {
+    this.isValidating = false;
+    const error: { status?: number } = err as { status?: number };
+    if (error && (error.status === 401 || error.status === 403)) {
+      this.logout();
     }
   }
 
@@ -154,7 +170,7 @@ export class AuthService {
 
   public loginUser(request: LoginRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(this.apiSvc.AUTH.LOGIN, request).pipe(
-      tap((res) => this.saveSession(res))
+      tap((res: AuthResponse) => this.saveSession(res))
     );
   }
 
@@ -182,7 +198,7 @@ export class AuthService {
     return this.http.post<AuthResponse>(this.apiSvc.AUTH.REFRESH, { refreshToken }, {
       context: new HttpContext().set(SKIP_CANCEL, true)
     }).pipe(
-      tap((res) => this.saveSession(res))
+      tap((res: AuthResponse) => this.saveSession(res))
     );
   }
 
@@ -193,7 +209,7 @@ export class AuthService {
   }
 
   private saveSession(response: AuthResponse): void {
-    const roles = this.extractRolesFromToken(response.accessToken, response.username || '');
+    const roles: string[] = this.extractRolesFromToken(response.accessToken, response.username || '');
     this.store.dispatch(AuthActions.loginSuccess({ response }));
     this.store.dispatch(AuthActions.setAuthenticated({
       isAuthenticated: true,
@@ -208,11 +224,12 @@ export class AuthService {
       if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
-      const audioSvc = this.injector.get(AudioVisualizerService);
+      const audioSvc: AudioVisualizerService = this.injector.get(AudioVisualizerService);
       if (audioSvc) {
         audioSvc.stopAudio();
       }
     } catch {
+      // Ignored
     }
 
     this.store.dispatch(AuthActions.clearSession());
@@ -220,14 +237,14 @@ export class AuthService {
 
 
   public logout(): void {
-    const refreshToken = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
+    const refreshToken: string | null = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
 
     this.clearSession();
 
     if (refreshToken && !environment.mock) {
       this.http.post(this.apiSvc.AUTH.LOGOUT, { refreshToken }, { responseType: 'text' }).subscribe({
-        next: () => {},
-        error: () => {}
+        next: () => { /* Ignored */ },
+        error: () => { /* Ignored */ }
       });
     }
   }
@@ -253,13 +270,14 @@ export class AuthService {
     }
 
     try {
-      const parts = token.split('.');
+      const parts: string[] = token.split('.');
       if (parts.length === 3) {
-        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+        const payloadStr: string = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+        const payload: Record<string, unknown> = JSON.parse(payloadStr) as Record<string, unknown>;
 
-        const roles = payload.roles || payload.role || payload.authorities || [];
-        const normalizeRole = (r: unknown): string => {
-          const str = String(r).toUpperCase();
+        const roles: unknown = payload['roles'] || payload['role'] || payload['authorities'] || [];
+        const normalizeRole: (r: unknown) => string = (r: unknown): string => {
+          const str: string = String(r).toUpperCase();
           return str.startsWith('ROLE_') ? str.substring(5) : str;
         };
 
@@ -270,6 +288,7 @@ export class AuthService {
         }
       }
     } catch {
+      // Ignored
     }
 
     return ['USER'];

@@ -1,9 +1,10 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { IonicModule, NavController } from '@ionic/angular';
-import { PresenceService } from '../../../../core/services/presence.service';
 import { addIcons } from 'ionicons';
 import { shieldCheckmarkOutline, arrowBackOutline, peopleOutline, peopleCircleOutline, serverOutline, pulseOutline, lockClosedOutline } from 'ionicons/icons';
+
+import { PresenceService } from '../../../../core/services/presence.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -13,8 +14,8 @@ import { shieldCheckmarkOutline, arrowBackOutline, peopleOutline, peopleCircleOu
   imports: [IonicModule, CommonModule]
 })
 export class AdminDashboardPage {
-  private navCtrl = inject(NavController);
-  private presenceService = inject(PresenceService);
+  private navCtrl: NavController = inject(NavController);
+  private presenceService: PresenceService = inject(PresenceService);
 
   public onlineUsersCount$ = this.presenceService.onlineUsersCount$;
 
@@ -23,10 +24,10 @@ export class AdminDashboardPage {
   }
 
   public goBack(): void {
-    this.navCtrl.navigateRoot('/tabs/profile', { animated: false });
+    void this.navCtrl.navigateRoot('/tabs/profile', { animated: false });
   }
 
   public navigateTo(path: string): void {
-    this.navCtrl.navigateForward(path);
+    void this.navCtrl.navigateForward(path);
   }
 }

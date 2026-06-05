@@ -1,18 +1,20 @@
-import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Params } from '@angular/router';
 import { NavController, AnimationController } from '@ionic/angular';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { alertCircleOutline } from 'ionicons/icons';
-import { StarfieldService } from '../../../../shared/starfield/starfield.service';
-import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
-import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../../data-access/auth.service';
+
 import { TranslationService } from '../../../../core/services/translation.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { StarfieldService } from '../../../../shared/starfield/starfield.service';
+import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
+import { AuthService } from '../../data-access/auth.service';
+
 
 @Component({
   selector: 'app-otp',
@@ -23,16 +25,16 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OtpPage implements OnInit, OnDestroy {
-  private fb = inject(FormBuilder);
-  private route = inject(ActivatedRoute);
-  private navCtrl = inject(NavController);
-  private animationCtrl = inject(AnimationController);
-  private starfieldSvc = inject(StarfieldService);
-  private cdr = inject(ChangeDetectorRef);
-  private authSvc = inject(AuthService);
-  private translationSvc = inject(TranslationService);
-  private el = inject(ElementRef);
-  private destroyRef = inject(DestroyRef);
+  private fb: FormBuilder = inject(FormBuilder);
+  private route: ActivatedRoute = inject(ActivatedRoute);
+  private navCtrl: NavController = inject(NavController);
+  private animationCtrl: AnimationController = inject(AnimationController);
+  private starfieldSvc: StarfieldService = inject(StarfieldService);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private authSvc: AuthService = inject(AuthService);
+  private translationSvc: TranslationService = inject(TranslationService);
+  private el: ElementRef<any> = inject(ElementRef);
+  private destroyRef: DestroyRef = inject(DestroyRef);
 
   @ViewChildren('otpInput') private otpInputs!: QueryList<ElementRef<HTMLInputElement>>;
 
@@ -49,7 +51,7 @@ export class OtpPage implements OnInit, OnDestroy {
   private revealingIndex: number = -1;
   private revealTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  public readonly alertCircleOutline = alertCircleOutline;
+  public readonly alertCircleOutline: string = alertCircleOutline;
 
   private timerInterval: ReturnType<typeof setInterval> | null = null;
   private routeSub!: Subscription;
@@ -66,7 +68,7 @@ export class OtpPage implements OnInit, OnDestroy {
     if (!this.email) {
       return '';
     }
-    const parts = this.email.split('@');
+    const parts: string[] = this.email.split('@');
     if (parts.length !== 2) {
       return this.email;
     }
@@ -74,13 +76,13 @@ export class OtpPage implements OnInit, OnDestroy {
     if (username.length <= 2) {
       return `${username.charAt(0)}*@${domain}`;
     }
-    const maskedUsername = username.charAt(0) + '*'.repeat(username.length - 2) + username.slice(-1);
+    const maskedUsername: string = username.charAt(0) + '*'.repeat(username.length - 2) + username.slice(-1);
     return `${maskedUsername}@${domain}`;
   }
 
   public getFormattedTimer(): string {
-    const minutes = Math.floor(this.resendTimer / 60);
-    const seconds = this.resendTimer % 60;
+    const minutes: number = Math.floor(this.resendTimer / 60);
+    const seconds: number = this.resendTimer % 60;
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   }
 
@@ -91,8 +93,8 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   public ionViewWillEnter(): void {
-    const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
-    const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
+    const card: HTMLElement = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
+    const header: HTMLElement = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
     if (card) { card.style.opacity = '1'; card.style.transition = 'none'; }
     if (header) { header.style.opacity = '1'; header.style.transition = 'none'; }
     this.isLoading = false;
@@ -113,14 +115,14 @@ export class OtpPage implements OnInit, OnDestroy {
     if (event && event.target !== event.currentTarget) {
       return;
     }
-    const firstEmptyIndex = this.otpDigits.findIndex(d => !d);
-    const targetIndex = firstEmptyIndex !== -1 ? firstEmptyIndex : 5;
+    const firstEmptyIndex: number = this.otpDigits.findIndex((d: string) => !d);
+    const targetIndex: number = firstEmptyIndex !== -1 ? firstEmptyIndex : 5;
     this.focusBox(targetIndex);
   }
 
   public onFocus(index: number): void {
     this.focusedIndex = index;
-    const inputElements = this.otpInputs.toArray();
+    const inputElements: ElementRef<HTMLInputElement>[] = this.otpInputs.toArray();
     if (inputElements[index]) {
       inputElements[index].nativeElement.select();
     }
@@ -135,8 +137,8 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   public onInput(event: Event, index: number): void {
-    const input = event.target as HTMLInputElement;
-    let val = input.value;
+    const input: HTMLInputElement = event.target as HTMLInputElement;
+    let val: string = input.value;
 
     val = val.replace(/[^0-9]/g, '');
 
@@ -177,9 +179,9 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   public getDisplayDigit(index: number): string {
-    const digit = this.otpDigits[index];
-    if (!digit) return '';
-    if (this.revealingIndex === index) return digit;
+    const digit: string = this.otpDigits[index];
+    if (!digit) {return '';}
+    if (this.revealingIndex === index) {return digit;}
     return '•';
   }
 
@@ -206,19 +208,19 @@ export class OtpPage implements OnInit, OnDestroy {
 
   public onPaste(event: ClipboardEvent): void {
     event.preventDefault();
-    const pastedData = event.clipboardData?.getData('text') || '';
-    const numericData = pastedData.replace(/[^0-9]/g, '').slice(0, 6);
+    const pastedData: string = event.clipboardData?.getData('text') || '';
+    const numericData: string = pastedData.replace(/[^0-9]/g, '').slice(0, 6);
 
-    for (let i = 0; i < 6; i++) {
+    for (let i: number = 0; i < 6; i++) {
       this.otpDigits[i] = numericData[i] || '';
     }
 
     this.updateFormControlValue();
 
     this.revealingIndex = -1;
-    if (this.revealTimeout) clearTimeout(this.revealTimeout);
+    if (this.revealTimeout) {clearTimeout(this.revealTimeout);}
 
-    const nextFocusIndex = Math.min(numericData.length, 5);
+    const nextFocusIndex: number = Math.min(numericData.length, 5);
     this.focusBox(nextFocusIndex);
     this.cdr.markForCheck();
 
@@ -228,7 +230,7 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   private focusBox(index: number): void {
-    const inputElements = this.otpInputs.toArray();
+    const inputElements: ElementRef<HTMLInputElement>[] = this.otpInputs.toArray();
     if (inputElements[index]) {
       inputElements[index].nativeElement.focus();
       this.focusedIndex = index;
@@ -236,7 +238,7 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   private updateFormControlValue(): void {
-    const combinedCode = this.otpDigits.join('');
+    const combinedCode: string = this.otpDigits.join('');
     this.otpForm.get('code')?.setValue(combinedCode);
     this.otpForm.get('code')?.markAsDirty();
   }
@@ -293,7 +295,7 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   public onVerify(): void {
-    if (this.isLoading) return;
+    if (this.isLoading) {return;}
     this.isSubmitted = true;
     this.errorMessage = '';
     this.cdr.markForCheck();
@@ -302,23 +304,23 @@ export class OtpPage implements OnInit, OnDestroy {
       this.isLoading = true;
       this.cdr.markForCheck();
 
-      const code = this.otpForm.get('code')?.value as string;
+      const code: string = this.otpForm.get('code')?.value as string;
 
       if (this.flowContext === 'reset') {
         this.authSvc.verifyForgotPasswordOtp(this.email, code).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: (token: string) => {
-            const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
-            const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
+            const card: HTMLElement = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
+            const header: HTMLElement = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
             if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
             if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
 
             setTimeout(() => {
               this.isLoading = false;
               this.cdr.markForCheck();
-              this.navCtrl.navigateRoot('/reset-password', {
-                queryParams: { email: this.email, token: token },
-                animation: getCrossfadeAnimation(this.animationCtrl)
-              });
+              void this.navCtrl.navigateRoot('/reset-password', {
+                                queryParams: { email: this.email, token: token },
+                                animation: getCrossfadeAnimation(this.animationCtrl)
+                              });
             }, 1000);
           },
           error: (err: Error) => {
@@ -330,17 +332,27 @@ export class OtpPage implements OnInit, OnDestroy {
       } else {
         this.authSvc.verifyOtp(this.email, code).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
           next: () => {
-            const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
-            const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
+            const card: HTMLElement = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
+            const header: HTMLElement = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
             if (card) { card.style.transition = 'opacity 1s'; card.style.opacity = '0'; }
             if (header) { header.style.transition = 'opacity 1s'; header.style.opacity = '0'; }
 
             setTimeout(() => {
               this.isLoading = false;
               this.cdr.markForCheck();
-              this.navCtrl.navigateRoot('/login', {
-                animation: getCrossfadeAnimation(this.animationCtrl)
-              });
+              void this.navCtrl.navigateRoot('/login', {
+                                animation: getCrossfadeAnimation(this.animationCtrl)
+                              });
+            }, 1000);
+          },
+          error: (err: Error) => {
+            this.isLoading = false;
+            this.errorMessage = err.message || this.translationSvc.translate('OTP.ERROR_DEFAULT');
+            this.cdr.markForCheck();
+          }
+        });
+      }
+                              });
             }, 1000);
           },
           error: (err: Error) => {
@@ -356,8 +368,12 @@ export class OtpPage implements OnInit, OnDestroy {
   }
 
   public goToLogin(): void {
-    this.navCtrl.navigateRoot('/login', {
-      animation: getCrossfadeAnimation(this.animationCtrl)
-    });
+    void this.navCtrl.navigateRoot('/login', {
+            animation: getCrossfadeAnimation(this.animationCtrl)
+          });
   }
+
+  public get maskedEmailValue() { return this.getMaskedEmail(); }
+  public get formattedTimerValue() { return this.getFormattedTimer(); }
+  public get displayDigitsValue() { return this.otpDigits.map((_, i) => this.getDisplayDigit(i)); }
 }

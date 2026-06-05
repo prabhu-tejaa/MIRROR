@@ -21,8 +21,7 @@
       </div>
     </div>
 
-    <form (ngSubmit)="create()" #createUserForm="ngForm" class="modal-form">
-      <!-- Username Field -->
+    <form #createUserForm="ngForm" class="modal-form" (ngSubmit)="create()">
       <div class="form-group">
         <label for="create-username" class="field-label">Username</label>
         <div class="input-wrapper">
@@ -31,15 +30,14 @@
             type="text" 
             id="create-username" 
             name="username" 
-            [(ngModel)]="createForm.username" 
             required 
-            placeholder="Enter username"
+            placeholder="Enter username" 
             class="glass-input"
+            [(ngModel)]="createForm.username"
           />
         </div>
       </div>
 
-      <!-- Email Field -->
       <div class="form-group">
         <label for="create-email" class="field-label">Email Address</label>
         <div class="input-wrapper">
@@ -48,15 +46,14 @@
             type="email" 
             id="create-email" 
             name="email" 
-            [(ngModel)]="createForm.email" 
             required 
-            placeholder="e.g. admin@tech.com"
+            placeholder="e.g. admin@tech.com" 
             class="glass-input"
+            [(ngModel)]="createForm.email"
           />
         </div>
       </div>
 
-      <!-- Password Field -->
       <div class="form-group">
         <label for="create-password" class="field-label">Password</label>
         <div class="input-wrapper">
@@ -65,15 +62,14 @@
             type="password" 
             id="create-password" 
             name="password" 
-            [(ngModel)]="createForm.password" 
             required 
-            placeholder="Set a password (min 6 chars)"
+            placeholder="Set a password (min 6 chars)" 
             class="glass-input"
+            [(ngModel)]="createForm.password"
           />
         </div>
       </div>
 
-      <!-- Role Dropdown Selection -->
       <div class="form-group">
         <label for="create-role" class="field-label">Access Role</label>
         <div class="input-wrapper select-wrapper">
@@ -81,28 +77,26 @@
           <select 
             id="create-role" 
             name="role" 
-            [(ngModel)]="createForm.role" 
-            class="glass-select">
+            class="glass-select" 
+            [(ngModel)]="createForm.role">
             <option value="ROLE_USER">User (Standard Access)</option>
             <option value="ROLE_ADMIN">Admin (Privileged Access)</option>
           </select>
         </div>
       </div>
 
-      <!-- Info Note -->
       <div class="create-info-note">
         <ion-icon name="shield-outline" class="note-icon"></ion-icon>
         <p>This user will be created with <strong>verified status</strong> — they can login immediately without email OTP verification.</p>
       </div>
 
-      <!-- Action Buttons -->
       <div class="modal-actions">
         <ion-button 
           type="button" 
           fill="clear" 
           class="cancel-btn" 
-          (click)="dismiss(false)"
-          [disabled]="isSubmitting">
+          [disabled]="isSubmitting"
+          (click)="dismiss(false)">
           Cancel
         </ion-button>
         

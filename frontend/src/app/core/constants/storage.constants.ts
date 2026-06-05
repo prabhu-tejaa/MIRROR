@@ -8,4 +8,4 @@ export enum StorageKeys {
   SIDEBAR_EXPANDED = 'sidebarExpanded'
 }
 
-export const getActiveSessionKey = (email: string) => `mirror_active_session_${email}`;
+export const getActiveSessionKey: (email: string) => string = (email: string) => `mirror_active_session_${email}`;

@@ -17,7 +17,7 @@ export class StarfieldRenderer {
     this.nebulaCanvas = document.createElement('canvas');
     this.nebulaCanvas.width = width * this.dpr;
     this.nebulaCanvas.height = height * this.dpr;
-    const nCtx = this.nebulaCanvas.getContext('2d') as CanvasRenderingContext2D;
+    const nCtx: CanvasRenderingContext2D = this.nebulaCanvas.getContext('2d') as CanvasRenderingContext2D;
     nCtx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
 
     const nebulaColors: string[] = [
@@ -27,7 +27,7 @@ export class StarfieldRenderer {
       'rgba(90, 20, 60, 0.03)',
     ];
 
-    for (let i = 0; i < 4; i++) {
+    for (let i: number = 0; i < 4; i++) {
       const n: Nebula = {
         x: Math.random() * width,
         y: Math.random() * height,
@@ -37,7 +37,7 @@ export class StarfieldRenderer {
         vy: (Math.random() - 0.5) * 0.06,
       };
 
-      const gradient = nCtx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.radius);
+      const gradient: CanvasGradient = nCtx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.radius);
       gradient.addColorStop(0, n.color);
       gradient.addColorStop(1, 'transparent');
       nCtx.fillStyle = gradient;
@@ -60,12 +60,12 @@ export class StarfieldRenderer {
       this.ctx.drawImage(this.nebulaCanvas, 0, 0, width, height);
     }
 
-    const px = config.parallax ? pointerX * config.parallaxStrength : 0;
-    const py = config.parallax ? pointerY * config.parallaxStrength : 0;
+    const px: number = config.parallax ? pointerX * config.parallaxStrength : 0;
+    const py: number = config.parallax ? pointerY * config.parallaxStrength : 0;
 
-    for (const star of stars) {
-      const drawX = star.x + px * star.depth;
-      const drawY = star.y + py * star.depth;
+    for (const star: Star of stars) {
+      const drawX: number = star.x + px * star.depth;
+      const drawY: number = star.y + py * star.depth;
 
       this.ctx.globalAlpha = globalAlpha * star.opacity;
       this.ctx.fillStyle = star.color;
@@ -83,20 +83,20 @@ export class StarfieldRenderer {
   }
 
   private drawMeteors(meteors: Meteor[], sparkles: Sparkle[], globalAlpha: number): void {
-    for (const s of sparkles) {
+    for (const s: Sparkle of sparkles) {
       this.ctx.globalAlpha = s.life * globalAlpha * 0.7;
       this.ctx.fillStyle = '#ffffff';
       this.ctx.fillRect(s.x - s.size, s.y - s.size, s.size * 2, s.size * 2);
     }
 
-    for (const m of meteors) {
-      const speed = Math.hypot(m.vx, m.vy);
-      const dirX = m.vx / speed;
-      const dirY = m.vy / speed;
-      const tailX = m.x - dirX * m.length;
-      const tailY = m.y - dirY * m.length;
+    for (const m: Meteor of meteors) {
+      const speed: number = Math.hypot(m.vx, m.vy);
+      const dirX: number = m.vx / speed;
+      const dirY: number = m.vy / speed;
+      const tailX: number = m.x - dirX * m.length;
+      const tailY: number = m.y - dirY * m.length;
 
-      const gradient = this.ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+      const gradient: CanvasGradient = this.ctx.createLinearGradient(m.x, m.y, tailX, tailY);
       gradient.addColorStop(0, `rgba(255, 255, 255, ${m.life * globalAlpha})`);
       gradient.addColorStop(0.3, `rgba(200, 220, 255, ${m.life * 0.6 * globalAlpha})`);
       gradient.addColorStop(1, 'rgba(180, 160, 255, 0)');

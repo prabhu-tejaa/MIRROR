@@ -1,31 +1,33 @@
 import { Injectable, inject, effect } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { RoleService } from './role.service';
 import { Store } from '@ngrx/store';
-import { selectIsAuthenticated, selectUsername } from '../../domains/auth/data-access/store/auth.selectors';
-import { environment } from '../../../environments/environment';
 import { initializeApp, getApps } from 'firebase/app';
 import { getDatabase, ref, onValue, set, onDisconnect } from 'firebase/database';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+import { environment } from '../../../environments/environment';
+import { selectIsAuthenticated, selectUsername } from '../../domains/auth/data-access/store/auth.selectors';
+
+import { RoleService } from './role.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PresenceService {
-  private store = inject(Store);
-  private roleService = inject(RoleService);
+  private store: Store<any> = inject(Store);
+  private roleService: RoleService = inject(RoleService);
   
-  private onlineUsersSubject = new BehaviorSubject<number>(0);
+  private onlineUsersSubject: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public onlineUsersCount$: Observable<number> = this.onlineUsersSubject.asObservable();
 
-  private isFirebaseInitialized = false;
+  private isFirebaseInitialized: boolean = false;
   private currentUserId: string | null = null;
 
   constructor() {
     this.initFirebase();
     
     effect(() => {
-      const isAuthenticated = this.store.selectSignal(selectIsAuthenticated)();
-      const userId = this.store.selectSignal(selectUsername)();
+      const isAuthenticated: boolean = this.store.selectSignal(selectIsAuthenticated)();
+      const userId: string | null = this.store.selectSignal(selectUsername)();
       
       if (isAuthenticated && userId) {
         this.currentUserId = userId;
@@ -43,7 +45,7 @@ export class PresenceService {
     return !!(environment.firebaseConfig && environment.firebaseConfig.projectId && environment.firebaseConfig.databaseURL);
   }
 
-  private initFirebase() {
+  private initFirebase(): void {
     if (environment.mock || !this.isFirebaseConfigured()) {
       return;
     }
@@ -59,7 +61,7 @@ export class PresenceService {
     }
   }
 
-  private startPresence(userId: string) {
+  private startPresence(userId: string): void {
     if (!this.isFirebaseInitialized || environment.mock) {
       return;
     }
@@ -68,17 +70,17 @@ export class PresenceService {
       const db = getDatabase();
       const userStatusRef = ref(db, `/status/${userId}`);
 
-      onDisconnect(userStatusRef).remove().then(() => {
-        set(userStatusRef, {
-          online: true,
-          lastChanged: new Date().toISOString()
-        });
-      });
+      void onDisconnect(userStatusRef).remove().then(() => {
+                void set(userStatusRef, {
+                            online: true,
+                            lastChanged: new Date().toISOString()
+                          });
+              });
     } catch {
     }
   }
 
-  private stopPresence() {
+  private stopPresence(): void {
     if (!this.isFirebaseInitialized || environment.mock || !this.currentUserId) {
       return;
     }
@@ -86,12 +88,12 @@ export class PresenceService {
     try {
       const db = getDatabase();
       const userStatusRef = ref(db, `/status/${this.currentUserId}`);
-      set(userStatusRef, null);
+      void set(userStatusRef, null);
     } catch {
     }
   }
 
-  private listenToOnlineUsers() {
+  private listenToOnlineUsers(): void {
     if (!this.isFirebaseInitialized || environment.mock) {
       return;
     }

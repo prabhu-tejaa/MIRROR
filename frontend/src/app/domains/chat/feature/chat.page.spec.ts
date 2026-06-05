@@ -1,20 +1,24 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
-import { provideIonicAngular } from '@ionic/angular/standalone';
-import { provideStore } from '@ngrx/store';
-import { provideEffects } from '@ngrx/effects';
-import { ChatPage } from './chat.page';
-import { AuthService } from '../../auth/data-access/auth.service';
-import { RoleService } from '../../../core/services/role.service';
-import { VoiceRecognitionService } from '../data-access/voice-recognition.service';
-import { TextToSpeechService } from '../data-access/text-to-speech.service';
-import { ChatStateService } from '../data-access/chat-state.service';
-import { ToastService } from '../../../core/services/toast.service';
-import { NavController, AlertController } from '@ionic/angular';
 import { signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { NavController, AlertController } from '@ionic/angular';
+import { provideIonicAngular } from '@ionic/angular/standalone';
+import { provideEffects } from '@ngrx/effects';
+import { provideStore } from '@ngrx/store';
 import { NEVER } from 'rxjs';
+
+import { RoleService } from '../../../core/services/role.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { AuthService } from '../../auth/data-access/auth.service';
+import { ChatStateService } from '../data-access/chat-state.service';
+import { TextToSpeechService } from '../data-access/text-to-speech.service';
+import { VoiceRecognitionService } from '../data-access/voice-recognition.service';
+
+import { ChatPage } from './chat.page';
+
+
 
 describe('ChatPage', () => {
   let component: ChatPage;
@@ -26,7 +30,7 @@ describe('ChatPage', () => {
     isAuthenticated: jasmine.createSpy('isAuthenticated').and.returnValue(false),
     logout: jasmine.createSpy('logout'),
   };
-  const roleSvcStub = {
+  const roleSvcStub: { hasRole: jasmine.Spy<jasmine.Func>; } = {
     hasRole: jasmine.createSpy('hasRole').and.returnValue(false),
   };
   const voiceRecognitionSvcStub = {
@@ -60,12 +64,12 @@ describe('ChatPage', () => {
     hasMoreHistory: signal(true),
     destroy: jasmine.createSpy('destroy'),
   };
-  const toastSvcStub = {
+  const toastSvcStub: { showError: jasmine.Spy<jasmine.Func>; showInfo: jasmine.Spy<jasmine.Func>; } = {
     showError: jasmine.createSpy('showError'),
     showInfo: jasmine.createSpy('showInfo'),
   };
-  const navCtrlStub = { navigateRoot: jasmine.createSpy('navigateRoot') };
-  const alertCtrlStub = {
+  const navCtrlStub: { navigateRoot: jasmine.Spy<jasmine.Func>; } = { navigateRoot: jasmine.createSpy('navigateRoot') };
+  const alertCtrlStub: { create: jasmine.Spy<jasmine.Func>; } = {
     create: jasmine.createSpy('create').and.returnValue(Promise.resolve({ present: jasmine.createSpy('present') }))
   };
 

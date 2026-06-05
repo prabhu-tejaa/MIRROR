@@ -1,8 +1,9 @@
-import { Component, Input, OnDestroy, ElementRef, ViewChild, AfterViewInit, OnInit, NgZone, HostListener, inject, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, Input, OnDestroy, ElementRef, ViewChild, AfterViewInit, OnInit, NgZone, HostListener, inject, OnChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ShapeType, StarfieldService } from './starfield.service';
+
 import { StarfieldEngine, StarfieldConfig } from './starfield.engine';
+import { ShapeType, StarfieldService } from './starfield.service';
 
 @Component({
   selector: 'app-starfield',
@@ -12,8 +13,8 @@ import { StarfieldEngine, StarfieldConfig } from './starfield.engine';
   styleUrls: ['./starfield.component.scss'],
 })
 export class StarfieldComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
-  private ngZone = inject(NgZone);
-  private starfieldSvc = inject(StarfieldService);
+  private ngZone: NgZone = inject(NgZone);
+  private starfieldSvc: StarfieldService = inject(StarfieldService);
 
   @Input() public starCount: number = 100;
   @Input() public speed: number = 0.05;
@@ -83,13 +84,13 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnChanges, OnD
   @HostListener('window:touchmove', ['$event'])
   public onTouchMove(e: TouchEvent): void {
     if (this.engine && e.touches.length > 0) {
-      const t = e.touches[0];
+      const t: Touch = e.touches[0];
       this.engine.onMouseMove(t.clientX, t.clientY);
     }
   }
 
   private onVisibilityChange(): void {
-    if (!this.engine) return;
+    if (!this.engine) {return;}
     
     if (document.hidden) {
       this.engine.pause();

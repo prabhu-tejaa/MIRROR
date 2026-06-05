@@ -1,15 +1,18 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { NavController, AlertController } from '@ionic/angular';
 import { provideIonicAngular } from '@ionic/angular/standalone';
-import { ProfilePage } from './profile.page';
-import { AuthService } from '../../auth/data-access/auth.service';
+import { provideMockStore } from '@ngrx/store/testing';
+
 import { RoleService } from '../../../core/services/role.service';
 import { TranslationService } from '../../../core/services/translation.service';
-import { NavController, AlertController } from '@ionic/angular';
-import { signal } from '@angular/core';
-import { provideMockStore } from '@ngrx/store/testing';
+import { AuthService } from '../../auth/data-access/auth.service';
+
+import { ProfilePage } from './profile.page';
+
 
 describe('ProfilePage', () => {
   let component: ProfilePage;
@@ -26,9 +29,9 @@ describe('ProfilePage', () => {
     hasRole: jasmine.createSpy('hasRole').and.returnValue(false),
     userRoles: signal<string[]>([]),
   };
-  const translationSvcStub = { translate: jasmine.createSpy('translate').and.returnValue('') };
-  const navCtrlStub = { navigateRoot: jasmine.createSpy('navigateRoot') };
-  const alertCtrlStub = {
+  const translationSvcStub: { translate: jasmine.Spy<jasmine.Func>; } = { translate: jasmine.createSpy('translate').and.returnValue('') };
+  const navCtrlStub: { navigateRoot: jasmine.Spy<jasmine.Func>; } = { navigateRoot: jasmine.createSpy('navigateRoot') };
+  const alertCtrlStub: { create: jasmine.Spy<jasmine.Func>; } = {
     create: jasmine.createSpy('create').and.returnValue(Promise.resolve({ present: jasmine.createSpy('present') }))
   };
 

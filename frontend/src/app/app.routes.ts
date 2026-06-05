@@ -1,8 +1,9 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './domains/auth/data-access/auth.guard';
-import { guestGuard } from './domains/auth/data-access/guest.guard';
+
 import { adminGuard } from './core/guards/admin.guard';
 import { overlayGuard } from './core/guards/overlay.guard';
+import { authGuard } from './domains/auth/data-access/auth.guard';
+import { guestGuard } from './domains/auth/data-access/guest.guard';
 
 export const routes: Routes = [
   {

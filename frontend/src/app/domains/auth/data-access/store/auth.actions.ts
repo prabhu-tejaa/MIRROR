@@ -1,4 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
+
 import { AuthResponse } from '../auth.model';
 
 export const AuthActions = createActionGroup({

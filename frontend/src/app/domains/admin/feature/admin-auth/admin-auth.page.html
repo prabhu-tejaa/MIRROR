@@ -1,5 +1,4 @@
 <ion-content [fullscreen]="true" class="ion-padding">
-  <!-- Custom Space-themed Header matching Dashboard -->
   <div class="dashboard-nav">
     <button class="back-circle-btn" (click)="goBack()" title="Back to Dashboard">
       <ion-icon name="arrow-back-outline"></ion-icon>
@@ -29,7 +28,6 @@
       <p>Manage user accounts, roles, verification statuses and credentials.</p>
     </div>
 
-    <!-- Telemetry & Analytics Dashboard row -->
     <div class="telemetry-grid">
       <div class="telemetry-card">
         <div class="card-icon-wrapper blue">
@@ -37,8 +35,8 @@
         </div>
         <div class="card-info">
           <span class="value">
-            <ng-container *ngIf="!isLoading(); else spinnerTemplate">
-              {{ (users() || []).length }}
+            <ng-container *ngIf="!isLoadingValue; else spinnerTemplate">
+              {{ usersList.length }}
             </ng-container>
           </span>
           <span class="label">Total Accounts</span>
@@ -51,8 +49,8 @@
         </div>
         <div class="card-info">
           <span class="value">
-            <ng-container *ngIf="!isLoading(); else spinnerTemplate">
-              {{ getVerifiedCount() }}
+            <ng-container *ngIf="!isLoadingValue; else spinnerTemplate">
+              {{ verifiedCountValue }}
             </ng-container>
           </span>
           <span class="label">Verified Profiles</span>
@@ -65,8 +63,8 @@
         </div>
         <div class="card-info">
           <span class="value">
-            <ng-container *ngIf="!isLoading(); else spinnerTemplate">
-              {{ getLockedCount() }}
+            <ng-container *ngIf="!isLoadingValue; else spinnerTemplate">
+              {{ lockedCountValue }}
             </ng-container>
           </span>
           <span class="label">Locked Out</span>
@@ -78,16 +76,15 @@
       <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
     </ng-template>
 
-    <!-- Search and Filters -->
     <div class="search-filter-bar">
       <ion-searchbar 
-        [ngModel]="searchQuery()" 
+        class="glass-searchbar"
+        [ngModel]="searchQueryValue" 
         (ionInput)="updateSearch($event)" 
-        placeholder="Search by username or email..." 
-        class="glass-searchbar">
+        placeholder="Search by username or email...">
       </ion-searchbar>
       
-      <ion-select class="glass-select" [ngModel]="roleFilter()" (ionChange)="updateRoleFilter($event)" label="" [interface]="'popover'" [interfaceOptions]="{ cssClass: 'role-select-popover' }">
+      <ion-select class="glass-select" label="" [interface]="'popover'" [interfaceOptions]="{ cssClass: 'role-select-popover' }" [ngModel]="roleFilterValue" (ionChange)="updateRoleFilter($event)">
         <ion-select-option value="ALL">All Roles</ion-select-option>
         <ion-select-option value="USER">User</ion-select-option>
         <ion-select-option value="ADMIN">Admin</ion-select-option>
@@ -95,8 +92,8 @@
     </div>
 
     <app-admin-user-list
-      [users]="filteredUsers()"
-      [isLoading]="isLoading()"
+      [users]="filteredUsersList"
+      [isLoading]="isLoadingValue"
       (edit)="editUser($event)"
       (delete)="deleteUser($event)"
       (unlock)="unlockUser($event)">

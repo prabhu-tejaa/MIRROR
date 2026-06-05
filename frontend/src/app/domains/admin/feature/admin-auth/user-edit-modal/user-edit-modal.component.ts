@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, Input, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { 
   IonHeader, 
@@ -12,15 +13,14 @@ import {
   IonToggle,
   ModalController 
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import { AdminActions } from '../../../data-access/store/admin.actions';
-import { ToastService } from '../../../../../core/services/toast.service';
-import { AdminUserResponse, AdminUserUpdateRequest } from '../../../../auth/data-access/auth.model';
-
+import { Store } from '@ngrx/store';
 import { addIcons } from 'ionicons';
 import { closeOutline, personOutline, mailOutline, shieldOutline, keyOutline } from 'ionicons/icons';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { ToastService } from '../../../../../core/services/toast.service';
+import { AdminUserResponse, AdminUserUpdateRequest } from '../../../../auth/data-access/auth.model';
+import { AdminActions } from '../../../data-access/store/admin.actions';
 
 @Component({
   selector: 'app-user-edit-modal',
@@ -43,17 +43,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class UserEditModalComponent implements OnInit {
   @Input() public user!: AdminUserResponse;
 
-  private modalCtrl = inject(ModalController);
-  private store = inject(Store);
-  private actions$ = inject(Actions);
-  private toastSvc = inject(ToastService);
-  private destroyRef = inject(DestroyRef);
+  private modalCtrl: ModalController = inject(ModalController);
+  private store: Store<any> = inject(Store);
+  private actions$: Actions<any> = inject(Actions);
+  private toastSvc: ToastService = inject(ToastService);
+  private destroyRef: DestroyRef = inject(DestroyRef);
 
   constructor() {
     addIcons({ closeOutline, personOutline, mailOutline, shieldOutline, keyOutline });
   }
 
-  public editForm = {
+  public editForm: { username: string; email: string; role: string; isVerified: boolean; password: string; } = {
     username: '',
     email: '',
     role: '',
@@ -61,9 +61,9 @@ export class UserEditModalComponent implements OnInit {
     password: ''
   };
 
-  public isSubmitting = false;
+  public isSubmitting: boolean = false;
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     if (this.user) {
       this.editForm.username = this.user.username;
       this.editForm.email = this.user.email;
@@ -72,17 +72,17 @@ export class UserEditModalComponent implements OnInit {
     }
   }
 
-  public dismiss(updated = false) {
-    this.modalCtrl.dismiss({ updated });
+  public dismiss(updated: boolean = false): void {
+    void this.modalCtrl.dismiss({ updated });
   }
 
-  public save() {
+  public save(): void {
     if (!this.editForm.username.trim()) {
-      this.toastSvc.showError('Username cannot be empty');
+      void this.toastSvc.showError('Username cannot be empty');
       return;
     }
     if (!this.editForm.email.trim()) {
-      this.toastSvc.showError('Email cannot be empty');
+      void this.toastSvc.showError('Email cannot be empty');
       return;
     }
 

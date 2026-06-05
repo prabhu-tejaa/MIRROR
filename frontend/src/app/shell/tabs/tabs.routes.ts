@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
-import { TabsPage } from './tabs.page';
+
 import { overlayGuard } from '../../core/guards/overlay.guard';
+
+import { TabsPage } from './tabs.page';
 
 export const routes: Routes = [
   {

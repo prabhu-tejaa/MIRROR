@@ -1,19 +1,21 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, ElementRef, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, ElementRef, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff, alertCircleOutline } from 'ionicons/icons';
-import { StarfieldService } from '../../../../shared/starfield/starfield.service';
-import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
-import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
-import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
-import { AnalyticsService } from '../../../../core/services/analytics.service';
-import { AuthService } from '../../data-access/auth.service';
-import { TranslationService } from '../../../../core/services/translation.service';
 import { Subscription } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { AnalyticsService } from '../../../../core/services/analytics.service';
+import { TranslationService } from '../../../../core/services/translation.service';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { StarfieldService } from '../../../../shared/starfield/starfield.service';
+import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
+import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
+import { AuthService } from '../../data-access/auth.service';
+
 
 @Component({
   selector: 'app-login',
@@ -24,16 +26,16 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPage implements OnInit {
-  private fb = inject(FormBuilder);
-  private navCtrl = inject(NavController);
-  private animationCtrl = inject(AnimationController);
-  private starfieldSvc = inject(StarfieldService);
-  private cdr = inject(ChangeDetectorRef);
-  private analyticsSvc = inject(AnalyticsService);
-  private authSvc = inject(AuthService);
-  private translationSvc = inject(TranslationService);
-  private el = inject(ElementRef);
-  private destroyRef = inject(DestroyRef);
+  private fb: FormBuilder = inject(FormBuilder);
+  private navCtrl: NavController = inject(NavController);
+  private animationCtrl: AnimationController = inject(AnimationController);
+  private starfieldSvc: StarfieldService = inject(StarfieldService);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private analyticsSvc: AnalyticsService = inject(AnalyticsService);
+  private authSvc: AuthService = inject(AuthService);
+  private translationSvc: TranslationService = inject(TranslationService);
+  private el: ElementRef<any> = inject(ElementRef);
+  private destroyRef: DestroyRef = inject(DestroyRef);
 
   public loginForm!: FormGroup;
   public isSubmitted: boolean = false;
@@ -41,9 +43,9 @@ export class LoginPage implements OnInit {
   public showPassword: boolean = false;
   public errorMessage: string = '';
   private loginSub?: Subscription;
-  public readonly eye = eye;
-  public readonly eyeOff = eyeOff;
-  public readonly alertCircleOutline = alertCircleOutline;
+  public readonly eye: string = eye;
+  public readonly eyeOff: string = eyeOff;
+  public readonly alertCircleOutline: string = alertCircleOutline;
 
   public showHeartUsername: boolean = false;
   public username: string = '';
@@ -60,8 +62,8 @@ export class LoginPage implements OnInit {
   }
 
   public ionViewWillEnter(): void {
-    const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
-    const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
+    const card: HTMLElement = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
+    const header: HTMLElement = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
     if (card) { card.style.opacity = '1'; card.style.transition = 'none'; }
     if (header) { header.style.opacity = '1'; header.style.transition = 'none'; }
     this.isLoading = false;
@@ -97,17 +99,17 @@ export class LoginPage implements OnInit {
         this.loginSub.unsubscribe();
       }
 
-      const { email, password } = this.loginForm.value;
+      const { email, password }: any = this.loginForm.value;
 
       this.loginSub = this.authSvc.loginUser({ email, password }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (res) => {
-          this.analyticsSvc.setUserId(email);
+          void this.analyticsSvc.setUserId(email);
           this.username = res.username || this.authSvc.getUserId() || '';
           this.showHeartUsername = true;
           this.cdr.markForCheck();
 
-          const card = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
-          const header = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
+          const card: HTMLElement = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
+          const header: HTMLElement = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
 
           if (card) {
             card.style.transition = 'opacity 1s';
@@ -124,9 +126,9 @@ export class LoginPage implements OnInit {
             this.starfieldSvc.setShape('none');
             this.isLoading = false;
             this.cdr.markForCheck();
-            this.navCtrl.navigateRoot('/tabs/chat', {
-              animation: getCrossfadeAnimation(this.animationCtrl)
-            });
+            void this.navCtrl.navigateRoot('/tabs/chat', {
+                            animation: getCrossfadeAnimation(this.animationCtrl)
+                          });
           }, 3000);
         },
         error: (err: Error) => {
@@ -141,14 +143,14 @@ export class LoginPage implements OnInit {
   }
 
   public goToSignup(): void {
-    this.navCtrl.navigateForward('/signup', {
-      animation: getCrossfadeAnimation(this.animationCtrl)
-    });
+    void this.navCtrl.navigateForward('/signup', {
+            animation: getCrossfadeAnimation(this.animationCtrl)
+          });
   }
 
   public goToForgot(): void {
-    this.navCtrl.navigateForward('/forgot-password', {
-      animation: getCrossfadeAnimation(this.animationCtrl)
-    });
+    void this.navCtrl.navigateForward('/forgot-password', {
+            animation: getCrossfadeAnimation(this.animationCtrl)
+          });
   }
 }

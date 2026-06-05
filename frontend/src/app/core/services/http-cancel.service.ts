@@ -1,19 +1,19 @@
 import { Injectable, inject } from '@angular/core';
-import { Router, NavigationStart } from '@angular/router';
-import { Subject, filter } from 'rxjs';
+import { Router, NavigationStart, Event } from '@angular/router';
+import { Subject, Observable, filter } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class HttpCancelService {
-  private router = inject(Router);
+  private router: Router = inject(Router);
   
-  private cancelPendingRequestsSubject = new Subject<void>();
-  public cancelPendingRequests$ = this.cancelPendingRequestsSubject.asObservable();
+  private cancelPendingRequestsSubject: Subject<void> = new Subject<void>();
+  public cancelPendingRequests$: Observable<void> = this.cancelPendingRequestsSubject.asObservable();
 
   constructor() {
     this.router.events.pipe(
-      filter(event => event instanceof NavigationStart)
+      filter((event: Event) => event instanceof NavigationStart)
     ).subscribe(() => {
       this.cancelPendingRequests();
     });

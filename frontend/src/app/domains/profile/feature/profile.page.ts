@@ -1,18 +1,30 @@
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import {
   IonContent, IonFooter,
   IonList, IonItem, IonLabel, IonIcon, IonNote,
   NavController, AlertController
 } from '@ionic/angular/standalone';
+import { Store } from '@ngrx/store';
+import confetti from 'canvas-confetti';
 import { addIcons } from 'ionicons';
 import { logOutOutline, personCircleOutline, mailOutline, shieldCheckmarkOutline, chevronForwardOutline, informationCircleOutline } from 'ionicons/icons';
-import { Store } from '@ngrx/store';
-import { selectUserEmail, selectUsername, selectIsAdmin } from '../../auth/data-access/store/auth.selectors';
-import { AuthService } from '../../auth/data-access/auth.service';
+
 import { TranslationService } from '../../../core/services/translation.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
-import confetti from 'canvas-confetti';
+import { AuthService } from '../../auth/data-access/auth.service';
+import { selectUserEmail, selectUsername, selectIsAdmin } from '../../auth/data-access/store/auth.selectors';
+
+@Component({
+  selector: 'app-profile',
+  templateUrl: 'profile.page.html',
+  styleUrls: ['profile.page.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+import { AuthService } from '../../auth/data-access/auth.service';
+import { selectUserEmail, selectUsername, selectIsAdmin } from '../../auth/data-access/store/auth.selectors';
+
 @Component({
   selector: 'app-profile',
   templateUrl: 'profile.page.html',
@@ -27,11 +39,11 @@ import confetti from 'canvas-confetti';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfilePage {
-  private authSvc = inject(AuthService);
-  private store = inject(Store);
-  private navCtrl = inject(NavController);
-  private alertCtrl = inject(AlertController);
-  private translationSvc = inject(TranslationService);
+  private authSvc: AuthService = inject(AuthService);
+  private store: Store = inject(Store);
+  private navCtrl: NavController = inject(NavController);
+  private alertCtrl: AlertController = inject(AlertController);
+  private translationSvc: TranslationService = inject(TranslationService);
 
   public readonly userId = computed(() => this.store.selectSignal(selectUsername)() ?? 'User');
   public readonly userEmail = computed(() => this.store.selectSignal(selectUserEmail)() ?? 'Email');
@@ -42,7 +54,7 @@ export class ProfilePage {
   }
 
   public async onLogout(): Promise<void> {
-    const alert = await this.alertCtrl.create({
+    const alert: HTMLIonAlertElement = await this.alertCtrl.create({
       header: this.translationSvc.translate('PROFILE.LOGOUT_ALERT_HEADER'),
       message: this.translationSvc.translate('PROFILE.LOGOUT_ALERT_MESSAGE'),
       cssClass: 'mirror-alert',
@@ -58,7 +70,7 @@ export class ProfilePage {
           cssClass: 'alert-logout-btn',
           handler: () => {
             this.authSvc.logout();
-            this.navCtrl.navigateRoot('/login', { animated: false });
+            void this.navCtrl.navigateRoot('/login', { animated: false });
           }
         }
       ]
@@ -68,11 +80,11 @@ export class ProfilePage {
   }
 
   public navigateToAdmin(): void {
-    this.navCtrl.navigateRoot('/admin', { animated: false });
+    void this.navCtrl.navigateRoot('/admin', { animated: false });
   }
 
   public async onShowAbout(): Promise<void> {
-    const alert = await this.alertCtrl.create({
+    const alert: HTMLIonAlertElement = await this.alertCtrl.create({
       header: this.translationSvc.translate('PROFILE.ABOUT_ALERT_HEADER'),
       message: this.translationSvc.translate('PROFILE.ABOUT_ALERT_MESSAGE'),
       cssClass: 'mirror-alert about-alert',
@@ -91,11 +103,11 @@ export class ProfilePage {
   }
 
   private fireConfetti(): void {
-    const count = 200;
-    const defaults = { origin: { x: 0.5, y: 0.65 } };
+    const count: 200 = 200;
+    const defaults: { origin: { x: number; y: number; }; } = { origin: { x: 0.5, y: 0.65 } };
 
-    const fire = (particleRatio: number, opts: Record<string, unknown>) => {
-      confetti(Object.assign({}, defaults, opts, { particleCount: Math.floor(count * particleRatio) }));
+    const fire: (particleRatio: number, opts: Record<string, unknown>) => void = (particleRatio: number, opts: Record<string, unknown>) => {
+      void confetti(Object.assign({}, defaults, opts, { particleCount: Math.floor(count * particleRatio) }));
     };
 
     fire(0.25, { spread: 26, startVelocity: 55 });
@@ -104,4 +116,8 @@ export class ProfilePage {
     fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
     fire(0.1, { spread: 120, startVelocity: 45 });
   }
+
+  public get userIdValue() { return this.userId(); }
+  public get userEmailValue() { return this.userEmail(); }
+  public get isAdminValue() { return this.isAdmin(); }
 }

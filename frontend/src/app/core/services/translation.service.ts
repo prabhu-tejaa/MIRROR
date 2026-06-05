@@ -1,12 +1,12 @@
-import { Injectable, signal, inject, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, signal, inject, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TranslationService implements OnDestroy {
-  private http = inject(HttpClient);
+  private http: HttpClient = inject(HttpClient);
   private currentLang = signal<string>('en');
   private translations = signal<Record<string, string | unknown>>({});
   private sub?: Subscription;
@@ -51,14 +51,14 @@ export class TranslationService implements OnDestroy {
   }
 
   public initTranslations(lang: string = 'en'): Promise<boolean> {
-    return new Promise((resolve) => {
+    return new Promise((resolve: (value: boolean | PromiseLike<boolean>) => void) => {
       this.http.get<Record<string, string | unknown>>(`assets/i18n/${lang}.json`)
         .subscribe({
-          next: (data) => {
+          next: (data: Record<string, unknown>) => {
             this.translations.set(data);
             resolve(true);
           },
-          error: (_err) => {
+          error: (err: any) => {
             this.translations.set(this.fallbackTranslations);
             resolve(true);
           }
@@ -73,21 +73,21 @@ export class TranslationService implements OnDestroy {
     
     this.sub = this.http.get<Record<string, string | unknown>>(`assets/i18n/${lang}.json`)
       .subscribe({
-        next: (data) => this.translations.set(data),
-        error: (_err) => {
+        next: (data: Record<string, unknown>) => this.translations.set(data),
+        error: (err: any) => {
           this.translations.set(this.fallbackTranslations);
         }
       });
   }
 
   public translate(key: string, params?: Record<string, unknown>): string {
-    const dict = this.translations();
-    if (!dict) return key;
+    const dict: Record<string, unknown> = this.translations();
+    if (!dict) {return key;}
 
-    const keys = key.split('.');
+    const keys: string[] = key.split('.');
     let result: string | unknown = dict;
 
-    for (const k of keys) {
+    for (const k: string of keys) {
       if (result && typeof result === 'object' && k in (result as Record<string, unknown>)) {
         result = (result as Record<string, unknown>)[k];
       } else {
@@ -95,16 +95,16 @@ export class TranslationService implements OnDestroy {
       }
     }
 
-    if (typeof result !== 'string') return key;
+    if (typeof result !== 'string') {return key;}
 
     if (params) {
-      Object.keys(params).forEach(p => {
-        const value = String(params[p]);
+      Object.keys(params).forEach((p: string) => {
+        const value: string = String(params[p]);
         result = (result as string).replace(new RegExp(`{{${p}}}`, 'g'), value);
       });
     }
 
-    return result as string;
+    return result;
   }
 
   public ngOnDestroy(): void {

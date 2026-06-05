@@ -1,29 +1,25 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
+
 import { AdminUserResponse } from '../../../../../auth/data-access/auth.model';
+import { IsUserLockedPipe } from '../pipes/is-user-locked-pipe';
+import { UserInitialsPipe } from '../pipes/user-initials-pipe';
 
 @Component({
   selector: 'app-admin-user-list',
   templateUrl: './admin-user-list.component.html',
   styleUrls: ['./admin-user-list.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonButton, IonIcon],
+  imports: [CommonModule, IonButton, IonIcon, IsUserLockedPipe, UserInitialsPipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminUserListComponent {
   @Input() public users: AdminUserResponse[] = [];
-  @Input() public isLoading = false;
+  @Input() public isLoading: boolean = false;
   
-  @Output() public edit = new EventEmitter<AdminUserResponse>();
-  @Output() public delete = new EventEmitter<AdminUserResponse>();
-  @Output() public unlock = new EventEmitter<AdminUserResponse>();
+  @Output() public edit: EventEmitter<AdminUserResponse> = new EventEmitter<AdminUserResponse>();
+  @Output() public delete: EventEmitter<AdminUserResponse> = new EventEmitter<AdminUserResponse>();
+  @Output() public unlock: EventEmitter<AdminUserResponse> = new EventEmitter<AdminUserResponse>();
 
-  public isUserLocked(user: AdminUserResponse): boolean {
-    if (user.failedAttempts >= 3) return true;
-    if (user.lockedUntil) {
-      return new Date(user.lockedUntil) > new Date();
-    }
-    return false;
-  }
 }

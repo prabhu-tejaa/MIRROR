@@ -1,23 +1,24 @@
 import { Injectable, NgZone, OnDestroy, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { Network, ConnectionStatus } from '@capacitor/network';
+import { BehaviorSubject, Observable } from 'rxjs';
+
 import { AnalyticsService } from './analytics.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ConnectionService implements OnDestroy {
-  private ngZone = inject(NgZone);
-  private analyticsSvc = inject(AnalyticsService);
+  private ngZone: NgZone = inject(NgZone);
+  private analyticsSvc: AnalyticsService = inject(AnalyticsService);
 
-  private online$ = new BehaviorSubject<boolean>(true); 
+  private online$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true); 
 
   constructor() {
-    this.initializeNetworkListeners();
+    void this.initializeNetworkListeners();
   }
 
   private async initializeNetworkListeners(): Promise<void> {
-    const status = await Network.getStatus();
+    const status: ConnectionStatus = await Network.getStatus();
     this.updateStatus(status.connected);
 
     await Network.addListener('networkStatusChange', (status: ConnectionStatus) => {
@@ -31,9 +32,9 @@ export class ConnectionService implements OnDestroy {
     if (this.online$.value !== connected) {
       this.online$.next(connected);
       
-      this.analyticsSvc.logEvent('connectivity_change', {
-        is_online: connected
-      });
+      void this.analyticsSvc.logEvent('connectivity_change', {
+                is_online: connected
+              });
     }
   }
 
@@ -46,12 +47,12 @@ export class ConnectionService implements OnDestroy {
   }
 
   public async checkConnection(): Promise<boolean> {
-    const status = await Network.getStatus();
+    const status: ConnectionStatus = await Network.getStatus();
     this.updateStatus(status.connected);
     return status.connected;
   }
 
   public ngOnDestroy(): void {
-    Network.removeAllListeners();
+    void Network.removeAllListeners();
   }
 }

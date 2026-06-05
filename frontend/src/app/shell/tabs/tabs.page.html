@@ -1,23 +1,22 @@
 <ion-tabs [class.sidebar-expanded]="sidebarExpanded">
   <ion-tab-bar slot="bottom" [class.sidebar-expanded]="sidebarExpanded">
 
-    <!-- Desktop-only collapse toggle button -->
-    <button class="sidebar-toggle-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+    <button class="sidebar-toggle-btn" aria-label="Toggle sidebar" (click)="toggleSidebar()">
       <ion-icon [name]="sidebarExpanded ? 'chevron-back-outline' : 'chevron-forward-outline'"></ion-icon>
     </button>
 
-    <ion-tab-button tab="you" (click)="navigateTab('you')" [layout]="isDesktop ? 'icon-start' : 'icon-top'">
-      <ion-icon aria-hidden="true" [icon]="isActive('you') ? heart : heartOutline"></ion-icon>
+    <ion-tab-button tab="you" [layout]="isDesktop ? 'icon-start' : 'icon-top'" (click)="navigateTab('you')">
+      <ion-icon aria-hidden="true" [icon]="isYouActiveValue ? heart : heartOutline"></ion-icon>
       <ion-label>{{ 'TABS.YOU' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="chat" (click)="navigateTab('chat')" [layout]="isDesktop ? 'icon-start' : 'icon-top'">
-      <ion-icon aria-hidden="true" [icon]="isActive('chat') ? chatbubbles : chatbubblesOutline"></ion-icon>
+    <ion-tab-button tab="chat" [layout]="isDesktop ? 'icon-start' : 'icon-top'" (click)="navigateTab('chat')">
+      <ion-icon aria-hidden="true" [icon]="isChatActiveValue ? chatbubbles : chatbubblesOutline"></ion-icon>
       <ion-label>{{ 'TABS.CHAT' | translate }}</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="profile" (click)="navigateTab('profile')" [layout]="isDesktop ? 'icon-start' : 'icon-top'" class="profile-tab-btn">
-      <ion-icon aria-hidden="true" [icon]="isActive('profile') ? personCircle : personCircleOutline"></ion-icon>
+    <ion-tab-button tab="profile" class="profile-tab-btn" [layout]="isDesktop ? 'icon-start' : 'icon-top'" (click)="navigateTab('profile')">
+      <ion-icon aria-hidden="true" [icon]="isProfileActiveValue ? personCircle : personCircleOutline"></ion-icon>
       <ion-label>{{ 'TABS.PROFILE' | translate }}</ion-label>
     </ion-tab-button>
   </ion-tab-bar>

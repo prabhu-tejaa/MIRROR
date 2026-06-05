@@ -1,22 +1,23 @@
-import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+
 import { AppComponent } from './app.component';
-import { ConnectionService } from './core/services/connection.service';
 import { AnalyticsService } from './core/services/analytics.service';
+import { ConnectionService } from './core/services/connection.service';
 import { HttpCancelService } from './core/services/http-cancel.service';
 import { PresenceService } from './core/services/presence.service';
-import { BehaviorSubject } from 'rxjs';
 
 describe('AppComponent', () => {
   it('should create the app', async () => {
     const connectionSvcStub = {
       isOnline$: new BehaviorSubject<boolean>(true).asObservable()
     };
-    const analyticsSvcStub = { logEvent: jasmine.createSpy('logEvent') };
-    const httpCancelSvcStub = { cancelPendingRequests: jasmine.createSpy() };
-    const presenceSvcStub = {};
+    const analyticsSvcStub: { logEvent: jasmine.Spy<jasmine.Func>; } = { logEvent: jasmine.createSpy('logEvent') };
+    const httpCancelSvcStub: { cancelPendingRequests: jasmine.Spy<jasmine.Func>; } = { cancelPendingRequests: jasmine.createSpy() };
+    const presenceSvcStub: {} = {};
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],
@@ -32,7 +33,7 @@ describe('AppComponent', () => {
     }).compileComponents();
 
     const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
+    const app: AppComponent = fixture.componentInstance;
     expect(app).toBeTruthy();
   });
 });

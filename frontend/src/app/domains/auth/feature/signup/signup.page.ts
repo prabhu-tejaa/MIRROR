@@ -1,17 +1,19 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { NavController, AnimationController } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff, closeOutline, alertCircleOutline, shieldCheckmarkOutline } from 'ionicons/icons';
-import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
-import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
-import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
+
 import { AnalyticsService } from '../../../../core/services/analytics.service';
-import { AuthService } from '../../data-access/auth.service';
 import { TranslationService } from '../../../../core/services/translation.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
+import { getCrossfadeAnimation } from '../../../../shared/utils/animations';
+import { strictPasswordValidator } from '../../../../shared/validators/password.validator';
+import { AuthService } from '../../data-access/auth.service';
+
 
 @Component({
   selector: 'app-signup',
@@ -22,25 +24,25 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupPage implements OnInit {
-  private fb = inject(FormBuilder);
-  private navCtrl = inject(NavController);
-  private animationCtrl = inject(AnimationController);
-  private cdr = inject(ChangeDetectorRef);
-  private analyticsSvc = inject(AnalyticsService);
-  private authSvc = inject(AuthService);
-  private translationSvc = inject(TranslationService);
-  private destroyRef = inject(DestroyRef);
+  private fb: FormBuilder = inject(FormBuilder);
+  private navCtrl: NavController = inject(NavController);
+  private animationCtrl: AnimationController = inject(AnimationController);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private analyticsSvc: AnalyticsService = inject(AnalyticsService);
+  private authSvc: AuthService = inject(AuthService);
+  private translationSvc: TranslationService = inject(TranslationService);
+  private destroyRef: DestroyRef = inject(DestroyRef);
 
   public signupForm!: FormGroup;
   public isSubmitted: boolean = false;
   public isLoading: boolean = false;
   public showPassword: boolean = false;
   public errorMessage: string = '';
-  public readonly eye = eye;
-  public readonly eyeOff = eyeOff;
-  public readonly closeOutline = closeOutline;
-  public readonly alertCircleOutline = alertCircleOutline;
-  public readonly shieldCheckmarkOutline = shieldCheckmarkOutline;
+  public readonly eye: string = eye;
+  public readonly eyeOff: string = eyeOff;
+  public readonly closeOutline: string = closeOutline;
+  public readonly alertCircleOutline: string = alertCircleOutline;
+  public readonly shieldCheckmarkOutline: string = shieldCheckmarkOutline;
 
   constructor() {
     addIcons({ eye, eyeOff, closeOutline, alertCircleOutline, shieldCheckmarkOutline });
@@ -68,20 +70,20 @@ export class SignupPage implements OnInit {
       this.isLoading = true;
       this.cdr.markForCheck();
 
-      const { username, email, password } = this.signupForm.value;
+      const { username, email, password }: any = this.signupForm.value;
 
       this.authSvc.signup({ username, email, password }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (_response) => {
-          this.analyticsSvc.setUserId(email);
+        next: (response: string) => {
+          void this.analyticsSvc.setUserId(email);
           
           this.authSvc.requestOtp(email).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
               this.isLoading = false;
               this.cdr.markForCheck();
-              this.navCtrl.navigateRoot('/otp', { 
-                queryParams: { flow: 'signup', email: email },
-                animation: getCrossfadeAnimation(this.animationCtrl)
-              });
+              void this.navCtrl.navigateRoot('/otp', { 
+                                  queryParams: { flow: 'signup', email: email },
+                                  animation: getCrossfadeAnimation(this.animationCtrl)
+                                });
             },
             error: (err: Error) => {
               this.isLoading = false;
@@ -102,8 +104,8 @@ export class SignupPage implements OnInit {
   }
 
   public goToLogin(): void {
-    this.navCtrl.navigateBack('/login', { 
-      animation: getCrossfadeAnimation(this.animationCtrl) 
-    });
+    void this.navCtrl.navigateBack('/login', { 
+            animation: getCrossfadeAnimation(this.animationCtrl) 
+          });
   }
 }

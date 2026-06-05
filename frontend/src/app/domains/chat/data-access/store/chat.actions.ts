@@ -1,4 +1,5 @@
 import { createAction, props } from '@ngrx/store';
+
 import { Message, Quote } from '../chat-state.models';
 
 export const loadDynamicQuote = createAction('[Chat] Load Dynamic Quote');

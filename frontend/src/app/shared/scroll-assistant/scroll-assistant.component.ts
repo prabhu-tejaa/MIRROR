@@ -1,5 +1,5 @@
-import { Component, HostListener, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, HostListener, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowUpOutline } from 'ionicons/icons';
@@ -13,11 +13,11 @@ import { arrowUpOutline } from 'ionicons/icons';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ScrollAssistantComponent {
-  private cdr = inject(ChangeDetectorRef);
+  private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
   private readonly threshold: number = 400;
   
   public isVisible: boolean = false;
-  public readonly arrowUpOutline = arrowUpOutline;
+  public readonly arrowUpOutline: string = arrowUpOutline;
 
   constructor() {
     addIcons({ arrowUpOutline });
@@ -25,8 +25,8 @@ export class ScrollAssistantComponent {
 
   @HostListener('window:scroll')
   public onWindowScroll(): void {
-    const scrollOffset = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-    const shouldBeVisible = scrollOffset > this.threshold;
+    const scrollOffset: number = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    const shouldBeVisible: boolean = scrollOffset > this.threshold;
     
     if (this.isVisible !== shouldBeVisible) {
       this.isVisible = shouldBeVisible;

@@ -1,14 +1,16 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { NavController, AnimationController } from '@ionic/angular';
 import { provideIonicAngular } from '@ionic/angular/standalone';
-import { LoginPage } from './login.page';
-import { AuthService } from '../../data-access/auth.service';
+
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { TranslationService } from '../../../../core/services/translation.service';
 import { StarfieldService } from '../../../../shared/starfield/starfield.service';
-import { NavController, AnimationController } from '@ionic/angular';
+import { AuthService } from '../../data-access/auth.service';
+
+import { LoginPage } from './login.page';
 
 describe('LoginPage', () => {
   let component: LoginPage;
@@ -21,11 +23,11 @@ describe('LoginPage', () => {
     isAuthenticated: jasmine.createSpy('isAuthenticated').and.returnValue(false),
     logout: jasmine.createSpy('logout'),
   };
-  const analyticsSvcStub = { setUserId: jasmine.createSpy('setUserId'), logEvent: jasmine.createSpy('logEvent') };
-  const translationSvcStub = { translate: jasmine.createSpy('translate').and.returnValue('') };
-  const starfieldSvcStub = { setShape: jasmine.createSpy('setShape') };
-  const navCtrlStub = { navigateRoot: jasmine.createSpy('navigateRoot'), navigateForward: jasmine.createSpy('navigateForward') };
-  const animCtrlStub = { create: jasmine.createSpy('create') };
+  const analyticsSvcStub: { setUserId: jasmine.Spy<jasmine.Func>; logEvent: jasmine.Spy<jasmine.Func>; } = { setUserId: jasmine.createSpy('setUserId'), logEvent: jasmine.createSpy('logEvent') };
+  const translationSvcStub: { translate: jasmine.Spy<jasmine.Func>; } = { translate: jasmine.createSpy('translate').and.returnValue('') };
+  const starfieldSvcStub: { setShape: jasmine.Spy<jasmine.Func>; } = { setShape: jasmine.createSpy('setShape') };
+  const navCtrlStub: { navigateRoot: jasmine.Spy<jasmine.Func>; navigateForward: jasmine.Spy<jasmine.Func>; } = { navigateRoot: jasmine.createSpy('navigateRoot'), navigateForward: jasmine.createSpy('navigateForward') };
+  const animCtrlStub: { create: jasmine.Spy<jasmine.Func>; } = { create: jasmine.createSpy('create') };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

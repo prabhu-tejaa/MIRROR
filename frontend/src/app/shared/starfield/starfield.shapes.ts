@@ -1,10 +1,10 @@
-import { ShapeType } from './starfield.service';
 import { Star } from './starfield.models';
+import { ShapeType } from './starfield.service';
 
 export class StarfieldShapeGenerator {
   public static applyShape(stars: Star[], type: ShapeType, width: number, height: number): void {
     if (type === 'none') {
-      for (const star of stars) {
+      for (const star: Star of stars) {
         star.isTransitioning = false;
         star.transitionProgress = 0;
         star.vx += (Math.random() - 0.5) * 0.4;
@@ -14,20 +14,20 @@ export class StarfieldShapeGenerator {
       return;
     }
 
-    const CX = width / 2;
-    const CY = height / 2;
-    let S = Math.min(width, height) / 45;
+    const CX: number = width / 2;
+    const CY: number = height / 2;
+    let S: number = Math.min(width, height) / 45;
 
     if (height > width) {
       S = width / 34;
     }
 
-    for (let i = 0; i < stars.length; i++) {
-      const star = stars[i];
-      const t = Math.random() * Math.PI * 2;
-      let xBase = 0;
-      let yBase = 0;
-      let rScale = 0.6 + Math.random() * 0.5;
+    for (let i: number = 0; i < stars.length; i++) {
+      const star: Star = stars[i];
+      const t: number = Math.random() * Math.PI * 2;
+      let xBase: number = 0;
+      let yBase: number = 0;
+      let rScale: number = 0.6 + Math.random() * 0.5;
 
       switch (type) {
         case 'heart': {
@@ -43,8 +43,8 @@ export class StarfieldShapeGenerator {
           break;
         }
         case 'square': {
-          const side = Math.floor(Math.random() * 4);
-          const pos = Math.random() * 40 - 20;
+          const side: number = Math.floor(Math.random() * 4);
+          const pos: number = Math.random() * 40 - 20;
           if (side === 0) { xBase = pos; yBase = -20; }
           else if (side === 1) { xBase = 20; yBase = pos; }
           else if (side === 2) { xBase = pos; yBase = 20; }
@@ -53,24 +53,24 @@ export class StarfieldShapeGenerator {
           break;
         }
         case 'star': {
-          const spikes = 5;
-          const outerRadius = 22;
-          const innerRadius = 10;
-          const rot = Math.PI / 2 * 3;
-          const step = Math.PI / spikes;
-          const pointIndex = Math.floor(Math.random() * (spikes * 2));
-          const pointT = pointIndex * step + rot;
-          const nextT = (pointIndex + 1) * step + rot;
-          const r1 = (pointIndex % 2 === 0) ? outerRadius : innerRadius;
-          const r2 = (pointIndex % 2 === 0) ? innerRadius : outerRadius;
-          const lerp = Math.random();
+          const spikes: 5 = 5;
+          const outerRadius: 22 = 22;
+          const innerRadius: 10 = 10;
+          const rot: number = Math.PI / 2 * 3;
+          const step: number = Math.PI / spikes;
+          const pointIndex: number = Math.floor(Math.random() * (spikes * 2));
+          const pointT: number = pointIndex * step + rot;
+          const nextT: number = (pointIndex + 1) * step + rot;
+          const r1: 22 | 10 = (pointIndex % 2 === 0) ? outerRadius : innerRadius;
+          const r2: 10 | 22 = (pointIndex % 2 === 0) ? innerRadius : outerRadius;
+          const lerp: number = Math.random();
           xBase = (r1 * Math.cos(pointT)) + (r2 * Math.cos(nextT) - r1 * Math.cos(pointT)) * lerp;
           yBase = (r1 * Math.sin(pointT)) + (r2 * Math.sin(nextT) - r1 * Math.sin(pointT)) * lerp;
           rScale = 0.9 + Math.random() * 0.2;
           break;
         }
         case 'smiley': {
-          const part = Math.random();
+          const part: number = Math.random();
           if (part < 0.6) {
             xBase = 20 * Math.cos(t);
             yBase = 20 * Math.sin(t);
@@ -81,7 +81,7 @@ export class StarfieldShapeGenerator {
             xBase = 7 + (Math.random() - 0.5) * 2;
             yBase = -7 + (Math.random() - 0.5) * 2;
           } else {
-            const mouthT = Math.PI * 0.2 + Math.random() * Math.PI * 0.6;
+            const mouthT: number = Math.PI * 0.2 + Math.random() * Math.PI * 0.6;
             xBase = 12 * Math.cos(mouthT);
             yBase = 12 * Math.sin(mouthT);
           }
@@ -99,9 +99,9 @@ export class StarfieldShapeGenerator {
       star.transitionDelay = Math.random() * 800;
       star.transitionDuration = 1200 + Math.random() * 1000;
       star.isTransitioning = true;
-      const dx = star.targetX - star.startX;
-      const dy = star.targetY - star.startY;
-      const dist = Math.hypot(dx, dy);
+      const dx: number = star.targetX - star.startX;
+      const dy: number = star.targetY - star.startY;
+      const dist: number = Math.hypot(dx, dy);
       star.curveX = (-dy / dist) * (20 + Math.random() * 40);
       star.curveY = (dx / dist) * (20 + Math.random() * 40);
       if (Math.random() > 0.5) {

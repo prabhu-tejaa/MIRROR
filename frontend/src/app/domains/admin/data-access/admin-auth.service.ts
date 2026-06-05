@@ -1,17 +1,18 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../../environments/environment';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { AdminUserResponse, AdminUserUpdateRequest, AdminCreateUserRequest } from '../../auth/data-access/auth.model';
+
+import { environment } from '../../../../environments/environment';
 import { ApiService } from '../../../core/services/api.service';
+import { AdminUserResponse, AdminUserUpdateRequest, AdminCreateUserRequest } from '../../auth/data-access/auth.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminAuthService {
-  private http = inject(HttpClient);
-  private apiSvc = inject(ApiService);
+  private http: HttpClient = inject(HttpClient);
+  private apiSvc: ApiService = inject(ApiService);
 
   private mockUsers: AdminUserResponse[] = [
     {
@@ -71,136 +72,111 @@ export class AdminAuthService {
     }
   ];
 
-  private isUsingMockFallback = false;
+  private isUsingMockFallback: boolean = false;
+
+  private handleMockError(error: unknown, fallbackAction: () => Observable<any>): Observable<any> {
+    if (!environment.mock) {
+      return throwError(() => error);
+    }
+    this.isUsingMockFallback = true;
+    return fallbackAction();
+  }
 
   public getAllUsers(): Observable<AdminUserResponse[]> {
     return this.http.get<AdminUserResponse[]>(this.apiSvc.AUTH.ADMIN_USERS).pipe(
-      catchError((error) => {
-        if (!environment.mock) {
-          return throwError(() => error);
-        }
-
-        this.isUsingMockFallback = true;
-        return of([...this.mockUsers]);
-      })
+      catchError((error: unknown) => this.handleMockError(error, () => of([...this.mockUsers])))
     );
   }
 
   public getUserById(id: string): Observable<AdminUserResponse> {
     if (this.isUsingMockFallback && environment.mock) {
-      const user = this.mockUsers.find(u => u.id === id);
-      if (user) return of({ ...user });
+      const user: AdminUserResponse | undefined = this.mockUsers.find((u: AdminUserResponse) => u.id === id);
+      if (user) {return of({ ...user });}
       return throwError(() => new Error('User not found in mock database'));
     }
 
     return this.http.get<AdminUserResponse>(`${this.apiSvc.AUTH.ADMIN_USERS}/${id}`).pipe(
-      catchError((error) => {
-        if (!environment.mock) {
-          return throwError(() => error);
-        }
-        const user = this.mockUsers.find(u => u.id === id);
+      catchError((error: unknown) => this.handleMockError(error, () => {
+        const user: AdminUserResponse | undefined = this.mockUsers.find((u: AdminUserResponse) => u.id === id);
         if (user) {
-          this.isUsingMockFallback = true;
           return of({ ...user });
         }
         return throwError(() => error);
-      })
+      }))
     );
+  }
+
+  private updateMockUser(id: string, request: AdminUserUpdateRequest): AdminUserResponse {
+    const index: number = this.mockUsers.findIndex((u: AdminUserResponse) => u.id === id);
+    if (index !== -1) {
+      const currentUser: AdminUserResponse = this.mockUsers[index];
+      const updatedUser: AdminUserResponse = {
+        ...currentUser,
+        username: request.username !== undefined ? request.username : currentUser.username,
+        email: request.email !== undefined ? request.email : currentUser.email,
+        role: request.role !== undefined ? request.role : currentUser.role,
+        isVerified: request.isVerified !== undefined ? request.isVerified : currentUser.isVerified,
+        failedAttempts: request.failedAttempts !== undefined ? request.failedAttempts : currentUser.failedAttempts,
+        lockedUntil: request.lockedUntil !== undefined ? request.lockedUntil : currentUser.lockedUntil,
+        updatedAt: new Date().toISOString()
+      };
+      this.mockUsers[index] = updatedUser;
+      return updatedUser;
+    }
+    throw new Error('User not found in mock database');
   }
 
   public updateUser(id: string, request: AdminUserUpdateRequest): Observable<AdminUserResponse> {
     if (this.isUsingMockFallback && environment.mock) {
-      const index = this.mockUsers.findIndex(u => u.id === id);
-      if (index !== -1) {
-        const currentUser = this.mockUsers[index];
-        const updatedUser: AdminUserResponse = {
-          ...currentUser,
-          username: request.username !== undefined ? request.username : currentUser.username,
-          email: request.email !== undefined ? request.email : currentUser.email,
-          role: request.role !== undefined ? request.role : currentUser.role,
-          isVerified: request.isVerified !== undefined ? request.isVerified : currentUser.isVerified,
-          failedAttempts: request.failedAttempts !== undefined ? request.failedAttempts : currentUser.failedAttempts,
-          lockedUntil: request.lockedUntil !== undefined ? request.lockedUntil : currentUser.lockedUntil,
-          updatedAt: new Date().toISOString()
-        };
-        this.mockUsers[index] = updatedUser;
-        return of({ ...updatedUser });
+      try {
+        return of({ ...this.updateMockUser(id, request) });
+      } catch (e) {
+        return throwError(() => e);
       }
-      return throwError(() => new Error('User not found in mock database'));
     }
 
     return this.http.put<AdminUserResponse>(`${this.apiSvc.AUTH.ADMIN_USERS}/${id}`, request).pipe(
-      catchError((error) => {
-        if (!environment.mock) {
+      catchError((error: unknown) => this.handleMockError(error, () => {
+        try {
+          return of({ ...this.updateMockUser(id, request) });
+        } catch {
           return throwError(() => error);
         }
-        const index = this.mockUsers.findIndex(u => u.id === id);
-        if (index !== -1) {
-
-          this.isUsingMockFallback = true;
-          const currentUser = this.mockUsers[index];
-          const updatedUser: AdminUserResponse = {
-            ...currentUser,
-            username: request.username !== undefined ? request.username : currentUser.username,
-            email: request.email !== undefined ? request.email : currentUser.email,
-            role: request.role !== undefined ? request.role : currentUser.role,
-            isVerified: request.isVerified !== undefined ? request.isVerified : currentUser.isVerified,
-            failedAttempts: request.failedAttempts !== undefined ? request.failedAttempts : currentUser.failedAttempts,
-            lockedUntil: request.lockedUntil !== undefined ? request.lockedUntil : currentUser.lockedUntil,
-            updatedAt: new Date().toISOString()
-          };
-          this.mockUsers[index] = updatedUser;
-          return of({ ...updatedUser });
-        }
-        return throwError(() => error);
-      })
+      }))
     );
+  }
+
+  private createMockUser(request: AdminCreateUserRequest): AdminUserResponse {
+    const newUser: AdminUserResponse = {
+      id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36),
+      username: request.username,
+      email: request.email,
+      role: request.role,
+      isVerified: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      failedAttempts: 0,
+      lockedUntil: null
+    };
+    this.mockUsers.push(newUser);
+    return newUser;
   }
 
   public createUser(request: AdminCreateUserRequest): Observable<AdminUserResponse> {
     if (this.isUsingMockFallback && environment.mock) {
-      const newUser: AdminUserResponse = {
-        id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36),
-        username: request.username,
-        email: request.email,
-        role: request.role,
-        isVerified: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        failedAttempts: 0,
-        lockedUntil: null
-      };
-      this.mockUsers.push(newUser);
-      return of({ ...newUser });
+      return of({ ...this.createMockUser(request) });
     }
 
     return this.http.post<AdminUserResponse>(this.apiSvc.AUTH.ADMIN_USERS, request).pipe(
-      catchError((error) => {
-        if (!environment.mock) {
-          return throwError(() => error);
-        }
-
-        this.isUsingMockFallback = true;
-        const newUser: AdminUserResponse = {
-          id: (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Math.random().toString(36).substring(2) + Date.now().toString(36),
-          username: request.username,
-          email: request.email,
-          role: request.role,
-          isVerified: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          failedAttempts: 0,
-          lockedUntil: null
-        };
-        this.mockUsers.push(newUser);
-        return of({ ...newUser });
-      })
+      catchError((error: unknown) => this.handleMockError(error, () => {
+        return of({ ...this.createMockUser(request) });
+      }))
     );
   }
 
   public deleteUser(id: string): Observable<void> {
     if (this.isUsingMockFallback && environment.mock) {
-      const index = this.mockUsers.findIndex(u => u.id === id);
+      const index: number = this.mockUsers.findIndex((u: AdminUserResponse) => u.id === id);
       if (index !== -1) {
         this.mockUsers.splice(index, 1);
         return of(undefined);
@@ -209,19 +185,14 @@ export class AdminAuthService {
     }
 
     return this.http.delete<void>(`${this.apiSvc.AUTH.ADMIN_USERS}/${id}`).pipe(
-      catchError((error) => {
-        if (!environment.mock) {
-          return throwError(() => error);
-        }
-        const index = this.mockUsers.findIndex(u => u.id === id);
+      catchError((error: unknown) => this.handleMockError(error, () => {
+        const index: number = this.mockUsers.findIndex((u: AdminUserResponse) => u.id === id);
         if (index !== -1) {
-
-          this.isUsingMockFallback = true;
           this.mockUsers.splice(index, 1);
           return of(undefined);
         }
         return throwError(() => error);
-      })
+      }))
     );
   }
 }

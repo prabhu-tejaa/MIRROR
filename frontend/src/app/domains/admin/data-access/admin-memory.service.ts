@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+
 import { ApiService } from '../../../core/services/api.service';
 
 export interface AdminMemoryRecord {
@@ -16,8 +17,8 @@ export interface AdminMemoryRecord {
   providedIn: 'root'
 })
 export class AdminMemoryService {
-  private http = inject(HttpClient);
-  private apiSvc = inject(ApiService);
+  private http: HttpClient = inject(HttpClient);
+  private apiSvc: ApiService = inject(ApiService);
 
   public getAllMemories(): Observable<AdminMemoryRecord[]> {
     return this.http.get<AdminMemoryRecord[]>(this.apiSvc.ADMIN_MEMORY.ALL);
@@ -28,7 +29,7 @@ export class AdminMemoryService {
   }
 
   public uploadMockData(file: File): Observable<string> {
-    const formData = new FormData();
+    const formData: FormData = new FormData();
     formData.append('file', file);
     return this.http.post(this.apiSvc.ADMIN_MEMORY.UPLOAD, formData, { responseType: 'text' });
   }

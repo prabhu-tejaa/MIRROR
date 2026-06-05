@@ -1,5 +1,6 @@
-import { Component, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { 
   IonHeader, 
@@ -11,15 +12,14 @@ import {
   IonContent,
   ModalController 
 } from '@ionic/angular/standalone';
-import { Store } from '@ngrx/store';
 import { Actions, ofType } from '@ngrx/effects';
-import { AdminActions } from '../../../data-access/store/admin.actions';
-import { ToastService } from '../../../../../core/services/toast.service';
-import { AdminCreateUserRequest } from '../../../../auth/data-access/auth.model';
-
+import { Store } from '@ngrx/store';
 import { addIcons } from 'ionicons';
 import { closeOutline, personOutline, mailOutline, shieldOutline, keyOutline, personAddOutline } from 'ionicons/icons';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+import { ToastService } from '../../../../../core/services/toast.service';
+import { AdminCreateUserRequest } from '../../../../auth/data-access/auth.model';
+import { AdminActions } from '../../../data-access/store/admin.actions';
 
 @Component({
   selector: 'app-user-create-modal',
@@ -39,44 +39,44 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   ]
 })
 export class UserCreateModalComponent {
-  private modalCtrl = inject(ModalController);
-  private store = inject(Store);
-  private actions$ = inject(Actions);
-  private toastSvc = inject(ToastService);
-  private destroyRef = inject(DestroyRef);
+  private modalCtrl: ModalController = inject(ModalController);
+  private store: Store<any> = inject(Store);
+  private actions$: Actions<any> = inject(Actions);
+  private toastSvc: ToastService = inject(ToastService);
+  private destroyRef: DestroyRef = inject(DestroyRef);
 
   constructor() {
     addIcons({ closeOutline, personOutline, mailOutline, shieldOutline, keyOutline, personAddOutline });
   }
 
-  public createForm = {
+  public createForm: { username: string; email: string; password: string; role: string; } = {
     username: '',
     email: '',
     password: '',
     role: 'ROLE_USER'
   };
 
-  public isSubmitting = false;
+  public isSubmitting: boolean = false;
 
-  public dismiss(created = false) {
-    this.modalCtrl.dismiss({ created });
+  public dismiss(created: boolean = false): void {
+    void this.modalCtrl.dismiss({ created });
   }
 
-  public create() {
+  public create(): void {
     if (!this.createForm.username.trim()) {
-      this.toastSvc.showError('Username is required');
+      void this.toastSvc.showError('Username is required');
       return;
     }
     if (!this.createForm.email.trim()) {
-      this.toastSvc.showError('Email is required');
+      void this.toastSvc.showError('Email is required');
       return;
     }
     if (!this.createForm.password.trim()) {
-      this.toastSvc.showError('Password is required');
+      void this.toastSvc.showError('Password is required');
       return;
     }
     if (this.createForm.password.trim().length < 6) {
-      this.toastSvc.showError('Password must be at least 6 characters');
+      void this.toastSvc.showError('Password must be at least 6 characters');
       return;
     }
 

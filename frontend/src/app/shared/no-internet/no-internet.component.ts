@@ -1,9 +1,9 @@
+import { CommonModule } from '@angular/common';
 import { 
   Component, 
   Input, 
   ChangeDetectionStrategy
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-no-internet',

@@ -1,17 +1,18 @@
-import { Component, inject, ChangeDetectionStrategy, ApplicationRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, inject, ChangeDetectionStrategy, ApplicationRef, HostListener } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
+import { IonApp, IonRouterOutlet, IonContent } from '@ionic/angular/standalone';
 import { Observable } from 'rxjs';
 import { map, filter } from 'rxjs/operators';
-import { IonApp, IonRouterOutlet, IonContent } from '@ionic/angular/standalone';
-import { StarfieldComponent } from './shared/starfield/starfield.component';
-import { NoInternetComponent } from './shared/no-internet/no-internet.component';
-import { ScrollAssistantComponent } from './shared/scroll-assistant/scroll-assistant.component';
 
-import { ConnectionService } from './core/services/connection.service';
+
 import { AnalyticsService } from './core/services/analytics.service';
+import { ConnectionService } from './core/services/connection.service';
 import { HttpCancelService } from './core/services/http-cancel.service';
 import { PresenceService } from './core/services/presence.service';
+import { NoInternetComponent } from './shared/no-internet/no-internet.component';
+import { ScrollAssistantComponent } from './shared/scroll-assistant/scroll-assistant.component';
+import { StarfieldComponent } from './shared/starfield/starfield.component';
 
 @Component({
   selector: 'app-root',
@@ -29,17 +30,17 @@ import { PresenceService } from './core/services/presence.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
-  private connectionService = inject(ConnectionService);
-  private analyticsService = inject(AnalyticsService);
-  private httpCancelService = inject(HttpCancelService);
-  private presenceService = inject(PresenceService);
-  private router = inject(Router);
+  private connectionService: ConnectionService = inject(ConnectionService);
+  private analyticsService: AnalyticsService = inject(AnalyticsService);
+  private httpCancelService: HttpCancelService = inject(HttpCancelService);
+  private presenceService: PresenceService = inject(PresenceService);
+  private router: Router = inject(Router);
   
   public isOffline$: Observable<boolean> = this.connectionService.isOnline$.pipe(
-    map(online => !online)
+    map((online: boolean) => !online)
   );
 
-  private appRef = inject(ApplicationRef);
+  private appRef: ApplicationRef = inject(ApplicationRef);
 
   @HostListener('document:visibilitychange')
   public onVisibilityChange(): void {
@@ -52,14 +53,14 @@ export class AppComponent {
     this.router.events.pipe(
       filter(event => event instanceof NavigationStart)
     ).subscribe(() => {
-      const activeElement = document.activeElement as HTMLElement;
+      const activeElement: HTMLElement = document.activeElement as HTMLElement;
       if (activeElement && typeof activeElement.blur === 'function') {
         activeElement.blur();
       }
     });
   }
 
-  public handleGlobalRefresh(_event: Event): void {
+  public handleGlobalRefresh(event: Event): void {
     setTimeout(() => {
       window.location.reload();
     }, 500);

@@ -1,76 +1,79 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, Signal } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AuthService } from '../../auth/data-access/auth.service';
-import { ToastService } from '../../../core/services/toast.service';
-import { StorageService } from '../../../core/services/storage.service';
+
 import { StorageKeys } from '../../../core/constants/storage.constants';
-import * as ChatSelectors from './store/chat.selectors';
-import * as ChatActions from './store/chat.actions';
+import { StorageService } from '../../../core/services/storage.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { AuthService } from '../../auth/data-access/auth.service';
+
+import * as chatActions from './store/chat.actions';
+import * as chatSelectors from './store/chat.selectors';
+import { Message, Quote } from './chat-state.models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatStateService {
-  private authSvc = inject(AuthService);
-  private toastSvc = inject(ToastService);
-  private storageSvc = inject(StorageService);
-  private store = inject(Store);
+  private authSvc: AuthService = inject(AuthService);
+  private toastSvc: ToastService = inject(ToastService);
+  private storageSvc: StorageService = inject(StorageService);
+  private store: Store = inject(Store);
 
-  public activeQuote = this.store.selectSignal(ChatSelectors.selectActiveQuote);
-  public activeStyle = this.store.selectSignal(ChatSelectors.selectActiveStyle);
-  public currentEmotion = this.store.selectSignal(ChatSelectors.selectCurrentEmotion);
+  public activeQuote: Signal<Quote> = this.store.selectSignal(chatSelectors.selectActiveQuote);
+  public activeStyle: Signal<'cyberpunk' | 'aurora'> = this.store.selectSignal(chatSelectors.selectActiveStyle);
+  public currentEmotion: Signal<string> = this.store.selectSignal(chatSelectors.selectCurrentEmotion);
   
-  public currentPrimaryColor = this.store.selectSignal(ChatSelectors.selectCurrentPrimaryColor);
-  public currentSecondaryColor = this.store.selectSignal(ChatSelectors.selectCurrentSecondaryColor);
+  public currentPrimaryColor: Signal<string> = this.store.selectSignal(chatSelectors.selectCurrentPrimaryColor);
+  public currentSecondaryColor: Signal<string> = this.store.selectSignal(chatSelectors.selectCurrentSecondaryColor);
   
-  public isWaitingForResponse = this.store.selectSignal(ChatSelectors.selectIsWaitingForResponse);
-  public isResting = this.store.selectSignal(ChatSelectors.selectIsResting);
-  public isLoadingHistory = this.store.selectSignal(ChatSelectors.selectIsLoadingHistory);
-  public isLoadingMore = this.store.selectSignal(ChatSelectors.selectIsLoadingMore);
-  public messages = this.store.selectSignal(ChatSelectors.selectMessages);
-  public todayMessages = this.store.selectSignal(ChatSelectors.selectTodayMessages);
+  public isWaitingForResponse: Signal<boolean> = this.store.selectSignal(chatSelectors.selectIsWaitingForResponse);
+  public isResting: Signal<boolean> = this.store.selectSignal(chatSelectors.selectIsResting);
+  public isLoadingHistory: Signal<boolean> = this.store.selectSignal(chatSelectors.selectIsLoadingHistory);
+  public isLoadingMore: Signal<boolean> = this.store.selectSignal(chatSelectors.selectIsLoadingMore);
+  public messages: Signal<Message[]> = this.store.selectSignal(chatSelectors.selectMessages);
+  public todayMessages: Signal<Message[]> = this.store.selectSignal(chatSelectors.selectTodayMessages);
 
-  public currentCursor = this.store.selectSignal(ChatSelectors.selectCurrentCursor);
-  public hasMoreHistory = this.store.selectSignal(ChatSelectors.selectHasMoreHistory);
-  public initialChatLoadedGlobally = this.store.selectSignal(ChatSelectors.selectInitialChatLoadedGlobally);
-  public isInitialLoad = this.store.selectSignal(ChatSelectors.selectIsInitialLoad);
-  public loadedEmail = this.store.selectSignal(ChatSelectors.selectLoadedEmail);
+  public currentCursor: Signal<string | null> = this.store.selectSignal(chatSelectors.selectCurrentCursor);
+  public hasMoreHistory: Signal<boolean> = this.store.selectSignal(chatSelectors.selectHasMoreHistory);
+  public initialChatLoadedGlobally: Signal<boolean> = this.store.selectSignal(chatSelectors.selectInitialChatLoadedGlobally);
+  public isInitialLoad: Signal<boolean> = this.store.selectSignal(chatSelectors.selectIsInitialLoad);
+  public loadedEmail: Signal<string | null> = this.store.selectSignal(chatSelectors.selectLoadedEmail);
 
-  public readonly pageSize = 20;
+  public readonly pageSize = 20 as const;
   
   private checkMidnightInterval: ReturnType<typeof setInterval> | null = null;
-  private currentDayOfMonth = new Date().getDate();
+  private currentDayOfMonth: number = new Date().getDate();
 
-  public scrollToBottomTrigger = this.store.selectSignal(ChatSelectors.selectScrollToBottomTrigger);
-  public maintainScrollTrigger = this.store.selectSignal(ChatSelectors.selectMaintainScrollTrigger);
+  public scrollToBottomTrigger: Signal<number> = this.store.selectSignal(chatSelectors.selectScrollToBottomTrigger);
+  public maintainScrollTrigger: Signal<number> = this.store.selectSignal(chatSelectors.selectMaintainScrollTrigger);
 
   constructor() {
     this.setupMidnightChecker();
   }
 
   public fetchDynamicQuote(): void {
-    this.store.dispatch(ChatActions.loadDynamicQuote());
+    this.store.dispatch(chatActions.loadDynamicQuote());
   }
 
   public checkGuestLimit(): boolean {
-    if (this.authSvc.isAuthenticated()) return true;
-    const val = this.storageSvc.get(StorageKeys.GUEST_CHAT_COUNT);
-    const current = val ? parseInt(val, 10) : 0;
-    if (current >= 5) return false;
+    if (this.authSvc.isAuthenticated()) {return true;}
+    const val: string | null = this.storageSvc.get(StorageKeys.GUEST_CHAT_COUNT);
+    const current: number = val ? parseInt(val, 10) : 0;
+    if (current >= 5) {return false;}
     this.storageSvc.set(StorageKeys.GUEST_CHAT_COUNT, (current + 1).toString());
     return true;
   }
 
-  private setupMidnightChecker() {
+  private setupMidnightChecker(): void {
     this.checkMidnightInterval = setInterval(() => {
-      const day = new Date().getDate();
+      const day: number = new Date().getDate();
       if (day !== this.currentDayOfMonth) {
         this.currentDayOfMonth = day;
       }
     }, 60000) as unknown as number;
   }
 
-  public destroy() {
+  public destroy(): void {
     if (this.checkMidnightInterval) {
       clearInterval(this.checkMidnightInterval);
     }

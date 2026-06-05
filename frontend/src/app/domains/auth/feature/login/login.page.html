@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true" class="transparent-bg">
+<ion-content class="transparent-bg" [fullscreen]="true">
   <div class="login-wrapper">
 
 <div class="branding-header">
@@ -22,8 +22,8 @@
             id="login-email"
             formControlName="email"
             type="email"
-            [placeholder]="'LOGIN.PLACEHOLDER_EMAIL' | translate"
             class="glassy-input"
+            [placeholder]="'LOGIN.PLACEHOLDER_EMAIL' | translate"
           ></ion-input>
           
           <div *ngIf="isSubmitted && f['email'].errors" class="error-msg">
@@ -37,11 +37,11 @@
           <ion-input
             id="login-password"
             formControlName="password"
+            class="glassy-input"
             [type]="showPassword ? 'text' : 'password'"
             [placeholder]="'LOGIN.PLACEHOLDER_PASSWORD' | translate"
-            class="glassy-input"
           >
-            <button type="button" slot="end" class="eye-toggle" (click)="showPassword = !showPassword" aria-label="Toggle password visibility">
+            <button type="button" slot="end" class="eye-toggle" aria-label="Toggle password visibility" (click)="showPassword = !showPassword">
               <ion-icon [icon]="showPassword ? eye : eyeOff"></ion-icon>
             </button>
           </ion-input>
@@ -66,18 +66,18 @@
         </ion-button>
         
         <div class="forgot-wrapper">
-          <a (click)="goToForgot()" class="forgot-link">{{ 'LOGIN.FORGOT_LINK' | translate }}</a>
+          <a class="forgot-link" (click)="goToForgot()">{{ 'LOGIN.FORGOT_LINK' | translate }}</a>
         </div>
         
         <div class="signup-wrapper">
-          <span class="signup-text">{{ 'LOGIN.SIGNUP_PREFIX' | translate }}<a (click)="goToSignup()" class="signup-link">{{ 'LOGIN.SIGNUP_LINK' | translate }}</a></span>
+          <span class="signup-text">{{ 'LOGIN.SIGNUP_PREFIX' | translate }}<a class="signup-link" (click)="goToSignup()">{{ 'LOGIN.SIGNUP_LINK' | translate }}</a></span>
         </div>
       </form>
     </div>
 
   </div>
 
-  <div class="heart-username-overlay" *ngIf="showHeartUsername">
+  <div *ngIf="showHeartUsername" class="heart-username-overlay">
     <span class="user-name style-chrome">{{ username }}</span>
   </div>
 </ion-content>

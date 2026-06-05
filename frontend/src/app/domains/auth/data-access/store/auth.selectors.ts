@@ -1,39 +1,40 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
+
 import { AuthState, authFeatureKey } from './auth.reducer';
 
 export const selectAuthState = createFeatureSelector<AuthState>(authFeatureKey);
 
 export const selectIsAuthenticated = createSelector(
   selectAuthState,
-  (state) => state.isAuthenticated
+  (state: AuthState) => state.isAuthenticated
 );
 
 export const selectUserEmail = createSelector(
   selectAuthState,
-  (state) => state.email
+  (state: AuthState) => state.email
 );
 
 export const selectUsername = createSelector(
   selectAuthState,
-  (state) => state.username
+  (state: AuthState) => state.username
 );
 
 export const selectAuthLoading = createSelector(
   selectAuthState,
-  (state) => state.loading
+  (state: AuthState) => state.loading
 );
 
 export const selectAuthError = createSelector(
   selectAuthState,
-  (state) => state.error
+  (state: AuthState) => state.error
 );
 
 export const selectUserRoles = createSelector(
   selectAuthState,
-  (state) => state.roles
+  (state: AuthState) => state.roles
 );
 
 export const selectIsAdmin = createSelector(
   selectUserRoles,
-  (roles) => roles.includes('ADMIN')
+  (roles: string[]) => roles.includes('ADMIN')
 );

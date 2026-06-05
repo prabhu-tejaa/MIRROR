@@ -1,0 +1,848 @@
+[
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\admin-auth.page.html",
+    "line": 38,
+    "column": 35,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\admin-auth.page.html",
+    "line": 39,
+    "column": 19,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\admin-auth.page.html",
+    "line": 52,
+    "column": 35,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\admin-auth.page.html",
+    "line": 53,
+    "column": 18,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\admin-auth.page.html",
+    "line": 66,
+    "column": 35,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\admin-auth.page.html",
+    "line": 67,
+    "column": 18,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\admin-auth.page.html",
+    "line": 81,
+    "column": 20,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\admin-auth.page.html",
+    "line": 87,
+    "column": 51,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\admin-auth.page.html",
+    "line": 95,
+    "column": 16,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\admin-auth.page.html",
+    "line": 96,
+    "column": 20,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\components\\admin-user-list\\admin-user-list.component.html",
+    "line": 33,
+    "column": 18,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\components\\admin-user-list\\admin-user-list.component.html",
+    "line": 33,
+    "column": 18,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\components\\admin-user-list\\admin-user-list.component.html",
+    "line": 39,
+    "column": 49,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\components\\admin-user-list\\admin-user-list.component.html",
+    "line": 49,
+    "column": 28,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\components\\admin-user-list\\admin-user-list.component.html",
+    "line": 57,
+    "column": 32,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\components\\admin-user-list\\admin-user-list.component.html",
+    "line": 78,
+    "column": 16,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\components\\admin-user-list\\admin-user-list.component.html",
+    "line": 78,
+    "column": 16,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\components\\admin-user-list\\admin-user-list.component.html",
+    "line": 86,
+    "column": 30,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\components\\admin-user-list\\admin-user-list.component.html",
+    "line": 101,
+    "column": 47,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\components\\admin-user-list\\admin-user-list.component.html",
+    "line": 112,
+    "column": 26,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\user-edit-modal\\user-edit-modal.component.html",
+    "line": 16,
+    "column": 12,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-auth\\user-edit-modal\\user-edit-modal.component.html",
+    "line": 16,
+    "column": 12,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 8,
+    "column": 22,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 15,
+    "column": 38,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 16,
+    "column": 38,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 19,
+    "column": 37,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 20,
+    "column": 49,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 22,
+    "column": 14,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 24,
+    "column": 117,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 33,
+    "column": 37,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 37,
+    "column": 84,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 45,
+    "column": 17,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 51,
+    "column": 18,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 51,
+    "column": 33,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 57,
+    "column": 18,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 57,
+    "column": 33,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 58,
+    "column": 52,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 60,
+    "column": 93,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 66,
+    "column": 29,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 69,
+    "column": 48,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 73,
+    "column": 77,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 87,
+    "column": 43,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 91,
+    "column": 62,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 91,
+    "column": 62,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 91,
+    "column": 112,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\admin\\feature\\admin-memory\\admin-memory.page.html",
+    "line": 113,
+    "column": 24,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\auth\\feature\\otp\\otp.page.html",
+    "line": 15,
+    "column": 39,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\auth\\feature\\otp\\otp.page.html",
+    "line": 32,
+    "column": 26,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 2,
+    "column": 40,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 2,
+    "column": 70,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 2,
+    "column": 70,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 3,
+    "column": 36,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 4,
+    "column": 38,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 20,
+    "column": 47,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 28,
+    "column": 52,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 36,
+    "column": 42,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 36,
+    "column": 75,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 38,
+    "column": 47,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 40,
+    "column": 16,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 44,
+    "column": 40,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 45,
+    "column": 41,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 49,
+    "column": 31,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 56,
+    "column": 112,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 62,
+    "column": 138,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 62,
+    "column": 138,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 63,
+    "column": 35,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 65,
+    "column": 118,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 90,
+    "column": 54,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 90,
+    "column": 87,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 90,
+    "column": 123,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 91,
+    "column": 25,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 92,
+    "column": 65,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 93,
+    "column": 46,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 96,
+    "column": 44,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 99,
+    "column": 34,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 99,
+    "column": 113,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 104,
+    "column": 53,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 104,
+    "column": 53,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 104,
+    "column": 75,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 104,
+    "column": 112,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 104,
+    "column": 112,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\chat\\feature\\chat.page.html",
+    "line": 104,
+    "column": 134,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\profile\\feature\\profile.page.html",
+    "line": 7,
+    "column": 32,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\profile\\feature\\profile.page.html",
+    "line": 17,
+    "column": 35,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\profile\\feature\\profile.page.html",
+    "line": 20,
+    "column": 26,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 2,
+    "column": 63,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 10,
+    "column": 132,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 10,
+    "column": 172,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 10,
+    "column": 331,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 11,
+    "column": 38,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 15,
+    "column": 84,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 16,
+    "column": 36,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 20,
+    "column": 37,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 20,
+    "column": 37,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 30,
+    "column": 42,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 32,
+    "column": 47,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 37,
+    "column": 50,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 48,
+    "column": 84,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 50,
+    "column": 29,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 52,
+    "column": 25,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 52,
+    "column": 25,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 55,
+    "column": 30,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 55,
+    "column": 30,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 61,
+    "column": 48,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 61,
+    "column": 69,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 62,
+    "column": 97,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 65,
+    "column": 30,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 67,
+    "column": 64,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 68,
+    "column": 79,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 68,
+    "column": 102,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 68,
+    "column": 138,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 68,
+    "column": 161,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 72,
+    "column": 57,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 75,
+    "column": 71,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 75,
+    "column": 71,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 75,
+    "column": 94,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 75,
+    "column": 94,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 79,
+    "column": 50,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 86,
+    "column": 30,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 86,
+    "column": 54,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 88,
+    "column": 55,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 94,
+    "column": 37,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 112,
+    "column": 82,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 112,
+    "column": 112,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 112,
+    "column": 142,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 114,
+    "column": 47,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 116,
+    "column": 108,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 116,
+    "column": 124,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 120,
+    "column": 46,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 120,
+    "column": 62,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 121,
+    "column": 36,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 121,
+    "column": 36,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 122,
+    "column": 36,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 122,
+    "column": 36,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 123,
+    "column": 36,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 123,
+    "column": 36,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 124,
+    "column": 36,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\domains\\you\\feature\\you.page.html",
+    "line": 124,
+    "column": 36,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\shell\\tabs\\tabs.page.html",
+    "line": 10,
+    "column": 44,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\shell\\tabs\\tabs.page.html",
+    "line": 15,
+    "column": 44,
+    "message": "Avoid calling expressions in templates"
+  },
+  {
+    "file": "C:\\Users\\91951\\Desktop\\Prabhu Teja\\VIT\\sem4\\Project and Seminar\\Project\\MIRROR_PROJECT\\MIRROR\\frontend\\src\\app\\shell\\tabs\\tabs.page.html",
+    "line": 20,
+    "column": 44,
+    "message": "Avoid calling expressions in templates"
+  }
+]

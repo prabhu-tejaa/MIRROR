@@ -1,15 +1,17 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideRouter } from '@angular/router';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter , ActivatedRoute } from '@angular/router';
+import { NavController, AnimationController } from '@ionic/angular';
 import { provideIonicAngular } from '@ionic/angular/standalone';
-import { OtpPage } from './otp.page';
-import { AuthService } from '../../data-access/auth.service';
+import { of } from 'rxjs';
+
 import { TranslationService } from '../../../../core/services/translation.service';
 import { StarfieldService } from '../../../../shared/starfield/starfield.service';
-import { NavController, AnimationController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
-import { of } from 'rxjs';
+import { AuthService } from '../../data-access/auth.service';
+
+import { OtpPage } from './otp.page';
+
 
 describe('OtpPage', () => {
   let component: OtpPage;
@@ -22,10 +24,10 @@ describe('OtpPage', () => {
     verifyForgotPasswordOtp: jasmine.createSpy('verifyForgotPasswordOtp'),
     isAuthenticated: jasmine.createSpy('isAuthenticated').and.returnValue(false),
   };
-  const translationSvcStub = { translate: jasmine.createSpy('translate').and.returnValue('') };
-  const starfieldSvcStub = { setShape: jasmine.createSpy('setShape') };
-  const navCtrlStub = { navigateRoot: jasmine.createSpy('navigateRoot'), navigateForward: jasmine.createSpy('navigateForward') };
-  const animCtrlStub = { create: jasmine.createSpy('create') };
+  const translationSvcStub: { translate: jasmine.Spy<jasmine.Func>; } = { translate: jasmine.createSpy('translate').and.returnValue('') };
+  const starfieldSvcStub: { setShape: jasmine.Spy<jasmine.Func>; } = { setShape: jasmine.createSpy('setShape') };
+  const navCtrlStub: { navigateRoot: jasmine.Spy<jasmine.Func>; navigateForward: jasmine.Spy<jasmine.Func>; } = { navigateRoot: jasmine.createSpy('navigateRoot'), navigateForward: jasmine.createSpy('navigateForward') };
+  const animCtrlStub: { create: jasmine.Spy<jasmine.Func>; } = { create: jasmine.createSpy('create') };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({

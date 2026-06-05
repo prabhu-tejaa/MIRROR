@@ -1,27 +1,27 @@
-<ion-content [fullscreen]="true" class="ion-padding">
+<ion-content class="ion-padding" [fullscreen]="true">
   <div class="dashboard-nav">
     <button class="back-circle-btn" (click)="goBack()">
       <ion-icon name="arrow-back-outline"></ion-icon>
     </button>
     <div class="nav-title-text">Memory Service</div>
     <div class="nav-right-group">
-      <button *ngIf="activeTab() === 'MANAGE'" class="refresh-circle-btn" (click)="loadRecords()" title="Refresh Database">
+      <button *ngIf="activeTabValue === 'MANAGE'" class="refresh-circle-btn" title="Refresh Database" (click)="loadRecords()">
         <ion-icon name="refresh-outline"></ion-icon>
       </button>
     </div>
   </div>
 
   <div class="tabs-container">
-    <div class="tab" [class.active]="activeTab() === 'MANAGE'" (click)="setTab('MANAGE')">Manage DB</div>
-    <div class="tab" [class.active]="activeTab() === 'UPLOAD'" (click)="setTab('UPLOAD')">Data Upload</div>
+    <div class="tab" [class.active]="activeTabValue === 'MANAGE'" (click)="setTab('MANAGE')">Manage DB</div>
+    <div class="tab" [class.active]="activeTabValue === 'UPLOAD'" (click)="setTab('UPLOAD')">Data Upload</div>
   </div>
 
-  <div class="content-panel" *ngIf="activeTab() === 'UPLOAD'">
-    <div class="upload-zone" [class.uploading]="isUploading()" (click)="fileInput.click()">
+  <div *ngIf="activeTabValue === 'UPLOAD'" class="content-panel">
+    <div class="upload-zone" [class.uploading]="isUploadingValue" (click)="fileInput.click()">
       <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
-      <h3>{{ isUploading() ? 'Syncing to Database...' : 'Upload Excel Mock Data' }}</h3>
+      <h3>{{ isUploadingValue ? 'Syncing to Database...' : 'Upload Excel Mock Data' }}</h3>
       <p>Drag & drop or click to browse</p>
-      <input type="file" hidden #fileInput accept=".xlsx, .xls, .csv" (change)="onFileSelected($event)" [disabled]="isUploading()">
+      <input #fileInput type="file" hidden accept=".xlsx, .xls, .csv" [disabled]="isUploadingValue" (change)="onFileSelected($event)">
     </div>
     
     <div class="info-card">
@@ -30,47 +30,45 @@
     </div>
   </div>
 
-  <div class="content-panel" *ngIf="activeTab() === 'MANAGE'">
+  <div *ngIf="activeTabValue === 'MANAGE'" class="content-panel">
     <div class="table-header-actions" style="justify-content: space-between; align-items: center;">
       <div class="search-container">
         <ion-icon name="search-outline"></ion-icon>
-        <input type="text" placeholder="Search by username or email..." [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" class="custom-search">
+        <input type="text" placeholder="Search by username or email..." class="custom-search" [ngModel]="searchQueryValue" (ngModelChange)="searchQuery.set($event)">
       </div>
       <button class="create-btn" (click)="addRecord()">
         <ion-icon name="add-circle-outline"></ion-icon>
         Add Record
       </button>
     </div>
-    <!-- Loading State -->
-    <div *ngIf="isLoading()" class="loading-state">
+    <div *ngIf="isLoadingValue" class="loading-state">
       <ion-spinner name="crescent"></ion-spinner>
       <p>Connecting to Postgres database...</p>
     </div>
 
-    <!-- Empty State -->
-    <div *ngIf="!isLoading() && cachedGroups().length === 0" class="empty-state">
+    <div *ngIf="!isLoadingValue && cachedGroupsValue.length === 0" class="empty-state">
       <ion-icon name="server-outline" class="empty-icon"></ion-icon>
       <h3>No Memories Found</h3>
       <p>The database is currently empty. Try uploading mock data or adding a record.</p>
     </div>
 
-    <div *ngIf="!isLoading() && cachedGroups().length > 0" class="accordion-container">
-      <div class="user-group" *ngFor="let group of cachedGroups(); trackBy: trackByUserId">
+    <div *ngIf="!isLoadingValue && cachedGroupsValue.length > 0" class="accordion-container">
+      <div *ngFor="let group of cachedGroupsValue; trackBy: trackByUserId" class="user-group">
         
-        <div class="user-group-header" (click)="toggleUser(group.userId)" [class.expanded]="expandedUserId() === group.userId">
+        <div class="user-group-header" [class.expanded]="expandedUserIdValue === group.userId" (click)="toggleUser(group.userId)">
           <div class="header-info">
             <ion-icon name="mail-outline"></ion-icon>
             <h3>{{ group.userId }}</h3>
             <span class="badge">{{ group.records.length }} Memories</span>
           </div>
-          <ion-icon [name]="expandedUserId() === group.userId ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+          <ion-icon [name]="expandedUserIdValue === group.userId ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
         </div>
 
-        <div class="user-group-content" *ngIf="expandedUserId() === group.userId">
+        <div *ngIf="expandedUserIdValue === group.userId" class="user-group-content">
           
           <div class="inner-search-bar">
             <ion-icon name="search-outline"></ion-icon>
-            <input type="text" placeholder="Search my memory..." [ngModel]="memorySearchQuery()" (ngModelChange)="memorySearchQuery.set($event)" class="custom-search">
+            <input type="text" placeholder="Search my memory..." class="custom-search" [ngModel]="memorySearchQueryValue" (ngModelChange)="memorySearchQuery.set($event)">
           </div>
 
           <div class="table-container table-responsive">
@@ -84,19 +82,19 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let record of getFilteredMemories(group.records)">
+                <tr *ngFor="let record of group.records">
                   <td>#{{ record.id }}</td>
                   <td>
                     <div class="memory-emotion">
-                      <span class="emotion-badge" [ngClass]="getCleanEmotion(record.emotion).toLowerCase()">{{ getCleanEmotion(record.emotion) }}</span>
+                      <span class="emotion-badge" [ngClass]="record.cleanEmotion.toLowerCase()">{{ record.cleanEmotion }}</span>
                     </div>
                   </td>
                   <td>{{ record.createdAt | date:'short' }}</td>
                   <td>
-                    <button class="action-btn edit" (click)="editRecord(record.id)" title="Edit">
+                    <button class="action-btn edit" title="Edit" (click)="editRecord(record.id)">
                       <ion-icon name="create-outline"></ion-icon>
                     </button>
-                    <button class="action-btn delete" (click)="deleteRecord(record.id)" title="Delete">
+                    <button class="action-btn delete" title="Delete" (click)="deleteRecord(record.id)">
                       <ion-icon name="trash-outline"></ion-icon>
                     </button>
                   </td>
@@ -109,8 +107,7 @@
     </div>
   </div>
 
-  <!-- Add/Edit Record Modal -->
-  <ion-modal [isOpen]="isModalOpen()" (didDismiss)="closeModal()" class="glassy-modal memory-modal">
+  <ion-modal class="glassy-modal memory-modal" [isOpen]="isModalOpenValue" (didDismiss)="closeModal()">
     <ng-template>
       <ion-header class="glassy-modal-header">
         <ion-toolbar>
@@ -127,8 +124,8 @@
           
           <div class="user-overview">
             <div class="modal-avatar" [ngClass]="{'create-avatar': modalMode === 'ADD'}">
-              <ion-icon name="server-outline" *ngIf="modalMode === 'ADD'"></ion-icon>
-              <ion-icon name="create-outline" *ngIf="modalMode === 'EDIT'"></ion-icon>
+              <ion-icon *ngIf="modalMode === 'ADD'" name="server-outline"></ion-icon>
+              <ion-icon *ngIf="modalMode === 'EDIT'" name="create-outline"></ion-icon>
             </div>
             <div class="user-meta">
               <h3>{{ modalMode === 'ADD' ? 'New Memory Record' : 'Editing Record' }}</h3>
@@ -136,12 +133,12 @@
             </div>
           </div>
 
-          <form (ngSubmit)="saveModalRecord()" class="modal-form">
+          <form class="modal-form" (ngSubmit)="saveModalRecord()">
             <div class="form-group">
               <label class="field-label">User Email</label>
               <div class="input-wrapper">
                 <ion-icon name="mail-outline" class="input-icon"></ion-icon>
-                <input type="email" name="user" [(ngModel)]="modalForm.userId" placeholder="user@mirror.tech" class="glass-input" required />
+                <input type="email" name="user" placeholder="user@mirror.tech" class="glass-input" required [(ngModel)]="modalForm.userId" />
               </div>
             </div>
 
@@ -149,7 +146,7 @@
               <label class="field-label">Content</label>
               <div class="input-wrapper">
                 <ion-icon name="document-text-outline" class="input-icon" style="top: 22px;"></ion-icon>
-                <textarea rows="4" name="content" [(ngModel)]="modalForm.content" placeholder="Enter memory text..." class="glass-input" style="padding-top: 14px; resize: none;" required></textarea>
+                <textarea rows="4" name="content" placeholder="Enter memory text..." class="glass-input" style="padding-top: 14px; resize: none;" required [(ngModel)]="modalForm.content"></textarea>
               </div>
             </div>
 
@@ -157,7 +154,7 @@
               <label class="field-label">Emotion Tag</label>
               <div class="input-wrapper">
                 <ion-icon name="heart-half-outline" class="input-icon"></ion-icon>
-                <input type="text" name="emotion" [(ngModel)]="modalForm.emotion" placeholder="e.g. Thoughtful Curiosity" class="glass-input" required />
+                <input type="text" name="emotion" placeholder="e.g. Thoughtful Curiosity" class="glass-input" required [(ngModel)]="modalForm.emotion" />
               </div>
             </div>
 

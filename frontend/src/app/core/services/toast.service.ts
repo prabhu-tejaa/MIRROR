@@ -7,7 +7,7 @@ import { alertCircleOutline, checkmarkCircleOutline, informationCircleOutline } 
   providedIn: 'root'
 })
 export class ToastService {
-  private toastCtrl = inject(ToastController);
+  private toastCtrl: ToastController = inject(ToastController);
   private activeToast: HTMLIonToastElement | null = null;
 
   constructor() {
@@ -31,7 +31,7 @@ export class ToastService {
   public async showError(message: string): Promise<void> {
     await this.dismissActiveToast();
 
-    const toast = await this.toastCtrl.create({
+    const toast: HTMLIonToastElement = await this.toastCtrl.create({
       message,
       duration: 4000,
       position: 'top',
@@ -47,11 +47,11 @@ export class ToastService {
     });
 
     this.activeToast = toast;
-    toast.onDidDismiss().then(() => {
-      if (this.activeToast === toast) {
-        this.activeToast = null;
-      }
-    });
+    await toast.onDidDismiss().then(() => {
+            if (this.activeToast === toast) {
+              this.activeToast = null;
+            }
+          });
 
     await toast.present();
   }
@@ -59,7 +59,7 @@ export class ToastService {
   public async showSuccess(message: string): Promise<void> {
     await this.dismissActiveToast();
 
-    const toast = await this.toastCtrl.create({
+    const toast: HTMLIonToastElement = await this.toastCtrl.create({
       message,
       duration: 3000,
       position: 'top',
@@ -75,11 +75,11 @@ export class ToastService {
     });
 
     this.activeToast = toast;
-    toast.onDidDismiss().then(() => {
-      if (this.activeToast === toast) {
-        this.activeToast = null;
-      }
-    });
+    await toast.onDidDismiss().then(() => {
+            if (this.activeToast === toast) {
+              this.activeToast = null;
+            }
+          });
 
     await toast.present();
   }
@@ -87,7 +87,7 @@ export class ToastService {
   public async showInfo(message: string): Promise<void> {
     await this.dismissActiveToast();
 
-    const toast = await this.toastCtrl.create({
+    const toast: HTMLIonToastElement = await this.toastCtrl.create({
       message,
       duration: 3000,
       position: 'top',
@@ -103,11 +103,11 @@ export class ToastService {
     });
 
     this.activeToast = toast;
-    toast.onDidDismiss().then(() => {
-      if (this.activeToast === toast) {
-        this.activeToast = null;
-      }
-    });
+    await toast.onDidDismiss().then(() => {
+            if (this.activeToast === toast) {
+              this.activeToast = null;
+            }
+          });
 
     await toast.present();
   }

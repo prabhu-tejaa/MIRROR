@@ -1,7 +1,9 @@
 import { createReducer, on } from '@ngrx/store';
-import { Message, Quote } from '../chat-state.models';
-import * as ChatActions from './chat.actions';
+
 import { AuthActions } from '../../../auth/data-access/store/auth.actions';
+import { Message, Quote } from '../chat-state.models';
+
+import * as chatActions from './chat.actions';
 
 export interface ChatState {
   activeQuote: Quote;
@@ -48,35 +50,35 @@ export const initialState: ChatState = {
 
 export const chatReducer = createReducer(
   initialState,
-  on(ChatActions.setDynamicQuote, (state, { quote }) => ({ ...state, activeQuote: quote })),
-  on(ChatActions.setStyle, (state, { style }) => ({ ...state, activeStyle: style })),
-  on(ChatActions.setEmotion, (state, { emotion }) => ({ ...state, currentEmotion: emotion })),
-  on(ChatActions.setColors, (state, { primary, secondary }) => ({
+  on(chatActions.setDynamicQuote, (state: ChatState, { quote }) => ({ ...state, activeQuote: quote })),
+  on(chatActions.setStyle, (state: ChatState, { style }) => ({ ...state, activeStyle: style })),
+  on(chatActions.setEmotion, (state: ChatState, { emotion }) => ({ ...state, currentEmotion: emotion })),
+  on(chatActions.setColors, (state: ChatState, { primary, secondary }) => ({
     ...state,
     currentPrimaryColor: primary,
     currentSecondaryColor: secondary
   })),
-  on(ChatActions.setMessages, (state, { messages }) => ({ ...state, messages })),
-  on(ChatActions.addMessage, (state, { message }) => ({ ...state, messages: [...state.messages, message] })),
-  on(ChatActions.updateMessage, (state, { id, changes }) => ({
+  on(chatActions.setMessages, (state: ChatState, { messages }) => ({ ...state, messages })),
+  on(chatActions.addMessage, (state: ChatState, { message }) => ({ ...state, messages: [...state.messages, message] })),
+  on(chatActions.updateMessage, (state: ChatState, { id, changes }) => ({
     ...state,
-    messages: state.messages.map(m => m.id === id ? { ...m, ...changes } : m)
+    messages: state.messages.map((m: Message) => m.id === id ? { ...m, ...changes } : m)
   })),
-  on(ChatActions.setWaitingForResponse, (state, { isWaiting }) => ({ ...state, isWaitingForResponse: isWaiting })),
-  on(ChatActions.setResting, (state, { isResting }) => ({ ...state, isResting: isResting })),
-  on(ChatActions.setLoadingHistory, (state, { isLoading }) => ({ ...state, isLoadingHistory: isLoading })),
-  on(ChatActions.setLoadingMore, (state, { isLoading }) => ({ ...state, isLoadingMore: isLoading })),
-  on(ChatActions.triggerScrollToBottom, (state) => ({ ...state, scrollToBottomTrigger: state.scrollToBottomTrigger + 1 })),
-  on(ChatActions.triggerMaintainScroll, (state) => ({ ...state, maintainScrollTrigger: state.maintainScrollTrigger + 1 })),
+  on(chatActions.setWaitingForResponse, (state: ChatState, { isWaiting }) => ({ ...state, isWaitingForResponse: isWaiting })),
+  on(chatActions.setResting, (state: ChatState, { isResting }) => ({ ...state, isResting: isResting })),
+  on(chatActions.setLoadingHistory, (state: ChatState, { isLoading }) => ({ ...state, isLoadingHistory: isLoading })),
+  on(chatActions.setLoadingMore, (state: ChatState, { isLoading }) => ({ ...state, isLoadingMore: isLoading })),
+  on(chatActions.triggerScrollToBottom, (state: ChatState) => ({ ...state, scrollToBottomTrigger: state.scrollToBottomTrigger + 1 })),
+  on(chatActions.triggerMaintainScroll, (state: ChatState) => ({ ...state, maintainScrollTrigger: state.maintainScrollTrigger + 1 })),
 
-  on(ChatActions.loadChatHistory, (state) => ({
+  on(chatActions.loadChatHistory, (state: ChatState) => ({
     ...state,
     isLoadingHistory: state.isInitialLoad,
     currentCursor: null,
     hasMoreHistory: true,
     isWaitingForResponse: false
   })),
-  on(ChatActions.loadChatHistorySuccess, (state, { messages, nextCursor, hasMore, loadedEmail }) => ({
+  on(chatActions.loadChatHistorySuccess, (state: ChatState, { messages, nextCursor, hasMore, loadedEmail }) => ({
     ...state,
     messages,
     currentCursor: nextCursor,
@@ -86,25 +88,25 @@ export const chatReducer = createReducer(
     isInitialLoad: false,
     initialChatLoadedGlobally: true
   })),
-  on(ChatActions.loadChatHistoryFailure, (state) => ({
+  on(chatActions.loadChatHistoryFailure, (state: ChatState) => ({
     ...state,
     isLoadingHistory: false,
     isInitialLoad: false,
     initialChatLoadedGlobally: true
   })),
 
-  on(ChatActions.loadMoreHistory, (state) => ({
+  on(chatActions.loadMoreHistory, (state: ChatState) => ({
     ...state,
     isLoadingMore: true
   })),
-  on(ChatActions.loadMoreHistorySuccess, (state, { messages, nextCursor, hasMore }) => ({
+  on(chatActions.loadMoreHistorySuccess, (state: ChatState, { messages, nextCursor, hasMore }) => ({
     ...state,
     messages: [...messages, ...state.messages],
     currentCursor: nextCursor,
     hasMoreHistory: hasMore,
     isLoadingMore: false
   })),
-  on(ChatActions.loadMoreHistoryFailure, (state) => ({
+  on(chatActions.loadMoreHistoryFailure, (state: ChatState) => ({
     ...state,
     isLoadingMore: false
   })),

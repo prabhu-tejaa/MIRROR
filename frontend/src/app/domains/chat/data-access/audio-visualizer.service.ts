@@ -1,17 +1,17 @@
-import { Injectable, NgZone, signal, OnDestroy, inject } from '@angular/core';
+import { Injectable, NgZone, signal, OnDestroy, inject, WritableSignal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AudioVisualizerService implements OnDestroy {
-  public readonly isPlaying = signal<boolean>(false);
-  public readonly isLoadingAudio = signal<boolean>(false);
-  public readonly isRealtimeSync = signal<boolean>(false);
+  public readonly isPlaying: WritableSignal<boolean> = signal<boolean>(false);
+  public readonly isLoadingAudio: WritableSignal<boolean> = signal<boolean>(false);
+  public readonly isRealtimeSync: WritableSignal<boolean> = signal<boolean>(false);
   
-  public readonly scale1 = signal<number>(0);
-  public readonly scale2 = signal<number>(0);
-  public readonly scale3 = signal<number>(0);
-  public readonly scale4 = signal<number>(0);
+  public readonly scale1: WritableSignal<number> = signal<number>(0);
+  public readonly scale2: WritableSignal<number> = signal<number>(0);
+  public readonly scale3: WritableSignal<number> = signal<number>(0);
+  public readonly scale4: WritableSignal<number> = signal<number>(0);
 
   private audioObj: HTMLAudioElement | null = null;
   private audioCtx: AudioContext | null = null;
@@ -20,42 +20,42 @@ export class AudioVisualizerService implements OnDestroy {
   private animationFrameId: number | null = null;
   private fadeInterval: ReturnType<typeof setInterval> | null = null;
   private duckInterval: ReturnType<typeof setInterval> | null = null;
-  private isDucked = false;
+  private isDucked: boolean = false;
 
-  private ngZone = inject(NgZone);
+  private ngZone: NgZone = inject(NgZone);
 
   constructor() {}
 
-  private fadeIn() {
-    if (!this.audioObj) return;
+  private fadeIn(): void {
+    if (!this.audioObj) {return;}
     
     if (this.fadeInterval) {
       clearInterval(this.fadeInterval);
       this.fadeInterval = null;
     }
     
-    const targetVolume = 1;
-    const fadeSteps = 25;
-    const fadeDuration = 800;
-    const stepTime = fadeDuration / fadeSteps;
-    const volumeStep = targetVolume / fadeSteps;
+    const targetVolume: 1 = 1;
+    const fadeSteps: 25 = 25;
+    const fadeDuration: 800 = 800;
+    const stepTime: number = fadeDuration / fadeSteps;
+    const volumeStep: number = targetVolume / fadeSteps;
 
     this.fadeInterval = setInterval(() => {
       if (!this.audioObj) {
-        if (this.fadeInterval) clearInterval(this.fadeInterval);
+        if (this.fadeInterval) {clearInterval(this.fadeInterval);}
         return;
       }
-      let newVolume = this.audioObj.volume + volumeStep;
+      let newVolume: number = this.audioObj.volume + volumeStep;
       if (newVolume >= targetVolume) {
         newVolume = targetVolume;
-        if (this.fadeInterval) clearInterval(this.fadeInterval);
+        if (this.fadeInterval) {clearInterval(this.fadeInterval);}
         this.fadeInterval = null;
       }
       this.audioObj.volume = newVolume;
     }, stepTime);
   }
 
-  private fadeOut(callback: () => void) {
+  private fadeOut(callback: () => void): void {
     if (!this.audioObj) {
       callback();
       return;
@@ -66,21 +66,21 @@ export class AudioVisualizerService implements OnDestroy {
       this.fadeInterval = null;
     }
 
-    const fadeSteps = 25;
-    const fadeDuration = 500;
-    const stepTime = fadeDuration / fadeSteps;
-    const volumeStep = (this.audioObj.volume || 1) / fadeSteps;
+    const fadeSteps: 25 = 25;
+    const fadeDuration: 500 = 500;
+    const stepTime: number = fadeDuration / fadeSteps;
+    const volumeStep: number = (this.audioObj.volume || 1) / fadeSteps;
 
     this.fadeInterval = setInterval(() => {
       if (!this.audioObj) {
-        if (this.fadeInterval) clearInterval(this.fadeInterval);
+        if (this.fadeInterval) {clearInterval(this.fadeInterval);}
         callback();
         return;
       }
-      let newVolume = this.audioObj.volume - volumeStep;
+      let newVolume: number = this.audioObj.volume - volumeStep;
       if (newVolume <= 0.02) {
         newVolume = 0;
-        if (this.fadeInterval) clearInterval(this.fadeInterval);
+        if (this.fadeInterval) {clearInterval(this.fadeInterval);}
         this.fadeInterval = null;
         this.audioObj.volume = newVolume;
         callback();
@@ -90,8 +90,8 @@ export class AudioVisualizerService implements OnDestroy {
     }, stepTime);
   }
 
-  public duckVolume(targetVolume = 0.18): void {
-    if (!this.audioObj || !this.isPlaying()) return;
+  public duckVolume(targetVolume: number = 0.18): void {
+    if (!this.audioObj || !this.isPlaying()) {return;}
     this.isDucked = true;
 
     if (this.duckInterval) {
@@ -99,21 +99,21 @@ export class AudioVisualizerService implements OnDestroy {
       this.duckInterval = null;
     }
 
-    const steps = 20;
-    const duration = 400;
-    const stepTime = duration / steps;
-    const currentVol = this.audioObj.volume;
-    const volumeStep = (currentVol - targetVolume) / steps;
+    const steps: 20 = 20;
+    const duration: 400 = 400;
+    const stepTime: number = duration / steps;
+    const currentVol: number = this.audioObj.volume;
+    const volumeStep: number = (currentVol - targetVolume) / steps;
 
     this.duckInterval = setInterval(() => {
       if (!this.audioObj) {
-        if (this.duckInterval) clearInterval(this.duckInterval);
+        if (this.duckInterval) {clearInterval(this.duckInterval);}
         return;
       }
-      let newVol = this.audioObj.volume - volumeStep;
+      let newVol: number = this.audioObj.volume - volumeStep;
       if (newVol <= targetVolume) {
         newVol = targetVolume;
-        if (this.duckInterval) clearInterval(this.duckInterval);
+        if (this.duckInterval) {clearInterval(this.duckInterval);}
         this.duckInterval = null;
       }
       this.audioObj.volume = newVol;
@@ -121,7 +121,7 @@ export class AudioVisualizerService implements OnDestroy {
   }
 
   public restoreVolume(): void {
-    if (!this.audioObj || !this.isDucked) return;
+    if (!this.audioObj || !this.isDucked) {return;}
     this.isDucked = false;
 
     if (this.duckInterval) {
@@ -129,22 +129,22 @@ export class AudioVisualizerService implements OnDestroy {
       this.duckInterval = null;
     }
 
-    const steps = 25;
-    const duration = 600;
-    const stepTime = duration / steps;
-    const targetVolume = 1;
-    const currentVol = this.audioObj.volume;
-    const volumeStep = (targetVolume - currentVol) / steps;
+    const steps: 25 = 25;
+    const duration: 600 = 600;
+    const stepTime: number = duration / steps;
+    const targetVolume: 1 = 1;
+    const currentVol: number = this.audioObj.volume;
+    const volumeStep: number = (targetVolume - currentVol) / steps;
 
     this.duckInterval = setInterval(() => {
       if (!this.audioObj) {
-        if (this.duckInterval) clearInterval(this.duckInterval);
+        if (this.duckInterval) {clearInterval(this.duckInterval);}
         return;
       }
-      let newVol = this.audioObj.volume + volumeStep;
+      let newVol: number = this.audioObj.volume + volumeStep;
       if (newVol >= targetVolume) {
         newVol = targetVolume;
-        if (this.duckInterval) clearInterval(this.duckInterval);
+        if (this.duckInterval) {clearInterval(this.duckInterval);}
         this.duckInterval = null;
       }
       this.audioObj.volume = newVol;
@@ -170,8 +170,8 @@ export class AudioVisualizerService implements OnDestroy {
     this.isDucked = false;
   }
 
-  public togglePlay(audioUrl: string) {
-    if (this.isLoadingAudio()) return;
+  public togglePlay(audioUrl: string): void {
+    if (this.isLoadingAudio()) {return;}
 
     if (this.isPlaying()) {
       this.isPlaying.set(false);
@@ -217,24 +217,24 @@ export class AudioVisualizerService implements OnDestroy {
       if (this.audioObj) {
         this.audioObj.volume = 0;
       }
-      this.audioObj.play()
-        .catch(() => {
-          this.isPlaying.set(false);
-          this.isLoadingAudio.set(false);
-          if (this.fadeInterval) {
-            clearInterval(this.fadeInterval);
-            this.fadeInterval = null;
-          }
-        });
+      void this.audioObj.play()
+                .catch(() => {
+                  this.isPlaying.set(false);
+                  this.isLoadingAudio.set(false);
+                  if (this.fadeInterval) {
+                    clearInterval(this.fadeInterval);
+                    this.fadeInterval = null;
+                  }
+                });
     }
   }
 
   private async setupAudioAnalysis(): Promise<void> {
-    if (!this.audioObj) return;
+    if (!this.audioObj) {return;}
 
     try {
-      const AudioContextClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-      if (!AudioContextClass) return;
+      const AudioContextClass: { new (contextOptions?: AudioContextOptions): AudioContext; prototype: AudioContext; } = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioContextClass) {return;}
 
       if (!this.audioCtx) {
         this.audioCtx = new AudioContextClass();
@@ -258,13 +258,13 @@ export class AudioVisualizerService implements OnDestroy {
     }
   }
 
-  private startAnalysisLoop() {
-    if (!this.analyser) return;
+  private startAnalysisLoop(): void {
+    if (!this.analyser) {return;}
 
-    const bufferLength = this.analyser.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
+    const bufferLength: number = this.analyser.frequencyBinCount;
+    const dataArray: Uint8Array<ArrayBuffer> = new Uint8Array(bufferLength);
 
-    const update = () => {
+    const update: () => void = () => {
       if (!this.audioObj || this.audioObj.paused || !this.analyser) {
         this.cancelAnalysisLoop();
         return;
@@ -272,24 +272,24 @@ export class AudioVisualizerService implements OnDestroy {
 
       this.analyser.getByteFrequencyData(dataArray);
 
-      const sum = dataArray.reduce((acc, val) => acc + val, 0);
-      const isSilent = sum === 0;
+      const sum: number = dataArray.reduce((acc: number, val: number) => acc + val, 0);
+      const isSilent: boolean = sum === 0;
 
-      let s1, s2, s3, s4;
+      let s1: number, s2: number, s3: number, s4: number;
 
       if (isSilent) {
-        const time = Date.now() * 0.005;
-        const groove = 0.5 + Math.sin(time * 0.6) * 0.45;
+        const time: number = Date.now() * 0.005;
+        const groove: number = 0.5 + Math.sin(time * 0.6) * 0.45;
         
         s1 = 0.12 + Math.pow(Math.sin(time * 1.3 + 0.1), 2) * 0.75 * groove;
         s2 = 0.12 + Math.pow(Math.sin(time * 0.9 + 0.5), 2) * 0.85 * groove;
         s3 = 0.12 + Math.pow(Math.sin(time * 1.5 + 1.0), 2) * 0.80 * groove;
         s4 = 0.12 + Math.pow(Math.sin(time * 1.1 + 1.5), 2) * 0.65 * groove;
       } else {
-        const v1 = dataArray[3] || 0;
-        const v2 = dataArray[5] || 0;
-        const v3 = dataArray[7] || 0;
-        const v4 = dataArray[9] || 0;
+        const v1: number = dataArray[3] || 0;
+        const v2: number = dataArray[5] || 0;
+        const v3: number = dataArray[7] || 0;
+        const v4: number = dataArray[9] || 0;
 
         s1 = Math.min(1.4, 0.12 + Math.pow(v1 / 255, 2) * 1.3);
         s2 = Math.min(1.4, 0.12 + Math.pow(v2 / 255, 2) * 1.3);
@@ -310,14 +310,14 @@ export class AudioVisualizerService implements OnDestroy {
     });
   }
 
-  private cancelAnalysisLoop() {
+  private cancelAnalysisLoop(): void {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
     }
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.cancelAnalysisLoop();
     if (this.fadeInterval) {
       clearInterval(this.fadeInterval);
@@ -332,7 +332,7 @@ export class AudioVisualizerService implements OnDestroy {
       this.audioObj = null;
     }
     if (this.audioCtx) {
-      this.audioCtx.close();
+      void this.audioCtx.close();
       this.audioCtx = null;
     }
   }

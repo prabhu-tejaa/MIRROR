@@ -1,10 +1,11 @@
-import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpContext } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
-import { ApiService } from '../../../core/services/api.service';
-import { SKIP_CANCEL } from '../../../core/interceptors/cancel.interceptor';
 import { timeout } from 'rxjs/operators';
+
+import { environment } from '../../../../environments/environment';
+import { SKIP_CANCEL } from '../../../core/interceptors/cancel.interceptor';
+import { ApiService } from '../../../core/services/api.service';
 
 export interface ChatMessage {
   id: string;
@@ -22,11 +23,11 @@ export interface ChatMessage {
   providedIn: 'root'
 })
 export class ChatService {
-  private http = inject(HttpClient);
-  private apiSvc = inject(ApiService);
+  private http: HttpClient = inject(HttpClient);
+  private apiSvc: ApiService = inject(ApiService);
 
   public getHistory(email: string, cursor: string | null, size: number): Observable<{ messages: unknown[], hasMore: boolean, nextCursor: string | null }> {
-    const cursorParam = cursor ? `&cursor=${cursor}` : '';
+    const cursorParam: string = cursor ? `&cursor=${cursor}` : '';
     return this.http.get<{ messages: unknown[], hasMore: boolean, nextCursor: string | null }>(`${this.apiSvc.USER_MEMORY.HISTORY}?size=${size}${cursorParam}`);
   }
 

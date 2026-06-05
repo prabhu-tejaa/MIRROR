@@ -1,19 +1,15 @@
-<!-- Loading State -->
 <div *ngIf="isLoading" class="loading-state">
   <p>Fetching user directory...</p>
 </div>
 
-<!-- Empty State -->
 <div *ngIf="!isLoading && users.length === 0" class="empty-state">
   <ion-icon name="people-outline" class="empty-icon"></ion-icon>
   <h3>No Users Found</h3>
   <p>Try adjusting your search terms or filters.</p>
 </div>
 
-<!-- User Cards / Table View -->
 <div *ngIf="!isLoading && users.length > 0" class="user-list-container">
   
-  <!-- Responsive Table for Tablet/Desktop -->
   <div class="desktop-table-wrapper">
     <table class="user-table">
       <thead>
@@ -30,7 +26,7 @@
         <tr *ngFor="let user of users">
           <td class="username-cell">
             <div class="avatar-circle">
-              {{ user.username.charAt(0).toUpperCase() }}
+              {{ user.username | userInitials }}
             </div>
             <span class="user-name-text">{{ user.username }}</span>
           </td>
@@ -46,7 +42,7 @@
                 <span class="status-dot-indicator"></span>
                 {{ user.isVerified ? 'Verified' : 'Pending' }}
               </span>
-              <span *ngIf="isUserLocked(user)" class="status-badge locked-badge">
+              <span *ngIf="user | isUserLocked" class="status-badge locked-badge">
                 <ion-icon name="lock-closed-outline" class="badge-lock-icon"></ion-icon>
                 Locked
               </span>
@@ -54,13 +50,13 @@
           </td>
           <td>{{ user.createdAt | date:'mediumDate' }}</td>
           <td class="actions-cell">
-            <ion-button *ngIf="isUserLocked(user)" fill="clear" color="warning" class="action-btn unlock-btn" (click)="unlock.emit(user)" title="Unlock User">
+            <ion-button *ngIf="user | isUserLocked" fill="clear" color="warning" class="action-btn unlock-btn" title="Unlock User" (click)="unlock.emit(user)">
               <ion-icon name="key-outline" slot="icon-only"></ion-icon>
             </ion-button>
-            <ion-button fill="clear" color="primary" class="action-btn" (click)="edit.emit(user)" title="Edit User">
+            <ion-button fill="clear" color="primary" class="action-btn" title="Edit User" (click)="edit.emit(user)">
               <ion-icon name="create-outline" slot="icon-only"></ion-icon>
             </ion-button>
-            <ion-button fill="clear" color="danger" class="action-btn" (click)="delete.emit(user)" title="Delete User">
+            <ion-button fill="clear" color="danger" class="action-btn" title="Delete User" (click)="delete.emit(user)">
               <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
             </ion-button>
           </td>
@@ -69,13 +65,12 @@
     </table>
   </div>
 
-  <!-- Mobile List View -->
   <div class="mobile-list-wrapper">
     <div *ngFor="let user of users" class="user-mobile-card">
       <div class="card-header">
         <div class="user-info">
           <div class="avatar-circle">
-            {{ user.username.charAt(0).toUpperCase() }}
+            {{ user.username | userInitials }}
           </div>
           <div class="user-details">
             <h3>{{ user.username }}</h3>
@@ -83,7 +78,7 @@
           </div>
         </div>
         <div class="card-actions">
-          <ion-button *ngIf="isUserLocked(user)" fill="clear" color="warning" class="unlock-btn" (click)="unlock.emit(user)" title="Unlock User">
+          <ion-button *ngIf="user | isUserLocked" fill="clear" color="warning" class="unlock-btn" title="Unlock User" (click)="unlock.emit(user)">
             <ion-icon name="key-outline" slot="icon-only"></ion-icon>
           </ion-button>
           <ion-button fill="clear" color="primary" (click)="edit.emit(user)">
@@ -109,7 +104,7 @@
               <span class="status-dot-indicator"></span>
               {{ user.isVerified ? 'Verified' : 'Pending' }}
             </span>
-            <span *ngIf="isUserLocked(user)" class="status-badge locked-badge">
+            <span *ngIf="user | isUserLocked" class="status-badge locked-badge">
               <ion-icon name="lock-closed-outline" class="badge-lock-icon"></ion-icon>
               Locked
             </span>

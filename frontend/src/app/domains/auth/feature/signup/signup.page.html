@@ -1,4 +1,4 @@
-<ion-content [fullscreen]="true" class="transparent-bg">
+<ion-content class="transparent-bg" [fullscreen]="true">
   <div class="login-wrapper">
 
     <div class="branding-header" style="margin-bottom: clamp(1rem, 3vh, 2rem);">
@@ -18,8 +18,8 @@
         <div class="input-row">
 
           <div class="input-group">
-            <ion-input id="signup-username" formControlName="username" type="text" [placeholder]="'SIGNUP.PLACEHOLDER_USERNAME' | translate"
-              class="glassy-input"></ion-input>
+            <ion-input id="signup-username" formControlName="username" type="text" class="glassy-input"
+              [placeholder]="'SIGNUP.PLACEHOLDER_USERNAME' | translate"></ion-input>
             @if (isSubmitted && f['username'].errors) {
             <div class="error-msg">
               @if (f['username'].errors['required']) {
@@ -36,8 +36,8 @@
           </div>
 
           <div class="input-group">
-            <ion-input id="signup-email" formControlName="email" type="email" [placeholder]="'SIGNUP.PLACEHOLDER_EMAIL' | translate"
-              class="glassy-input"></ion-input>
+            <ion-input id="signup-email" formControlName="email" type="email" class="glassy-input"
+              [placeholder]="'SIGNUP.PLACEHOLDER_EMAIL' | translate"></ion-input>
             @if (isSubmitted && f['email'].errors) {
             <div class="error-msg">
               @if (f['email'].errors['required']) {
@@ -54,10 +54,10 @@
         </div>
 
         <div class="input-group">
-          <ion-input id="signup-password" formControlName="password" [type]="showPassword ? 'text' : 'password'"
-            [placeholder]="'SIGNUP.PLACEHOLDER_PASSWORD' | translate" class="glassy-input">
-            <button type="button" slot="end" class="eye-toggle" (click)="showPassword = !showPassword"
-              aria-label="Toggle password visibility">
+          <ion-input id="signup-password" formControlName="password" class="glassy-input"
+            [type]="showPassword ? 'text' : 'password'" [placeholder]="'SIGNUP.PLACEHOLDER_PASSWORD' | translate">
+            <button type="button" slot="end" class="eye-toggle" aria-label="Toggle password visibility"
+              (click)="showPassword = !showPassword">
               <ion-icon [icon]="showPassword ? eye : eyeOff"></ion-icon>
             </button>
           </ion-input>
@@ -95,13 +95,13 @@
             </span>
           </div>
 
-          <ion-modal trigger="open-terms" class="premium-modal" #modal>
+          <ion-modal #modal trigger="open-terms" class="premium-modal">
             <ng-template>
               <ion-header class="ion-no-border">
                 <ion-toolbar class="glassy-toolbar">
                   <ion-title>{{ 'SIGNUP.TOS_LINK' | translate }}</ion-title>
                   <ion-buttons slot="end">
-                    <ion-button (click)="modal.dismiss()" class="close-btn">
+                    <ion-button class="close-btn" (click)="modal.dismiss()">
                       <ion-icon [icon]="closeOutline"></ion-icon>
                     </ion-button>
                   </ion-buttons>
@@ -110,7 +110,7 @@
               <ion-content class="ion-padding glassy-modal-content">
                 <div class="modal-body glassy-body">
                   <div class="tos-header-badge">
-                    <ion-icon [icon]="shieldCheckmarkOutline" class="tos-badge-icon"></ion-icon>
+                    <ion-icon class="tos-badge-icon" [icon]="shieldCheckmarkOutline"></ion-icon>
                     <span>SECURE &amp; VERIFIED ACADEMIC SANDBOX</span>
                   </div>
                   <p [innerHTML]="'SIGNUP.TOS_SUBTITLE' | translate"></p>
@@ -164,8 +164,8 @@
         </ion-button>
 
         <div class="signup-wrapper">
-          <span class="signup-text">{{ 'SIGNUP.LOGIN_PREFIX' | translate }}<a (click)="goToLogin()"
-              class="signup-link">{{ 'SIGNUP.LOGIN_LINK' | translate }}</a></span>
+          <span class="signup-text">{{ 'SIGNUP.LOGIN_PREFIX' | translate }}<a class="signup-link"
+              (click)="goToLogin()">{{ 'SIGNUP.LOGIN_LINK' | translate }}</a></span>
         </div>
       </form>
     </div>

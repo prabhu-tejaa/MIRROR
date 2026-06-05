@@ -1,19 +1,19 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { AlertController } from '@ionic/angular/standalone';
 import { Capacitor } from '@capacitor/core';
 import { SpeechRecognition } from '@capacitor-community/speech-recognition';
+import { AlertController } from '@ionic/angular/standalone';
 import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VoiceRecognitionService {
-  private alertCtrl = inject(AlertController);
-  private isNative = Capacitor.isNativePlatform();
+  private alertCtrl: AlertController = inject(AlertController);
+  private isNative: boolean = Capacitor.isNativePlatform();
 
   public isRecording = signal<boolean>(false);
   
-  public transcriptionUpdate = new Subject<{text: string, isPartial: boolean}>();
+  public transcriptionUpdate: Subject<{ text: string; isPartial: boolean; }> = new Subject<{text: string, isPartial: boolean}>();
 
   private nativeListenerHandle: import('@capacitor/core').PluginListenerHandle | null = null;
   private nativeStateListenerHandle: import('@capacitor/core').PluginListenerHandle | null = null;
@@ -36,24 +36,24 @@ export class VoiceRecognitionService {
     this.initSpeechRecognition();
   }
 
-  private clearSpeechTimeout() {
+  private clearSpeechTimeout(): void {
     if (this.speechTimeout) {
       clearTimeout(this.speechTimeout);
       this.speechTimeout = null;
     }
   }
 
-  private initSpeechRecognition() {
+  private initSpeechRecognition(): void {
     if (this.isNative) {
-      SpeechRecognition.available().then(() => {
-        
-      }).catch(() => {
-        
-      });return;
+      void SpeechRecognition.available().then(() => {
+                
+              }).catch(() => {
+                
+              });return;
     }
 
     const globalWindow = window as unknown as { SpeechRecognition: new () => NonNullable<typeof this.recognition>; webkitSpeechRecognition: new () => NonNullable<typeof this.recognition> };
-    const SpeechRecognitionCtor = globalWindow.SpeechRecognition || globalWindow.webkitSpeechRecognition;
+    const SpeechRecognitionCtor: new () => NonNullable<any> = globalWindow.SpeechRecognition || globalWindow.webkitSpeechRecognition;
     if (SpeechRecognitionCtor) {
       this.recognition = new SpeechRecognitionCtor();
       this.recognition.continuous = false;
@@ -93,7 +93,7 @@ export class VoiceRecognitionService {
 
       this.recognition.onresult = (event: { results: { transcript: string }[][] }) => {
         this.clearSpeechTimeout();
-        const transcript = event.results[0][0].transcript;
+        const transcript: string = event.results[0][0].transcript;
         if (transcript) {
           this.transcriptionUpdate.next({ text: transcript, isPartial: false });
         }
@@ -112,7 +112,7 @@ export class VoiceRecognitionService {
     }
   }
 
-  public async toggleRecording() {
+  public async toggleRecording(): Promise<void> {
     if (this.isNative) {
       await this.toggleNativeRecording();
     } else {
@@ -120,9 +120,9 @@ export class VoiceRecognitionService {
     }
   }
 
-  private async toggleNativeRecording() {
+  private async toggleNativeRecording(): Promise<void> {
     try {
-      const isListening = await SpeechRecognition.isListening();
+      const isListening: { listening: boolean; } = await SpeechRecognition.isListening();
       if (isListening.listening || this.isRecording()) {
         await this.stopRecording();
         return;
@@ -134,7 +134,7 @@ export class VoiceRecognitionService {
       }
 
       if (permStatus.speechRecognition !== 'granted') {
-        const alert = await this.alertCtrl.create({
+        const alert: HTMLIonAlertElement = await this.alertCtrl.create({
           header: 'Permission Denied',
           message: 'Microphone and speech recognition permissions are required to capture voice input.',
           buttons: ['OK']
@@ -143,9 +143,9 @@ export class VoiceRecognitionService {
         return;
       }
 
-      const avail = await SpeechRecognition.available();
+      const avail: { available: boolean; } = await SpeechRecognition.available();
       if (!avail.available) {
-        const alert = await this.alertCtrl.create({
+        const alert: HTMLIonAlertElement = await this.alertCtrl.create({
           header: 'Speech Recognition Unavailable',
           message: 'Speech recognition is not supported on this device.',
           buttons: ['OK']
@@ -167,7 +167,7 @@ export class VoiceRecognitionService {
 
       this.nativeListenerHandle = await SpeechRecognition.addListener('partialResults', (data: { matches: string[] }) => {
         if (data.matches && data.matches.length > 0) {
-          const match = data.matches[0];
+          const match: string = data.matches[0];
           if (match) {
             this.transcriptionUpdate.next({ text: match, isPartial: true });
           }
@@ -199,7 +199,7 @@ export class VoiceRecognitionService {
     }
   }
 
-  private async stopNativeRecording() {
+  private async stopNativeRecording(): Promise<void> {
     this.clearSpeechTimeout();
     this.isRecording.set(false);
     try {
@@ -217,7 +217,7 @@ export class VoiceRecognitionService {
     }
   }
 
-  private toggleBrowserRecording() {
+  private toggleBrowserRecording(): void {
     if (!this.recognition) {
       if (this.isRecording()) {
         this.isRecording.set(false);
@@ -251,7 +251,7 @@ export class VoiceRecognitionService {
     }
   }
 
-  public async stopRecording() {
+  public async stopRecording(): Promise<void> {
     if (this.isNative) {
       await this.stopNativeRecording();
     } else if (this.recognition) {
@@ -263,8 +263,8 @@ export class VoiceRecognitionService {
     }
   }
 
-  public destroy() {
+  public destroy(): void {
     this.clearSpeechTimeout();
-    this.stopRecording();
+    void this.stopRecording();
   }
 }

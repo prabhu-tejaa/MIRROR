@@ -3,8 +3,8 @@
 
   <div class="profile-page-inner">
     <div class="profile-hero">
-      <ion-icon [icon]="'person-circle-outline'" class="avatar-icon"></ion-icon>
-      <p class="user-email">{{ userId() }}</p>
+      <ion-icon class="avatar-icon" [icon]="'person-circle-outline'"></ion-icon>
+      <p class="user-email">{{ userIdValue }}</p>
     </div>
 
     <div class="profile-content-area">
@@ -14,10 +14,10 @@
         <ion-item class="profile-item" button detail="false">
           <ion-icon slot="start" name="mail-outline" class="item-icon"></ion-icon>
           <ion-label>{{ 'PROFILE.EMAIL' | translate }}</ion-label>
-          <ion-note slot="end">{{ userEmail() }}</ion-note>
+          <ion-note slot="end">{{ userEmailValue }}</ion-note>
         </ion-item>
 
-        <ion-item *ngIf="isAdmin()" class="profile-item" button detail="false" (click)="navigateToAdmin()">
+        <ion-item *ngIf="isAdminValue" class="profile-item" button detail="false" (click)="navigateToAdmin()">
           <ion-icon slot="start" name="shield-checkmark-outline" class="item-icon admin-color"></ion-icon>
           <ion-label>{{ 'PROFILE.ADMIN_VIEW' | translate }}</ion-label>
           <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon"></ion-icon>

@@ -23,8 +23,8 @@ export const THEME_COLORS = {
 };
 
 export function getEmotionColors(emotionText: string): { primary: string, secondary: string, name: string } {
-  const e = (emotionText || '').toUpperCase();
-  for (const [key, value] of Object.entries(THEME_COLORS.emotions)) {
+  const e: string = (emotionText || '').toUpperCase();
+  for (const [key, value]: any of Object.entries(THEME_COLORS.emotions)) {
     if (e.includes(key)) {
       return { primary: value.primary, secondary: value.secondary, name: value.fallbackName };
     }

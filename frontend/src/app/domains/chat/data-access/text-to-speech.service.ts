@@ -1,4 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
+
 import { AudioVisualizerService } from './audio-visualizer.service';
 
 @Injectable({
@@ -8,19 +9,19 @@ export class TextToSpeechService {
   public availableVoices = signal<SpeechSynthesisVoice[]>([]);
   public currentlySpeakingId = signal<string | null>(null);
 
-  private audioVisualizer = inject(AudioVisualizerService);
+  private audioVisualizer: AudioVisualizerService = inject(AudioVisualizerService);
 
   constructor() {
     this.preCacheVoices();
   }
 
-  private preCacheVoices() {
+  private preCacheVoices(): void {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
-      let voicesLoaded = false;
+      let voicesLoaded: boolean = false;
 
-      const loadVoices = () => {
-        if (voicesLoaded) return;
-        const voices = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
+      const loadVoices: () => void = () => {
+        if (voicesLoaded) {return;}
+        const voices: SpeechSynthesisVoice[] = window.speechSynthesis.getVoices().filter((v: SpeechSynthesisVoice) => v.lang.startsWith('en'));
         if (voices.length > 0) {
           voicesLoaded = true;
           this.availableVoices.set(voices);
@@ -32,7 +33,7 @@ export class TextToSpeechService {
         }
       };
 
-      const handleVoicesChanged = () => {
+      const handleVoicesChanged: () => void = () => {
         loadVoices();
       };
 
@@ -48,7 +49,7 @@ export class TextToSpeechService {
     }
   }
 
-  public speakText(msgId: string, text: string) {
+  public speakText(msgId: string, text: string): void {
     if (this.currentlySpeakingId() === msgId) {
       window.speechSynthesis.cancel();
       this.currentlySpeakingId.set(null);
@@ -58,18 +59,18 @@ export class TextToSpeechService {
 
     window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
+    const utterance: SpeechSynthesisUtterance = new SpeechSynthesisUtterance(text);
 
-    const voices = window.speechSynthesis.getVoices();
+    const voices: SpeechSynthesisVoice[] = window.speechSynthesis.getVoices();
 
 
-    const selectedVoice = voices.find(v => v.name.toLowerCase().includes('google uk english female')) ||
-      voices.find(v => v.name.toLowerCase().includes('google uk english')) ||
-      voices.find(v => v.name.toLowerCase().includes('samantha')) ||
-      voices.find(v => v.name.toLowerCase().includes('zira')) ||
-      voices.find(v => v.name.toLowerCase().includes('hazel')) ||
-      voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
-      voices.find(v => v.lang.startsWith('en')) ||
+    const selectedVoice: SpeechSynthesisVoice = voices.find((v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('google uk english female')) ||
+      voices.find((v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('google uk english')) ||
+      voices.find((v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('samantha')) ||
+      voices.find((v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('zira')) ||
+      voices.find((v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('hazel')) ||
+      voices.find((v: SpeechSynthesisVoice) => v.lang.startsWith('en') && v.name.toLowerCase().includes('female')) ||
+      voices.find((v: SpeechSynthesisVoice) => v.lang.startsWith('en')) ||
       voices[0];
 
     if (selectedVoice) {
@@ -103,7 +104,7 @@ export class TextToSpeechService {
     }, 100);
   }
 
-  public cancel() {
+  public cancel(): void {
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
       this.currentlySpeakingId.set(null);

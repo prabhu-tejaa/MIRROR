@@ -1,8 +1,8 @@
-import { ShapeType } from './starfield.service';
 import { StarfieldConfig, Star, Meteor, Sparkle } from './starfield.models';
-import { StarfieldShapeGenerator } from './starfield.shapes';
-import { StarfieldRenderer } from './starfield.renderer';
 import { StarfieldPhysics } from './starfield.physics';
+import { StarfieldRenderer } from './starfield.renderer';
+import { ShapeType } from './starfield.service';
+import { StarfieldShapeGenerator } from './starfield.shapes';
 
 export * from './starfield.models';
 
@@ -61,7 +61,7 @@ export class StarfieldEngine {
   }
 
   public updateConfig(newConfig: Partial<StarfieldConfig>): void {
-    const oldStarCount = this.config.starCount;
+    const oldStarCount: number = this.config.starCount;
     this.config = { ...this.config, ...newConfig };
     
     if (newConfig.starCount !== undefined && newConfig.starCount !== oldStarCount) {
@@ -75,7 +75,7 @@ export class StarfieldEngine {
   }
 
   public onMouseMove(clientX: number, clientY: number): void {
-    if (!this.config.parallax) return;
+    if (!this.config.parallax) {return;}
     this.pointerX = (clientX / this.width - 0.5) * 2;
     this.pointerY = (clientY / this.height - 0.5) * 2;
   }
@@ -83,7 +83,7 @@ export class StarfieldEngine {
   public pause(): void {
     this.paused = true;
     cancelAnimationFrame(this.animationId);
-    if (this.meteorTimeout) clearTimeout(this.meteorTimeout);
+    if (this.meteorTimeout) {clearTimeout(this.meteorTimeout);}
   }
 
   public resume(): void {
@@ -98,13 +98,13 @@ export class StarfieldEngine {
   public destroy(): void {
     cancelAnimationFrame(this.animationId);
     this.resizeObserver?.disconnect();
-    if (this.meteorTimeout) clearTimeout(this.meteorTimeout);
+    if (this.meteorTimeout) {clearTimeout(this.meteorTimeout);}
   }
 
   private resize(): void {
-    const parent = this.canvas.parentElement as HTMLElement;
-    const oldWidth = this.width;
-    const oldHeight = this.height;
+    const parent: HTMLElement = this.canvas.parentElement as HTMLElement;
+    const oldWidth: number = this.width;
+    const oldHeight: number = this.height;
     
     this.width = parent.clientWidth;
     this.height = parent.clientHeight;
@@ -116,42 +116,42 @@ export class StarfieldEngine {
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
 
     if (oldWidth > 0 && oldHeight > 0) {
-      const scaleX = this.width / oldWidth;
-      const scaleY = this.height / oldHeight;
-      for (const star of this.stars) {
+      const scaleX: number = this.width / oldWidth;
+      const scaleY: number = this.height / oldHeight;
+      for (const star: Star of this.stars) {
         star.x *= scaleX;
         star.y *= scaleY;
-        if (star.targetX !== undefined) star.targetX *= scaleX;
-        if (star.targetY !== undefined) star.targetY *= scaleY;
+        if (star.targetX !== undefined) {star.targetX *= scaleX;}
+        if (star.targetY !== undefined) {star.targetY *= scaleY;}
       }
     }
   }
 
   private initStars(): void {
     this.stars = [];
-    for (let i = 0; i < this.config.starCount; i++) {
+    for (let i: number = 0; i < this.config.starCount; i++) {
       this.stars.push(StarfieldPhysics.createStar(true, this.width, this.height, this.config));
     }
   }
 
   private scheduleMeteor(): void {
-    const [min, max] = this.config.shootingStarInterval;
-    const delay = min + Math.random() * (max - min);
+    const [min, max]: any = this.config.shootingStarInterval;
+    const delay: any = min + Math.random() * (max - min);
     this.meteorTimeout = setTimeout(() => {
       StarfieldPhysics.spawnMeteor(this.width, this.height, this.meteors);
       this.scheduleMeteor();
     }, delay);
   }
 
-  private animate = (now: number): void => {
-    if (this.paused) return;
+  private animate: (now: number) => void = (now: number): void => {
+    if (this.paused) {return;}
     
     const dt: number = Math.min(now - this.lastTime, 100); 
     this.lastTime = now;
 
-    let globalAlpha = 1;
+    let globalAlpha: number = 1;
     if (this.config.fadeInDuration > 0) {
-      const elapsed = now - this.fadeStart;
+      const elapsed: number = now - this.fadeStart;
       globalAlpha = Math.min(1, elapsed / this.config.fadeInDuration);
     }
 

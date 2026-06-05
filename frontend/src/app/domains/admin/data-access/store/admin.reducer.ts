@@ -1,9 +1,11 @@
 import { createReducer, on } from '@ngrx/store';
-import { AdminActions } from './admin.actions';
+
 import { AdminUserResponse } from '../../../auth/data-access/auth.model';
 import { AdminMemoryRecord } from '../admin-memory.service';
 
-export const adminFeatureKey = 'admin';
+import { AdminActions } from './admin.actions';
+
+export const adminFeatureKey: "admin" = 'admin';
 
 export interface AdminState {
   users: AdminUserResponse[];
@@ -28,17 +30,17 @@ export const initialState: AdminState = {
 export const adminReducer = createReducer(
   initialState,
   
-  on(AdminActions.loadUsers, (state) => ({ ...state, usersLoading: true, error: null })),
-  on(AdminActions.loadUsersSuccess, (state, { users }) => ({ ...state, users, usersLoading: false })),
-  on(AdminActions.loadUsersFailure, (state, { error }) => ({ ...state, error, usersLoading: false })),
+  on(AdminActions.loadUsers, (state: AdminState) => ({ ...state, usersLoading: true, error: null })),
+  on(AdminActions.loadUsersSuccess, (state: AdminState, { users }) => ({ ...state, users, usersLoading: false })),
+  on(AdminActions.loadUsersFailure, (state: AdminState, { error }) => ({ ...state, error, usersLoading: false })),
   
-  on(AdminActions.createUserSuccess, (state, { user }) => ({ ...state, users: [...state.users, user] })),
-  on(AdminActions.updateUserSuccess, (state, { user }) => ({ ...state, users: state.users.map(u => u.id === user.id ? user : u) })),
-  on(AdminActions.deleteUserSuccess, (state, { id }) => ({ ...state, users: state.users.filter(u => u.id !== id) })),
+  on(AdminActions.createUserSuccess, (state: AdminState, { user }) => ({ ...state, users: [...state.users, user] })),
+  on(AdminActions.updateUserSuccess, (state: AdminState, { user }) => ({ ...state, users: state.users.map((u: AdminUserResponse) => u.id === user.id ? user : u) })),
+  on(AdminActions.deleteUserSuccess, (state: AdminState, { id }) => ({ ...state, users: state.users.filter((u: AdminUserResponse) => u.id !== id) })),
   
-  on(AdminActions.loadMemories, (state) => ({ ...state, memoriesLoading: true, error: null })),
-  on(AdminActions.loadMemoriesSuccess, (state, { memories }) => ({ ...state, memories, memoriesLoading: false })),
-  on(AdminActions.loadMemoriesFailure, (state, { error }) => ({ ...state, error, memoriesLoading: false })),
+  on(AdminActions.loadMemories, (state: AdminState) => ({ ...state, memoriesLoading: true, error: null })),
+  on(AdminActions.loadMemoriesSuccess, (state: AdminState, { memories }) => ({ ...state, memories, memoriesLoading: false })),
+  on(AdminActions.loadMemoriesFailure, (state: AdminState, { error }) => ({ ...state, error, memoriesLoading: false })),
   
-  on(AdminActions.deleteMemorySuccess, (state, { id }) => ({ ...state, memories: state.memories.filter(m => m.id !== id) }))
+  on(AdminActions.deleteMemorySuccess, (state: AdminState, { id }) => ({ ...state, memories: state.memories.filter((m: AdminMemoryRecord) => m.id !== id) }))
 );
