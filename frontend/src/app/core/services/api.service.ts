@@ -4,7 +4,19 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ApiService {
-  public get AUTH() {
+  public get auth(): {
+    SIGNUP: string;
+    LOGIN: string;
+    OTP_REQUEST: string;
+    OTP_VERIFY: string;
+    FORGOT_PASSWORD_REQUEST: string;
+    FORGOT_PASSWORD_VERIFY: string;
+    FORGOT_PASSWORD_RESET: string;
+    REFRESH: string;
+    LOGOUT: string;
+    ADMIN_USERS: string;
+    VALIDATE: string;
+  } {
     return {
       SIGNUP: '/api/auth/signup',
       LOGIN: '/api/auth/login',
@@ -20,7 +32,13 @@ export class ApiService {
     } as const;
   }
 
-  public get ADMIN_MEMORY() {
+  public get adminMemory(): {
+    ALL: string;
+    DELETE: (id: string) => string;
+    UPLOAD: string;
+    CREATE: string;
+    UPDATE: (id: string) => string;
+  } {
     return {
       ALL: '/api/admin/memory/all',
       DELETE: (id: string) => `/api/admin/memory/${id}`,
@@ -30,7 +48,12 @@ export class ApiService {
     } as const;
   }
 
-  public get USER_MEMORY() {
+  public get userMemory(): {
+    HISTORY: string;
+    REFLECT: string;
+    ANALYTICS: string;
+    ALL: string;
+  } {
     return {
       HISTORY: '/api/memory/history',
       REFLECT: '/api/memory/reflect',

@@ -83,7 +83,7 @@ export class AdminAuthService {
   }
 
   public getAllUsers(): Observable<AdminUserResponse[]> {
-    return this.http.get<AdminUserResponse[]>(this.apiSvc.AUTH.ADMIN_USERS).pipe(
+    return this.http.get<AdminUserResponse[]>(this.apiSvc.auth.ADMIN_USERS).pipe(
       catchError((error: unknown) => this.handleMockError(error, () => of([...this.mockUsers])))
     );
   }
@@ -95,7 +95,7 @@ export class AdminAuthService {
       return throwError(() => new Error('User not found in mock database'));
     }
 
-    return this.http.get<AdminUserResponse>(`${this.apiSvc.AUTH.ADMIN_USERS}/${id}`).pipe(
+    return this.http.get<AdminUserResponse>(`${this.apiSvc.auth.ADMIN_USERS}/${id}`).pipe(
       catchError((error: unknown) => this.handleMockError(error, () => {
         const user: AdminUserResponse | undefined = this.mockUsers.find((u: AdminUserResponse) => u.id === id);
         if (user) {
@@ -135,7 +135,7 @@ export class AdminAuthService {
       }
     }
 
-    return this.http.put<AdminUserResponse>(`${this.apiSvc.AUTH.ADMIN_USERS}/${id}`, request).pipe(
+    return this.http.put<AdminUserResponse>(`${this.apiSvc.auth.ADMIN_USERS}/${id}`, request).pipe(
       catchError((error: unknown) => this.handleMockError(error, () => {
         try {
           return of({ ...this.updateMockUser(id, request) });
@@ -167,7 +167,7 @@ export class AdminAuthService {
       return of({ ...this.createMockUser(request) });
     }
 
-    return this.http.post<AdminUserResponse>(this.apiSvc.AUTH.ADMIN_USERS, request).pipe(
+    return this.http.post<AdminUserResponse>(this.apiSvc.auth.ADMIN_USERS, request).pipe(
       catchError((error: unknown) => this.handleMockError(error, () => {
         return of({ ...this.createMockUser(request) });
       }))
@@ -184,7 +184,7 @@ export class AdminAuthService {
       return throwError(() => new Error('User not found in mock database'));
     }
 
-    return this.http.delete<void>(`${this.apiSvc.AUTH.ADMIN_USERS}/${id}`).pipe(
+    return this.http.delete<void>(`${this.apiSvc.auth.ADMIN_USERS}/${id}`).pipe(
       catchError((error: unknown) => this.handleMockError(error, () => {
         const index: number = this.mockUsers.findIndex((u: AdminUserResponse) => u.id === id);
         if (index !== -1) {

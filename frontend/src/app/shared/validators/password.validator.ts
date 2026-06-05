@@ -1,16 +1,24 @@
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 
-export function strictPasswordValidator(control: AbstractControl): ValidationErrors | null {
-  const value: string = control.value || '';
+const hasUpper: RegExp = /[A-Z]/;
+const hasLower: RegExp = /[a-z]/;
+const hasNumeric: RegExp = /[0-9]/;
+const hasSpecial: RegExp = /[@$!%*?&]/;
 
-  if (!value) {return null;}
-
+function validatePassword(value: string): ValidationErrors {
   const errors: ValidationErrors = {};
+  if (!hasUpper.test(value)) { errors['missingUpper'] = true; }
+  if (!hasLower.test(value)) { errors['missingLower'] = true; }
+  if (!hasNumeric.test(value)) { errors['missingNumeric'] = true; }
+  if (!hasSpecial.test(value)) { errors['missingSpecial'] = true; }
+  return errors;
+}
 
-  if (!/[A-Z]/.test(value)) {errors['missingUpper'] = true;}
-  if (!/[a-z]/.test(value)) {errors['missingLower'] = true;}
-  if (!/[0-9]/.test(value)) {errors['missingNumeric'] = true;}
-  if (!/[@$!%*?&]/.test(value)) {errors['missingSpecial'] = true;}
-
+export function strictPasswordValidator(control: AbstractControl): ValidationErrors | null {
+  const value: string = (control.value as string | null | undefined) ?? '';
+  if (!value) {
+    return null;
+  }
+  const errors: ValidationErrors = validatePassword(value);
   return Object.keys(errors).length > 0 ? errors : null;
 }

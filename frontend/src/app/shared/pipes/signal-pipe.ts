@@ -4,9 +4,7 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'signal'
 })
 export class SignalPipe implements PipeTransform {
-
-  transform(value: unknown, ...args: unknown[]): unknown {
+  public transform(_value: unknown, ..._args: unknown[]): unknown {
     return null;
   }
-
 }

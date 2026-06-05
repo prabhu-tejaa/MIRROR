@@ -4,7 +4,7 @@ import { ShapeType } from './starfield.service';
 export class StarfieldShapeGenerator {
   public static applyShape(stars: Star[], type: ShapeType, width: number, height: number): void {
     if (type === 'none') {
-      for (const star: Star of stars) {
+      for (const star of stars) {
         star.isTransitioning = false;
         star.transitionProgress = 0;
         star.vx += (Math.random() - 0.5) * 0.4;
@@ -53,9 +53,9 @@ export class StarfieldShapeGenerator {
           break;
         }
         case 'star': {
-          const spikes: 5 = 5;
-          const outerRadius: 22 = 22;
-          const innerRadius: 10 = 10;
+          const spikes = 5 as const;
+          const outerRadius = 22 as const;
+          const innerRadius = 10 as const;
           const rot: number = Math.PI / 2 * 3;
           const step: number = Math.PI / spikes;
           const pointIndex: number = Math.floor(Math.random() * (spikes * 2));

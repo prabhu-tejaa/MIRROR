@@ -118,7 +118,7 @@ export class StarfieldEngine {
     if (oldWidth > 0 && oldHeight > 0) {
       const scaleX: number = this.width / oldWidth;
       const scaleY: number = this.height / oldHeight;
-      for (const star: Star of this.stars) {
+      for (const star of this.stars) {
         star.x *= scaleX;
         star.y *= scaleY;
         if (star.targetX !== undefined) {star.targetX *= scaleX;}
@@ -135,8 +135,8 @@ export class StarfieldEngine {
   }
 
   private scheduleMeteor(): void {
-    const [min, max]: any = this.config.shootingStarInterval;
-    const delay: any = min + Math.random() * (max - min);
+    const interval: [number, number] = this.config.shootingStarInterval;
+    const delay: number = interval[0] + Math.random() * (interval[1] - interval[0]);
     this.meteorTimeout = setTimeout(() => {
       StarfieldPhysics.spawnMeteor(this.width, this.height, this.meteors);
       this.scheduleMeteor();

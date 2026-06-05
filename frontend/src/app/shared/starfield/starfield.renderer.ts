@@ -63,7 +63,7 @@ export class StarfieldRenderer {
     const px: number = config.parallax ? pointerX * config.parallaxStrength : 0;
     const py: number = config.parallax ? pointerY * config.parallaxStrength : 0;
 
-    for (const star: Star of stars) {
+    for (const star of stars) {
       const drawX: number = star.x + px * star.depth;
       const drawY: number = star.y + py * star.depth;
 
@@ -83,13 +83,13 @@ export class StarfieldRenderer {
   }
 
   private drawMeteors(meteors: Meteor[], sparkles: Sparkle[], globalAlpha: number): void {
-    for (const s: Sparkle of sparkles) {
+    for (const s of sparkles) {
       this.ctx.globalAlpha = s.life * globalAlpha * 0.7;
       this.ctx.fillStyle = '#ffffff';
       this.ctx.fillRect(s.x - s.size, s.y - s.size, s.size * 2, s.size * 2);
     }
 
-    for (const m: Meteor of meteors) {
+    for (const m of meteors) {
       const speed: number = Math.hypot(m.vx, m.vy);
       const dirX: number = m.vx / speed;
       const dirY: number = m.vy / speed;

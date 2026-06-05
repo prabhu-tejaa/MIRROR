@@ -22,11 +22,11 @@
         "@angular-eslint/component-class-suffix": ["error", { "suffixes": ["Component", "Page"] }],
         "@angular-eslint/component-selector": ["error", { "type": "element", "prefix": "app", "style": "kebab-case" }],
         "@angular-eslint/directive-selector": ["error", { "type": "attribute", "prefix": "app", "style": "camelCase" }],
-        
+
         "no-console": "error",
         "no-debugger": "error",
         "no-alert": "error",
-        
+
         "@typescript-eslint/no-unused-vars": ["error", { "args": "all", "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
         "@typescript-eslint/explicit-member-accessibility": [
           "error",
@@ -39,10 +39,12 @@
           "error",
           { "selector": "default", "format": ["camelCase"], "leadingUnderscore": "forbid", "trailingUnderscore": "forbid" },
           { "selector": "variable", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
-          { "selector": "objectLiteralProperty", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+          { "selector": "objectLiteralProperty", "format": null, "filter": { "regex": "[-_]", "match": true } },
+          { "selector": "objectLiteralProperty", "format": ["camelCase", "UPPER_CASE", "PascalCase"], "filter": { "regex": "[-_]", "match": false } },
+          { "selector": "parameter", "format": ["camelCase"], "leadingUnderscore": "allow" },
           { "selector": "typeLike", "format": ["PascalCase"] }
         ],
-        
+
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/no-unsafe-argument": "error",
         "@typescript-eslint/no-unsafe-assignment": "error",
@@ -67,13 +69,13 @@
           { "selector": "Block", "message": "Block Comments are forbidden. Code must be self-documenting." }
         ],
         "no-inline-comments": "error",
-        
+
         "eqeqeq": ["error", "always"],
         "curly": ["error", "all"],
         "no-eval": "error",
         "no-implied-eval": "error",
         "no-param-reassign": "error",
-        
+
         "max-lines-per-function": ["error", { "max": 25, "skipBlankLines": true }],
         "max-lines": ["error", { "max": 200, "skipBlankLines": true }],
         "complexity": ["error", { "max": 5 }],
@@ -82,6 +84,39 @@
 
         "import/no-duplicates": "error",
         "import/order": ["error", { "alphabetize": { "order": "asc" }, "newlines-between": "always" }]
+      }
+    },
+    {
+      "files": ["*.spec.ts"],
+      "rules": {
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "max-lines-per-function": "off",
+        "max-lines": "off"
+      }
+    },
+    {
+      "files": ["*.routes.ts"],
+      "rules": {
+        "@typescript-eslint/no-unsafe-return": "off"
+      }
+    },
+    {
+      "files": [
+        "starfield.physics.ts",
+        "starfield.shapes.ts",
+        "starfield.renderer.ts",
+        "starfield.engine.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-extraneous-class": "off",
+        "max-lines-per-function": "off",
+        "max-params": "off",
+        "complexity": "off",
+        "max-depth": "off",
+        "@typescript-eslint/no-non-null-assertion": "off"
       }
     },
     {

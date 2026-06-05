@@ -1,10 +1,10 @@
-import { HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+﻿import { HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { ApiService } from '../../services/api.service';
 
 export function handleMemoryRoutes(req: HttpRequest<unknown>, url: string, apiSvc: ApiService): Observable<HttpResponse<unknown> | HttpErrorResponse> | null {
-  if (url.includes(apiSvc.USER_MEMORY.HISTORY)) {
+  if (url.includes(apiSvc.userMemory.HISTORY)) {
     const mockHistory = {
       messages: [
         { id: '1', sender: 'user', content: 'Feeling completely overwhelmed today. I have my final MCA project review coming up and I feel like the backend isn\'t ready.', createdAt: new Date(Date.now() - 3600000 * 2).toISOString(), emotion: 'ANXIOUS' },
@@ -18,7 +18,7 @@ export function handleMemoryRoutes(req: HttpRequest<unknown>, url: string, apiSv
     return of(new HttpResponse({ status: 200, body: mockHistory })).pipe(delay(600));
   }
 
-  if (url.includes(apiSvc.USER_MEMORY.REFLECT)) {
+  if (url.includes(apiSvc.userMemory.REFLECT)) {
     const userPrompt: string = typeof req.body === 'string' ? req.body : '';
     let responseText: string = "I hear you. Every thought you share is a stepping stone to deeper self-awareness. Let's explore this feeling together.";
     let emotionToken: string = "CALM|#10b981|#06b6d4";
@@ -44,7 +44,7 @@ export function handleMemoryRoutes(req: HttpRequest<unknown>, url: string, apiSv
     return of(new HttpResponse({ status: 200, body: { reflection: responseText, emotion: emotionToken } })).pipe(delay(1000));
   }
 
-  if (url.includes(apiSvc.USER_MEMORY.ANALYTICS)) {
+  if (url.includes(apiSvc.userMemory.ANALYTICS)) {
     const mockAnalytics = {
       totalMemories: 5,
       dominantEmotion: 'JOY',
@@ -60,7 +60,7 @@ export function handleMemoryRoutes(req: HttpRequest<unknown>, url: string, apiSv
     return of(new HttpResponse({ status: 200, body: mockAnalytics })).pipe(delay(500));
   }
 
-  if (url.includes(apiSvc.USER_MEMORY.ALL)) {
+  if (url.includes(apiSvc.userMemory.ALL)) {
     const mockAll = [
       { content: 'Finally submitted the zeroth review documents! So relieved.', emotion: 'JOY', createdAt: new Date().toISOString(), sender: 'user' },
       { content: 'Stressed about the upcoming MCA final presentations and microservices architecture.', emotion: 'ANXIOUS', createdAt: new Date(Date.now() - 3600000 * 24).toISOString(), sender: 'user' },
@@ -73,3 +73,4 @@ export function handleMemoryRoutes(req: HttpRequest<unknown>, url: string, apiSv
 
   return null;
 }
+

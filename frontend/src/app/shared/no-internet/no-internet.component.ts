@@ -1,9 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { 
-  Component, 
-  Input, 
-  ChangeDetectionStrategy
-} from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-no-internet',
@@ -15,6 +11,4 @@ import {
 })
 export class NoInternetComponent {
   @Input() public isVisible: boolean = false;
-
-  constructor() { }
 }

@@ -1,4 +1,4 @@
-import { HttpClient, HttpContext } from '@angular/common/http';
+﻿import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { timeout } from 'rxjs/operators';
@@ -28,11 +28,11 @@ export class ChatService {
 
   public getHistory(email: string, cursor: string | null, size: number): Observable<{ messages: unknown[], hasMore: boolean, nextCursor: string | null }> {
     const cursorParam: string = cursor ? `&cursor=${cursor}` : '';
-    return this.http.get<{ messages: unknown[], hasMore: boolean, nextCursor: string | null }>(`${this.apiSvc.USER_MEMORY.HISTORY}?size=${size}${cursorParam}`);
+    return this.http.get<{ messages: unknown[], hasMore: boolean, nextCursor: string | null }>(`${this.apiSvc.userMemory.HISTORY}?size=${size}${cursorParam}`);
   }
 
   public reflect(email: string, prompt: string): Observable<{ reflection: string, emotion: string }> {
-    return this.http.post<{ reflection: string, emotion: string }>(this.apiSvc.USER_MEMORY.REFLECT, prompt, {
+    return this.http.post<{ reflection: string, emotion: string }>(this.apiSvc.userMemory.REFLECT, prompt, {
       headers: { 
         'Content-Type': 'text/plain' 
       },
@@ -46,3 +46,4 @@ export class ChatService {
     return this.http.get<{ quote: string, author: string }>((environment as Record<string, unknown>)['quoteApiUrl'] as string || 'https://dummyjson.com/quotes/random');
   }
 }
+

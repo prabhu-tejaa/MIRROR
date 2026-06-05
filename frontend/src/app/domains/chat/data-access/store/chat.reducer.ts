@@ -50,35 +50,35 @@ export const initialState: ChatState = {
 
 export const chatReducer = createReducer(
   initialState,
-  on(chatActions.setDynamicQuote, (state: ChatState, { quote }) => ({ ...state, activeQuote: quote })),
-  on(chatActions.setStyle, (state: ChatState, { style }) => ({ ...state, activeStyle: style })),
-  on(chatActions.setEmotion, (state: ChatState, { emotion }) => ({ ...state, currentEmotion: emotion })),
-  on(chatActions.setColors, (state: ChatState, { primary, secondary }) => ({
+  on(chatActions.setDynamicQuote, (state: ChatState, { quote }): ChatState => ({ ...state, activeQuote: quote })),
+  on(chatActions.setStyle, (state: ChatState, { style }): ChatState => ({ ...state, activeStyle: style })),
+  on(chatActions.setEmotion, (state: ChatState, { emotion }): ChatState => ({ ...state, currentEmotion: emotion })),
+  on(chatActions.setColors, (state: ChatState, { primary, secondary }): ChatState => ({
     ...state,
     currentPrimaryColor: primary,
     currentSecondaryColor: secondary
   })),
-  on(chatActions.setMessages, (state: ChatState, { messages }) => ({ ...state, messages })),
-  on(chatActions.addMessage, (state: ChatState, { message }) => ({ ...state, messages: [...state.messages, message] })),
-  on(chatActions.updateMessage, (state: ChatState, { id, changes }) => ({
+  on(chatActions.setMessages, (state: ChatState, { messages }): ChatState => ({ ...state, messages })),
+  on(chatActions.addMessage, (state: ChatState, { message }): ChatState => ({ ...state, messages: [...state.messages, message] })),
+  on(chatActions.updateMessage, (state: ChatState, { id, changes }): ChatState => ({
     ...state,
     messages: state.messages.map((m: Message) => m.id === id ? { ...m, ...changes } : m)
   })),
-  on(chatActions.setWaitingForResponse, (state: ChatState, { isWaiting }) => ({ ...state, isWaitingForResponse: isWaiting })),
-  on(chatActions.setResting, (state: ChatState, { isResting }) => ({ ...state, isResting: isResting })),
-  on(chatActions.setLoadingHistory, (state: ChatState, { isLoading }) => ({ ...state, isLoadingHistory: isLoading })),
-  on(chatActions.setLoadingMore, (state: ChatState, { isLoading }) => ({ ...state, isLoadingMore: isLoading })),
-  on(chatActions.triggerScrollToBottom, (state: ChatState) => ({ ...state, scrollToBottomTrigger: state.scrollToBottomTrigger + 1 })),
-  on(chatActions.triggerMaintainScroll, (state: ChatState) => ({ ...state, maintainScrollTrigger: state.maintainScrollTrigger + 1 })),
+  on(chatActions.setWaitingForResponse, (state: ChatState, { isWaiting }): ChatState => ({ ...state, isWaitingForResponse: isWaiting })),
+  on(chatActions.setResting, (state: ChatState, { isResting }): ChatState => ({ ...state, isResting })),
+  on(chatActions.setLoadingHistory, (state: ChatState, { isLoading }): ChatState => ({ ...state, isLoadingHistory: isLoading })),
+  on(chatActions.setLoadingMore, (state: ChatState, { isLoading }): ChatState => ({ ...state, isLoadingMore: isLoading })),
+  on(chatActions.triggerScrollToBottom, (state: ChatState): ChatState => ({ ...state, scrollToBottomTrigger: state.scrollToBottomTrigger + 1 })),
+  on(chatActions.triggerMaintainScroll, (state: ChatState): ChatState => ({ ...state, maintainScrollTrigger: state.maintainScrollTrigger + 1 })),
 
-  on(chatActions.loadChatHistory, (state: ChatState) => ({
+  on(chatActions.loadChatHistory, (state: ChatState): ChatState => ({
     ...state,
     isLoadingHistory: state.isInitialLoad,
     currentCursor: null,
     hasMoreHistory: true,
     isWaitingForResponse: false
   })),
-  on(chatActions.loadChatHistorySuccess, (state: ChatState, { messages, nextCursor, hasMore, loadedEmail }) => ({
+  on(chatActions.loadChatHistorySuccess, (state: ChatState, { messages, nextCursor, hasMore, loadedEmail }): ChatState => ({
     ...state,
     messages,
     currentCursor: nextCursor,
@@ -88,29 +88,29 @@ export const chatReducer = createReducer(
     isInitialLoad: false,
     initialChatLoadedGlobally: true
   })),
-  on(chatActions.loadChatHistoryFailure, (state: ChatState) => ({
+  on(chatActions.loadChatHistoryFailure, (state: ChatState): ChatState => ({
     ...state,
     isLoadingHistory: false,
     isInitialLoad: false,
     initialChatLoadedGlobally: true
   })),
 
-  on(chatActions.loadMoreHistory, (state: ChatState) => ({
+  on(chatActions.loadMoreHistory, (state: ChatState): ChatState => ({
     ...state,
     isLoadingMore: true
   })),
-  on(chatActions.loadMoreHistorySuccess, (state: ChatState, { messages, nextCursor, hasMore }) => ({
+  on(chatActions.loadMoreHistorySuccess, (state: ChatState, { messages, nextCursor, hasMore }): ChatState => ({
     ...state,
     messages: [...messages, ...state.messages],
     currentCursor: nextCursor,
     hasMoreHistory: hasMore,
     isLoadingMore: false
   })),
-  on(chatActions.loadMoreHistoryFailure, (state: ChatState) => ({
+  on(chatActions.loadMoreHistoryFailure, (state: ChatState): ChatState => ({
     ...state,
     isLoadingMore: false
   })),
-  on(AuthActions.clearSession, AuthActions.logoutSuccess, () => ({
+  on(AuthActions.clearSession, AuthActions.logoutSuccess, (): ChatState => ({
     ...initialState
   }))
 );

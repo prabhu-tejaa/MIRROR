@@ -61,16 +61,21 @@ export class AuthService {
     this.startSessionValidationTimer();
   }
 
+  private handleSessionKeyChange(event: StorageEvent): void {
+    const email: string | null = this.getEmail();
+    if (!email || event.key !== getActiveSessionKey(email)) {
+      return;
+    }
+    const activeSessionId: string | null = event.newValue;
+    if (activeSessionId && activeSessionId !== this.getSessionInstanceId()) {
+      this.logout();
+    }
+  }
+
   private setupStorageListener(): void {
     window.addEventListener('storage', (event: StorageEvent) => {
       if (event.key && event.key.startsWith('mirror_active_session_')) {
-        const email: string | null = this.getEmail();
-        if (email && event.key === getActiveSessionKey(email)) {
-          const activeSessionId: string | null = event.newValue;
-          if (activeSessionId && activeSessionId !== this.getSessionInstanceId()) {
-            this.logout();
-          }
-        }
+        this.handleSessionKeyChange(event);
       }
       if (event.key === StorageKeys.ACCESS_TOKEN && !event.newValue) {
         this.clearSession();
@@ -140,7 +145,7 @@ export class AuthService {
       this.isValidating = true;
       this.lastValidationTime = Date.now();
       
-      this.http.post<{ valid: boolean }>(this.apiSvc.AUTH.VALIDATE, { refreshToken }).subscribe({
+      this.http.post<{ valid: boolean }>(this.apiSvc.auth.VALIDATE, { refreshToken }).subscribe({
         next: (res: { valid: boolean; }) => this.handleValidationSuccess(res),
         error: (err: unknown) => this.handleValidationError(err)
       });
@@ -162,40 +167,40 @@ export class AuthService {
     }
   }
 
-  public readonly isAuthenticated = this.store.selectSignal(selectIsAuthenticated);
+  public readonly isAuthenticated: import('@angular/core').Signal<boolean> = this.store.selectSignal(selectIsAuthenticated);
 
   public signup(request: RegisterRequest): Observable<string> {
-    return this.http.post(this.apiSvc.AUTH.SIGNUP, request, { responseType: 'text' });
+    return this.http.post(this.apiSvc.auth.SIGNUP, request, { responseType: 'text' });
   }
 
   public loginUser(request: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.apiSvc.AUTH.LOGIN, request).pipe(
+    return this.http.post<AuthResponse>(this.apiSvc.auth.LOGIN, request).pipe(
       tap((res: AuthResponse) => this.saveSession(res))
     );
   }
 
   public requestOtp(email: string): Observable<string> {
-    return this.http.post(this.apiSvc.AUTH.OTP_REQUEST, { email }, { responseType: 'text' });
+    return this.http.post(this.apiSvc.auth.OTP_REQUEST, { email }, { responseType: 'text' });
   }
 
   public verifyOtp(email: string, code: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.apiSvc.AUTH.OTP_VERIFY, { email, code });
+    return this.http.post<AuthResponse>(this.apiSvc.auth.OTP_VERIFY, { email, code });
   }
 
   public requestForgotPasswordOtp(email: string): Observable<string> {
-    return this.http.post(this.apiSvc.AUTH.FORGOT_PASSWORD_REQUEST, { email }, { responseType: 'text' });
+    return this.http.post(this.apiSvc.auth.FORGOT_PASSWORD_REQUEST, { email }, { responseType: 'text' });
   }
 
   public verifyForgotPasswordOtp(email: string, code: string): Observable<string> {
-    return this.http.post(this.apiSvc.AUTH.FORGOT_PASSWORD_VERIFY, { email, code }, { responseType: 'text' });
+    return this.http.post(this.apiSvc.auth.FORGOT_PASSWORD_VERIFY, { email, code }, { responseType: 'text' });
   }
 
   public resetPassword(email: string, password?: string, token?: string): Observable<string> {
-    return this.http.post(this.apiSvc.AUTH.FORGOT_PASSWORD_RESET, { email, password, token }, { responseType: 'text' });
+    return this.http.post(this.apiSvc.auth.FORGOT_PASSWORD_RESET, { email, password, token }, { responseType: 'text' });
   }
 
   public refresh(refreshToken: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.apiSvc.AUTH.REFRESH, { refreshToken }, {
+    return this.http.post<AuthResponse>(this.apiSvc.auth.REFRESH, { refreshToken }, {
       context: new HttpContext().set(SKIP_CANCEL, true)
     }).pipe(
       tap((res: AuthResponse) => this.saveSession(res))
@@ -203,7 +208,7 @@ export class AuthService {
   }
 
   public logoutSession(refreshToken: string): Observable<string> {
-    return this.http.post(this.apiSvc.AUTH.LOGOUT, { refreshToken }, { responseType: 'text' }).pipe(
+    return this.http.post(this.apiSvc.auth.LOGOUT, { refreshToken }, { responseType: 'text' }).pipe(
       tap(() => this.clearSession())
     );
   }
@@ -238,13 +243,11 @@ export class AuthService {
 
   public logout(): void {
     const refreshToken: string | null = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
-
     this.clearSession();
-
     if (refreshToken && !environment.mock) {
-      this.http.post(this.apiSvc.AUTH.LOGOUT, { refreshToken }, { responseType: 'text' }).subscribe({
-        next: () => { /* Ignored */ },
-        error: () => { /* Ignored */ }
+      this.http.post(this.apiSvc.auth.LOGOUT, { refreshToken }, { responseType: 'text' }).subscribe({
+        next: () => undefined,
+        error: () => undefined
       });
     }
   }
@@ -261,36 +264,36 @@ export class AuthService {
     return this.storageSvc.get(StorageKeys.ACCESS_TOKEN);
   }
 
-  private extractRolesFromToken(token: string, username: string): string[] {
-    if (token.startsWith('mock_jwt_access_token')) {
-      if (username.toLowerCase().startsWith('admin')) {
-        return ['ADMIN'];
-      }
+  private normalizeRole(r: unknown): string {
+    const str: string = String(r).toUpperCase();
+    return str.startsWith('ROLE_') ? str.substring(5) : str;
+  }
+
+  private parseJwtRoles(token: string): string[] {
+    const parts: string[] = token.split('.');
+    if (parts.length !== 3) {
       return ['USER'];
     }
-
-    try {
-      const parts: string[] = token.split('.');
-      if (parts.length === 3) {
-        const payloadStr: string = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
-        const payload: Record<string, unknown> = JSON.parse(payloadStr) as Record<string, unknown>;
-
-        const roles: unknown = payload['roles'] || payload['role'] || payload['authorities'] || [];
-        const normalizeRole: (r: unknown) => string = (r: unknown): string => {
-          const str: string = String(r).toUpperCase();
-          return str.startsWith('ROLE_') ? str.substring(5) : str;
-        };
-
-        if (Array.isArray(roles)) {
-          return roles.map(normalizeRole);
-        } else if (typeof roles === 'string') {
-          return [normalizeRole(roles)];
-        }
-      }
-    } catch {
-      // Ignored
+    const payloadStr: string = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+    const payload: Record<string, unknown> = JSON.parse(payloadStr) as Record<string, unknown>;
+    const roles: unknown = payload['roles'] ?? payload['role'] ?? payload['authorities'] ?? [];
+    if (Array.isArray(roles)) {
+      return roles.map((r: unknown) => this.normalizeRole(r));
     }
-
+    if (typeof roles === 'string') {
+      return [this.normalizeRole(roles)];
+    }
     return ['USER'];
+  }
+
+  private extractRolesFromToken(token: string, username: string): string[] {
+    if (token.startsWith('mock_jwt_access_token')) {
+      return username.toLowerCase().startsWith('admin') ? ['ADMIN'] : ['USER'];
+    }
+    try {
+      return this.parseJwtRoles(token);
+    } catch {
+      return ['USER'];
+    }
   }
 }

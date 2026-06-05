@@ -12,7 +12,7 @@ export class StarfieldPhysics {
     config: StarfieldConfig,
     targetShape: ShapeType
   ): void {
-    const margin: 10 = 10;
+    const margin = 10 as const;
     const now: number = performance.now();
 
     for (let i: number = 0; i < stars.length; i++) {

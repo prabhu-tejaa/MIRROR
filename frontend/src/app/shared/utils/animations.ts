@@ -4,7 +4,7 @@ import { Animation, AnimationController } from '@ionic/angular';
 export function getCrossfadeAnimation(
   animationCtrl: AnimationController
 ): (baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement; leavingEl?: HTMLElement }) => Animation {
-  return (baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement; leavingEl?: HTMLElement }): Animation => {
+  return (_baseEl: HTMLElement, opts?: { enteringEl?: HTMLElement; leavingEl?: HTMLElement }): Animation => {
     const rootTransition: Animation = animationCtrl.create()
       .duration(400)
       .easing('ease-in-out');

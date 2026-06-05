@@ -29,14 +29,14 @@ export interface AnalyticsResponse {
 export const YouActions = createActionGroup({
   source: 'You',
   events: {
-    'Load Analytics': props<{ email: string }>(),
-    'Load Analytics Success': props<{ data: AnalyticsResponse }>(),
-    'Load Analytics Failure': props<{ error: unknown }>(),
-    
-    'Load Memories': props<{ email: string }>(),
-    'Load Memories Success': props<{ memories: Reflection[] }>(),
-    'Load Memories Failure': props<{ error: unknown }>(),
-    
-    'Clear Data': emptyProps(),
+    loadAnalytics: props<{ email: string }>(),
+    loadAnalyticsSuccess: props<{ data: AnalyticsResponse }>(),
+    loadAnalyticsFailure: props<{ error: unknown }>(),
+
+    loadMemories: props<{ email: string }>(),
+    loadMemoriesSuccess: props<{ memories: Reflection[] }>(),
+    loadMemoriesFailure: props<{ error: unknown }>(),
+
+    clearData: emptyProps(),
   }
 });

@@ -58,13 +58,8 @@ export class AnalyticsService {
   private initFirebase(): void {
     if (this.isFirebaseConfigured() && Capacitor.getPlatform() === 'web') {
       const app = initializeApp(environment.firebaseConfig);
-      
       if (!environment.production) {
-        initializeAnalytics(app, {
-          config: {
-            'debug_mode': true
-          }
-        });
+        initializeAnalytics(app, { config: { ['debug_mode']: true } });
       }
     }
   }
@@ -74,12 +69,9 @@ export class AnalyticsService {
       if (!this.isFirebaseConfigured()) {
         return;
       }
-      await FirebaseAnalytics.logEvent({
-        name,
-        params
-      });
-    } catch (e: unknown) {
-      // Ignored
+      await FirebaseAnalytics.logEvent({ name, params });
+    } catch {
+      return;
     }
   }
 
@@ -90,27 +82,29 @@ export class AnalyticsService {
 
   private handleClickEvent(event: MouseEvent): void {
     const target: HTMLElement = event.target as HTMLElement;
-    const interactiveElement: Element | null = target.closest('button, a, [role="button"], ion-button, ion-item, ion-segment-button, [data-analytics]');
-    
-    if (interactiveElement) {
-      const el: HTMLElement = interactiveElement as HTMLElement;
-      const metadata: ElementMetadata = this.getElementMetadata(el);
-      const eventName: string = this.getSemanticEventName(metadata);
-
-      const params: Record<string, unknown> = {
-        'text': metadata.text,
-        'id': metadata.id,
-        'name': metadata.name,
-        'analytics_label': metadata.analyticsLabel,
-        'element_type': metadata.elementType,
-        'element_role': metadata.elementRole,
-        'page_path': window.location.pathname,
-        'page_title': document.title,
-        'platform': Capacitor.getPlatform()
-      };
-
-      void this.logEvent(eventName, params);
+    const interactiveEl: Element | null = target.closest('button, a, [role="button"], ion-button, ion-item, ion-segment-button, [data-analytics]');
+    if (!interactiveEl) {
+      return;
     }
+    const el: HTMLElement = interactiveEl as HTMLElement;
+    const metadata: ElementMetadata = this.getElementMetadata(el);
+    const eventName: string = this.getSemanticEventName(metadata);
+    const params: Record<string, unknown> = this.buildClickParams(metadata);
+    void this.logEvent(eventName, params);
+  }
+
+  private buildClickParams(metadata: ElementMetadata): Record<string, unknown> {
+    return {
+      ['text']: metadata.text,
+      ['id']: metadata.id,
+      ['name']: metadata.name,
+      ['analytics_label']: metadata.analyticsLabel,
+      ['element_type']: metadata.elementType,
+      ['element_role']: metadata.elementRole,
+      ['page_path']: window.location.pathname,
+      ['page_title']: document.title,
+      ['platform']: Capacitor.getPlatform()
+    };
   }
 
   private handleSubmitEvent(event: SubmitEvent): void {
@@ -118,11 +112,10 @@ export class AnalyticsService {
     const formId: string = form.id || 'anonymous_form';
     const formName: string = form.getAttribute('name') || 'anonymous_form';
     const eventName: string = this.getFormEventName(formId, formName);
-
     void this.logEvent(eventName, {
-      'form_id': formId,
-      'form_name': formName,
-      'page_path': window.location.pathname
+      ['form_id']: formId,
+      ['form_name']: formName,
+      ['page_path']: window.location.pathname
     });
   }
 
@@ -215,23 +208,13 @@ export class AnalyticsService {
   private async logPageView(screenName: string): Promise<void> {
     try {
       if (!this.isFirebaseConfigured()) {
-        await this.logEvent('page_view', {
-          'page_path': screenName,
-          'page_title': document.title || 'Mirror App'
-        });
+        await this.logEvent('page_view', { ['page_path']: screenName, ['page_title']: document.title || 'Mirror App' });
         return;
       }
-
-      await FirebaseAnalytics.setCurrentScreen({
-        screenName: screenName
-      });
-      
-      await this.logEvent('page_view', {
-        'page_path': screenName,
-        'page_title': document.title || 'Mirror App'
-      });
-    } catch (e: unknown) {
-      // Ignored
+      await FirebaseAnalytics.setCurrentScreen({ screenName });
+      await this.logEvent('page_view', { ['page_path']: screenName, ['page_title']: document.title || 'Mirror App' });
+    } catch {
+      return;
     }
   }
 
@@ -240,14 +223,9 @@ export class AnalyticsService {
       if (!this.isFirebaseConfigured()) {
         return;
       }
-      if (userId === null) {
-        // null is technically allowed, but Capacitor types might complain, assuming any here isn't needed.
-      }
-      await FirebaseAnalytics.setUserId({
-        userId: userId || ''
-      });
-    } catch (e: unknown) {
-      // Ignored
+      await FirebaseAnalytics.setUserId({ userId: userId || '' });
+    } catch {
+      return;
     }
   }
 
@@ -256,12 +234,9 @@ export class AnalyticsService {
       if (!this.isFirebaseConfigured()) {
         return;
       }
-      await FirebaseAnalytics.setUserProperty({
-        key: name,
-        value
-      });
-    } catch (e: unknown) {
-      // Ignored
+      await FirebaseAnalytics.setUserProperty({ key: name, value });
+    } catch {
+      return;
     }
   }
 }

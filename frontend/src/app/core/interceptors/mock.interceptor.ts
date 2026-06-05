@@ -1,5 +1,6 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpEvent } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { ApiService } from '../services/api.service';
@@ -8,25 +9,21 @@ import { handleAuthRoutes } from './mock-data/mock-auth';
 import { handleGatewayRoutes } from './mock-data/mock-gateway';
 import { handleMemoryRoutes } from './mock-data/mock-memory';
 
+function resolveRoute(req: Parameters<HttpInterceptorFn>[0], url: string, apiSvc: ApiService): Observable<HttpEvent<unknown>> | null {
+  return handleAuthRoutes(req, url, apiSvc)
+    ?? handleMemoryRoutes(req, url, apiSvc)
+    ?? handleAdminRoutes(req, url)
+    ?? handleGatewayRoutes(req, url);
+}
+
 export const mockInterceptor: HttpInterceptorFn = (req, next) => {
   if (!environment.mock) {
     return next(req);
   }
-
   const apiSvc: ApiService = inject(ApiService);
-  const url: string = req.url;
-
-  const authResponse = handleAuthRoutes(req, url, apiSvc);
-  if (authResponse) return authResponse;
-
-  const memoryResponse = handleMemoryRoutes(req, url, apiSvc);
-  if (memoryResponse) return memoryResponse;
-
-  const adminResponse = handleAdminRoutes(req, url);
-  if (adminResponse) return adminResponse;
-
-  const gatewayResponse = handleGatewayRoutes(req, url);
-  if (gatewayResponse) return gatewayResponse;
-
+  const resolved: Observable<HttpEvent<unknown>> | null = resolveRoute(req, req.url, apiSvc);
+  if (resolved) {
+    return resolved;
+  }
   return next(req);
 };

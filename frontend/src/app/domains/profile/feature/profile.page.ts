@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed, Signal } from '@angular/core';
 import {
   IonContent, IonFooter,
   IonList, IonItem, IonLabel, IonIcon, IonNote,
@@ -8,22 +8,17 @@ import {
 import { Store } from '@ngrx/store';
 import confetti from 'canvas-confetti';
 import { addIcons } from 'ionicons';
-import { logOutOutline, personCircleOutline, mailOutline, shieldCheckmarkOutline, chevronForwardOutline, informationCircleOutline } from 'ionicons/icons';
+import {
+  logOutOutline, personCircleOutline, mailOutline,
+  shieldCheckmarkOutline, chevronForwardOutline, informationCircleOutline
+} from 'ionicons/icons';
 
 import { TranslationService } from '../../../core/services/translation.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { AuthService } from '../../auth/data-access/auth.service';
 import { selectUserEmail, selectUsername, selectIsAdmin } from '../../auth/data-access/store/auth.selectors';
 
-@Component({
-  selector: 'app-profile',
-  templateUrl: 'profile.page.html',
-  styleUrls: ['profile.page.scss'],
-  standalone: true,
-  imports: [
-    CommonModule,
-import { AuthService } from '../../auth/data-access/auth.service';
-import { selectUserEmail, selectUsername, selectIsAdmin } from '../../auth/data-access/store/auth.selectors';
+type ConfettiOpts = Record<string, unknown>;
 
 @Component({
   selector: 'app-profile',
@@ -45,9 +40,9 @@ export class ProfilePage {
   private alertCtrl: AlertController = inject(AlertController);
   private translationSvc: TranslationService = inject(TranslationService);
 
-  public readonly userId = computed(() => this.store.selectSignal(selectUsername)() ?? 'User');
-  public readonly userEmail = computed(() => this.store.selectSignal(selectUserEmail)() ?? 'Email');
-  public readonly isAdmin = this.store.selectSignal(selectIsAdmin);
+  public readonly userId: Signal<string> = computed(() => this.store.selectSignal(selectUsername)() ?? 'User');
+  public readonly userEmail: Signal<string> = computed(() => this.store.selectSignal(selectUserEmail)() ?? 'Email');
+  public readonly isAdmin: Signal<boolean> = this.store.selectSignal(selectIsAdmin);
 
   constructor() {
     addIcons({ logOutOutline, personCircleOutline, mailOutline, shieldCheckmarkOutline, chevronForwardOutline, informationCircleOutline });
@@ -75,7 +70,6 @@ export class ProfilePage {
         }
       ]
     });
-
     await alert.present();
   }
 
@@ -92,22 +86,19 @@ export class ProfilePage {
         {
           text: this.translationSvc.translate('PROFILE.ABOUT_ALERT_AWESOME'),
           cssClass: 'alert-awesome-btn',
-          handler: () => {
-            this.fireConfetti();
-          }
+          handler: () => { this.fireConfetti(); }
         }
       ]
     });
-
     await alert.present();
   }
 
   private fireConfetti(): void {
-    const count: 200 = 200;
-    const defaults: { origin: { x: number; y: number; }; } = { origin: { x: 0.5, y: 0.65 } };
+    const particleCount: number = 200;
+    const origin: { x: number; y: number } = { x: 0.5, y: 0.65 };
 
-    const fire: (particleRatio: number, opts: Record<string, unknown>) => void = (particleRatio: number, opts: Record<string, unknown>) => {
-      void confetti(Object.assign({}, defaults, opts, { particleCount: Math.floor(count * particleRatio) }));
+    const fire: (ratio: number, opts: ConfettiOpts) => void = (ratio: number, opts: ConfettiOpts): void => {
+      void confetti({ origin, ...opts, particleCount: Math.floor(particleCount * ratio) });
     };
 
     fire(0.25, { spread: 26, startVelocity: 55 });
@@ -117,7 +108,7 @@ export class ProfilePage {
     fire(0.1, { spread: 120, startVelocity: 45 });
   }
 
-  public get userIdValue() { return this.userId(); }
-  public get userEmailValue() { return this.userEmail(); }
-  public get isAdminValue() { return this.isAdmin(); }
+  public get userIdValue(): string { return this.userId(); }
+  public get userEmailValue(): string { return this.userEmail(); }
+  public get isAdminValue(): boolean { return this.isAdmin(); }
 }

@@ -12,9 +12,9 @@ export class ToastService {
 
   constructor() {
     addIcons({
-      'alert-circle-outline': alertCircleOutline,
-      'checkmark-circle-outline': checkmarkCircleOutline,
-      'information-circle-outline': informationCircleOutline
+      ['alert-circle-outline']: alertCircleOutline,
+      ['checkmark-circle-outline']: checkmarkCircleOutline,
+      ['information-circle-outline']: informationCircleOutline
     });
   }
 

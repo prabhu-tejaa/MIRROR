@@ -99,7 +99,7 @@ export class TabsPage {
     void this.router.navigate(['/tabs', tab], { replaceUrl: true });
   }
 
-  public get isYouActiveValue() { return this.isActive('you'); }
-  public get isChatActiveValue() { return this.isActive('chat'); }
-  public get isProfileActiveValue() { return this.isActive('profile'); }
+  public get isYouActiveValue(): boolean { return this.isActive('you'); }
+  public get isChatActiveValue(): boolean { return this.isActive('chat'); }
+  public get isProfileActiveValue(): boolean { return this.isActive('profile'); }
 }

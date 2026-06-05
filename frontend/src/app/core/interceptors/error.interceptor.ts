@@ -85,7 +85,7 @@ function determineErrorMessage(error: HttpErrorResponse, translationSvc: Transla
 function handleAuthError(error: HttpErrorResponse, req: HttpRequest<unknown>, next: HttpHandlerFn, injector: Injector): Observable<HttpEvent<unknown>> | null {
   if (error.status === 401) {
     const apiSvc: ApiService = injector.get(ApiService);
-    if (!req.url.includes(apiSvc.AUTH.REFRESH) && !req.url.includes(apiSvc.AUTH.LOGIN)) {
+    if (!req.url.includes(apiSvc.auth.REFRESH) && !req.url.includes(apiSvc.auth.LOGIN)) {
       return handle401Error(req, next, injector);
     } else {
       const authSvc: AuthService = injector.get(AuthService);

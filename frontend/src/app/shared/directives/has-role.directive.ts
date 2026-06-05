@@ -7,11 +7,11 @@ import { RoleService } from '../../core/services/role.service';
   standalone: true
 })
 export class HasRoleDirective {
-  private templateRef = inject(TemplateRef<unknown>);
-  private viewContainer = inject(ViewContainerRef);
-  private roleSvc = inject(RoleService);
+  private templateRef: TemplateRef<unknown> = inject(TemplateRef<unknown>);
+  private viewContainer: ViewContainerRef = inject(ViewContainerRef);
+  private roleSvc: RoleService = inject(RoleService);
 
-  private hasView = false;
+  private hasView: boolean = false;
   private roles: string | string[] = [];
 
   constructor() {
@@ -26,7 +26,7 @@ export class HasRoleDirective {
   }
 
   private updateView(): void {
-    const hasAccess = this.roleSvc.hasAnyRole(this.roles);
+    const hasAccess: boolean = this.roleSvc.hasAnyRole(this.roles);
 
     if (hasAccess && !this.hasView) {
       this.viewContainer.createEmbeddedView(this.templateRef);
