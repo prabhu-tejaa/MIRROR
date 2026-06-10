@@ -21,5 +21,6 @@ export class AdminUserListComponent {
   @Output() public edit: EventEmitter<AdminUserResponse> = new EventEmitter<AdminUserResponse>();
   @Output() public delete: EventEmitter<AdminUserResponse> = new EventEmitter<AdminUserResponse>();
   @Output() public unlock: EventEmitter<AdminUserResponse> = new EventEmitter<AdminUserResponse>();
+  @Output() public lock: EventEmitter<AdminUserResponse> = new EventEmitter<AdminUserResponse>();
 
 }

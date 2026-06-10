@@ -80,17 +80,28 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new LoginFailureException("Invalid email or password!"));
 
-        if (user.getLockedUntil() != null && user.getLockedUntil().isAfter(LocalDateTime.now())) {
-            throw new LoginFailureException("Account is locked. Try again later.");
+        if (user.getLockedUntil() != null) {
+            if (user.getLockedUntil().isAfter(LocalDateTime.now())) {
+                throw new LoginFailureException("Account is locked. Try again later.");
+            } else {
+                user.setLockedUntil(null);
+                user.setFailedAttempts(0);
+            }
         }
 
         if (!passwordEncoder.matches(rawPassword, user.getPasswordHash())) {
             user.setFailedAttempts(user.getFailedAttempts() + 1);
             if (user.getFailedAttempts() >= 5) {
                 user.setLockedUntil(LocalDateTime.now().plusMinutes(15));
+                userRepository.save(user);
+                throw new LoginFailureException("Account is locked due to too many failed attempts. Try again later.");
             }
             userRepository.save(user);
             throw new LoginFailureException("Invalid email or password!");
+        }
+
+        if (!user.isVerified()) {
+            throw new LoginFailureException("Please verify your email address before logging in.");
         }
 
         user.setFailedAttempts(0);
@@ -160,6 +171,15 @@ public class AuthService {
         }
 
         User user = refreshTokenEntity.getUser();
+
+        if (user.getLockedUntil() != null && user.getLockedUntil().isAfter(LocalDateTime.now())) {
+            throw new RuntimeException("Account is locked.");
+        }
+        
+        if (!user.isVerified()) {
+            throw new RuntimeException("Account is not verified.");
+        }
+
         String newAccessToken = jwtUtil.generateAccessToken(user);
 
         return AuthResponse.builder()
@@ -217,6 +237,9 @@ public class AuthService {
             if (request.getFailedAttempts() == 0) {
                 user.setLockedUntil(null);
             }
+        }
+        if (request.getLockedUntil() != null) {
+            user.setLockedUntil(request.getLockedUntil());
         }
 
         User updatedUser = userRepository.save(user);

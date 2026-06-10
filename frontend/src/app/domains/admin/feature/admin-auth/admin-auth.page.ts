@@ -80,7 +80,6 @@ export class AdminAuthPage implements OnInit {
   }
 
   public isUserLocked(user: AdminUserResponse): boolean {
-    if (user.failedAttempts >= 3) {return true;}
     if (user.lockedUntil) {
       return new Date(user.lockedUntil) > new Date();
     }
@@ -99,6 +98,15 @@ export class AdminAuthPage implements OnInit {
     // eslint-disable-next-line no-alert
     if (window.confirm(`Are you sure you want to unlock the account for ${user.username}?`)) {
       this.store.dispatch(AdminActions.updateUser({ id: user.id, request: { failedAttempts: 0, lockedUntil: null } }));
+    }
+  }
+
+  public lockUser(user: AdminUserResponse): void {
+    // eslint-disable-next-line no-alert
+    if (window.confirm(`Are you sure you want to permanently lock the account for ${user.username}?`)) {
+      const lockDate = new Date();
+      lockDate.setFullYear(lockDate.getFullYear() + 100);
+      this.store.dispatch(AdminActions.updateUser({ id: user.id, request: { failedAttempts: 5, lockedUntil: lockDate.toISOString() } }));
     }
   }
 

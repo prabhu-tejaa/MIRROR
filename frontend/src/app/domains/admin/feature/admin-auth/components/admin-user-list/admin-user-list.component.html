@@ -61,6 +61,10 @@
                   <ion-button fill="clear" color="warning" class="action-btn unlock-btn" title="Unlock User" (click)="unlock.emit(user)">
                     <ion-icon name="key-outline" slot="icon-only"></ion-icon>
                   </ion-button>
+                } @else {
+                  <ion-button fill="clear" color="danger" class="action-btn lock-btn" title="Lock User" (click)="lock.emit(user)">
+                    <ion-icon name="lock-closed-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
                 }
                 <ion-button fill="clear" color="primary" class="action-btn" title="Edit User" (click)="edit.emit(user)">
                   <ion-icon name="create-outline" slot="icon-only"></ion-icon>
@@ -91,6 +95,10 @@
               @if (user | isUserLocked) {
                 <ion-button fill="clear" color="warning" class="unlock-btn" title="Unlock User" (click)="unlock.emit(user)">
                   <ion-icon name="key-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              } @else {
+                <ion-button fill="clear" color="danger" class="lock-btn" title="Lock User" (click)="lock.emit(user)">
+                  <ion-icon name="lock-closed-outline" slot="icon-only"></ion-icon>
                 </ion-button>
               }
               <ion-button fill="clear" color="primary" (click)="edit.emit(user)">
