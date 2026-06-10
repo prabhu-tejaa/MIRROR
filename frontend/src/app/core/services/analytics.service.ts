@@ -78,6 +78,8 @@ export class AnalyticsService {
   private trackGlobalInteractions(): void {
     document.addEventListener('click', this.handleClickEvent.bind(this), true);
     document.addEventListener('submit', this.handleSubmitEvent.bind(this), true);
+    document.addEventListener('change', this.handleChangeEvent.bind(this), true);
+    document.addEventListener('ionChange', this.handleChangeEvent.bind(this), true);
   }
 
   private handleClickEvent(event: MouseEvent): void {
@@ -88,12 +90,25 @@ export class AnalyticsService {
     }
     const el: HTMLElement = interactiveEl as HTMLElement;
     const metadata: ElementMetadata = this.getElementMetadata(el);
-    const eventName: string = this.getSemanticEventName(metadata);
-    const params: Record<string, unknown> = this.buildClickParams(metadata);
+    const eventName: string = this.getSemanticEventName(metadata, 'click');
+    const params: Record<string, unknown> = this.buildInteractionParams(metadata, 'click');
     void this.logEvent(eventName, params);
   }
 
-  private buildClickParams(metadata: ElementMetadata): Record<string, unknown> {
+  private handleChangeEvent(event: Event): void {
+    const target: HTMLElement = event.target as HTMLElement;
+    const inputEl: Element | null = target.closest('input, select, textarea, ion-input, ion-select, ion-textarea, ion-toggle, ion-checkbox, ion-radio');
+    if (!inputEl) {
+      return;
+    }
+    const el: HTMLElement = inputEl as HTMLElement;
+    const metadata: ElementMetadata = this.getElementMetadata(el);
+    const eventName: string = this.getSemanticEventName(metadata, 'change');
+    const params: Record<string, unknown> = this.buildInteractionParams(metadata, 'change');
+    void this.logEvent(eventName, params);
+  }
+
+  private buildInteractionParams(metadata: ElementMetadata, eventType: string): Record<string, unknown> {
     return {
       ['text']: metadata.text,
       ['id']: metadata.id,
@@ -101,6 +116,7 @@ export class AnalyticsService {
       ['analytics_label']: metadata.analyticsLabel,
       ['element_type']: metadata.elementType,
       ['element_role']: metadata.elementRole,
+      ['event_type']: eventType,
       ['page_path']: window.location.pathname,
       ['page_title']: document.title,
       ['platform']: Capacitor.getPlatform()
@@ -138,22 +154,25 @@ export class AnalyticsService {
     };
   }
 
-  private getSemanticEventName(metadata: ElementMetadata): string {
+  private getSemanticEventName(metadata: ElementMetadata, eventType: string): string {
     if (metadata.analyticsLabel) {
-      return this.slugify(metadata.analyticsLabel);
+      return `${this.slugify(metadata.analyticsLabel)}_${eventType}`;
     }
     const lowerText: string = metadata.text.toLowerCase();
     const matchedKeyword: string | null = this.matchEventKeyword(lowerText);
     if (matchedKeyword) {
+      if (eventType === 'change') {
+        return matchedKeyword.replace('_click', '_change');
+      }
       return matchedKeyword;
     }
 
     const base: string = metadata.id || metadata.name || metadata.text;
     if (base) {
-      return `${this.slugify(base)}_click`;
+      return `${this.slugify(base)}_${eventType}`;
     }
 
-    return `${metadata.elementType}_interaction`;
+    return `${metadata.elementType}_${eventType}`;
   }
 
   private matchEventKeyword(lowerText: string): string | null {

@@ -19,6 +19,7 @@ import {
 import { RoleService } from '../../../core/services/role.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { AuthService } from '../../auth/data-access/auth.service';
+import { selectUsername } from '../../auth/data-access/store/auth.selectors';
 import { ChatScrollService } from '../data-access/chat-scroll.service';
 import { Message } from '../data-access/chat-state.models';
 import { ChatStateService } from '../data-access/chat-state.service';
@@ -126,8 +127,10 @@ export class ChatPage implements OnDestroy {
     });
   }
 
+  public readonly username: Signal<string | null> = this.store.selectSignal(selectUsername);
+
   public getUsername(): string {
-    return this.authSvc.getUserId() || 'Friend';
+    return this.username() || 'Friend';
   }
 
   public getGreeting(): string {

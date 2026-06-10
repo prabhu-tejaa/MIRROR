@@ -56,7 +56,7 @@ export class ProfilePage {
     const alert: HTMLIonAlertElement = await this.alertCtrl.create({
       header: this.translationSvc.translate('PROFILE.LOGOUT_ALERT_HEADER'),
       message: this.translationSvc.translate('PROFILE.LOGOUT_ALERT_MESSAGE'),
-      cssClass: 'mirror-alert',
+      cssClass: 'premium-alert',
       buttons: [
         {
           text: this.translationSvc.translate('PROFILE.LOGOUT_ALERT_CANCEL'),
@@ -68,8 +68,10 @@ export class ProfilePage {
           role: 'destructive',
           cssClass: 'alert-logout-btn',
           handler: () => {
-            this.authSvc.logout();
-            void this.navCtrl.navigateRoot('/login', { animated: false });
+            void this.navCtrl.navigateRoot('/tabs/chat', { animated: false }).then(() => {
+              this.authSvc.logout();
+              void this.navCtrl.navigateRoot('/login', { animated: false });
+            });
           }
         }
       ]
@@ -85,7 +87,7 @@ export class ProfilePage {
     const alert: HTMLIonAlertElement = await this.alertCtrl.create({
       header: this.translationSvc.translate('PROFILE.ABOUT_ALERT_HEADER'),
       message: this.translationSvc.translate('PROFILE.ABOUT_ALERT_MESSAGE'),
-      cssClass: 'mirror-alert about-alert',
+      cssClass: 'about-alert',
       buttons: [
         {
           text: this.translationSvc.translate('PROFILE.ABOUT_ALERT_AWESOME'),

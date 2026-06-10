@@ -48,11 +48,11 @@ export class ToastService {
     });
 
     this.activeToast = toast;
-    await toast.onDidDismiss().then(() => {
-            if (this.activeToast === toast) {
-              this.activeToast = null;
-            }
-          });
+    void toast.onDidDismiss().then(() => {
+      if (this.activeToast === toast) {
+        this.activeToast = null;
+      }
+    });
 
     await toast.present();
   }
@@ -76,11 +76,11 @@ export class ToastService {
     });
 
     this.activeToast = toast;
-    await toast.onDidDismiss().then(() => {
-            if (this.activeToast === toast) {
-              this.activeToast = null;
-            }
-          });
+    void toast.onDidDismiss().then(() => {
+      if (this.activeToast === toast) {
+        this.activeToast = null;
+      }
+    });
 
     await toast.present();
   }
@@ -104,11 +104,11 @@ export class ToastService {
     });
 
     this.activeToast = toast;
-    await toast.onDidDismiss().then(() => {
-            if (this.activeToast === toast) {
-              this.activeToast = null;
-            }
-          });
+    void toast.onDidDismiss().then(() => {
+      if (this.activeToast === toast) {
+        this.activeToast = null;
+      }
+    });
 
     await toast.present();
   }

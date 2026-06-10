@@ -126,7 +126,7 @@ export class AdminAuthPage implements OnInit {
           role: 'destructive',
           handler: () => {
             const lockDate = new Date();
-            lockDate.setFullYear(lockDate.getFullYear() + 100);
+            lockDate.setFullYear(lockDate.getFullYear() + 10);
             const offset = lockDate.getTimezoneOffset() * 60000;
             const localIso = new Date(lockDate.getTime() - offset).toISOString().slice(0, -1);
             this.store.dispatch(AdminActions.updateUser({ id: user.id, request: { failedAttempts: 5, lockedUntil: localIso } }));

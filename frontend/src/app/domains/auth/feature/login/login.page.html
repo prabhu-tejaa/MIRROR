@@ -24,6 +24,7 @@
             type="email"
             class="glassy-input"
             [placeholder]="'LOGIN.PLACEHOLDER_EMAIL' | translate"
+            (keyup.enter)="onLogin()"
           ></ion-input>
 
           @if (isSubmitted && f['email'].errors) {
@@ -48,6 +49,7 @@
             class="glassy-input"
             [type]="showPassword ? 'text' : 'password'"
             [placeholder]="'LOGIN.PLACEHOLDER_PASSWORD' | translate"
+            (keyup.enter)="onLogin()"
             >
             <button type="button" slot="end" class="eye-toggle" aria-label="Toggle password visibility" (click)="showPassword = !showPassword">
               <ion-icon [icon]="showPassword ? eye : eyeOff"></ion-icon>
@@ -69,7 +71,7 @@
           }
         </div>
 
-        <ion-button type="submit" expand="block" class="premium-btn" [disabled]="isLoading">
+        <ion-button type="button" expand="block" class="premium-btn" [disabled]="isLoading" (click)="onLogin()">
           @if (!isLoading) {
             <span>{{ 'LOGIN.BUTTON_SIGNIN' | translate }}</span>
           } @else {

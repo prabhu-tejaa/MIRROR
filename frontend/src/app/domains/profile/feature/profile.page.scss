@@ -239,3 +239,42 @@ ion-footer {
     max-width: 100%;
   }
 }
+::ng-deep .about-alert {
+  --background: rgba(255, 255, 255, 0.02);
+  --backdrop-opacity: 0.6;
+
+  .alert-wrapper {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(40px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+  }
+
+  .alert-title {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 1.25rem !important;
+    letter-spacing: 0.02em !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .alert-message {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    margin-top: 12px !important;
+  }
+
+  .alert-button-group {
+    padding: 12px 20px 20px !important;
+  }
+
+  .alert-awesome-btn {
+    color: #0a84ff !important;
+    font-weight: 600 !important;
+    font-size: 1.05rem !important;
+  }
+}

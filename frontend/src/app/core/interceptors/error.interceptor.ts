@@ -95,7 +95,11 @@ function handleAuthError(ctx: AuthErrorContext): Observable<HttpEvent<unknown>> 
   if (ctx.error.status !== 401) { return null; }
   
   const apiSvc: ApiService = ctx.injector.get(ApiService);
-  if (!ctx.req.url.includes(apiSvc.auth.REFRESH) && !ctx.req.url.includes(apiSvc.auth.LOGIN)) {
+  if (ctx.req.url.includes(apiSvc.auth.LOGIN)) {
+    return null;
+  }
+  
+  if (!ctx.req.url.includes(apiSvc.auth.REFRESH)) {
     return handle401Error(ctx.req, ctx.next, ctx.injector);
   }
   

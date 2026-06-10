@@ -1,5 +1,5 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, inject, ErrorHandler } from '@angular/core';
+import { APP_INITIALIZER, inject, ErrorHandler, Injectable, Injector } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
@@ -14,6 +14,7 @@ import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { cancelInterceptor } from './app/core/interceptors/cancel.interceptor';
 import { errorInterceptor } from './app/core/interceptors/error.interceptor';
 import { mockInterceptor } from './app/core/interceptors/mock.interceptor';
+import { ToastService } from './app/core/services/toast.service';
 import { TranslationService } from './app/core/services/translation.service';
 import { AdminEffects } from './app/domains/admin/data-access/store/admin.effects';
 import { adminReducer } from './app/domains/admin/data-access/store/admin.reducer';
@@ -25,19 +26,49 @@ import { YouEffects } from './app/domains/you/data-access/store/you.effects';
 import { youReducer } from './app/domains/you/data-access/store/you.reducer';
 import { environment } from './environments/environment';
 
+@Injectable()
 class GlobalErrorHandler implements ErrorHandler {
-  public handleError(error: unknown): void {
-    const chunkFailedMessage: RegExp = /Loading chunk [\w-.]+ failed/;
-    const dynamicImportFailed: RegExp = /Failed to fetch dynamically imported module/;
-    const errMessage: string = error instanceof Error ? error.message : String(error);
-    if (chunkFailedMessage.test(errMessage) || dynamicImportFailed.test(errMessage)) {
-      window.location.reload();
+  private injector: Injector = inject(Injector);
+
+  private getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : String(error);
+  }
+
+  private isChunkError(msg: string): boolean {
+    return /Loading chunk [\w-.]+ failed/.test(msg) || /Failed to fetch dynamically imported module/.test(msg);
+  }
+
+  private showToast(errMessage: string): void {
+    try {
+      const toastSvc = this.injector.get(ToastService);
+      void toastSvc.showError(errMessage || 'An unexpected error occurred.');
+    } catch {
+      // Ignored if ToastService is unavailable
     }
+  }
+
+  public handleError(error: unknown): void {
+    const errMessage: string = this.getErrorMessage(error);
+    
+    if (this.isChunkError(errMessage)) {
+      window.location.reload();
+      return;
+    }
+
+    // Ignore HTTP errors here because the error.interceptor already shows a toast for them
+    if (errMessage.includes('Http failure response')) {
+      return;
+    }
+
+    this.showToast(errMessage);
   }
 }
 
 if (environment.production) {
   window.console.log = () => {};
+  window.console.warn = () => {};
+  window.console.error = () => {};
+  window.console.info = () => {};
 }
 
 void bootstrapApplication(AppComponent, {

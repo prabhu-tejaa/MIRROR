@@ -124,12 +124,13 @@ export class LoginPage implements OnInit {
           this.starfieldSvc.setShape('heart');
 
           setTimeout(() => {
-            this.starfieldSvc.setShape('none');
-            this.isLoading = false;
-            this.cdr.markForCheck();
             void this.navCtrl.navigateRoot('/tabs/chat', {
-                            animation: getCrossfadeAnimation(this.animationCtrl)
-                          });
+              animation: getCrossfadeAnimation(this.animationCtrl)
+            }).then(() => {
+              this.starfieldSvc.setShape('none');
+              this.isLoading = false;
+              this.cdr.markForCheck();
+            });
           }, 3000);
         },
         error: (err: Error) => {
