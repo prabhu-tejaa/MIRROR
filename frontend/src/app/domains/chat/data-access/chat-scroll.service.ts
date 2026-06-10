@@ -6,7 +6,7 @@ import * as chatActions from './store/chat.actions';
 
 @Injectable({ providedIn: 'root' })
 export class ChatScrollService {
-  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private store: Store<object> = inject<Store<object>>(Store);
   private chatState: ChatStateService = inject(ChatStateService);
 
   private scrollListenerAttached: boolean = false;

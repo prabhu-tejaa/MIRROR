@@ -35,7 +35,7 @@ type ConfettiOpts = Record<string, unknown>;
 })
 export class ProfilePage {
   private authSvc: AuthService = inject(AuthService);
-  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private store: Store<object> = inject<Store<object>>(Store);
   private navCtrl: NavController = inject(NavController);
   private alertCtrl: AlertController = inject(AlertController);
   private translationSvc: TranslationService = inject(TranslationService);

@@ -54,7 +54,7 @@ export class ChatPage implements OnDestroy {
   private toastSvc: ToastService = inject(ToastService);
   private navCtrl: NavController = inject(NavController);
   private destroyRef: DestroyRef = inject(DestroyRef);
-  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private store: Store<object> = inject<Store<object>>(Store);
   
   public voiceRecognitionSvc: VoiceRecognitionService = inject(VoiceRecognitionService);
   public ttsSvc: TextToSpeechService = inject(TextToSpeechService);

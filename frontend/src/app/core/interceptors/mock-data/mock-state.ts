@@ -125,5 +125,5 @@ export const MockState = {
     totalRequestsToday: 48512,
     whitelistedCount: 4,
     globalRateLimit: 120
-  } as MockGatewayStats
+  }
 };

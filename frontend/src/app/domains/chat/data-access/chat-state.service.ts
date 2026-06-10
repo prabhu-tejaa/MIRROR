@@ -17,7 +17,7 @@ export class ChatStateService {
   private authSvc: AuthService = inject(AuthService);
   private toastSvc: ToastService = inject(ToastService);
   private storageSvc: StorageService = inject(StorageService);
-  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private store: Store<object> = inject<Store<object>>(Store);
 
   public activeQuote: Signal<Quote> = this.store.selectSignal(chatSelectors.selectActiveQuote);
   public activeStyle: Signal<'cyberpunk' | 'aurora'> = this.store.selectSignal(chatSelectors.selectActiveStyle);
@@ -70,7 +70,7 @@ export class ChatStateService {
       if (day !== this.currentDayOfMonth) {
         this.currentDayOfMonth = day;
       }
-    }, 60000) as unknown as number;
+    }, 60000);
   }
 
   public destroy(): void {

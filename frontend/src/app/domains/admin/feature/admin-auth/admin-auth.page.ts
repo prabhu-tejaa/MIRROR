@@ -47,7 +47,7 @@ import { UserEditModalComponent } from './user-edit-modal/user-edit-modal.compon
 })
 export class AdminAuthPage implements OnInit {
   private location: Location = inject(Location);
-  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private store: Store<object> = inject<Store<object>>(Store);
   private modalCtrl: ModalController = inject(ModalController);
   private translationSvc: TranslationService = inject(TranslationService);
 

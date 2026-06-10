@@ -30,7 +30,7 @@ type OrbStat = EmotionStat & { orbScale: number };
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class YouPage implements OnDestroy {
-  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private store: Store<object> = inject<Store<object>>(Store);
   private router: Router = inject(Router);
   private toastSvc: ToastService = inject(ToastService);
   private ngZone: NgZone = inject(NgZone);

@@ -40,8 +40,8 @@ import { AdminActions } from '../../../data-access/store/admin.actions';
 })
 export class UserCreateModalComponent {
   private modalCtrl: ModalController = inject(ModalController);
-  private store: Store<object> = inject(Store) as unknown as Store<object>;
-  private actions$: Actions<import('@ngrx/store').Action<string>> = inject(Actions) as unknown as Actions<import('@ngrx/store').Action<string>>;
+  private store: Store<object> = inject<Store<object>>(Store);
+  private actions$: Actions<import('@ngrx/store').Action<string>> = inject<Actions<import('@ngrx/store').Action<string>>>(Actions);
   private toastSvc: ToastService = inject(ToastService);
   private destroyRef: DestroyRef = inject(DestroyRef);
 

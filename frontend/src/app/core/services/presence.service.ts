@@ -13,7 +13,7 @@ import { RoleService } from './role.service';
   providedIn: 'root'
 })
 export class PresenceService {
-  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private store: Store<object> = inject<Store<object>>(Store);
   private roleService: RoleService = inject(RoleService);
   
   private onlineUsersSubject: BehaviorSubject<number> = new BehaviorSubject<number>(0);

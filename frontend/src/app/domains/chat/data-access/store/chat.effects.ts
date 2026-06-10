@@ -39,7 +39,7 @@ export class ChatEffects {
   private actions$: Actions = inject(Actions);
   private chatSvc: ChatService = inject(ChatService);
   private toastSvc: ToastService = inject(ToastService);
-  private store: Store<object> = inject(Store);
+  private store: Store<object> = inject<Store<object>>(Store);
 
   private parseEmotionParts(rawEmotion: string): { emotion: string; primary: string; secondary: string } {
     const parts: string[] = rawEmotion.split('|');
@@ -161,7 +161,7 @@ export class ChatEffects {
             if (res?.quote && res?.author) {
               return chatActions.setDynamicQuote({ quote: { text: res.quote, author: res.author } });
             }
-            return { type: '[Chat] Load Dynamic Quote Failed' } as Action;
+            return { type: '[Chat] Load Dynamic Quote Failed' };
           }),
           catchError((): Observable<Action> => {
             void this.toastSvc.showInfo('Using local quotes (offline mode).');

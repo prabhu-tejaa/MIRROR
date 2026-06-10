@@ -12,7 +12,7 @@ import { YouActions, AnalyticsResponse, Reflection } from './you.actions';
 
 @Injectable()
 export class YouEffects {
-  private actions$: Actions<Action<string>> = inject(Actions) as unknown as Actions<Action<string>>;
+  private actions$: Actions<Action<string>> = inject<Actions<Action<string>>>(Actions);
   private http: HttpClient = inject(HttpClient);
   private apiSvc: ApiService = inject(ApiService);
   private toastSvc: ToastService = inject(ToastService);

@@ -27,7 +27,7 @@ export class AuthService {
   private injector: Injector = inject(Injector);
   private lastValidationTime: number = 0;
   private isValidating: boolean = false;
-  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private store: Store<object> = inject<Store<object>>(Store);
 
   private getSessionInstanceId(): string {
     let id: string | null = this.storageSvc.get(StorageKeys.SESSION_INSTANCE_ID);
