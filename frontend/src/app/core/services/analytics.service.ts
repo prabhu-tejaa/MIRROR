@@ -4,7 +4,7 @@ import { Capacitor } from '@capacitor/core';
 import { FirebaseAnalytics } from '@capacitor-firebase/analytics';
 import { initializeAnalytics } from 'firebase/analytics';
 import { initializeApp } from 'firebase/app';
-import { filter } from 'rxjs/operators';
+import { filter } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 

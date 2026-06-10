@@ -3,7 +3,7 @@
 
 <div class="branding-header">
       <div class="title-glow">
-        <h1 class="splash-title" style="font-size: clamp(2.5rem, 10vw, 3.8rem);">{{ 'OTP.HEADER' | translate }}</h1>
+        <h1 class="splash-title extracted-style-1781088649416-1" >{{ 'OTP.HEADER' | translate }}</h1>
       </div>
       <p class="splash-tagline">{{ 'OTP.TAGLINE' | translate }}</p>
     </div>
@@ -40,7 +40,7 @@
           </div>
           
           @if (isSubmitted && f['code'].errors) {
-            <div class="error-msg" style="text-align: center;">
+            <div class="error-msg extracted-style-1781088649416-2" >
               @if (f['code'].errors['required']) { <span>{{ 'OTP.ERROR_REQUIRED' | translate }}</span> }
               @if (f['code'].errors['pattern']) { <span>{{ 'OTP.ERROR_PATTERN' | translate }}</span> }
             </div>
@@ -62,7 +62,7 @@
         <div class="signup-wrapper">
           <span class="signup-text">{{ 'OTP.DIDNT_RECEIVE' | translate }}
             @if (resendTimer > 0) {
-              <span style="opacity: 0.5; cursor: not-allowed; pointer-events: none;">{{ 'OTP.RESEND_IN' | translate: { resendTimer: formattedTimerValue } }}</span>
+              <span class="extracted-style-1781088649416-3">{{ 'OTP.RESEND_IN' | translate: { resendTimer: formattedTimerValue } }}</span>
             } @else {
               <a class="signup-link" tabindex="0" (click)="resendCode()" (keydown.enter)="resendCode()">{{ 'OTP.RESEND' | translate }}</a>
             }

@@ -24,12 +24,14 @@ export const initialState: YouState = {
   error: null
 };
 
-const normalizeCreatedAt = (m: Reflection): Reflection => ({
-  ...m,
-  createdAt: typeof m.createdAt === 'number'
-    ? new Date(m.createdAt < 9999999999 ? m.createdAt * 1000 : m.createdAt).toISOString()
-    : String(m.createdAt)
-});
+const normalizeCreatedAt = (m: Reflection): Reflection => {
+  const ts: number | string = m.createdAt;
+  const isSeconds: boolean = typeof ts === 'number' && ts < 9999999999;
+  const normalized: string = typeof ts === 'number'
+    ? new Date(isSeconds ? ts * 1000 : ts).toISOString()
+    : String(ts);
+  return { ...m, createdAt: normalized };
+};
 
 const toUserMemories = (memories: Reflection[]): Reflection[] =>
   memories.filter((m: Reflection) => m.sender === 'user').map(normalizeCreatedAt);

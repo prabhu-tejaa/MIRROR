@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, HostListener, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -9,7 +9,7 @@ import { arrowUpOutline } from 'ionicons/icons';
   templateUrl: './scroll-assistant.component.html',
   styleUrls: ['./scroll-assistant.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon],
+  imports: [IonIcon],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ScrollAssistantComponent {

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
@@ -17,7 +17,7 @@ import { AuthService } from '../../data-access/auth.service';
   templateUrl: './forgot-password.page.html',
   styleUrls: ['./forgot-password.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, TranslatePipe],
+  imports: [IonContent, ReactiveFormsModule, IonInput, IonButton, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ForgotPasswordPage implements OnInit {

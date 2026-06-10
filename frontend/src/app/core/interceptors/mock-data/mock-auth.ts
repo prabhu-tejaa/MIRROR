@@ -1,6 +1,6 @@
 import { HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { Observable, of, throwError , delay } from 'rxjs';
+
 
 import { ApiService } from '../../services/api.service';
 

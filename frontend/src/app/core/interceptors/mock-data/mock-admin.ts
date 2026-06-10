@@ -2,8 +2,8 @@
 /* eslint-disable max-lines-per-function */
 /* eslint-disable max-depth */
 import { HttpRequest, HttpResponse } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { Observable, of , delay } from 'rxjs';
+
 
 import { MockState } from './mock-state';
 

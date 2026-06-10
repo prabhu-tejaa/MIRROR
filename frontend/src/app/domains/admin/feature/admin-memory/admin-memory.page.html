@@ -5,9 +5,11 @@
     </button>
     <div class="nav-title-text">Memory Service</div>
     <div class="nav-right-group">
-      <button *ngIf="activeTabValue === 'MANAGE'" class="refresh-circle-btn" title="Refresh Database" (click)="loadRecords()">
-        <ion-icon name="refresh-outline"></ion-icon>
-      </button>
+      @if (activeTabValue === 'MANAGE') {
+        <button class="refresh-circle-btn" title="Refresh Database" (click)="loadRecords()">
+          <ion-icon name="refresh-outline"></ion-icon>
+        </button>
+      }
     </div>
   </div>
 
@@ -16,96 +18,105 @@
     <div class="tab" tabindex="0" [class.active]="activeTabValue === 'UPLOAD'" (click)="setTab('UPLOAD')" (keydown.enter)="setTab('UPLOAD')">Data Upload</div>
   </div>
 
-  <div *ngIf="activeTabValue === 'UPLOAD'" class="content-panel">
-    <div class="upload-zone" tabindex="0" [class.uploading]="isUploadingValue" (click)="fileInput.click()" (keydown.enter)="fileInput.click()">
-      <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
-      <h3>{{ isUploadingValue ? 'Syncing to Database...' : 'Upload Excel Mock Data' }}</h3>
-      <p>Drag & drop or click to browse</p>
-      <input #fileInput type="file" hidden accept=".xlsx, .xls, .csv" [disabled]="isUploadingValue" (change)="onFileSelected($event)">
-    </div>
-    
-    <div class="info-card">
-      <ion-icon name="information-circle-outline"></ion-icon>
-      <p>Data imported here will be directly parsed and inserted into the PostgreSQL + pgvector database for RAG context testing.</p>
-    </div>
-  </div>
-
-  <div *ngIf="activeTabValue === 'MANAGE'" class="content-panel">
-    <div class="table-header-actions" style="justify-content: space-between; align-items: center;">
-      <div class="search-container">
-        <ion-icon name="search-outline"></ion-icon>
-        <input type="text" placeholder="Search by username or email..." class="custom-search" [ngModel]="searchQueryValue" (ngModelChange)="searchQuery.set($event)">
+  @if (activeTabValue === 'UPLOAD') {
+    <div class="content-panel">
+      <div class="upload-zone" tabindex="0" [class.uploading]="isUploadingValue" (click)="fileInput.click()" (keydown.enter)="fileInput.click()">
+        <ion-icon name="cloud-upload-outline" class="upload-icon"></ion-icon>
+        <h3>{{ isUploadingValue ? 'Syncing to Database...' : 'Upload Excel Mock Data' }}</h3>
+        <p>Drag & drop or click to browse</p>
+        <input #fileInput type="file" hidden accept=".xlsx, .xls, .csv" [disabled]="isUploadingValue" (change)="onFileSelected($event)">
       </div>
-      <button class="create-btn" (click)="addRecord()">
-        <ion-icon name="add-circle-outline"></ion-icon>
-        Add Record
-      </button>
-    </div>
-    <div *ngIf="isLoadingValue" class="loading-state">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Connecting to Postgres database...</p>
-    </div>
-
-    <div *ngIf="!isLoadingValue && cachedGroupsValue.length === 0" class="empty-state">
-      <ion-icon name="server-outline" class="empty-icon"></ion-icon>
-      <h3>No Memories Found</h3>
-      <p>The database is currently empty. Try uploading mock data or adding a record.</p>
-    </div>
-
-    <div *ngIf="!isLoadingValue && cachedGroupsValue.length > 0" class="accordion-container">
-      <div *ngFor="let group of cachedGroupsValue; trackBy: trackByUserId" class="user-group">
-        
-        <div class="user-group-header" tabindex="0" [class.expanded]="expandedUserIdValue === group.userId" (click)="toggleUser(group.userId)" (keydown.enter)="toggleUser(group.userId)">
-          <div class="header-info">
-            <ion-icon name="mail-outline"></ion-icon>
-            <h3>{{ group.userId }}</h3>
-            <span class="badge">{{ group.records.length }} Memories</span>
-          </div>
-          <ion-icon [name]="expandedUserIdValue === group.userId ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
-        </div>
-
-        <div *ngIf="expandedUserIdValue === group.userId" class="user-group-content">
-          
-          <div class="inner-search-bar">
-            <ion-icon name="search-outline"></ion-icon>
-            <input type="text" placeholder="Search my memory..." class="custom-search" [ngModel]="memorySearchQueryValue" (ngModelChange)="memorySearchQuery.set($event)">
-          </div>
-
-          <div class="table-container table-responsive">
-            <table>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Emotion</th>
-                  <th>Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let record of group.records">
-                  <td>#{{ record.id }}</td>
-                  <td>
-                    <div class="memory-emotion">
-                      <span class="emotion-badge" [ngClass]="record.cleanEmotion.toLowerCase()">{{ record.cleanEmotion }}</span>
-                    </div>
-                  </td>
-                  <td>{{ record.createdAt | date:'short' }}</td>
-                  <td>
-                    <button class="action-btn edit" title="Edit" (click)="editRecord(record.id)">
-                      <ion-icon name="create-outline"></ion-icon>
-                    </button>
-                    <button class="action-btn delete" title="Delete" (click)="deleteRecord(record.id)">
-                      <ion-icon name="trash-outline"></ion-icon>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+      <div class="info-card">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <p>Data imported here will be directly parsed and inserted into the PostgreSQL + pgvector database for RAG context testing.</p>
       </div>
     </div>
-  </div>
+  }
+
+  @if (activeTabValue === 'MANAGE') {
+    <div class="content-panel">
+      <div class="table-header-actions extracted-style-1781088649401-1" >
+        <div class="search-container">
+          <ion-icon name="search-outline"></ion-icon>
+          <input type="text" placeholder="Search by username or email..." class="custom-search" [ngModel]="searchQueryValue" (ngModelChange)="searchQuery.set($event)">
+        </div>
+        <button class="create-btn" (click)="addRecord()">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Add Record
+        </button>
+      </div>
+      @if (isLoadingValue) {
+        <div class="loading-state">
+          <ion-spinner name="crescent"></ion-spinner>
+          <p>Connecting to Postgres database...</p>
+        </div>
+      }
+      @if (!isLoadingValue && cachedGroupsValue.length === 0) {
+        <div class="empty-state">
+          <ion-icon name="server-outline" class="empty-icon"></ion-icon>
+          <h3>No Memories Found</h3>
+          <p>The database is currently empty. Try uploading mock data or adding a record.</p>
+        </div>
+      }
+      @if (!isLoadingValue && cachedGroupsValue.length > 0) {
+        <div class="accordion-container">
+          @for (group of cachedGroupsValue; track trackByUserId($index, group)) {
+            <div class="user-group">
+              <div class="user-group-header" tabindex="0" [class.expanded]="expandedUserIdValue === group.userId" (click)="toggleUser(group.userId)" (keydown.enter)="toggleUser(group.userId)">
+                <div class="header-info">
+                  <ion-icon name="mail-outline"></ion-icon>
+                  <h3>{{ group.userId }}</h3>
+                  <span class="badge">{{ group.records.length }} Memories</span>
+                </div>
+                <ion-icon [name]="expandedUserIdValue === group.userId ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+              </div>
+              @if (expandedUserIdValue === group.userId) {
+                <div class="user-group-content">
+                  <div class="inner-search-bar">
+                    <ion-icon name="search-outline"></ion-icon>
+                    <input type="text" placeholder="Search my memory..." class="custom-search" [ngModel]="memorySearchQueryValue" (ngModelChange)="memorySearchQuery.set($event)">
+                  </div>
+                  <div class="table-container table-responsive">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Emotion</th>
+                          <th>Date</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @for (record of group.records; track record) {
+                          <tr>
+                            <td>#{{ record.id }}</td>
+                            <td>
+                              <div class="memory-emotion">
+                                <span class="emotion-badge" [ngClass]="record.cleanEmotion.toLowerCase()">{{ record.cleanEmotion }}</span>
+                              </div>
+                            </td>
+                            <td>{{ record.createdAt | date:'short' }}</td>
+                            <td>
+                              <button class="action-btn edit" title="Edit" (click)="editRecord(record.id)">
+                                <ion-icon name="create-outline"></ion-icon>
+                              </button>
+                              <button class="action-btn delete" title="Delete" (click)="deleteRecord(record.id)">
+                                <ion-icon name="trash-outline"></ion-icon>
+                              </button>
+                            </td>
+                          </tr>
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
 
   <ion-modal class="glassy-modal memory-modal" [isOpen]="isModalOpenValue" (didDismiss)="closeModal()">
     <ng-template>
@@ -121,11 +132,15 @@
       </ion-header>
       <div class="ion-padding glassy-modal-content modal-body-scroll">
         <div class="modal-form-wrapper">
-          
+
           <div class="user-overview">
             <div class="modal-avatar" [ngClass]="{'create-avatar': modalMode === 'ADD'}">
-              <ion-icon *ngIf="modalMode === 'ADD'" name="server-outline"></ion-icon>
-              <ion-icon *ngIf="modalMode === 'EDIT'" name="create-outline"></ion-icon>
+              @if (modalMode === 'ADD') {
+                <ion-icon name="server-outline"></ion-icon>
+              }
+              @if (modalMode === 'EDIT') {
+                <ion-icon name="create-outline"></ion-icon>
+              }
             </div>
             <div class="user-meta">
               <h3>{{ modalMode === 'ADD' ? 'New Memory Record' : 'Editing Record' }}</h3>
@@ -145,8 +160,8 @@
             <div class="form-group">
               <label class="field-label" for="contentInput">Content</label>
               <div class="input-wrapper">
-                <ion-icon name="document-text-outline" class="input-icon" style="top: 22px;"></ion-icon>
-                <textarea id="contentInput" rows="4" name="content" placeholder="Enter memory text..." class="glass-input" style="padding-top: 14px; resize: none;" required [(ngModel)]="modalForm.content"></textarea>
+                <ion-icon name="document-text-outline" class="input-icon extracted-style-1781088649401-2" ></ion-icon>
+                <textarea id="contentInput" rows="4" name="content" placeholder="Enter memory text..." class="glass-input extracted-style-1781088649401-3"  required [(ngModel)]="modalForm.content"></textarea>
               </div>
             </div>
 

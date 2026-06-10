@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
@@ -6,6 +6,7 @@ import { NavController, AnimationController } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff, closeOutline, alertCircleOutline, shieldCheckmarkOutline } from 'ionicons/icons';
+import { switchMap, tap } from 'rxjs';
 
 import { AnalyticsService } from '../../../../core/services/analytics.service';
 import { TranslationService } from '../../../../core/services/translation.service';
@@ -20,7 +21,7 @@ import { AuthService } from '../../data-access/auth.service';
   templateUrl: './signup.page.html',
   styleUrls: ['./signup.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonIcon, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, TranslatePipe],
+  imports: [IonContent, ReactiveFormsModule, IonInput, IonButton, IonIcon, IonCheckbox, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignupPage implements OnInit {
@@ -74,24 +75,17 @@ export class SignupPage implements OnInit {
       const email: string = this.signupForm.get('email')?.value as string;
       const password: string = this.signupForm.get('password')?.value as string;
 
-      this.authSvc.signup({ username, email, password }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (_response: string) => {
-          void this.analyticsSvc.setUserId(email);
-          
-          this.authSvc.requestOtp(email).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-            next: () => {
-              this.isLoading = false;
-              this.cdr.markForCheck();
-              void this.navCtrl.navigateRoot('/otp', { 
-                                  queryParams: { flow: 'signup', email: email },
-                                  animation: getCrossfadeAnimation(this.animationCtrl)
-                                });
-            },
-            error: (err: Error) => {
-              this.isLoading = false;
-              this.errorMessage = err.message || this.translationSvc.translate('SIGNUP.ERROR_DEFAULT');
-              this.cdr.markForCheck();
-            }
+      this.authSvc.signup({ username, email, password }).pipe(
+        tap(() => void this.analyticsSvc.setUserId(email)),
+        switchMap(() => this.authSvc.requestOtp(email)),
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.cdr.markForCheck();
+          void this.navCtrl.navigateRoot('/otp', { 
+            queryParams: { flow: 'signup', email: email },
+            animation: getCrossfadeAnimation(this.animationCtrl)
           });
         },
         error: (err: Error) => {

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input, OnDestroy, ElementRef, ViewChild, AfterViewInit, OnInit, NgZone, HostListener, inject, OnChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 
@@ -8,7 +8,7 @@ import { ShapeType, StarfieldService } from './starfield.service';
 @Component({
   selector: 'app-starfield',
   standalone: true,
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './starfield.component.html',
   styleUrls: ['./starfield.component.scss'],
 })

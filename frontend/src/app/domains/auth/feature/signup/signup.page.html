@@ -1,9 +1,9 @@
 <ion-content class="transparent-bg" [fullscreen]="true">
   <div class="login-wrapper">
 
-    <div class="branding-header" style="margin-bottom: clamp(1rem, 3vh, 2rem);">
+    <div class="branding-header extracted-style-1781088649425-1" >
       <div class="title-glow">
-        <h1 class="splash-title" style="font-size: clamp(2rem, 8vw, 3rem);">{{ 'SIGNUP.JOIN' | translate }}</h1>
+        <h1 class="splash-title extracted-style-1781088649425-2" >{{ 'SIGNUP.JOIN' | translate }}</h1>
       </div>
       <p class="splash-tagline">{{ 'SIGNUP.TAGLINE' | translate }}</p>
     </div>
@@ -78,19 +78,19 @@
             @if (f['password'].errors['minlength']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span> }
             @if (f['password'].errors['maxlength']) { <span>{{ 'SIGNUP.ERROR_PASSWORD_MAXLENGTH' | translate }}</span> }
             } @else if (f['password'].errors['minlength'] && !f['password'].errors['required']) {
-            <span style="opacity: 0.8; font-size: 0.75rem;">{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span>
+            <span class="extracted-style-1781088649425-3">{{ 'SIGNUP.ERROR_PASSWORD_MINLENGTH' | translate }}</span>
             }
           </div>
           }
         </div>
 
-        <div class="tos-wrapper input-group" style="padding: 0 0.5rem; margin-bottom: 1rem;">
-          <div class="tos-container"
-            style="display: flex; align-items: center; justify-content: flex-start; gap: 12px;">
+        <div class="tos-wrapper input-group extracted-style-1781088649425-4" >
+          <div class="tos-container extracted-style-1781088649425-5"
+            >
             <ion-checkbox formControlName="agreeTos" class="glassy-checkbox"></ion-checkbox>
-            <span class="tos-text" style="font-size: 0.85rem; color: rgba(255, 255, 255, 0.8); line-height: 1.4;">
-              {{ 'SIGNUP.TOS_PREFIX' | translate }}<a id="open-terms" class="signup-link"
-                style="display: inline-block; padding: 2px 4px; position: relative; z-index: 100;">{{ 'SIGNUP.TOS_LINK'
+            <span class="tos-text extracted-style-1781088649425-6" >
+              {{ 'SIGNUP.TOS_PREFIX' | translate }}<a id="open-terms" class="signup-link extracted-style-1781088649425-7"
+                >{{ 'SIGNUP.TOS_LINK'
                 | translate }}</a>
             </span>
           </div>
@@ -145,7 +145,7 @@
           </ion-modal>
 
           @if (isSubmitted && f['agreeTos'].errors) {
-          <div class="error-msg" style="margin-top: 0.5rem;">
+          <div class="error-msg extracted-style-1781088649425-8" >
             @if (f['agreeTos'].errors['required']) { <span>{{ 'SIGNUP.ERROR_TOS_REQUIRED' | translate }}</span> }
           </div>
           }

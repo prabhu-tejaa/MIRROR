@@ -14,7 +14,7 @@ import {
   mailOutline, documentTextOutline, heartHalfOutline,
   chevronDownOutline, chevronUpOutline, refreshOutline
 } from 'ionicons/icons';
-import { take } from 'rxjs/operators';
+import { take } from 'rxjs';
 
 import { ToastService } from '../../../../core/services/toast.service';
 import { AdminMemoryRecord } from '../../data-access/admin-memory.service';

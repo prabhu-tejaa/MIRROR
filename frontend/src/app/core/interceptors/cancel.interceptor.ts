@@ -1,6 +1,6 @@
 import { HttpInterceptorFn, HttpContextToken } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs';
 
 import { HttpCancelService } from '../services/http-cancel.service';
 

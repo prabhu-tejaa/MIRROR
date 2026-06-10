@@ -4,7 +4,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { IonTabs, IonTabBar, IonTabButton, IonIcon, IonLabel } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { triangle, ellipse, square, person, chatbubbles, personCircle, menuOutline, chevronBackOutline, chevronForwardOutline, heart, heartOutline, chatbubblesOutline, personCircleOutline } from 'ionicons/icons';
-import { filter } from 'rxjs/operators';
+import { filter } from 'rxjs';
 
 import { StorageKeys } from '../../core/constants/storage.constants';
 import { StorageService } from '../../core/services/storage.service';

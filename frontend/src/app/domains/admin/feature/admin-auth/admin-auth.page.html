@@ -35,9 +35,11 @@
         </div>
         <div class="card-info">
           <span class="value">
-            <ng-container *ngIf="!isLoadingValue; else spinnerTemplate">
+            @if (!isLoadingValue) {
               {{ usersList.length }}
-            </ng-container>
+            } @else {
+              <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
+            }
           </span>
           <span class="label">Total Accounts</span>
         </div>
@@ -49,9 +51,11 @@
         </div>
         <div class="card-info">
           <span class="value">
-            <ng-container *ngIf="!isLoadingValue; else spinnerTemplate">
+            @if (!isLoadingValue) {
               {{ verifiedCountValue }}
-            </ng-container>
+            } @else {
+              <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
+            }
           </span>
           <span class="label">Verified Profiles</span>
         </div>
@@ -63,27 +67,26 @@
         </div>
         <div class="card-info">
           <span class="value">
-            <ng-container *ngIf="!isLoadingValue; else spinnerTemplate">
+            @if (!isLoadingValue) {
               {{ lockedCountValue }}
-            </ng-container>
+            } @else {
+              <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
+            }
           </span>
           <span class="label">Locked Out</span>
         </div>
       </div>
     </div>
 
-    <ng-template #spinnerTemplate>
-      <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
-    </ng-template>
 
     <div class="search-filter-bar">
-      <ion-searchbar 
+      <ion-searchbar
         class="glass-searchbar"
         placeholder="Search by username or email..."
-        [ngModel]="searchQueryValue" 
+        [ngModel]="searchQueryValue"
         (ionInput)="updateSearch($event)">
       </ion-searchbar>
-      
+
       <ion-select class="glass-select" label="" [interface]="'popover'" [interfaceOptions]="{ cssClass: 'role-select-popover' }" [ngModel]="roleFilterValue" (ionChange)="updateRoleFilter($event)">
         <ion-select-option value="ALL">All Roles</ion-select-option>
         <ion-select-option value="USER">User</ion-select-option>

@@ -203,3 +203,46 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.extracted-style-1781088649425-1 {
+  margin-bottom: clamp(1rem, 3vh, 2rem);
+}
+
+.extracted-style-1781088649425-2 {
+  font-size: clamp(2rem, 8vw, 3rem);
+}
+
+.extracted-style-1781088649425-3 {
+  opacity: 0.8;
+  font-size: 0.75rem;
+}
+
+.extracted-style-1781088649425-4 {
+  padding: 0 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.extracted-style-1781088649425-5 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.extracted-style-1781088649425-6 {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
+}
+
+.extracted-style-1781088649425-7 {
+  display: inline-block;
+  padding: 2px 4px;
+  position: relative;
+  z-index: 100;
+}
+
+.extracted-style-1781088649425-8 {
+  margin-top: 0.5rem;
+}

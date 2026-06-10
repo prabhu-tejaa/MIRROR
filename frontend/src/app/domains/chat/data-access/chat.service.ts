@@ -1,7 +1,7 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable } from 'rxjs';
-import { timeout } from 'rxjs/operators';
+import { Observable , timeout } from 'rxjs';
+
 
 import { environment } from '../../../../environments/environment';
 import { SKIP_CANCEL } from '../../../core/interceptors/cancel.interceptor';

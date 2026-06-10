@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, ElementRef, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
@@ -22,7 +22,7 @@ import { AuthService } from '../../data-access/auth.service';
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonInput, IonButton, IonIcon, TranslatePipe],
+  imports: [IonContent, ReactiveFormsModule, IonInput, IonButton, IonIcon, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginPage implements OnInit {

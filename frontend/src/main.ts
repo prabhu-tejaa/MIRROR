@@ -27,7 +27,7 @@ import { environment } from './environments/environment';
 
 class GlobalErrorHandler implements ErrorHandler {
   public handleError(error: unknown): void {
-    const chunkFailedMessage: RegExp = /Loading chunk [\w\d-.]+ failed/;
+    const chunkFailedMessage: RegExp = /Loading chunk [\w-.]+ failed/;
     const dynamicImportFailed: RegExp = /Failed to fetch dynamically imported module/;
     const errMessage: string = error instanceof Error ? error.message : String(error);
     if (chunkFailedMessage.test(errMessage) || dynamicImportFailed.test(errMessage)) {

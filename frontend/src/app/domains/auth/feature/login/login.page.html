@@ -1,7 +1,7 @@
 <ion-content class="transparent-bg" [fullscreen]="true">
   <div class="login-wrapper">
 
-<div class="branding-header">
+    <div class="branding-header">
       <div class="title-glow">
         <h1 class="splash-title">
           <span class="title-left">MIЯ</span><span class="title-right">ROЯ</span>
@@ -10,11 +10,11 @@
       <p class="splash-tagline">{{ 'LOGIN.TAGLINE' | translate }}</p>
     </div>
 
-<div class="glassy-card">
+    <div class="glassy-card">
       <h2 class="form-title">{{ 'LOGIN.TITLE' | translate }}</h2>
-      
+
       <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-        
+
 
 
         <div class="input-group">
@@ -25,12 +25,20 @@
             class="glassy-input"
             [placeholder]="'LOGIN.PLACEHOLDER_EMAIL' | translate"
           ></ion-input>
-          
-          <div *ngIf="isSubmitted && f['email'].errors" class="error-msg">
-            <span *ngIf="f['email'].errors['required']">{{ 'LOGIN.ERROR_EMAIL_REQUIRED' | translate }}</span>
-            <span *ngIf="f['email'].errors['email'] || f['email'].errors['pattern']">{{ 'LOGIN.ERROR_EMAIL_INVALID' | translate }}</span>
-            <span *ngIf="f['email'].errors['maxlength']">{{ 'LOGIN.ERROR_EMAIL_MAXLENGTH' | translate }}</span>
-          </div>
+
+          @if (isSubmitted && f['email'].errors) {
+            <div class="error-msg">
+              @if (f['email'].errors['required']) {
+                <span>{{ 'LOGIN.ERROR_EMAIL_REQUIRED' | translate }}</span>
+              }
+              @if (f['email'].errors['email'] || f['email'].errors['pattern']) {
+                <span>{{ 'LOGIN.ERROR_EMAIL_INVALID' | translate }}</span>
+              }
+              @if (f['email'].errors['maxlength']) {
+                <span>{{ 'LOGIN.ERROR_EMAIL_MAXLENGTH' | translate }}</span>
+              }
+            </div>
+          }
         </div>
 
         <div class="input-group">
@@ -40,17 +48,25 @@
             class="glassy-input"
             [type]="showPassword ? 'text' : 'password'"
             [placeholder]="'LOGIN.PLACEHOLDER_PASSWORD' | translate"
-          >
+            >
             <button type="button" slot="end" class="eye-toggle" aria-label="Toggle password visibility" (click)="showPassword = !showPassword">
               <ion-icon [icon]="showPassword ? eye : eyeOff"></ion-icon>
             </button>
           </ion-input>
-          
-          <div *ngIf="isSubmitted && f['password'].errors" class="error-msg">
-            <span *ngIf="f['password'].errors['required']">{{ 'LOGIN.ERROR_PASSWORD_REQUIRED' | translate }}</span>
-            <span *ngIf="f['password'].errors['maxlength']">{{ 'LOGIN.ERROR_PASSWORD_MAXLENGTH' | translate }}</span>
-            <span *ngIf="!f['password'].errors['required'] && !f['password'].errors['maxlength']">{{ 'LOGIN.ERROR_PASSWORD_INVALID' | translate }}</span>
-          </div>
+
+          @if (isSubmitted && f['password'].errors) {
+            <div class="error-msg">
+              @if (f['password'].errors['required']) {
+                <span>{{ 'LOGIN.ERROR_PASSWORD_REQUIRED' | translate }}</span>
+              }
+              @if (f['password'].errors['maxlength']) {
+                <span>{{ 'LOGIN.ERROR_PASSWORD_MAXLENGTH' | translate }}</span>
+              }
+              @if (!f['password'].errors['required'] && !f['password'].errors['maxlength']) {
+                <span>{{ 'LOGIN.ERROR_PASSWORD_INVALID' | translate }}</span>
+              }
+            </div>
+          }
         </div>
 
         <ion-button type="submit" expand="block" class="premium-btn" [disabled]="isLoading">
@@ -64,11 +80,11 @@
             </div>
           }
         </ion-button>
-        
+
         <div class="forgot-wrapper">
           <a class="forgot-link" tabindex="0" (click)="goToForgot()" (keydown.enter)="goToForgot()">{{ 'LOGIN.FORGOT_LINK' | translate }}</a>
         </div>
-        
+
         <div class="signup-wrapper">
           <span class="signup-text">{{ 'LOGIN.SIGNUP_PREFIX' | translate }}<a class="signup-link" tabindex="0" (click)="goToSignup()" (keydown.enter)="goToSignup()">{{ 'LOGIN.SIGNUP_LINK' | translate }}</a></span>
         </div>
@@ -77,7 +93,9 @@
 
   </div>
 
-  <div *ngIf="showHeartUsername" class="heart-username-overlay">
-    <span class="user-name style-chrome">{{ username }}</span>
-  </div>
+  @if (showHeartUsername) {
+    <div class="heart-username-overlay">
+      <span class="user-name style-chrome">{{ username }}</span>
+    </div>
+  }
 </ion-content>

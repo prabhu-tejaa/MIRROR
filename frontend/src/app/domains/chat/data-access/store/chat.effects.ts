@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType, CreateEffectMetadata } from '@ngrx/effects';
 import { Store, Action } from '@ngrx/store';
-import { of, from, interval, Observable } from 'rxjs';
-import { map, catchError, switchMap, withLatestFrom, mergeMap, distinctUntilChanged, takeWhile, concatMap } from 'rxjs/operators';
+import { of, from, interval, Observable , map, catchError, switchMap, withLatestFrom, mergeMap, distinctUntilChanged, takeWhile, concatMap } from 'rxjs';
+
 
 import { getEmotionColors } from '../../../../core/constants/theme.constants';
 import { ToastService } from '../../../../core/services/toast.service';

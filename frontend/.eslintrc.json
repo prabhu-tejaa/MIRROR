@@ -5,7 +5,7 @@
     {
       "files": ["*.ts"],
       "parserOptions": {
-        "project": ["tsconfig.json", "tsconfig.app.json", "tsconfig.spec.json"],
+        "project": ["tsconfig.eslint.json"],
         "createDefaultProgram": false
       },
       "extends": [
@@ -15,9 +15,17 @@
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/recommended-requiring-type-checking",
         "plugin:@typescript-eslint/strict",
-        "plugin:@ngrx/all"
+        "plugin:@ngrx/all",
+        "plugin:rxjs-x/recommended-legacy",
+        "plugin:sonarjs/recommended-legacy"
       ],
-      "plugins": ["@typescript-eslint", "import", "rxjs-x", "@ngrx"],
+      "plugins": [
+        "@typescript-eslint", 
+        "import", 
+        "rxjs-x", 
+        "@ngrx", 
+        "sonarjs"
+      ],
       "rules": {
         "@angular-eslint/component-class-suffix": ["error", { "suffixes": ["Component", "Page"] }],
         "@angular-eslint/component-selector": ["error", { "type": "element", "prefix": "app", "style": "kebab-case" }],
@@ -70,8 +78,14 @@
 
         "no-restricted-syntax": [
           "error",
-          { "selector": "Line", "message": "Direct Line Comments are forbidden. Code must be self-documenting." },
-          { "selector": "Block", "message": "Block Comments are forbidden. Code must be self-documenting." }
+          { 
+            "selector": "Line:not([value=/^\\s*(eslint-disable|ts-ignore|todo|fixme)/i])", 
+            "message": "Direct Line Comments are forbidden. Code must be self-documenting. Use explicit ESLint flags or TODO/FIXME annotations if documenting an architectural or engine-level bypass." 
+          },
+          { 
+            "selector": "Block:not([value=/^\\s*(eslint-disable|ts-ignore|todo|fixme)/i])", 
+            "message": "Block Comments are forbidden. Code must be self-documenting. Use explicit ESLint flags or TODO/FIXME annotations if documenting an architectural or engine-level bypass." 
+          }
         ],
         "no-inline-comments": "error",
 
@@ -88,7 +102,17 @@
         "max-params": ["error", { "max": 3 }],
 
         "import/no-duplicates": "error",
-        "import/order": ["error", { "alphabetize": { "order": "asc" }, "newlines-between": "always" }]
+        "import/order": ["error", { "alphabetize": { "order": "asc" }, "newlines-between": "always" }],
+
+        "rxjs-x/no-ignored-observable": "error",
+        "rxjs-x/no-nested-subscribe": "error", 
+        "rxjs-x/no-implicit-any-catch": "off",
+        "sonarjs/deprecation": "off",
+        "sonarjs/pseudo-random": "off",
+        "sonarjs/function-return-type": "off",
+        "sonarjs/no-nested-conditional": "off",
+        "sonarjs/slow-regex": "off",
+        "sonarjs/no-async-constructor": "off"
       }
     },
     {
@@ -99,7 +123,8 @@
         "@typescript-eslint/no-unsafe-argument": "off",
         "@typescript-eslint/no-explicit-any": "off",
         "max-lines-per-function": "off",
-        "max-lines": "off"
+        "max-lines": "off",
+        "sonarjs/no-duplicate-string": "off"
       }
     },
     {
@@ -141,7 +166,9 @@
       "files": ["mock-*.ts"],
       "rules": {
         "max-lines-per-function": "off",
-        "complexity": "off"
+        "complexity": "off",
+        "sonarjs/cognitive-complexity": "off",
+        "sonarjs/no-hardcoded-ip": "off"
       }
     },
     {
@@ -157,7 +184,8 @@
         "max-params": "off",
         "complexity": "off",
         "max-depth": "off",
-        "@typescript-eslint/no-non-null-assertion": "off"
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "sonarjs/cognitive-complexity": "off"
       }
     },
     {
@@ -172,7 +200,10 @@
         "@angular-eslint/template/conditional-complexity": ["error", { "maxComplexity": 2 }],
         "@angular-eslint/template/no-duplicate-attributes": "error",
         "@angular-eslint/template/attributes-order": "error",
-        "@angular-eslint/template/no-call-expression": "off"
+        "@angular-eslint/template/no-call-expression": "off",
+        "@angular-eslint/template/eqeqeq": "error",
+        "@angular-eslint/template/no-inline-styles": ["error", { "allowNgStyle": true, "allowBindToStyle": true }],
+        "@angular-eslint/template/prefer-control-flow": "error"
       }
     }
   ]

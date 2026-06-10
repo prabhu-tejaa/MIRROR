@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType, CreateEffectMetadata } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
-import { of, Observable } from 'rxjs';
-import { catchError, map, switchMap } from 'rxjs/operators';
+import { of, Observable , catchError, map, switchMap } from 'rxjs';
+
 
 import { ToastService } from '../../../../core/services/toast.service';
 import { AdminAuthService } from '../admin-auth.service';

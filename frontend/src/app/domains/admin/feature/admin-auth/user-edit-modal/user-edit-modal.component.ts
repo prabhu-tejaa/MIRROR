@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, Input, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -28,17 +28,16 @@ import { AdminActions } from '../../../data-access/store/admin.actions';
   styleUrls: ['./user-edit-modal.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, 
     FormsModule,
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
-    IonButtons, 
-    IonButton, 
-    IonIcon, 
-    IonContent, 
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonIcon,
+    IonContent,
     IonToggle
-  ]
+]
 })
 export class UserEditModalComponent implements OnInit {
   @Input() public user!: AdminUserResponse;

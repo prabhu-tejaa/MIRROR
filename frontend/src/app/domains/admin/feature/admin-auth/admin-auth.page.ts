@@ -1,4 +1,4 @@
-import { CommonModule, Location } from '@angular/common';
+import { Location } from '@angular/common';
 import { Component, inject, OnInit, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { 
@@ -32,17 +32,16 @@ import { UserEditModalComponent } from './user-edit-modal/user-edit-modal.compon
   styleUrls: ['./admin-auth.page.scss'],
   standalone: true,
   imports: [
-    CommonModule, 
     FormsModule,
-    IonButton, 
-    IonIcon, 
-    IonContent, 
-    IonSearchbar, 
+    IonButton,
+    IonIcon,
+    IonContent,
+    IonSearchbar,
     IonSpinner,
     IonSelect,
     IonSelectOption,
     AdminUserListComponent
-  ],
+],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminAuthPage implements OnInit {

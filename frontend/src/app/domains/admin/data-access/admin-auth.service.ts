@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, of, throwError , catchError } from 'rxjs';
+
 
 import { environment } from '../../../../environments/environment';
 import { ApiService } from '../../../core/services/api.service';

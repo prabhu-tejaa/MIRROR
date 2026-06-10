@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, ChangeDetectionStrategy, ApplicationRef, HostListener } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
 import { IonApp, IonRouterOutlet, IonContent } from '@ionic/angular/standalone';
-import { Observable } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
+import { Observable , map, filter } from 'rxjs';
+
 
 
 import { AnalyticsService } from './core/services/analytics.service';

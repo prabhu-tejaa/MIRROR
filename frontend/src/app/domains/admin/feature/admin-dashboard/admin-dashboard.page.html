@@ -4,12 +4,14 @@
       <ion-icon name="arrow-back-outline"></ion-icon>
     </button>
 
-    <div *ngIf="{ count: (onlineUsersCount$ | async) ?? 0 } as state" class="nav-right-group">
-      <div class="live-presence-pill" [class.offline]="state.count === 0">
-        <span class="presence-dot"></span>
-        <span class="presence-label">{{ state.count }} Online</span>
+    @if ({ count: (onlineUsersCount$ | async) ?? 0 }; as state) {
+      <div class="nav-right-group">
+        <div class="live-presence-pill" [class.offline]="state.count === 0">
+          <span class="presence-dot"></span>
+          <span class="presence-label">{{ state.count }} Online</span>
+        </div>
       </div>
-    </div>
+    }
 
   </div>
 

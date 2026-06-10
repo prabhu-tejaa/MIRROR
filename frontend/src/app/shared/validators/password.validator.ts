@@ -2,7 +2,7 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
 
 const hasUpper: RegExp = /[A-Z]/;
 const hasLower: RegExp = /[a-z]/;
-const hasNumeric: RegExp = /[0-9]/;
+const hasNumeric: RegExp = /\d/;
 const hasSpecial: RegExp = /[@$!%*?&]/;
 
 function validatePassword(value: string): ValidationErrors {

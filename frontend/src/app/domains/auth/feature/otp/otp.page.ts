@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
@@ -21,7 +21,7 @@ import { AuthService } from '../../data-access/auth.service';
   templateUrl: './otp.page.html',
   styleUrls: ['./otp.page.scss'],
   standalone: true,
-  imports: [IonContent, CommonModule, ReactiveFormsModule, IonButton, TranslatePipe],
+  imports: [IonContent, ReactiveFormsModule, IonButton, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OtpPage implements OnInit, OnDestroy {
@@ -141,7 +141,7 @@ export class OtpPage implements OnInit, OnDestroy {
     const input: HTMLInputElement = event.target as HTMLInputElement;
     let val: string = input.value;
 
-    val = val.replace(/[^0-9]/g, '');
+    val = val.replace(/\D/g, '');
 
     if (val.length > 1) {
       val = val.charAt(val.length - 1);
@@ -212,7 +212,7 @@ export class OtpPage implements OnInit, OnDestroy {
   public onPaste(event: ClipboardEvent): void {
     event.preventDefault();
     const pastedData: string = event.clipboardData?.getData('text') || '';
-    const numericData: string = pastedData.replace(/[^0-9]/g, '').slice(0, 6);
+    const numericData: string = pastedData.replace(/\D/g, '').slice(0, 6);
 
     for (let i: number = 0; i < 6; i++) {
       this.otpDigits[i] = numericData[i] || '';

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
@@ -27,16 +27,15 @@ import { AdminActions } from '../../../data-access/store/admin.actions';
   styleUrls: ['./user-create-modal.component.scss'],
   standalone: true,
   imports: [
-    CommonModule, 
     FormsModule,
-    IonHeader, 
-    IonToolbar, 
-    IonTitle, 
-    IonButtons, 
-    IonButton, 
-    IonIcon, 
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonIcon,
     IonContent
-  ]
+]
 })
 export class UserCreateModalComponent {
   private modalCtrl: ModalController = inject(ModalController);

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, ChangeDetectionStrategy, inject, computed, Signal } from '@angular/core';
 import {
   IonContent, IonFooter,
@@ -26,11 +26,15 @@ type ConfettiOpts = Record<string, unknown>;
   styleUrls: ['profile.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
-    IonContent, IonFooter,
-    IonList, IonItem, IonLabel, IonIcon, IonNote,
+    IonContent,
+    IonFooter,
+    IonList,
+    IonItem,
+    IonLabel,
+    IonIcon,
+    IonNote,
     TranslatePipe
-  ],
+],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProfilePage {
