@@ -30,6 +30,10 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
 
+            if (request.getURI().getPath().endsWith("/keepalive")) {
+                return chain.filter(exchange);
+            }
+
             if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
                 return onError(exchange, "Missing authorization header", HttpStatus.UNAUTHORIZED);
             }

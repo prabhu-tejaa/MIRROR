@@ -32,7 +32,6 @@ const TYPING_INTERVAL_MS = 15 as const;
 const BASE_SPEED = 1.2 / 15;
 const WAVE_FREQ = 1 / 300;
 const WAVE_AMP = 4 as const;
-const DEFAULT_EMAIL = 'guest@mirror.tech' as const;
 
 @Injectable()
 export class ChatEffects {
@@ -177,9 +176,11 @@ export class ChatEffects {
       ofType(chatActions.loadChatHistory),
       withLatestFrom(this.store.select(selectUserEmail)),
       switchMap(([, email]: [Action, string | null]): Observable<Action> => {
-        const targetEmail: string = email || DEFAULT_EMAIL;
-        return this.chatSvc.getHistory(targetEmail, null, 20).pipe(
-          mergeMap((data: HistoryResponse) => from(this.buildHistoryActions(data, targetEmail))),
+        if (!email) {
+          return of(chatActions.loadChatHistoryFailure({ error: new Error('User email not found') }));
+        }
+        return this.chatSvc.getHistory(email, null, 20).pipe(
+          mergeMap((data: HistoryResponse) => from(this.buildHistoryActions(data, email))),
           catchError((): Observable<Action> => {
             void this.toastSvc.showError('Failed to load chat history.');
             return of(chatActions.loadChatHistoryFailure({ error: new Error('History load failed') }));
@@ -194,8 +195,10 @@ export class ChatEffects {
       ofType(chatActions.loadMoreHistory),
       withLatestFrom(this.store.select(selectUserEmail), this.store.select(chatSelectors.selectCurrentCursor)),
       switchMap(([, email, cursor]: [Action, string | null, string | null]): Observable<Action> => {
-        const targetEmail: string = email || DEFAULT_EMAIL;
-        return this.chatSvc.getHistory(targetEmail, cursor, 20).pipe(
+        if (!email) {
+          return of(chatActions.loadMoreHistoryFailure({ error: new Error('User email not found') }));
+        }
+        return this.chatSvc.getHistory(email, cursor, 20).pipe(
           mergeMap((data: HistoryResponse): Observable<Action> => {
             const msgs: Message[] = (data?.messages || []).reverse().map((m: unknown) => this.mapBackendMessage(m as BackendMessage));
             return from([chatActions.loadMoreHistorySuccess({ messages: msgs, nextCursor: data?.nextCursor || null, hasMore: !!data?.hasMore }), chatActions.triggerMaintainScroll()]);
@@ -218,11 +221,14 @@ export class ChatEffects {
         const typingId: string = 'typing-' + Math.random().toString(36).substring(7);
         const userMsg: Message = { id: userMsgId, sender: 'user', text, timestamp: new Date(), isCurrentSession: true };
         const typingMsg: Message = { id: typingId, sender: 'mirror', text: '', timestamp: new Date(), isTyping: true, isCurrentSession: true };
-        const targetEmail: string = email || DEFAULT_EMAIL;
+        
+        if (!email) {
+          return of(chatActions.postMessageFailure({ typingId, errorMsg: 'Authentication required. Please log in.' }));
+        }
 
         const immediateActions: Action[] = this.buildPostMessageActions(typingId, userMsg, typingMsg);
 
-        const apiCall$: Observable<Action> = this.chatSvc.reflect(targetEmail, text).pipe(
+        const apiCall$: Observable<Action> = this.chatSvc.reflect(email, text).pipe(
           map((res: { reflection: string; emotion: string; }): Action => {
             const { emotion, primary, secondary } = this.parseEmotionAndColors(res.emotion);
             return chatActions.postMessageSuccess({ typingId, text: res.reflection || 'Thank you for sharing.', emotion, primary, secondary });

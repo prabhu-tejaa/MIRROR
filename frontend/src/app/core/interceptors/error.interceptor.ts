@@ -3,9 +3,7 @@ import { inject, Injector } from '@angular/core';
 import { catchError, throwError, switchMap, BehaviorSubject, filter, take, finalize, Observable } from 'rxjs';
 
 import { AuthService } from '../../domains/auth/data-access/auth.service';
-import { StorageKeys } from '../constants/storage.constants';
 import { ApiService } from '../services/api.service';
-import { StorageService } from '../services/storage.service';
 import { ToastService } from '../services/toast.service';
 import { TranslationService } from '../services/translation.service';
 
@@ -131,14 +129,13 @@ export const errorInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, n
 
 interface RefreshContext {
   authSvc: AuthService;
-  refreshToken: string;
   request: HttpRequest<unknown>;
   next: HttpHandlerFn;
 }
 
 function performTokenRefresh(ctx: RefreshContext): Observable<HttpEvent<unknown>> {
   let completed: boolean = false;
-  return ctx.authSvc.refresh(ctx.refreshToken).pipe(
+  return ctx.authSvc.refresh().pipe(
     catchError((err: unknown) => {
       completed = true;
       isRefreshing = false;
@@ -176,8 +173,6 @@ function processRefreshQueue(request: HttpRequest<unknown>, next: HttpHandlerFn)
 
 function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, injector: Injector): Observable<HttpEvent<unknown>> {
   const authSvc: AuthService = injector.get(AuthService);
-  const storageSvc: StorageService = injector.get(StorageService);
-  const refreshToken: string | null = storageSvc.get(StorageKeys.REFRESH_TOKEN);
 
   if (isRefreshing) {
     return processRefreshQueue(request, next);
@@ -186,14 +181,7 @@ function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, inje
   isRefreshing = true;
   refreshTokenSubject.next(null);
 
-  if (!refreshToken) {
-    isRefreshing = false;
-    refreshTokenSubject.next('FAILED');
-    authSvc.clearSession();
-    return throwError(() => new Error('No refresh token available'));
-  }
-
-  return performTokenRefresh({ authSvc, refreshToken, request, next });
+  return performTokenRefresh({ authSvc, request, next });
 }
 
 function addTokenHeader(request: HttpRequest<unknown>, token: string): HttpRequest<unknown> {

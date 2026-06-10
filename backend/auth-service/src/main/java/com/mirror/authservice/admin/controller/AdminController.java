@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +27,13 @@ public class AdminController {
         return ResponseEntity.ok(authService.getAllUsers());
     }
 
+    @GetMapping("/metrics")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getMetrics() {
+        long userCount = authService.getUserCount();
+        return ResponseEntity.ok(java.util.Map.of("user_count", userCount));
+    }
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id) {
@@ -34,7 +42,7 @@ public class AdminController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> createUser(@RequestBody AdminCreateUserRequest request) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody AdminCreateUserRequest request) {
         try {
             UserResponse created = authService.adminCreateUser(
                     request.username(),
@@ -50,7 +58,7 @@ public class AdminController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @RequestBody UserUpdateRequest request) {
+    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateRequest request) {
         return ResponseEntity.ok(authService.updateUser(id, request));
     }
 
@@ -61,4 +69,3 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 }
-

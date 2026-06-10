@@ -15,6 +15,8 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @RequestMapping("/api/admin/memory")
@@ -82,7 +84,7 @@ public class AdminMemoryController {
         }
     }
     @PostMapping
-    public ResponseEntity<String> createMemory(@RequestBody MemoryRequest request) {
+    public ResponseEntity<String> createMemory(@Valid @RequestBody MemoryRequest request) {
         try {
             float[] embedding = geminiService.getEmbedding(request.content());
             memoryService.saveMemory(request.userId(), request.content(), request.emotion(), "user", embedding);
@@ -94,7 +96,7 @@ public class AdminMemoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateMemory(@PathVariable Long id, @RequestBody MemoryRequest request) {
+    public ResponseEntity<String> updateMemory(@PathVariable Long id, @Valid @RequestBody MemoryRequest request) {
         try {
             memoryService.updateMemory(id, request.userId(), request.content(), request.emotion());
             return ResponseEntity.ok("Memory updated successfully.");
@@ -104,5 +106,9 @@ public class AdminMemoryController {
         }
     }
 
-    public record MemoryRequest(String userId, String content, String emotion) {}
+    public record MemoryRequest(
+        @NotBlank(message = "userId is required") String userId, 
+        @NotBlank(message = "content is required") String content, 
+        @NotBlank(message = "emotion is required") String emotion
+    ) {}
 }

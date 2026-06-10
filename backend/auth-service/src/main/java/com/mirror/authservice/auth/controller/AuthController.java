@@ -4,16 +4,19 @@ import com.mirror.authservice.auth.dto.AuthResponse;
 import com.mirror.authservice.auth.dto.LoginRequest;
 import com.mirror.authservice.auth.dto.RegisterRequest;
 import com.mirror.authservice.auth.service.AuthService;
-import com.mirror.authservice.user.model.User;
 import com.mirror.authservice.recovery.dto.OtpRequest;
 import com.mirror.authservice.recovery.dto.OtpVerifyRequest;
 import com.mirror.authservice.recovery.dto.ForgotPasswordRequest;
 import com.mirror.authservice.recovery.dto.PasswordResetRequest;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.Map;
 
 @RestController
@@ -23,8 +26,28 @@ public class AuthController {
 
     private final AuthService authService;
 
+    private ResponseCookie buildRefreshTokenCookie(String token, int maxAgeDays) {
+        return ResponseCookie.from("refreshToken", token)
+                .httpOnly(true)
+                .secure(true) // Should be true for HTTPS (production)
+                .path("/api/auth")
+                .maxAge(Duration.ofDays(maxAgeDays))
+                .sameSite("Strict")
+                .build();
+    }
+
+    private ResponseCookie buildClearRefreshTokenCookie() {
+        return ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/api/auth")
+                .maxAge(0)
+                .sameSite("Strict")
+                .build();
+    }
+
     @PostMapping("/signup")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
         var registeredUser = authService.registerUser(
                 request.username(),
                 request.email(),
@@ -34,32 +57,44 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         String safeEmail = request.email() != null ? request.email().trim().toLowerCase() : null;
         AuthResponse response = authService.loginUserAndIssueTokens(safeEmail, request.password());
-        return ResponseEntity.ok(response);
+        
+        ResponseCookie cookie = buildRefreshTokenCookie(response.getRefreshToken(), 7);
+        response.setRefreshToken(null); // Don't expose in JSON
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(response);
     }
 
     @PostMapping("/otp/request")
-    public ResponseEntity<String> requestOtp(@RequestBody OtpRequest request) {
+    public ResponseEntity<String> requestOtp(@Valid @RequestBody OtpRequest request) {
         authService.requestOtp(request.email());
         return ResponseEntity.ok("OTP sent to your email.");
     }
 
     @PostMapping("/otp/verify")
-    public ResponseEntity<AuthResponse> verifyOtp(@RequestBody OtpVerifyRequest request) {
+    public ResponseEntity<AuthResponse> verifyOtp(@Valid @RequestBody OtpVerifyRequest request) {
         AuthResponse response = authService.verifyOtpAndIssueTokens(request.email(), request.code());
-        return ResponseEntity.ok(response);
+        
+        ResponseCookie cookie = buildRefreshTokenCookie(response.getRefreshToken(), 7);
+        response.setRefreshToken(null);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(response);
     }
 
     @PostMapping("/forgot-password/request")
-    public ResponseEntity<String> requestForgotPasswordOtp(@RequestBody ForgotPasswordRequest request) {
+    public ResponseEntity<String> requestForgotPasswordOtp(@Valid @RequestBody ForgotPasswordRequest request) {
         authService.requestForgotPasswordOtp(request.email());
         return ResponseEntity.ok("Password reset OTP sent to your email.");
     }
 
     @PostMapping("/forgot-password/verify")
-    public ResponseEntity<String> verifyForgotPasswordOtp(@RequestBody OtpVerifyRequest request) {
+    public ResponseEntity<String> verifyForgotPasswordOtp(@Valid @RequestBody OtpVerifyRequest request) {
         if (request.email() == null || request.email().trim().isEmpty() || request.code() == null || request.code().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Email and code cannot be empty.");
         }
@@ -68,7 +103,7 @@ public class AuthController {
     }
 
     @PostMapping("/forgot-password/reset")
-    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetRequest request) {
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordResetRequest request) {
         if (request.email() == null || request.email().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("Email cannot be empty.");
         }
@@ -83,28 +118,38 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh(@RequestBody TokenRequest request) {
-        if (request.refreshToken() == null || request.refreshToken().isEmpty()) {
-            return ResponseEntity.badRequest().body("Refresh token missing.");
+    public ResponseEntity<?> refresh(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            return ResponseEntity.status(401).body("Refresh token missing from cookie.");
         }
-        AuthResponse response = authService.refreshAccessToken(request.refreshToken());
-        return ResponseEntity.ok(response);
+        AuthResponse response = authService.refreshAccessToken(refreshToken);
+        
+        // Also issue a new cookie just in case it rotates or to reset expiry
+        ResponseCookie cookie = buildRefreshTokenCookie(response.getRefreshToken(), 7);
+        response.setRefreshToken(null);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(response);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestBody TokenRequest request) {
-        if (request.refreshToken() != null && !request.refreshToken().isEmpty()) {
-            authService.logout(request.refreshToken());
+    public ResponseEntity<String> logout(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken != null && !refreshToken.isEmpty()) {
+            authService.logout(refreshToken);
         }
-        return ResponseEntity.ok("Logged out successfully.");
+        ResponseCookie cookie = buildClearRefreshTokenCookie();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("Logged out successfully.");
     }
 
     @PostMapping("/validate")
-    public ResponseEntity<?> validateSession(@RequestBody TokenRequest request) {
-        if (request.refreshToken() == null || request.refreshToken().isEmpty()) {
-            return ResponseEntity.status(401).body(Map.of("valid", false, "message", "Session token missing."));
+    public ResponseEntity<?> validateSession(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+        if (refreshToken == null || refreshToken.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("valid", false, "message", "Session cookie missing."));
         }
-        boolean isValid = authService.isSessionValid(request.refreshToken());
+        boolean isValid = authService.isSessionValid(refreshToken);
         if (isValid) {
             return ResponseEntity.ok(Map.of("valid", true));
         }
@@ -113,12 +158,10 @@ public class AuthController {
 
     @GetMapping("/keepalive")
     public ResponseEntity<?> keepAlive() {
-        long count = authService.getAllUsers().size();
         return ResponseEntity.ok(Map.of(
             "status", "awake",
             "service", "auth-service",
-            "db_status", "healthy",
-            "user_count", count
+            "db_status", "healthy"
         ));
     }
 }

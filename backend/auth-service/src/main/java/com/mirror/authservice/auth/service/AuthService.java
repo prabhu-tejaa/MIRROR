@@ -206,6 +206,10 @@ public class AuthService {
         return userRepository.findAll().stream().map(this::mapToUserResponse).toList();
     }
 
+    public long getUserCount() {
+        return userRepository.count();
+    }
+
     public com.mirror.authservice.user.dto.UserResponse getUserById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));

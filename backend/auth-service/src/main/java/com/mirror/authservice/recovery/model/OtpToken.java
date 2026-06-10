@@ -7,7 +7,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "otp_tokens")
+@Table(name = "otp_tokens", indexes = {
+    @Index(name = "idx_otp_user_id", columnList = "user_id")
+})
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class OtpToken {
     @Id

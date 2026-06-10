@@ -1,5 +1,5 @@
 
-import { Component, HostListener, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject, NgZone, OnInit, OnDestroy } from '@angular/core';
 import { IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowUpOutline } from 'ionicons/icons';
@@ -12,25 +12,39 @@ import { arrowUpOutline } from 'ionicons/icons';
   imports: [IonIcon],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ScrollAssistantComponent {
+export class ScrollAssistantComponent implements OnInit, OnDestroy {
   private cdr: ChangeDetectorRef = inject(ChangeDetectorRef);
+  private ngZone: NgZone = inject(NgZone);
   private readonly threshold: number = 400;
   
   public isVisible: boolean = false;
   public readonly arrowUpOutline: string = arrowUpOutline;
+  private scrollListener: () => void;
 
   constructor() {
     addIcons({ arrowUpOutline });
+    this.scrollListener = this.onWindowScroll.bind(this);
   }
 
-  @HostListener('window:scroll')
-  public onWindowScroll(): void {
+  public ngOnInit(): void {
+    this.ngZone.runOutsideAngular(() => {
+      window.addEventListener('scroll', this.scrollListener, { passive: true });
+    });
+  }
+
+  public ngOnDestroy(): void {
+    window.removeEventListener('scroll', this.scrollListener);
+  }
+
+  private onWindowScroll(): void {
     const scrollOffset: number = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
     const shouldBeVisible: boolean = scrollOffset > this.threshold;
     
     if (this.isVisible !== shouldBeVisible) {
-      this.isVisible = shouldBeVisible;
-      this.cdr.markForCheck();
+      this.ngZone.run(() => {
+        this.isVisible = shouldBeVisible;
+        this.cdr.markForCheck();
+      });
     }
   }
 

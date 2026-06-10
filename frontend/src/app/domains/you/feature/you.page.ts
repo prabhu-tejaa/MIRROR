@@ -3,6 +3,7 @@ import {
   Component, ChangeDetectionStrategy, Signal, signal, inject,
   computed, effect, NgZone, ViewChild, ElementRef, OnDestroy, WritableSignal
 } from '@angular/core';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
@@ -35,6 +36,7 @@ export class YouPage implements OnDestroy {
   private toastSvc: ToastService = inject(ToastService);
   private ngZone: NgZone = inject(NgZone);
   private audioVisualizerSvc: AudioVisualizerService = inject(AudioVisualizerService);
+  private sanitizer: DomSanitizer = inject(DomSanitizer);
 
   @ViewChild('auraStage') private stageRef!: ElementRef<HTMLElement>;
 
@@ -71,7 +73,11 @@ export class YouPage implements OnDestroy {
   public readonly dominantEmotion: Signal<string> = computed(() => this.analyticsSignal()?.dominantEmotion ?? 'CALM');
   public readonly activeStreak: Signal<number> = computed(() => this.analyticsSignal()?.activeStreak ?? 0);
   public readonly emotionStats: Signal<EmotionStat[]> = computed(() => this.analyticsSignal()?.emotionStats ?? []);
-  public readonly auraGradient: Signal<string> = computed(() => this.analyticsSignal()?.auraGradient ?? 'transparent');
+  public readonly auraGradient: Signal<SafeStyle | string> = computed(() => {
+    const grad = this.analyticsSignal()?.auraGradient ?? 'transparent';
+    // eslint-disable-next-line sonarjs/no-angular-bypass-sanitization
+    return grad === 'transparent' ? grad : this.sanitizer.bypassSecurityTrustStyle(grad);
+  });
   public readonly reflectionsList: Signal<Reflection[]> = computed(() => this.memoriesSignal() ?? []);
 
   public readonly username: Signal<string> = computed(() => this.store.selectSignal(selectUsername)() || 'Soul');
@@ -108,14 +114,17 @@ export class YouPage implements OnDestroy {
     return stat?.primaryColor ?? 'rgba(255, 255, 255, 0.2)';
   });
 
+  private wasInitiallyLoaded: boolean = false;
+
   constructor() {
+    this.wasInitiallyLoaded = this.dataLoadedOnce();
     effect(() => { this.handleIntroEffect(); });
   }
 
   public ionViewWillEnter(): void {
     this.isTabActive.set(true);
-    const email: string = this.store.selectSignal(selectUserEmail)() || 'guest@mirror.tech';
-    if (!this.dataLoadedOnce()) {
+    const email: string | null = this.store.selectSignal(selectUserEmail)();
+    if (email && !this.dataLoadedOnce()) {
       this.store.dispatch(YouActions.loadAnalytics({ email }));
     }
   }
@@ -185,7 +194,7 @@ export class YouPage implements OnDestroy {
 
   private handleIntroEffect(): void {
     const count: number = this.totalCount();
-    if (count > 0 && !this.dataLoadedOnce() && !this.introAnimated) {
+    if (count > 0 && !this.wasInitiallyLoaded && !this.introAnimated) {
       this.introAnimated = true;
       this.shouldAnimateIntro = true;
       this.isFirstVisit = true;

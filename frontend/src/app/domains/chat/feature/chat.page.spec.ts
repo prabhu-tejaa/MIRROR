@@ -58,7 +58,6 @@ describe('ChatPage', () => {
     scrollToBottomTrigger: signal(0),
     maintainScrollTrigger: signal(0),
     fetchDynamicQuote: jasmine.createSpy('fetchDynamicQuote'),
-    checkGuestLimit: jasmine.createSpy('checkGuestLimit').and.returnValue(true),
     isInitialLoad: signal(false),
     loadedEmail: signal<string | null>(null),
     hasMoreHistory: signal(true),

@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 import { adminGuard } from './core/guards/admin.guard';
 import { overlayGuard } from './core/guards/overlay.guard';
 import { authGuard } from './domains/auth/data-access/auth.guard';
-import { guestGuard } from './domains/auth/data-access/guest.guard';
+import { unauthGuard } from './domains/auth/data-access/unauth.guard';
 
 export const routes: Routes = [
   {
@@ -13,7 +13,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    canActivate: [guestGuard],
+    canActivate: [unauthGuard],
     loadComponent: () => import('./domains/auth/feature/login/login.page').then((m) => m.LoginPage),
   },
   {
@@ -23,22 +23,22 @@ export const routes: Routes = [
   },
   {
     path: 'signup',
-    canActivate: [guestGuard],
+    canActivate: [unauthGuard],
     loadComponent: () => import('./domains/auth/feature/signup/signup.page').then(m => m.SignupPage)
   },
   {
     path: 'otp',
-    canActivate: [guestGuard],
+    canActivate: [unauthGuard],
     loadComponent: () => import('./domains/auth/feature/otp/otp.page').then(m => m.OtpPage)
   },
   {
     path: 'forgot-password',
-    canActivate: [guestGuard],
+    canActivate: [unauthGuard],
     loadComponent: () => import('./domains/auth/feature/forgot-password/forgot-password.page').then(m => m.ForgotPasswordPage)
   },
   {
     path: 'reset-password',
-    canActivate: [guestGuard],
+    canActivate: [unauthGuard],
     loadComponent: () => import('./domains/auth/feature/reset-password/reset-password.page').then(m => m.ResetPasswordPage)
   },
   {

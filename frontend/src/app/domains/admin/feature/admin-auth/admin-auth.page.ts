@@ -8,6 +8,7 @@ import {
   IonSearchbar, 
   IonSpinner,
   ModalController,
+  AlertController,
   IonSelect,
   IonSelectOption
 } from '@ionic/angular/standalone';
@@ -48,6 +49,7 @@ export class AdminAuthPage implements OnInit {
   private location: Location = inject(Location);
   private store: Store<object> = inject<Store<object>>(Store);
   private modalCtrl: ModalController = inject(ModalController);
+  private alertCtrl: AlertController = inject(AlertController);
   private translationSvc: TranslationService = inject(TranslationService);
 
   public users: import('@angular/core').Signal<AdminUserResponse[] | undefined> = this.store.selectSignal(selectUsers);
@@ -94,20 +96,45 @@ export class AdminAuthPage implements OnInit {
     return (this.users() || []).filter((u: AdminUserResponse) => this.isUserLocked(u)).length;
   });
 
-  public unlockUser(user: AdminUserResponse): void {
-    // eslint-disable-next-line no-alert
-    if (window.confirm(`Are you sure you want to unlock the account for ${user.username}?`)) {
-      this.store.dispatch(AdminActions.updateUser({ id: user.id, request: { failedAttempts: 0, lockedUntil: null } }));
-    }
+  public async unlockUser(user: AdminUserResponse): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: 'Unlock User',
+      message: `Are you sure you want to unlock the account for ${user.username}?`,
+      cssClass: 'premium-alert',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { 
+          text: 'Unlock', 
+          handler: () => {
+            this.store.dispatch(AdminActions.updateUser({ id: user.id, request: { failedAttempts: 0, lockedUntil: null } }));
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
-  public lockUser(user: AdminUserResponse): void {
-    // eslint-disable-next-line no-alert
-    if (window.confirm(`Are you sure you want to permanently lock the account for ${user.username}?`)) {
-      const lockDate = new Date();
-      lockDate.setFullYear(lockDate.getFullYear() + 100);
-      this.store.dispatch(AdminActions.updateUser({ id: user.id, request: { failedAttempts: 5, lockedUntil: lockDate.toISOString() } }));
-    }
+  public async lockUser(user: AdminUserResponse): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: 'Lock User',
+      message: `Are you sure you want to permanently lock the account for ${user.username}?`,
+      cssClass: 'premium-alert',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { 
+          text: 'Lock', 
+          role: 'destructive',
+          handler: () => {
+            const lockDate = new Date();
+            lockDate.setFullYear(lockDate.getFullYear() + 100);
+            const offset = lockDate.getTimezoneOffset() * 60000;
+            const localIso = new Date(lockDate.getTime() - offset).toISOString().slice(0, -1);
+            this.store.dispatch(AdminActions.updateUser({ id: user.id, request: { failedAttempts: 5, lockedUntil: localIso } }));
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   public goBack(): void {
@@ -139,11 +166,23 @@ export class AdminAuthPage implements OnInit {
     await modal.present();
   }
 
-  public deleteUser(user: AdminUserResponse): void {
-    // eslint-disable-next-line no-alert
-    if (window.confirm(`Are you sure you want to delete ${user.username}? This action cannot be undone.`)) {
-      this.store.dispatch(AdminActions.deleteUser({ id: user.id }));
-    }
+  public async deleteUser(user: AdminUserResponse): Promise<void> {
+    const alert = await this.alertCtrl.create({
+      header: 'Delete User',
+      message: `Are you sure you want to delete ${user.username}? This action cannot be undone.`,
+      cssClass: 'premium-alert',
+      buttons: [
+        { text: 'Cancel', role: 'cancel' },
+        { 
+          text: 'Delete', 
+          role: 'destructive',
+          handler: () => {
+            this.store.dispatch(AdminActions.deleteUser({ id: user.id }));
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
   public async addUser(): Promise<void> {

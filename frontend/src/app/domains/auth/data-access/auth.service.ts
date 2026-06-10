@@ -140,12 +140,11 @@ export class AuthService {
       return;
     }
 
-    const refreshToken: string | null = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
-    if (!environment.mock && refreshToken) {
+    if (!environment.mock) {
       this.isValidating = true;
       this.lastValidationTime = Date.now();
       
-      this.http.post<{ valid: boolean }>(this.apiSvc.auth.VALIDATE, { refreshToken }).subscribe({
+      this.http.post<{ valid: boolean }>(this.apiSvc.auth.VALIDATE, {}, { withCredentials: true }).subscribe({
         next: (res: { valid: boolean; }) => this.handleValidationSuccess(res),
         error: (err: unknown) => this.handleValidationError(err)
       });
@@ -199,16 +198,17 @@ export class AuthService {
     return this.http.post(this.apiSvc.auth.FORGOT_PASSWORD_RESET, { email, password, token }, { responseType: 'text' });
   }
 
-  public refresh(refreshToken: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.apiSvc.auth.REFRESH, { refreshToken }, {
-      context: new HttpContext().set(SKIP_CANCEL, true)
+  public refresh(): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(this.apiSvc.auth.REFRESH, {}, {
+      context: new HttpContext().set(SKIP_CANCEL, true),
+      withCredentials: true
     }).pipe(
       tap((res: AuthResponse) => this.saveSession(res))
     );
   }
 
-  public logoutSession(refreshToken: string): Observable<string> {
-    return this.http.post(this.apiSvc.auth.LOGOUT, { refreshToken }, { responseType: 'text' }).pipe(
+  public logoutSession(): Observable<string> {
+    return this.http.post(this.apiSvc.auth.LOGOUT, {}, { responseType: 'text', withCredentials: true }).pipe(
       tap(() => this.clearSession())
     );
   }
@@ -244,10 +244,9 @@ export class AuthService {
 
 
   public logout(): void {
-    const refreshToken: string | null = this.storageSvc.get(StorageKeys.REFRESH_TOKEN);
     this.clearSession();
-    if (refreshToken && !environment.mock) {
-      this.http.post(this.apiSvc.auth.LOGOUT, { refreshToken }, { responseType: 'text' }).subscribe({
+    if (!environment.mock) {
+      this.http.post(this.apiSvc.auth.LOGOUT, {}, { responseType: 'text', withCredentials: true }).subscribe({
         next: () => undefined,
         error: () => undefined
       });

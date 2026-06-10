@@ -22,7 +22,7 @@ export class AuthEffects {
       ofType(AuthActions.loginSuccess),
       tap(({ response }) => {
         this.storageSvc.set(StorageKeys.ACCESS_TOKEN, response.accessToken);
-        this.storageSvc.set(StorageKeys.REFRESH_TOKEN, response.refreshToken);
+
         this.storageSvc.set(StorageKeys.USERNAME, response.username);
         
         if (response.email) {
@@ -48,10 +48,9 @@ export class AuthEffects {
           this.storageSvc.remove(getActiveSessionKey(email));
         }
         this.storageSvc.remove(StorageKeys.ACCESS_TOKEN);
-        this.storageSvc.remove(StorageKeys.REFRESH_TOKEN);
+
         this.storageSvc.remove(StorageKeys.USERNAME);
         this.storageSvc.remove(StorageKeys.EMAIL);
-        this.storageSvc.remove(StorageKeys.GUEST_CHAT_COUNT);
         this.storageSvc.remove(StorageKeys.SESSION_INSTANCE_ID);
         
         void this.router.navigate([RoutePaths.AUTH.LOGIN]);

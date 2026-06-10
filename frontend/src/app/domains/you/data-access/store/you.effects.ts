@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType, CreateEffectMetadata } from '@ngrx/effects';
-import { Action } from '@ngrx/store';
-import { Observable, of , catchError, map, switchMap } from 'rxjs';
-
+import { Action, Store } from '@ngrx/store';
+import { Observable, of, catchError, map, switchMap, withLatestFrom } from 'rxjs';
 
 import { ApiService } from '../../../../core/services/api.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import { selectUserEmail } from '../../../auth/data-access/store/auth.selectors';
+import * as chatActions from '../../../chat/data-access/store/chat.actions';
 
 import { YouActions, AnalyticsResponse, Reflection } from './you.actions';
 
@@ -16,6 +17,7 @@ export class YouEffects {
   private http: HttpClient = inject(HttpClient);
   private apiSvc: ApiService = inject(ApiService);
   private toastSvc: ToastService = inject(ToastService);
+  private store: Store<object> = inject<Store<object>>(Store);
 
   public loadAnalytics$: Observable<Action> & CreateEffectMetadata = createEffect(() => {
     return this.actions$.pipe(
@@ -47,6 +49,14 @@ export class YouEffects {
           })
         )
       )
+    );
+  });
+
+  public refreshOnNewMessage$: Observable<Action> & CreateEffectMetadata = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(chatActions.postMessageSuccess),
+      withLatestFrom(this.store.select(selectUserEmail)),
+      map(([, email]) => YouActions.loadAnalytics({ email: email || '' }))
     );
   });
 }

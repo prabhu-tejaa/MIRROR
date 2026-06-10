@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.validation.annotation.Validated;
+import jakarta.validation.constraints.NotBlank;
+
 @RestController
 @RequestMapping("/api/memory")
+@Validated
 public class MemoryController {
 
     private final MemoryService service;
@@ -29,7 +33,7 @@ public class MemoryController {
     @PostMapping("/save")
     public ResponseEntity<String> saveMemory(
             java.security.Principal principal,
-            @RequestBody String content
+            @NotBlank(message = "content cannot be empty") @RequestBody String content
     ) {
         String userId = principal.getName();
         try {
@@ -45,7 +49,7 @@ public class MemoryController {
     @PostMapping("/reflect")
     public ResponseEntity<Map<String, String>> reflect(
             java.security.Principal principal,
-            @RequestBody String prompt
+            @NotBlank(message = "prompt cannot be empty") @RequestBody String prompt
     ) {
         String userId = principal.getName();
         Map<String, String> response = service.generateReflection(userId, prompt);
@@ -85,6 +89,9 @@ public class MemoryController {
     public String keepAlive(
             java.security.Principal principal
     ) {
+        if (principal == null) {
+            return "Memory service is awake.";
+        }
         String userId = principal.getName();
         try {
             long count = service.getMemoryCount(userId);

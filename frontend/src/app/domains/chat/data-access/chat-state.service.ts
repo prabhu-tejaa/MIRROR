@@ -1,7 +1,6 @@
 import { Injectable, inject, Signal } from '@angular/core';
 import { Store } from '@ngrx/store';
 
-import { StorageKeys } from '../../../core/constants/storage.constants';
 import { StorageService } from '../../../core/services/storage.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { AuthService } from '../../auth/data-access/auth.service';
@@ -41,41 +40,16 @@ export class ChatStateService {
 
   public readonly pageSize: number = 20;
   
-  private checkMidnightInterval: ReturnType<typeof setInterval> | null = null;
-  private currentDayOfMonth: number = new Date().getDate();
-
   public scrollToBottomTrigger: Signal<number> = this.store.selectSignal(chatSelectors.selectScrollToBottomTrigger);
   public maintainScrollTrigger: Signal<number> = this.store.selectSignal(chatSelectors.selectMaintainScrollTrigger);
 
-  constructor() {
-    this.setupMidnightChecker();
-  }
+
 
   public fetchDynamicQuote(): void {
     this.store.dispatch(chatActions.loadDynamicQuote());
   }
 
-  public checkGuestLimit(): boolean {
-    if (this.authSvc.isAuthenticated()) {return true;}
-    const val: string | null = this.storageSvc.get(StorageKeys.GUEST_CHAT_COUNT);
-    const current: number = val ? parseInt(val, 10) : 0;
-    if (current >= 5) {return false;}
-    this.storageSvc.set(StorageKeys.GUEST_CHAT_COUNT, (current + 1).toString());
-    return true;
-  }
-
-  private setupMidnightChecker(): void {
-    this.checkMidnightInterval = setInterval(() => {
-      const day: number = new Date().getDate();
-      if (day !== this.currentDayOfMonth) {
-        this.currentDayOfMonth = day;
-      }
-    }, 60000);
-  }
-
   public destroy(): void {
-    if (this.checkMidnightInterval) {
-      clearInterval(this.checkMidnightInterval);
-    }
+    // Cleanup if necessary
   }
 }

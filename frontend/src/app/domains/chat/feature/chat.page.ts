@@ -68,7 +68,6 @@ export class ChatPage implements OnDestroy {
   @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLTextAreaElement>;
 
-  public readonly isGuest: Signal<boolean> = computed(() => this.authSvc.getEmail() === 'guest@mirror.tech');
   public readonly isAdmin: Signal<boolean> = computed(() => this.roleSvc.hasRole('ADMIN'));
   
   public readonly chatInput: WritableSignal<string> = signal<string>('');
@@ -141,7 +140,7 @@ export class ChatPage implements OnDestroy {
   }
 
   public ionViewWillEnter(): void {
-    const currentEmail: string = this.authSvc.getEmail() || 'guest@mirror.tech';
+    const currentEmail: string | null = this.authSvc.getEmail();
     if (!this.chatState.initialChatLoadedGlobally() || this.chatState.loadedEmail() !== currentEmail) {
       this.initialScrollState.value = false;
       this.store.dispatch(chatActions.loadChatHistory());
@@ -157,7 +156,7 @@ export class ChatPage implements OnDestroy {
   }
 
   private initScrollForView(scrollEl: HTMLDivElement): void {
-    const currentEmail: string = this.authSvc.getEmail() || 'guest@mirror.tech';
+    const currentEmail: string | null = this.authSvc.getEmail();
     const isSameUser: boolean = this.chatState.loadedEmail() === currentEmail;
     
     if (!this.chatState.isInitialLoad() && isSameUser) {
@@ -207,10 +206,6 @@ export class ChatPage implements OnDestroy {
 
   public useChip(chipText: string): void {
     if (this.isWaitingForResponse()) {return;}
-    if (!this.chatState.checkGuestLimit()) {
-      void this.showSignupPopup();
-      return;
-    }
     this.chatInput.set('');
     setTimeout(() => this.adjustTextareaHeight(), 0);
     this.focusInput();
@@ -240,10 +235,6 @@ export class ChatPage implements OnDestroy {
         await this.toastSvc.showError('Your message is too long. Please keep it under 2,000 characters.');
         return;
       }
-      if (!this.chatState.checkGuestLimit()) {
-        await this.showSignupPopup();
-        return;
-      }
       this.chatInput.set('');
       setTimeout(() => this.adjustTextareaHeight(), 0);
       this.focusInput();
@@ -257,25 +248,7 @@ export class ChatPage implements OnDestroy {
     this.ttsSvc.speakText(msgId, text);
   }
 
-  private async showSignupPopup(): Promise<void> {
-    const alert: HTMLIonAlertElement = await this.alertCtrl.create({
-      header: 'Limit Reached',
-      message: 'Please sign up to access all the features and unlock unlimited synchronization.',
-      cssClass: 'mirror-alert',
-      buttons: [
-        { text: 'Cancel', role: 'cancel', cssClass: 'alert-cancel-btn' },
-        {
-          text: 'Sign Up',
-          cssClass: 'alert-signup-btn',
-          handler: async () => {
-            this.authSvc.logout();
-            await this.navCtrl.navigateRoot('/signup', { animated: true });
-          }
-        }
-      ]
-    });
-    await alert.present();
-  }
+
 
   public trackByMessageId(_index: number, message: Message): string {
     return message.id;

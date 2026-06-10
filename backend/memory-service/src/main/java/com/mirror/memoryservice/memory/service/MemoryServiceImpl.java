@@ -318,6 +318,7 @@ public class MemoryServiceImpl implements MemoryService {
     }
 
     @Override
+    @Transactional
     @CacheEvict(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
     public void updateMemory(Long id, String userId, String content, String emotion) {
         Memory memory = repository.findById(id).orElseThrow(() -> new MemoryNotFoundException("Memory " + id + " not found"));
