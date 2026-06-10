@@ -58,7 +58,7 @@ export class ForgotPasswordPage implements OnInit {
       this.isLoading = true;
       this.cdr.markForCheck();
       
-      const emailValue: string = this.forgotForm.value.email as string;
+      const emailValue: string = this.forgotForm.get('email')?.value as string;
 
       this.authSvc.requestForgotPasswordOtp(emailValue).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {

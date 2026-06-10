@@ -47,17 +47,17 @@ import { UserEditModalComponent } from './user-edit-modal/user-edit-modal.compon
 })
 export class AdminAuthPage implements OnInit {
   private location: Location = inject(Location);
-  private store: Store = inject(Store);
+  private store: Store<object> = inject(Store) as unknown as Store<object>;
   private modalCtrl: ModalController = inject(ModalController);
   private translationSvc: TranslationService = inject(TranslationService);
 
-  public users = this.store.selectSignal(selectUsers);
-  public isLoading = this.store.selectSignal(selectUsersLoading);
+  public users: import('@angular/core').Signal<AdminUserResponse[] | undefined> = this.store.selectSignal(selectUsers);
+  public isLoading: import('@angular/core').Signal<boolean> = this.store.selectSignal(selectUsersLoading);
 
-  public searchQuery = signal('');
-  public roleFilter = signal('ALL');
+  public searchQuery: import('@angular/core').WritableSignal<string> = signal('');
+  public roleFilter: import('@angular/core').WritableSignal<string> = signal('ALL');
 
-  public filteredUsers = computed(() => {
+  public filteredUsers: import('@angular/core').Signal<AdminUserResponse[]> = computed(() => {
     const allUsers: AdminUserResponse[] = this.users() || [];
     return allUsers.filter((user: AdminUserResponse) => {
       const query: string = this.searchQuery().toLowerCase();
@@ -88,16 +88,17 @@ export class AdminAuthPage implements OnInit {
     return false;
   }
 
-  public verifiedCount = computed(() => {
+  public verifiedCount: import('@angular/core').Signal<number> = computed(() => {
     return (this.users() || []).filter((u: AdminUserResponse) => u.isVerified).length;
   });
 
-  public lockedCount = computed(() => {
+  public lockedCount: import('@angular/core').Signal<number> = computed(() => {
     return (this.users() || []).filter((u: AdminUserResponse) => this.isUserLocked(u)).length;
   });
 
   public unlockUser(user: AdminUserResponse): void {
-    if (confirm(`Are you sure you want to unlock the account for ${user.username}?`)) {
+    // eslint-disable-next-line no-alert
+    if (window.confirm(`Are you sure you want to unlock the account for ${user.username}?`)) {
       this.store.dispatch(AdminActions.updateUser({ id: user.id, request: { failedAttempts: 0, lockedUntil: null } }));
     }
   }
@@ -110,12 +111,16 @@ export class AdminAuthPage implements OnInit {
     this.store.dispatch(AdminActions.loadUsers());
   }
 
-  public updateSearch(event: CustomEvent): void {
-    this.searchQuery.set(event.detail.value || '');
+  public updateSearch(event: Event): void {
+    const customEvent: CustomEvent = event as CustomEvent;
+    const val = (customEvent.detail as { value?: string }).value;
+    this.searchQuery.set(val || '');
   }
 
-  public updateRoleFilter(event: CustomEvent): void {
-    this.roleFilter.set(event.detail.value || 'ALL');
+  public updateRoleFilter(event: Event): void {
+    const customEvent: CustomEvent = event as CustomEvent;
+    const val = (customEvent.detail as { value?: string }).value;
+    this.roleFilter.set(val || 'ALL');
   }
 
   public async editUser(user: AdminUserResponse): Promise<void> {
@@ -128,7 +133,8 @@ export class AdminAuthPage implements OnInit {
   }
 
   public deleteUser(user: AdminUserResponse): void {
-    if (confirm(`Are you sure you want to delete ${user.username}? This action cannot be undone.`)) {
+    // eslint-disable-next-line no-alert
+    if (window.confirm(`Are you sure you want to delete ${user.username}? This action cannot be undone.`)) {
       this.store.dispatch(AdminActions.deleteUser({ id: user.id }));
     }
   }

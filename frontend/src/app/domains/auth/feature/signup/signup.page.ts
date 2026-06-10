@@ -70,10 +70,12 @@ export class SignupPage implements OnInit {
       this.isLoading = true;
       this.cdr.markForCheck();
 
-      const { username, email, password }: any = this.signupForm.value;
+      const username: string = this.signupForm.get('username')?.value as string;
+      const email: string = this.signupForm.get('email')?.value as string;
+      const password: string = this.signupForm.get('password')?.value as string;
 
       this.authSvc.signup({ username, email, password }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (response: string) => {
+        next: (_response: string) => {
           void this.analyticsSvc.setUserId(email);
           
           this.authSvc.requestOtp(email).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({

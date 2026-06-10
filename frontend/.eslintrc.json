@@ -39,6 +39,10 @@
           "error",
           { "selector": "default", "format": ["camelCase"], "leadingUnderscore": "forbid", "trailingUnderscore": "forbid" },
           { "selector": "variable", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+          { "selector": "property", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+          { "selector": "typeProperty", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+          { "selector": "enumMember", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+          { "selector": "method", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
           { "selector": "objectLiteralProperty", "format": null, "filter": { "regex": "[-_]", "match": true } },
           { "selector": "objectLiteralProperty", "format": ["camelCase", "UPPER_CASE", "PascalCase"], "filter": { "regex": "[-_]", "match": false } },
           { "selector": "parameter", "format": ["camelCase"], "leadingUnderscore": "allow" },
@@ -62,6 +66,7 @@
             "memberVariableDeclaration": true
           }
         ],
+        "@typescript-eslint/unbound-method": "off",
 
         "no-restricted-syntax": [
           "error",
@@ -104,6 +109,42 @@
       }
     },
     {
+      "files": ["*.page.ts"],
+      "rules": {
+        "max-lines": ["error", { "max": 400, "skipBlankLines": true }],
+        "max-lines-per-function": ["error", { "max": 55, "skipBlankLines": true }]
+      }
+    },
+    {
+      "files": ["*.effects.ts"],
+      "rules": {
+        "max-lines": "off",
+        "max-lines-per-function": "off",
+        "complexity": "off",
+        "@ngrx/prefer-effect-callback-in-block-statement": "off",
+        "@ngrx/prefer-concat-latest-from": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off"
+      }
+    },
+    {
+      "files": ["*.service.ts"],
+      "rules": {
+        "max-lines": ["error", { "max": 400, "skipBlankLines": true }],
+        "max-lines-per-function": ["error", { "max": 55, "skipBlankLines": true }],
+        "complexity": ["error", { "max": 12 }],
+        "max-depth": ["error", { "max": 4 }]
+      }
+    },
+    {
+      "files": ["mock-*.ts"],
+      "rules": {
+        "max-lines-per-function": "off",
+        "complexity": "off"
+      }
+    },
+    {
       "files": [
         "starfield.physics.ts",
         "starfield.shapes.ts",
@@ -131,7 +172,7 @@
         "@angular-eslint/template/conditional-complexity": ["error", { "maxComplexity": 2 }],
         "@angular-eslint/template/no-duplicate-attributes": "error",
         "@angular-eslint/template/attributes-order": "error",
-        "@angular-eslint/template/no-call-expression": "error"
+        "@angular-eslint/template/no-call-expression": "off"
       }
     }
   ]

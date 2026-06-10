@@ -75,7 +75,7 @@ export class ResetPasswordPage implements OnInit {
       this.isLoading = true;
       this.cdr.markForCheck();
 
-      const { password }: any = this.resetForm.value;
+      const password: string = this.resetForm.get('password')?.value as string;
 
       this.authSvc.resetPassword(this.email, password, this.token).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {

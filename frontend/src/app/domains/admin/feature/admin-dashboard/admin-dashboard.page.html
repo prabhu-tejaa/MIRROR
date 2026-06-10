@@ -16,7 +16,7 @@
   <div class="dashboard-layout-container">
     <div class="services-grid">
 
-      <div class="service-card active" (click)="navigateTo('/admin/auth-service')">
+      <div class="service-card active" tabindex="0" (click)="navigateTo('/admin/auth-service')" (keydown.enter)="navigateTo('/admin/auth-service')">
         <div class="card-header-row">
           <div class="card-title-group">
 
@@ -26,7 +26,7 @@
 
       </div>
 
-      <div class="service-card active" (click)="navigateTo('/admin/memory-service')">
+      <div class="service-card active" tabindex="0" (click)="navigateTo('/admin/memory-service')" (keydown.enter)="navigateTo('/admin/memory-service')">
         <div class="card-header-row">
           <div class="card-title-group">
             <h3>Memory Service</h3>

@@ -5,7 +5,7 @@ import { AdminMemoryRecord } from '../admin-memory.service';
 
 import { AdminActions } from './admin.actions';
 
-export const adminFeatureKey: 'admin' = 'admin';
+export const adminFeatureKey = 'admin' as const;
 
 export interface AdminState {
   users: AdminUserResponse[];

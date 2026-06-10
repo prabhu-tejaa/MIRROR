@@ -74,7 +74,7 @@ export class AdminAuthService {
 
   private isUsingMockFallback: boolean = false;
 
-  private handleMockError(error: unknown, fallbackAction: () => Observable<any>): Observable<any> {
+  private handleMockError<T>(error: unknown, fallbackAction: () => Observable<T>): Observable<T> {
     if (!environment.mock) {
       return throwError(() => error);
     }
@@ -174,7 +174,7 @@ export class AdminAuthService {
     );
   }
 
-  public deleteUser(id: string): Observable<void> {
+  public deleteUser(id: string): Observable<undefined> {
     if (this.isUsingMockFallback && environment.mock) {
       const index: number = this.mockUsers.findIndex((u: AdminUserResponse) => u.id === id);
       if (index !== -1) {
@@ -184,7 +184,7 @@ export class AdminAuthService {
       return throwError(() => new Error('User not found in mock database'));
     }
 
-    return this.http.delete<void>(`${this.apiSvc.auth.ADMIN_USERS}/${id}`).pipe(
+    return this.http.delete<undefined>(`${this.apiSvc.auth.ADMIN_USERS}/${id}`).pipe(
       catchError((error: unknown) => this.handleMockError(error, () => {
         const index: number = this.mockUsers.findIndex((u: AdminUserResponse) => u.id === id);
         if (index !== -1) {

@@ -1,9 +1,10 @@
-import { HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { HttpRequest, HttpResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+
 import { MockState } from './mock-state';
 
-export function handleGatewayRoutes(req: HttpRequest<unknown>, url: string): Observable<HttpResponse<unknown> | HttpErrorResponse> | null {
+export function handleGatewayRoutes(req: HttpRequest<unknown>, url: string): Observable<HttpResponse<unknown>> | null {
   if (url.includes('/api/gateway/admin/health')) {
     return of(new HttpResponse({ status: 200, body: MockState.healthStats })).pipe(delay(200));
   }

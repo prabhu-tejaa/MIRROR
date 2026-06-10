@@ -24,7 +24,6 @@ export class AudioVisualizerService implements OnDestroy {
 
   private ngZone: NgZone = inject(NgZone);
 
-  constructor() {}
 
   private fadeIn(): void {
     if (!this.audioObj) {return;}
@@ -34,9 +33,9 @@ export class AudioVisualizerService implements OnDestroy {
       this.fadeInterval = null;
     }
     
-    const targetVolume: 1 = 1;
-    const fadeSteps: 25 = 25;
-    const fadeDuration: 800 = 800;
+    const targetVolume: number = 1;
+    const fadeSteps: number = 25;
+    const fadeDuration: number = 800;
     const stepTime: number = fadeDuration / fadeSteps;
     const volumeStep: number = targetVolume / fadeSteps;
 
@@ -66,8 +65,8 @@ export class AudioVisualizerService implements OnDestroy {
       this.fadeInterval = null;
     }
 
-    const fadeSteps: 25 = 25;
-    const fadeDuration: 500 = 500;
+    const fadeSteps: number = 25;
+    const fadeDuration: number = 500;
     const stepTime: number = fadeDuration / fadeSteps;
     const volumeStep: number = (this.audioObj.volume || 1) / fadeSteps;
 
@@ -99,8 +98,8 @@ export class AudioVisualizerService implements OnDestroy {
       this.duckInterval = null;
     }
 
-    const steps: 20 = 20;
-    const duration: 400 = 400;
+    const steps: number = 20;
+    const duration: number = 400;
     const stepTime: number = duration / steps;
     const currentVol: number = this.audioObj.volume;
     const volumeStep: number = (currentVol - targetVolume) / steps;
@@ -129,10 +128,10 @@ export class AudioVisualizerService implements OnDestroy {
       this.duckInterval = null;
     }
 
-    const steps: 25 = 25;
-    const duration: 600 = 600;
+    const steps: number = 25;
+    const duration: number = 600;
     const stepTime: number = duration / steps;
-    const targetVolume: 1 = 1;
+    const targetVolume: number = 1;
     const currentVol: number = this.audioObj.volume;
     const volumeStep: number = (targetVolume - currentVol) / steps;
 
@@ -188,11 +187,12 @@ export class AudioVisualizerService implements OnDestroy {
         this.audioObj.addEventListener('loadstart', () => this.isLoadingAudio.set(true));
         this.audioObj.addEventListener('waiting', () => this.isLoadingAudio.set(true));
         
-        this.audioObj.addEventListener('playing', async () => {
+        this.audioObj.addEventListener('playing', () => {
           this.isLoadingAudio.set(false);
           this.isPlaying.set(true);
-          await this.setupAudioAnalysis();
-          this.fadeIn();
+          void this.setupAudioAnalysis().then(() => {
+            this.fadeIn();
+          });
         });
         
         this.audioObj.addEventListener('pause', () => {

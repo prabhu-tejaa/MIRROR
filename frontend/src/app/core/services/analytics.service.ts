@@ -50,7 +50,7 @@ export class AnalyticsService {
       this.initFirebase();
       this.trackPageViews();
       this.trackGlobalInteractions();
-    } catch (e: unknown) {
+    } catch {
       // Intentionally swallowed to avoid console output in production
     }
   }

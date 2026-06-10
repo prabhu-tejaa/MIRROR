@@ -2,6 +2,13 @@ import { inject } from '@angular/core';
 import { CanDeactivateFn, Router } from '@angular/router';
 import { AlertController, ModalController, PopoverController, ActionSheetController } from '@ionic/angular/standalone';
 
+export interface OverlayControllers {
+  alertCtrl: AlertController;
+  modalCtrl: ModalController;
+  popoverCtrl: PopoverController;
+  actionSheetCtrl: ActionSheetController;
+}
+
 export const overlayGuard: CanDeactivateFn<unknown> = async () => {
   const router: Router = inject(Router);
   const navigation = router.getCurrentNavigation();
@@ -10,17 +17,14 @@ export const overlayGuard: CanDeactivateFn<unknown> = async () => {
     return true;
   }
 
-  const alertCtrl: AlertController = inject(AlertController);
-  const modalCtrl: ModalController = inject(ModalController);
-  const popoverCtrl: PopoverController = inject(PopoverController);
-  const actionSheetCtrl: ActionSheetController = inject(ActionSheetController);
-  
-  const alert: HTMLIonAlertElement | undefined = await alertCtrl.getTop();
-  const modal: HTMLIonModalElement | undefined = await modalCtrl.getTop();
-  const popover: HTMLIonPopoverElement | undefined = await popoverCtrl.getTop();
-  const actionSheet: HTMLIonActionSheetElement | undefined = await actionSheetCtrl.getTop();
-  
-  const topOverlay = alert || modal || popover || actionSheet;
+  const ctrls: OverlayControllers = {
+    alertCtrl: inject(AlertController),
+    modalCtrl: inject(ModalController),
+    popoverCtrl: inject(PopoverController),
+    actionSheetCtrl: inject(ActionSheetController)
+  };
+
+  const topOverlay = await getTopOverlay(ctrls);
   
   if (topOverlay) {
     await topOverlay.dismiss();
@@ -29,3 +33,19 @@ export const overlayGuard: CanDeactivateFn<unknown> = async () => {
   
   return true;
 };
+
+async function getTopOverlay(
+  ctrls: OverlayControllers
+): Promise<HTMLIonAlertElement | HTMLIonModalElement | HTMLIonPopoverElement | HTMLIonActionSheetElement | undefined> {
+  const alert: HTMLIonAlertElement | undefined = await ctrls.alertCtrl.getTop();
+  if (alert) { return alert; }
+  
+  const modal: HTMLIonModalElement | undefined = await ctrls.modalCtrl.getTop();
+  if (modal) { return modal; }
+  
+  const popover: HTMLIonPopoverElement | undefined = await ctrls.popoverCtrl.getTop();
+  if (popover) { return popover; }
+  
+  const actionSheet: HTMLIonActionSheetElement | undefined = await ctrls.actionSheetCtrl.getTop();
+  return actionSheet;
+}

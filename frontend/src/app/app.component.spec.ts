@@ -17,7 +17,7 @@ describe('AppComponent', () => {
     };
     const analyticsSvcStub: { logEvent: jasmine.Spy<jasmine.Func>; } = { logEvent: jasmine.createSpy('logEvent') };
     const httpCancelSvcStub: { cancelPendingRequests: jasmine.Spy<jasmine.Func>; } = { cancelPendingRequests: jasmine.createSpy() };
-    const presenceSvcStub: {} = {};
+    const presenceSvcStub: Record<string, never> = {};
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],

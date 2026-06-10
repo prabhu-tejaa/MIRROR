@@ -6,8 +6,8 @@ import { AudioVisualizerService } from './audio-visualizer.service';
   providedIn: 'root'
 })
 export class TextToSpeechService {
-  public availableVoices = signal<SpeechSynthesisVoice[]>([]);
-  public currentlySpeakingId = signal<string | null>(null);
+  public availableVoices: import('@angular/core').WritableSignal<SpeechSynthesisVoice[]> = signal<SpeechSynthesisVoice[]>([]);
+  public currentlySpeakingId: import('@angular/core').WritableSignal<string | null> = signal<string | null>(null);
 
   private audioVisualizer: AudioVisualizerService = inject(AudioVisualizerService);
 

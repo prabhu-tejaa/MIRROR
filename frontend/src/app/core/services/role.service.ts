@@ -5,7 +5,7 @@ import { selectUserRoles } from '../../domains/auth/data-access/store/auth.selec
 
 @Injectable({ providedIn: 'root' })
 export class RoleService {
-  private store: Store = inject(Store);
+  private store: Store<object> = inject(Store) as unknown as Store<object>;
 
   public readonly userRoles: Signal<string[]> = this.store.selectSignal(selectUserRoles);
 

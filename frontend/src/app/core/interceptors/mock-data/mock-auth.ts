@@ -1,9 +1,10 @@
 import { HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
+
 import { ApiService } from '../../services/api.service';
 
-export function handleAuthRoutes(req: HttpRequest<unknown>, url: string, apiSvc: ApiService): Observable<HttpResponse<unknown> | HttpErrorResponse> | null {
+export function handleAuthRoutes(req: HttpRequest<unknown>, url: string, apiSvc: ApiService): Observable<HttpResponse<unknown>> | null {
   const triggerErrorEmail = 'error@mirror.tech';
   const triggerErrorOtp = '000000';
   const defaultUsername = 'mockuser';

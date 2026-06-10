@@ -3,8 +3,8 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
 import { IonButton, IonIcon } from '@ionic/angular/standalone';
 
 import { AdminUserResponse } from '../../../../../auth/data-access/auth.model';
-import { IsUserLockedPipe } from '../pipes/is-user-locked-pipe';
-import { UserInitialsPipe } from '../pipes/user-initials-pipe';
+import { IsUserLockedPipe } from '../../pipes/is-user-locked-pipe';
+import { UserInitialsPipe } from '../../pipes/user-initials-pipe';
 
 @Component({
   selector: 'app-admin-user-list',

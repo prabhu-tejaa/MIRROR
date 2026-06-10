@@ -13,37 +13,41 @@ let isRefreshing: boolean = false;
 const refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
 
 function getBackendErrorMessage(error: HttpErrorResponse, translationSvc: TranslationService): string | null {
-  if (error.error && typeof error.error === 'object') {
-    const errorObj: Record<string, unknown> = error.error as Record<string, unknown>;
-    if (typeof errorObj['errorCode'] === 'string') {
-      const lookupKey: string = `BACKEND_ERRORS.${errorObj['errorCode']}`;
-      const translatedError: string = translationSvc.translate(lookupKey);
-      if (translatedError !== lookupKey) {
-        return translatedError;
-      }
-    }
+  if (!error.error || typeof error.error !== 'object') { return null; }
+  
+  const errorObj: Record<string, unknown> = error.error as Record<string, unknown>;
+  if (typeof errorObj['errorCode'] !== 'string') { return null; }
+  
+  const lookupKey: string = `BACKEND_ERRORS.${errorObj['errorCode']}`;
+  const translatedError: string = translationSvc.translate(lookupKey);
+  
+  return translatedError !== lookupKey ? translatedError : null;
+}
+
+function extractObjString(errObj: Record<string, unknown>, key: string): string {
+  return typeof errObj[key] === 'string' ? errObj[key] : '';
+}
+
+function extractRawMessage(error: HttpErrorResponse): string {
+  if (!error.error) { return ''; }
+  if (typeof error.error === 'string') { return error.error; }
+  
+  if (typeof error.error === 'object') {
+    const errObj: Record<string, unknown> = error.error as Record<string, unknown>;
+    return extractObjString(errObj, 'error') || extractObjString(errObj, 'message');
   }
-  return null;
+  return '';
 }
 
 function getRawErrorMessage(error: HttpErrorResponse, translationSvc: TranslationService): string | null {
-  let rawMessage: string = '';
-  if (error.error) {
-    if (typeof error.error === 'string') {
-      rawMessage = error.error;
-    } else if (typeof error.error === 'object') {
-      const errObj: Record<string, unknown> = error.error as Record<string, unknown>;
-      rawMessage = (typeof errObj['error'] === 'string' ? errObj['error'] : '') || (typeof errObj['message'] === 'string' ? errObj['message'] : '');
-    }
-  }
+  const rawMessage: string = extractRawMessage(error);
+  if (!rawMessage) { return null; }
+
+  const errorKey: string = rawMessage.toUpperCase().replace(/[^A-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
+  const lookupKey: string = `BACKEND_ERRORS.${errorKey}`;
+  const translatedError: string = translationSvc.translate(lookupKey);
   
-  if (rawMessage) {
-    const errorKey: string = rawMessage.toUpperCase().replace(/[^A-Z0-9]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
-    const lookupKey: string = `BACKEND_ERRORS.${errorKey}`;
-    const translatedError: string = translationSvc.translate(lookupKey);
-    return translatedError !== lookupKey ? translatedError : rawMessage;
-  }
-  return null;
+  return translatedError !== lookupKey ? translatedError : rawMessage;
 }
 
 function getHttpStatusMessage(error: HttpErrorResponse, translationSvc: TranslationService): string | null {
@@ -82,16 +86,23 @@ function determineErrorMessage(error: HttpErrorResponse, translationSvc: Transla
   return errorMessage || defaultErrorMessage;
 }
 
-function handleAuthError(error: HttpErrorResponse, req: HttpRequest<unknown>, next: HttpHandlerFn, injector: Injector): Observable<HttpEvent<unknown>> | null {
-  if (error.status === 401) {
-    const apiSvc: ApiService = injector.get(ApiService);
-    if (!req.url.includes(apiSvc.auth.REFRESH) && !req.url.includes(apiSvc.auth.LOGIN)) {
-      return handle401Error(req, next, injector);
-    } else {
-      const authSvc: AuthService = injector.get(AuthService);
-      authSvc.clearSession();
-    }
+interface AuthErrorContext {
+  error: HttpErrorResponse;
+  req: HttpRequest<unknown>;
+  next: HttpHandlerFn;
+  injector: Injector;
+}
+
+function handleAuthError(ctx: AuthErrorContext): Observable<HttpEvent<unknown>> | null {
+  if (ctx.error.status !== 401) { return null; }
+  
+  const apiSvc: ApiService = ctx.injector.get(ApiService);
+  if (!ctx.req.url.includes(apiSvc.auth.REFRESH) && !ctx.req.url.includes(apiSvc.auth.LOGIN)) {
+    return handle401Error(ctx.req, ctx.next, ctx.injector);
   }
+  
+  const authSvc: AuthService = ctx.injector.get(AuthService);
+  authSvc.clearSession();
   return null;
 }
 
@@ -104,7 +115,7 @@ export const errorInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, n
     catchError((error: HttpErrorResponse) => {
       const errorMessage: string = determineErrorMessage(error, translationSvc);
 
-      const authHandlerResult: Observable<HttpEvent<unknown>> | null = handleAuthError(error, req, next, injector);
+      const authHandlerResult: Observable<HttpEvent<unknown>> | null = handleAuthError({ error, req, next, injector });
       if (authHandlerResult) {
         return authHandlerResult;
       }
@@ -118,21 +129,28 @@ export const errorInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, n
   );
 };
 
-function performTokenRefresh(authSvc: AuthService, refreshToken: string, request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+interface RefreshContext {
+  authSvc: AuthService;
+  refreshToken: string;
+  request: HttpRequest<unknown>;
+  next: HttpHandlerFn;
+}
+
+function performTokenRefresh(ctx: RefreshContext): Observable<HttpEvent<unknown>> {
   let completed: boolean = false;
-  return authSvc.refresh(refreshToken).pipe(
+  return ctx.authSvc.refresh(ctx.refreshToken).pipe(
     catchError((err: unknown) => {
       completed = true;
       isRefreshing = false;
       refreshTokenSubject.next('FAILED');
-      authSvc.clearSession();
+      ctx.authSvc.clearSession();
       return throwError(() => err instanceof Error ? err : new Error(String(err)));
     }),
     switchMap((token: { accessToken: string }) => {
       completed = true;
       isRefreshing = false;
       refreshTokenSubject.next(token.accessToken);
-      return next(addTokenHeader(request, token.accessToken));
+      return ctx.next(addTokenHeader(ctx.request, token.accessToken));
     }),
     finalize(() => {
       if (!completed && isRefreshing) {
@@ -143,35 +161,39 @@ function performTokenRefresh(authSvc: AuthService, refreshToken: string, request
   );
 }
 
+function processRefreshQueue(request: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
+  return refreshTokenSubject.pipe(
+    filter((token: string | null) => token !== null),
+    take(1),
+    switchMap((token: string) => {
+      if (token === 'FAILED') {
+        return throwError(() => new Error('Token refresh failed'));
+      }
+      return next(addTokenHeader(request, token));
+    })
+  );
+}
+
 function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, injector: Injector): Observable<HttpEvent<unknown>> {
   const authSvc: AuthService = injector.get(AuthService);
   const storageSvc: StorageService = injector.get(StorageService);
   const refreshToken: string | null = storageSvc.get(StorageKeys.REFRESH_TOKEN);
 
-  if (!isRefreshing) {
-    isRefreshing = true;
-    refreshTokenSubject.next(null);
-
-    if (refreshToken) {
-      return performTokenRefresh(authSvc, refreshToken, request, next);
-    } else {
-      isRefreshing = false;
-      refreshTokenSubject.next('FAILED');
-      authSvc.clearSession();
-      return throwError(() => new Error('No refresh token available'));
-    }
-  } else {
-    return refreshTokenSubject.pipe(
-      filter((token: string | null) => token !== null),
-      take(1),
-      switchMap((token: string) => {
-        if (token === 'FAILED') {
-          return throwError(() => new Error('Token refresh failed'));
-        }
-        return next(addTokenHeader(request, token));
-      })
-    );
+  if (isRefreshing) {
+    return processRefreshQueue(request, next);
   }
+
+  isRefreshing = true;
+  refreshTokenSubject.next(null);
+
+  if (!refreshToken) {
+    isRefreshing = false;
+    refreshTokenSubject.next('FAILED');
+    authSvc.clearSession();
+    return throwError(() => new Error('No refresh token available'));
+  }
+
+  return performTokenRefresh({ authSvc, refreshToken, request, next });
 }
 
 function addTokenHeader(request: HttpRequest<unknown>, token: string): HttpRequest<unknown> {

@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType, CreateEffectMetadata } from '@ngrx/effects';
-import { concatLatestFrom } from '@ngrx/operators';
 import { Store, Action } from '@ngrx/store';
 import { of, from, interval, Observable } from 'rxjs';
 import { map, catchError, switchMap, withLatestFrom, mergeMap, distinctUntilChanged, takeWhile, concatMap } from 'rxjs/operators';
@@ -69,7 +68,7 @@ export class ChatEffects {
     const ts: Date = typeof m.createdAt === 'number'
       ? new Date(m.createdAt > 9999999999 ? m.createdAt : m.createdAt * 1000)
       : new Date(m.createdAt || new Date());
-    return { id: m.id.toString(), sender: m.sender || 'user', text: m.content, timestamp: ts, emotion, primaryColor: primary, secondaryColor: secondary };
+    return { id: m.id.toString(), sender: (m.sender as 'user' | 'mirror') || 'user', text: m.content, timestamp: ts, emotion, primaryColor: primary, secondaryColor: secondary };
   }
 
   private buildHistoryActions(data: HistoryResponse, targetEmail: string): Action[] {
@@ -89,7 +88,7 @@ export class ChatEffects {
     return actionsArr;
   }
 
-  private buildPostMessageActions(typingId: string, userMsg: Message, typingMsg: Message): Action[] {
+  private buildPostMessageActions(_typingId: string, userMsg: Message, typingMsg: Message): Action[] {
     return [
       chatActions.addMessage({ message: userMsg }),
       chatActions.addMessage({ message: typingMsg }),
@@ -176,7 +175,7 @@ export class ChatEffects {
   public loadChatHistory$: Observable<Action> & CreateEffectMetadata = createEffect(() =>
     this.actions$.pipe(
       ofType(chatActions.loadChatHistory),
-      concatLatestFrom(() => this.store.select(selectUserEmail)),
+      withLatestFrom(this.store.select(selectUserEmail)),
       switchMap(([, email]: [Action, string | null]): Observable<Action> => {
         const targetEmail: string = email || DEFAULT_EMAIL;
         return this.chatSvc.getHistory(targetEmail, null, 20).pipe(
@@ -213,7 +212,7 @@ export class ChatEffects {
   public postMessage$: Observable<Action> & CreateEffectMetadata = createEffect(() =>
     this.actions$.pipe(
       ofType(chatActions.postMessage),
-      concatLatestFrom(() => this.store.select(selectUserEmail)),
+      withLatestFrom(this.store.select(selectUserEmail)),
       concatMap(([{ text }, email]: [{ text: string; }, string | null]): Observable<Action> => {
         const userMsgId: string = Math.random().toString(36).substring(7);
         const typingId: string = 'typing-' + Math.random().toString(36).substring(7);
@@ -259,7 +258,7 @@ export class ChatEffects {
   public postMessageFailure$: Observable<Action> & CreateEffectMetadata = createEffect(() =>
     this.actions$.pipe(
       ofType(chatActions.postMessageFailure),
-      concatLatestFrom(() => this.store.select(chatSelectors.selectMessages)),
+      withLatestFrom(this.store.select(chatSelectors.selectMessages)),
       mergeMap(([{ typingId, errorMsg }, messages]: [{ typingId: string; errorMsg: string; }, Message[]]): Observable<Action> => {
         void this.toastSvc.showError('Connection issue while communicating with MIRROR.');
         const filteredMessages: Message[] = messages.filter((m: Message) => m.id !== typingId);

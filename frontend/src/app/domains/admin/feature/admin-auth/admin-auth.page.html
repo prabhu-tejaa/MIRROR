@@ -1,13 +1,13 @@
-<ion-content [fullscreen]="true" class="ion-padding">
+<ion-content class="ion-padding" [fullscreen]="true">
   <div class="dashboard-nav">
-    <button class="back-circle-btn" (click)="goBack()" title="Back to Dashboard">
+    <button class="back-circle-btn" title="Back to Dashboard" (click)="goBack()">
       <ion-icon name="arrow-back-outline"></ion-icon>
     </button>
 
     <div class="nav-title-text">Auth Service</div>
 
     <div class="nav-right-group">
-      <button class="refresh-circle-btn" (click)="loadUsers()" title="Refresh Users">
+      <button class="refresh-circle-btn" title="Refresh Users" (click)="loadUsers()">
         <ion-icon name="refresh-outline"></ion-icon>
       </button>
     </div>
@@ -79,9 +79,9 @@
     <div class="search-filter-bar">
       <ion-searchbar 
         class="glass-searchbar"
+        placeholder="Search by username or email..."
         [ngModel]="searchQueryValue" 
-        (ionInput)="updateSearch($event)" 
-        placeholder="Search by username or email...">
+        (ionInput)="updateSearch($event)">
       </ion-searchbar>
       
       <ion-select class="glass-select" label="" [interface]="'popover'" [interfaceOptions]="{ cssClass: 'role-select-popover' }" [ngModel]="roleFilterValue" (ionChange)="updateRoleFilter($event)">

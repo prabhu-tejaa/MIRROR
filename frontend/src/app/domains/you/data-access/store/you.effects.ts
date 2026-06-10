@@ -12,28 +12,31 @@ import { YouActions, AnalyticsResponse, Reflection } from './you.actions';
 
 @Injectable()
 export class YouEffects {
-  private actions$: Actions<Action> = inject(Actions);
+  private actions$: Actions<Action<string>> = inject(Actions) as unknown as Actions<Action<string>>;
   private http: HttpClient = inject(HttpClient);
   private apiSvc: ApiService = inject(ApiService);
   private toastSvc: ToastService = inject(ToastService);
 
-  public loadAnalytics$: Observable<Action> & CreateEffectMetadata = createEffect(() =>
-    this.actions$.pipe(
+  public loadAnalytics$: Observable<Action> & CreateEffectMetadata = createEffect(() => {
+    return this.actions$.pipe(
       ofType(YouActions.loadAnalytics),
-      switchMap(() =>
+      switchMap((action) =>
         this.http.get<AnalyticsResponse>(this.apiSvc.userMemory.ANALYTICS).pipe(
-          map((data: AnalyticsResponse): Action => YouActions.loadAnalyticsSuccess({ data })),
+          switchMap((data: AnalyticsResponse): Action[] => [
+            YouActions.loadAnalyticsSuccess({ data }),
+            YouActions.loadMemories({ email: action.email })
+          ]),
           catchError((error: unknown): Observable<Action> => {
             void this.toastSvc.showError('Failed to sync your aura. Please try again.');
             return of(YouActions.loadAnalyticsFailure({ error }));
           })
         )
       )
-    )
-  );
+    );
+  });
 
-  public loadMemories$: Observable<Action> & CreateEffectMetadata = createEffect(() =>
-    this.actions$.pipe(
+  public loadMemories$: Observable<Action> & CreateEffectMetadata = createEffect(() => {
+    return this.actions$.pipe(
       ofType(YouActions.loadMemories),
       switchMap(() =>
         this.http.get<Reflection[]>(this.apiSvc.userMemory.ALL).pipe(
@@ -44,6 +47,6 @@ export class YouEffects {
           })
         )
       )
-    )
-  );
+    );
+  });
 }

@@ -1,56 +1,56 @@
 <ion-content [fullscreen]="true" [scrollY]="false"
-  [class]="'chat-content-container ' + activeStyleValue + ' emotion-' + currentEmotionLowercaseValue"
-  [style.--emotion-color-primary]="currentPrimaryColorValue"
-  [style.--emotion-color-secondary]="currentSecondaryColorValue">
+  [ngClass]="getContainerClasses()"
+  [style.--emotion-color-primary]="currentPrimaryColor()"
+  [style.--emotion-color-secondary]="currentSecondaryColor()">
 
   <div class="chat-wrapper">
  
     <div #streamScroll class="message-stream">
 
-      <div *ngIf="isLoadingMoreValue" class="load-more-indicator">
+      <div *ngIf="isLoadingMore()" class="load-more-indicator">
         <div class="load-more-dots">
           <span></span><span></span><span></span>
         </div>
         <span class="load-more-text">Loading older messages...</span>
       </div>
 
-      <div *ngIf="isLoadingHistoryValue" class="history-loading-skeleton">
+      <div *ngIf="isLoadingHistory()" class="history-loading-skeleton">
         <div class="skeleton-dot-wave">
           <span></span><span></span><span></span>
         </div>
         <p class="skeleton-text">Connecting...</p>
       </div>
 
-      <div *ngIf="todayMessagesFormattedValue.length === 0 && !isLoadingHistoryValue" class="welcome-banner">
+      <div *ngIf="showWelcomeBanner()" class="welcome-banner">
         <h1 class="greeting-title">
-          <span class="greeting-time-text">{{ greetingValue }},</span>
+          <span class="greeting-time-text">{{ getGreeting() }},</span>
           <span class="username-highlight">
-            {{ usernameValue }}
+            {{ getUsername() }}
           </span>
         </h1>
         <p class="greeting-subtitle">
-          <span class="quote-text">“{{ activeQuoteValue.text }}”</span>
-          <span class="quote-author">{{ activeQuoteValue.author }}</span>
+          <span class="quote-text">“{{ activeQuote().text }}”</span>
+          <span class="quote-author">{{ activeQuote().author }}</span>
         </p>
       </div>
  
-      <div *ngFor="let msg of todayMessagesFormattedValue; trackBy: trackByMessageId" class="message-wrapper" [@messageAnimation] [class.user-message]="msg.isUser"
+      <div *ngFor="let msg of todayMessagesFormatted(); trackBy: trackByMessageId" class="message-wrapper" [@messageAnimation] [class.user-message]="msg.isUser"
         [class.mirror-message]="msg.isMirror">
  
         <div *ngIf="msg.isMirror" class="avatar">
           <ion-icon name="finger-print" [class.loading-fingerprint]="msg.isTyping"></ion-icon>
         </div>
  
-        <div [class]="'message-bubble ' + (msg.isTyping ? 'typing-bubble ' : '') + msg.emotionClass"
+        <div [class]="getMessageBubbleClass(msg)"
           [style.--bubble-color-primary]="msg.primaryColor"
           [style.--bubble-color-secondary]="msg.secondaryColor">
           <ng-container *ngIf="!msg.isTyping; else typingIndicator">
             <p class="msg-text">{{ msg.text }}</p>
             <div class="bubble-meta">
-              <button *ngIf="msg.isMirror" class="tts-button" aria-label="Listen to reflection" [class.speaking]="currentlySpeakingIdValue === msg.id" (click)="speakText(msg.id, msg.text, $event)">
-                <ion-icon [name]="currentlySpeakingIdValue === msg.id ? 'volume-high-outline' : 'volume-mute-outline'"></ion-icon>
+              <button *ngIf="msg.isMirror" class="tts-button" aria-label="Listen to reflection" [class.speaking]="currentlySpeakingId() === msg.id" (click)="speakText(msg.id, msg.text, $event)">
+                <ion-icon [name]="currentlySpeakingId() === msg.id ? 'volume-high-outline' : 'volume-mute-outline'"></ion-icon>
               </button>
-              <span *ngIf="msg.isMirror && msg.emotion && msg.emotion !== 'NEUTRAL' && isAdminValue" class="vibe-badge">
+              <span *ngIf="showVibeBadge(msg)" class="vibe-badge">
                 {{ msg.emotion }}
               </span>
               <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
@@ -72,22 +72,22 @@
       <div class="bottom-ambient-glow"></div>
       <div class="bottom-ambient-glow-secondary"></div>
       <div class="entry-capsule">
-        <button class="voice-btn" [class.recording]="isRecordingValue" [class.disabled]="isWaitingForResponseValue" [disabled]="isWaitingForResponseValue" [aria-label]="isRecordingValue ? 'Stop voice input' : 'Start voice input'"
+        <button class="voice-btn" [class.recording]="isRecording()" [class.disabled]="isWaitingForResponse()" [disabled]="isWaitingForResponse()" [aria-label]="isRecording() ? 'Stop voice input' : 'Start voice input'"
           (click)="toggleRecording()">
-          <ion-icon *ngIf="!isRecordingValue" name="mic-outline" class="mic-icon"></ion-icon>
-          <div *ngIf="isRecordingValue" class="mini-equalizer">
+          <ion-icon *ngIf="!isRecording()" name="mic-outline" class="mic-icon"></ion-icon>
+          <div *ngIf="isRecording()" class="mini-equalizer">
             <span></span><span></span><span></span><span></span>
           </div>
-          <span *ngIf="isRecordingValue" class="record-ring"></span>
+          <span *ngIf="isRecording()" class="record-ring"></span>
         </button>
 
         <textarea #textInput aria-label="Chat input message"
-          rows="1" [placeholder]="isRecordingValue ? 'Listening & transcribing...' : 'Speak or type...'"
-          [ngModel]="chatInputValue" (ngModelChange)="chatInput.set($event); adjustTextareaHeight()" (keydown)="handleKeyDown($event)"
+          rows="1" [placeholder]="isRecording() ? 'Listening & transcribing...' : 'Speak or type...'"
+          [ngModel]="chatInput()" (ngModelChange)="chatInput.set($event); adjustTextareaHeight()" (keydown)="handleKeyDown($event)"
           (focus)="moveCursorToEnd($event)" (click)="moveCursorToEnd($event)"></textarea>
 
-        <button class="send-btn" aria-label="Send message" [class.disabled]="isSendDisabledValue"
-          [disabled]="isSendDisabledValue" (click)="triggerSend()">
+        <button class="send-btn" aria-label="Send message" [class.disabled]="isSendDisabled()"
+          [disabled]="isSendDisabled()" (click)="triggerSend()">
           <ion-icon name="send-outline"></ion-icon>
         </button>
       </div>

@@ -19,6 +19,7 @@ import {
 import { RoleService } from '../../../core/services/role.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { AuthService } from '../../auth/data-access/auth.service';
+import { ChatScrollService } from '../data-access/chat-scroll.service';
 import { Message } from '../data-access/chat-state.models';
 import { ChatStateService } from '../data-access/chat-state.service';
 import * as chatActions from '../data-access/store/chat.actions';
@@ -53,18 +54,16 @@ export class ChatPage implements OnDestroy {
   private toastSvc: ToastService = inject(ToastService);
   private navCtrl: NavController = inject(NavController);
   private destroyRef: DestroyRef = inject(DestroyRef);
-  private store: Store = inject(Store);
+  private store: Store<object> = inject(Store) as unknown as Store<object>;
   
   public voiceRecognitionSvc: VoiceRecognitionService = inject(VoiceRecognitionService);
   public ttsSvc: TextToSpeechService = inject(TextToSpeechService);
   public chatState: ChatStateService = inject(ChatStateService);
+  public scrollSvc: ChatScrollService = inject(ChatScrollService);
 
   private initialInputText: string = '';
   private isSpeechToggleInFlight: boolean = false;
-  private scrollListenerAttached: boolean = false;
-  private initialScrollCompleted: boolean = false;
-  private scrollObserver?: MutationObserver;
-  private scrollObserverTimeout?: ReturnType<typeof setTimeout>;
+  public initialScrollState: { value: boolean } = { value: false };
 
   @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLTextAreaElement>;
@@ -74,7 +73,7 @@ export class ChatPage implements OnDestroy {
   
   public readonly chatInput: WritableSignal<string> = signal<string>('');
   
-  public readonly activeQuote: Signal<import('../data-access/store/chat-state.models').Quote> = this.chatState.activeQuote;
+  public readonly activeQuote: Signal<import('../data-access/chat-state.models').Quote> = this.chatState.activeQuote;
   public readonly activeStyle: Signal<'cyberpunk' | 'aurora'> = this.chatState.activeStyle;
   public readonly currentEmotion: Signal<string> = this.chatState.currentEmotion;
   public readonly currentPrimaryColor: Signal<string> = this.chatState.currentPrimaryColor;
@@ -94,54 +93,37 @@ export class ChatPage implements OnDestroy {
       colorPaletteOutline, flashOutline, globeOutline, moonOutline, happyOutline, codeSlashOutline,
       pulseOutline, stopCircleOutline, volumeHighOutline, volumeMuteOutline
     });
-
     this.chatState.fetchDynamicQuote();
+    this.setupEffects();
+  }
 
+  private setupEffects(): void {
     effect(() => {
-      if (this.isRecording()) {
-        this.initialInputText = this.chatInput();
-      }
+      if (this.isRecording()) { this.initialInputText = this.chatInput(); }
     });
-
     this.voiceRecognitionSvc.transcriptionUpdate.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((update: { text: string; isPartial: boolean; }) => {
-      if (update.isPartial) {
-        this.chatInput.set(this.initialInputText ? `${this.initialInputText} ${update.text}` : update.text);
-      } else {
-        this.chatInput.update((curr: string) => curr ? `${curr} ${update.text}` : update.text);
-      }
+      if (update.isPartial) { this.chatInput.set(this.initialInputText ? `${this.initialInputText} ${update.text}` : update.text); } 
+      else { this.chatInput.update((curr: string) => curr ? `${curr} ${update.text}` : update.text); }
       setTimeout(() => this.adjustTextareaHeight(), 0);
     });
-
     effect(() => {
-      const trigger: number = this.chatState.scrollToBottomTrigger();
-      if (trigger > 0) {
-        const behavior: "smooth" | "auto" = this.initialScrollCompleted ? 'smooth' : 'auto';
-        this.triggerDynamicScrollToBottom(behavior);
+      if (this.chatState.scrollToBottomTrigger() > 0) {
+        const behavior: "smooth" | "auto" = this.initialScrollState.value ? 'smooth' : 'auto';
+        if (this.streamScroll?.nativeElement) { this.scrollSvc.triggerDynamicScrollToBottom(this.streamScroll.nativeElement, behavior, this.initialScrollState); }
       }
     });
-
     effect(() => {
-      const trigger: number = this.chatState.maintainScrollTrigger();
-      if (trigger > 0) {
+      if (this.chatState.maintainScrollTrigger() > 0) {
         const scrollEl: HTMLDivElement | undefined = this.streamScroll?.nativeElement;
         if (scrollEl) {
-          const prevScrollHeight: number = scrollEl.scrollHeight;
-          const prevScrollTop: number = scrollEl.scrollTop;
-          setTimeout(() => {
-            const newScrollHeight: number = scrollEl.scrollHeight;
-            scrollEl.scrollTop = prevScrollTop + (newScrollHeight - prevScrollHeight);
-          }, 50);
+          const prevH: number = scrollEl.scrollHeight;
+          const prevT: number = scrollEl.scrollTop;
+          setTimeout(() => { scrollEl.scrollTop = prevT + (scrollEl.scrollHeight - prevH); }, 50);
         }
       }
     });
-
     effect(() => {
-      const isLoading: boolean = this.isLoadingHistory();
-      if (!isLoading) {
-        setTimeout(() => {
-          this.initialScrollCompleted = true;
-        }, 500);
-      }
+      if (!this.isLoadingHistory()) { setTimeout(() => { this.initialScrollState.value = true; }, 500); }
     });
   }
 
@@ -151,125 +133,50 @@ export class ChatPage implements OnDestroy {
 
   public getGreeting(): string {
     const hour: number = new Date().getHours();
-    if (hour >= 5 && hour < 12) {return 'Good morning';}
-    if (hour >= 12 && hour < 17) {return 'Good afternoon';}
-    if (hour >= 17 && hour < 22) {return 'Good evening';}
+    if (hour < 5) { return 'Up late'; }
+    if (hour < 12) { return 'Good morning'; }
+    if (hour < 17) { return 'Good afternoon'; }
+    if (hour < 22) { return 'Good evening'; }
     return 'Up late';
   }
 
   public ionViewWillEnter(): void {
     const currentEmail: string = this.authSvc.getEmail() || 'guest@mirror.tech';
     if (!this.chatState.initialChatLoadedGlobally() || this.chatState.loadedEmail() !== currentEmail) {
-      this.initialScrollCompleted = false;
+      this.initialScrollState.value = false;
       this.store.dispatch(chatActions.loadChatHistory());
     } else {
-      this.initialScrollCompleted = true;
+      this.initialScrollState.value = true;
     }
   }
 
   public ionViewDidEnter(): void {
     this.focusInput();
+    const scrollEl: HTMLDivElement | undefined = this.streamScroll?.nativeElement;
+    if (scrollEl) { this.initScrollForView(scrollEl); }
+  }
+
+  private initScrollForView(scrollEl: HTMLDivElement): void {
     const currentEmail: string = this.authSvc.getEmail() || 'guest@mirror.tech';
-    if (!(this.chatState.isInitialLoad() || this.chatState.loadedEmail() !== currentEmail)) {
-      this.triggerDynamicScrollToBottom('auto');
+    const isSameUser: boolean = this.chatState.loadedEmail() === currentEmail;
+    
+    if (!this.chatState.isInitialLoad() && isSameUser) {
+      this.scrollSvc.triggerDynamicScrollToBottom(scrollEl, 'auto', this.initialScrollState);
     }
-    this.setupScrollListener();
-  }
-
-  private setupScrollListener(): void {
-    if (this.scrollListenerAttached) {return;}
-    setTimeout(() => {
-      const scrollEl: HTMLDivElement | undefined = this.streamScroll?.nativeElement;
-      if (scrollEl) {
-        this.scrollListenerAttached = true;
-        
-        const mo: MutationObserver = new MutationObserver(() => {
-          if (!this.initialScrollCompleted && scrollEl) {
-            const maxScroll: number = scrollEl.scrollHeight - scrollEl.clientHeight;
-            scrollEl.scrollTop = maxScroll;
-          }
-        });
-        mo.observe(scrollEl, { childList: true, subtree: true, characterData: true });
-
-        scrollEl.addEventListener('scroll', () => {
-          if (!this.initialScrollCompleted) {return;}
-          
-          const maxScroll: number = scrollEl.scrollHeight - scrollEl.clientHeight;
-          if (maxScroll <= 0) {return;} 
-
-          const isAtTop: boolean = scrollEl.scrollTop <= 10;
-          const isAtBottom: boolean = scrollEl.scrollTop >= (maxScroll - 10);
-
-          if (isAtTop && !isAtBottom && this.chatState.hasMoreHistory() && !this.isLoadingMore() && !this.chatState.isInitialLoad()) {
-            this.store.dispatch(chatActions.loadMoreHistory());
-          }
-        }, { passive: true });
-      }
-    }, 300);
-  }
-
-  private scrollToBottom(behavior: ScrollBehavior = 'smooth'): void {
-    if (this.streamScroll?.nativeElement) {
-      const el: HTMLDivElement = this.streamScroll.nativeElement;
-      el.scrollTo({ top: el.scrollHeight, behavior });
-    }
-  }
-
-  private triggerDynamicScrollToBottom(behavior: ScrollBehavior = 'smooth'): void {
-    const el: HTMLDivElement | undefined = this.streamScroll?.nativeElement;
-    if (!el) {return;}
-
-    let hasUsedSmooth: boolean = false;
-
-    const doScroll: () => void = () => {
-      const maxScroll: number = el.scrollHeight - el.clientHeight;
-      const distance: number = maxScroll - el.scrollTop;
-      
-      let actualBehavior: ScrollBehavior = behavior;
-      
-      if (distance < 100) {
-        actualBehavior = 'auto';
-      } else if (behavior === 'smooth') {
-        if (hasUsedSmooth) {
-          actualBehavior = 'auto';
-        } else {
-          hasUsedSmooth = true;
-        }
-      }
-
-      el.scrollTo({ top: el.scrollHeight, behavior: actualBehavior });
-    };
-
-    doScroll();
-
-    if (this.scrollObserver) {
-      this.scrollObserver.disconnect();
-      clearTimeout(this.scrollObserverTimeout);
-    }
-
-    this.scrollObserver = new MutationObserver(() => {
-      doScroll();
-    });
-    this.scrollObserver.observe(el, { childList: true, subtree: true, characterData: true });
-
-    this.scrollObserverTimeout = setTimeout(() => {
-      this.scrollObserver?.disconnect();
-      this.scrollObserver = undefined;
-      if (!this.initialScrollCompleted) {
-        this.initialScrollCompleted = true;
-      }
-    }, 800);
+    this.scrollSvc.setupScrollListener(scrollEl, this.initialScrollState, () => this.isLoadingMore()); 
   }
 
   public focusInput(): void {
     if (Capacitor.isNativePlatform() || (typeof window !== 'undefined' && window.innerWidth < 768)) {return;}
     setTimeout(() => {
-      if (this.textInput?.nativeElement) {
-        const input: HTMLTextAreaElement = this.textInput.nativeElement;
-        input.focus();
-        const len: number = input.value.length;
-        input.setSelectionRange(len, len);
-        setTimeout(() => this.scrollToBottom('auto'), 50);
+      const inputEl: HTMLTextAreaElement | undefined = this.textInput ? this.textInput.nativeElement : undefined;
+      const scrollEl: HTMLDivElement | undefined = this.streamScroll ? this.streamScroll.nativeElement : undefined;
+      
+      if (inputEl) {
+        inputEl.focus();
+        const len: number = inputEl.value.length;
+        inputEl.setSelectionRange(len, len);
+        setTimeout(() => { if (scrollEl) { this.scrollSvc.scrollToBottom(scrollEl, 'auto'); } }, 50);
       }
     }, 150);
   }
@@ -312,8 +219,8 @@ export class ChatPage implements OnDestroy {
   }
 
   public adjustTextareaHeight(): void {
-    if (this.textInput?.nativeElement) {
-      const textarea: HTMLTextAreaElement = this.textInput.nativeElement;
+    const textarea: HTMLTextAreaElement | undefined = this.textInput ? this.textInput.nativeElement : undefined;
+    if (textarea) {
       textarea.style.height = 'auto';
       textarea.style.height = `${textarea.scrollHeight}px`;
     }
@@ -360,7 +267,7 @@ export class ChatPage implements OnDestroy {
         {
           text: 'Sign Up',
           cssClass: 'alert-signup-btn',
-          handler: () => {
+          handler: async () => {
             this.authSvc.logout();
             await this.navCtrl.navigateRoot('/signup', { animated: true });
           }
@@ -370,38 +277,37 @@ export class ChatPage implements OnDestroy {
     await alert.present();
   }
 
-  public trackByMessageId(index: number, message: Message): string {
+  public trackByMessageId(_index: number, message: Message): string {
     return message.id;
   }
 
-  public get isGuestValue() { return this.isGuest(); }
-  public get isAdminValue() { return this.isAdmin(); }
-  public get chatInputValue() { return this.chatInput(); }
-  public get activeQuoteValue() { return this.activeQuote(); }
-  public get activeStyleValue() { return this.activeStyle(); }
-  public get currentEmotionValue() { return this.currentEmotion(); }
-  public get currentEmotionLowercaseValue() { return this.currentEmotion() ? this.currentEmotion().toLowerCase() : ''; }
-  public get currentPrimaryColorValue() { return this.currentPrimaryColor(); }
-  public get currentSecondaryColorValue() { return this.currentSecondaryColor(); }
-  public get isWaitingForResponseValue() { return this.isWaitingForResponse(); }
-  public get isSendDisabledValue() { return !this.chatInput().trim() || this.isWaitingForResponse(); }
-  public get isRestingValue() { return this.isResting(); }
-  public get isLoadingHistoryValue() { return this.isLoadingHistory(); }
-  public get isLoadingMoreValue() { return this.isLoadingMore(); }
-  public get todayMessagesValue() { return this.todayMessages(); }
-  public get todayMessagesFormattedValue() {
+  public readonly todayMessagesFormatted: Signal<(Message & { emotionClass: string; isUser: boolean; isMirror: boolean; })[]> = computed(() => {
     return this.todayMessages().map(msg => ({
       ...msg,
       emotionClass: msg.emotion ? `emotion-${msg.emotion.toLowerCase()}` : '',
       isUser: msg.sender === 'user',
       isMirror: msg.sender === 'mirror'
     }));
+  });
+
+  public readonly currentEmotionLowercase: Signal<string> = computed(() => this.currentEmotion() ? this.currentEmotion().toLowerCase() : '');
+  public readonly isSendDisabled: Signal<boolean> = computed(() => !this.chatInput().trim() || this.isWaitingForResponse());
+
+  public showWelcomeBanner(): boolean {
+    return this.todayMessagesFormatted().length === 0 && !this.isLoadingHistory();
   }
-  public get isRecordingValue() { return this.isRecording(); }
-  public get currentlySpeakingIdValue() { return this.currentlySpeakingId(); }
-  
-  public get greetingValue() { return this.getGreeting(); }
-  public get usernameValue() { return this.getUsername(); }
+
+  public getContainerClasses(): string {
+    return `chat-content-container ${this.activeStyle()} emotion-${this.currentEmotionLowercase()}`;
+  }
+
+  public getMessageBubbleClass(msg: { isTyping?: boolean; emotionClass: string }): string {
+    return 'message-bubble ' + (msg.isTyping ? 'typing-bubble ' : '') + msg.emotionClass;
+  }
+
+  public showVibeBadge(msg: { isMirror: boolean; emotion?: string }): boolean {
+    return !!(msg.isMirror && msg.emotion && msg.emotion !== 'NEUTRAL' && this.isAdmin());
+  }
 
   public ngOnDestroy(): void {
     this.ttsSvc.cancel();

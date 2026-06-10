@@ -40,8 +40,8 @@ import { AdminActions } from '../../../data-access/store/admin.actions';
 })
 export class UserCreateModalComponent {
   private modalCtrl: ModalController = inject(ModalController);
-  private store: Store<any> = inject(Store);
-  private actions$: Actions<any> = inject(Actions);
+  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private actions$: Actions<import('@ngrx/store').Action<string>> = inject(Actions) as unknown as Actions<import('@ngrx/store').Action<string>>;
   private toastSvc: ToastService = inject(ToastService);
   private destroyRef: DestroyRef = inject(DestroyRef);
 
@@ -62,23 +62,16 @@ export class UserCreateModalComponent {
     void this.modalCtrl.dismiss({ created });
   }
 
+  private validateForm(): boolean {
+    if (!this.createForm.username.trim()) { void this.toastSvc.showError('Username is required'); return false; }
+    if (!this.createForm.email.trim()) { void this.toastSvc.showError('Email is required'); return false; }
+    if (!this.createForm.password.trim()) { void this.toastSvc.showError('Password is required'); return false; }
+    if (this.createForm.password.trim().length < 6) { void this.toastSvc.showError('Password must be at least 6 characters'); return false; }
+    return true;
+  }
+
   public create(): void {
-    if (!this.createForm.username.trim()) {
-      void this.toastSvc.showError('Username is required');
-      return;
-    }
-    if (!this.createForm.email.trim()) {
-      void this.toastSvc.showError('Email is required');
-      return;
-    }
-    if (!this.createForm.password.trim()) {
-      void this.toastSvc.showError('Password is required');
-      return;
-    }
-    if (this.createForm.password.trim().length < 6) {
-      void this.toastSvc.showError('Password must be at least 6 characters');
-      return;
-    }
+    if (!this.validateForm()) { return; }
 
     this.isSubmitting = true;
     const request: AdminCreateUserRequest = {
@@ -93,15 +86,11 @@ export class UserCreateModalComponent {
     this.actions$.pipe(
       ofType(AdminActions.createUserSuccess),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.dismiss(true);
-    });
+    ).subscribe(() => this.dismiss(true));
 
     this.actions$.pipe(
       ofType(AdminActions.createUserFailure),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.isSubmitting = false;
-    });
+    ).subscribe(() => { this.isSubmitting = false; });
   }
 }

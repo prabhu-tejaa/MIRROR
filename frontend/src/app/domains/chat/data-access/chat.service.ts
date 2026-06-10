@@ -1,4 +1,4 @@
-﻿import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { timeout } from 'rxjs/operators';
@@ -26,12 +26,12 @@ export class ChatService {
   private http: HttpClient = inject(HttpClient);
   private apiSvc: ApiService = inject(ApiService);
 
-  public getHistory(email: string, cursor: string | null, size: number): Observable<{ messages: unknown[], hasMore: boolean, nextCursor: string | null }> {
+  public getHistory(_email: string, cursor: string | null, size: number): Observable<{ messages: unknown[], hasMore: boolean, nextCursor: string | null }> {
     const cursorParam: string = cursor ? `&cursor=${cursor}` : '';
     return this.http.get<{ messages: unknown[], hasMore: boolean, nextCursor: string | null }>(`${this.apiSvc.userMemory.HISTORY}?size=${size}${cursorParam}`);
   }
 
-  public reflect(email: string, prompt: string): Observable<{ reflection: string, emotion: string }> {
+  public reflect(_email: string, prompt: string): Observable<{ reflection: string, emotion: string }> {
     return this.http.post<{ reflection: string, emotion: string }>(this.apiSvc.userMemory.REFLECT, prompt, {
       headers: { 
         'Content-Type': 'text/plain' 

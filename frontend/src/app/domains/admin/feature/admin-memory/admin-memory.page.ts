@@ -41,60 +41,66 @@ export interface GroupViewModel {
 })
 export class AdminMemoryPage implements OnInit {
   private router: Router = inject(Router);
-  private store: Store = inject(Store);
-  private actions$: Actions = inject(Actions);
+  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private actions$: Actions<import('@ngrx/store').Action<string>> = inject(Actions) as unknown as Actions<import('@ngrx/store').Action<string>>;
   private toastSvc: ToastService = inject(ToastService);
   private destroyRef: DestroyRef = inject(DestroyRef);
 
-  public activeTab = signal<'UPLOAD' | 'MANAGE'>('MANAGE');
-  public isUploading = signal(false);
-  public searchQuery = signal('');
-  public memorySearchQuery = signal('');
+  public activeTab: import('@angular/core').WritableSignal<'UPLOAD' | 'MANAGE'> = signal<'UPLOAD' | 'MANAGE'>('MANAGE');
+  public isUploading: import('@angular/core').WritableSignal<boolean> = signal<boolean>(false);
+  public searchQuery: import('@angular/core').WritableSignal<string> = signal<string>('');
+  public memorySearchQuery: import('@angular/core').WritableSignal<string> = signal<string>('');
   
-  public dbRecords = this.store.selectSignal(selectMemories);
-  public isLoading = this.store.selectSignal(selectMemoriesLoading);
+  public dbRecords: import('@angular/core').Signal<AdminMemoryRecord[]> = this.store.selectSignal(selectMemories);
+  public isLoading: import('@angular/core').Signal<boolean> = this.store.selectSignal(selectMemoriesLoading);
 
-  public cachedGroups = computed(() => {
+  private groupRecords(records: AdminMemoryRecord[]): GroupViewModel[] {
     const groups = new Map<string, MemoryViewModel[]>();
-    for (const r of (this.dbRecords() || [])) {
+    for (const r of records) {
       const u: string = r.userId || 'Unknown';
-      if (!groups.has(u)) { groups.set(u, []); }
-      
+      const existing = groups.get(u) || [];
       const cleanEmotion = r.emotion ? r.emotion.split('|')[0] : 'UNKNOWN';
-      groups.get(u)!.push({ ...r, cleanEmotion });
+      existing.push({ ...r, cleanEmotion });
+      groups.set(u, existing);
     }
-    
-    let allGroups: GroupViewModel[] = Array.from(groups.entries()).map(([userId, records]) => ({ userId, records }));
-    
-    const query: string = this.searchQuery();
-    if (query) {
-      const lowerQuery: string = query.toLowerCase();
-      allGroups = allGroups.filter(g => g.userId.toLowerCase().includes(lowerQuery));
-    }
+    return Array.from(groups.entries()).map(([userId, records]) => ({ userId, records }));
+  }
 
-    const memoryQuery: string = this.memorySearchQuery();
-    if (memoryQuery) {
-      const lowerMem: string = memoryQuery.toLowerCase();
-      allGroups = allGroups.map(g => ({
-        userId: g.userId,
-        records: g.records.filter(r => 
-          r.content?.toLowerCase().includes(lowerMem) || 
-          r.emotion?.toLowerCase().includes(lowerMem)
-        )
-      }));
-    }
-
+  public cachedGroups: import('@angular/core').Signal<GroupViewModel[]> = computed(() => {
+    let allGroups: GroupViewModel[] = this.groupRecords(this.dbRecords() || []);
+    allGroups = this.filterBySearchQuery(allGroups);
+    allGroups = this.filterByMemoryQuery(allGroups);
     return allGroups;
   });
 
-  public expandedUserId = signal<string | null>(null);
+  private filterBySearchQuery(groups: GroupViewModel[]): GroupViewModel[] {
+    const query: string = this.searchQuery();
+    if (!query) { return groups; }
+    const lowerQuery: string = query.toLowerCase();
+    return groups.filter(g => g.userId.toLowerCase().includes(lowerQuery));
+  }
+
+  private filterByMemoryQuery(groups: GroupViewModel[]): GroupViewModel[] {
+    const query: string = this.memorySearchQuery();
+    if (!query) { return groups; }
+    const lowerMem: string = query.toLowerCase();
+    return groups.map(g => ({
+      userId: g.userId,
+      records: g.records.filter(r => 
+        (r.content || '').toLowerCase().includes(lowerMem) || 
+        (r.emotion || '').toLowerCase().includes(lowerMem)
+      )
+    }));
+  }
+
+  public expandedUserId: import('@angular/core').WritableSignal<string | null> = signal<string | null>(null);
   
   public toggleUser(userId: string): void {
     this.expandedUserId.set(this.expandedUserId() === userId ? null : userId);
     this.memorySearchQuery.set('');
   }
 
-  public trackByUserId(index: number, group: GroupViewModel): string {
+  public trackByUserId(_index: number, group: GroupViewModel): string {
     return group.userId;
   }
 
@@ -124,7 +130,7 @@ export class AdminMemoryPage implements OnInit {
     this.activeTab.set(tab);
   }
 
-  public async onFileSelected(event: Event): Promise<void> {
+  public onFileSelected(event: Event): void {
     const target: HTMLInputElement = event.target as HTMLInputElement;
     const file: File | undefined = target.files?.[0];
     if (file) {
@@ -150,7 +156,7 @@ export class AdminMemoryPage implements OnInit {
     }
   }
 
-  public isModalOpen = signal(false);
+  public isModalOpen: import('@angular/core').WritableSignal<boolean> = signal<boolean>(false);
   public modalMode: 'ADD' | 'EDIT' = 'ADD';
   public editingId: string | null = null;
   public modalForm: { userId: string; content: string; emotion: string; } = {
@@ -159,14 +165,14 @@ export class AdminMemoryPage implements OnInit {
     emotion: ''
   };
 
-  public async addRecord(): Promise<void> {
+  public addRecord(): void {
     this.modalMode = 'ADD';
     this.editingId = null;
     this.modalForm = { userId: '', content: '', emotion: '' };
     this.isModalOpen.set(true);
   }
 
-  public async editRecord(id: string): Promise<void> {
+  public editRecord(id: string): void {
     this.modalMode = 'EDIT';
     this.editingId = id;
     const record: AdminMemoryRecord | undefined = (this.dbRecords() || []).find((r: AdminMemoryRecord) => r.id === id);
@@ -249,5 +255,9 @@ export class AdminMemoryPage implements OnInit {
 
   public get isModalOpenValue(): boolean {
     return this.isModalOpen();
+  }
+
+  public get modalTitleValue(): string {
+    return this.modalMode === 'ADD' ? 'Create Memory' : 'Edit Memory ' + (this.editingId || '');
   }
 }

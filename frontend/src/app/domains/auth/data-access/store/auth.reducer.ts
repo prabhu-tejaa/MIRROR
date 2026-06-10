@@ -2,7 +2,7 @@ import { createReducer, on } from '@ngrx/store';
 
 import { AuthActions } from './auth.actions';
 
-export const authFeatureKey: 'auth' = 'auth';
+export const authFeatureKey = 'auth' as const;
 
 export interface AuthState {
   isAuthenticated: boolean;

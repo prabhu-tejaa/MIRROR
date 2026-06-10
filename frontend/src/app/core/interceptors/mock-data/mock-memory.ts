@@ -1,9 +1,10 @@
-﻿import { HttpRequest, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { HttpRequest, HttpResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
+
 import { ApiService } from '../../services/api.service';
 
-export function handleMemoryRoutes(req: HttpRequest<unknown>, url: string, apiSvc: ApiService): Observable<HttpResponse<unknown> | HttpErrorResponse> | null {
+export function handleMemoryRoutes(req: HttpRequest<unknown>, url: string, apiSvc: ApiService): Observable<HttpResponse<unknown>> | null {
   if (url.includes(apiSvc.userMemory.HISTORY)) {
     const mockHistory = {
       messages: [

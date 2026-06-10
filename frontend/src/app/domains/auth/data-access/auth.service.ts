@@ -27,7 +27,7 @@ export class AuthService {
   private injector: Injector = inject(Injector);
   private lastValidationTime: number = 0;
   private isValidating: boolean = false;
-  private store: Store<unknown> = inject(Store);
+  private store: Store<object> = inject(Store) as unknown as Store<object>;
 
   private getSessionInstanceId(): string {
     let id: string | null = this.storageSvc.get(StorageKeys.SESSION_INSTANCE_ID);
@@ -215,7 +215,9 @@ export class AuthService {
 
   private saveSession(response: AuthResponse): void {
     const roles: string[] = this.extractRolesFromToken(response.accessToken, response.username || '');
+    // eslint-disable-next-line @ngrx/avoid-dispatching-multiple-actions-sequentially
     this.store.dispatch(AuthActions.loginSuccess({ response }));
+    // eslint-disable-next-line @ngrx/avoid-dispatching-multiple-actions-sequentially
     this.store.dispatch(AuthActions.setAuthenticated({
       isAuthenticated: true,
       email: response.email || undefined,

@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
-import { AdminUserResponse } from '../../../../../auth/data-access/auth.model';
+import { AdminUserResponse } from '../../../../auth/data-access/auth.model';
 
 @Pipe({
   name: 'isUserLocked',

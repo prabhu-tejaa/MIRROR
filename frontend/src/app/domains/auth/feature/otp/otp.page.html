@@ -20,7 +20,7 @@
 
 
         <div class="input-group otp-group">
-          <div class="otp-boxes-container" (click)="focusInput($event)">
+          <div class="otp-boxes-container" tabindex="0" (click)="focusInput($event)" (keydown.enter)="focusInput($event)">
             @for (digit of otpDigits; track $index) {
               <input
                 #otpInput
@@ -64,10 +64,10 @@
             @if (resendTimer > 0) {
               <span style="opacity: 0.5; cursor: not-allowed; pointer-events: none;">{{ 'OTP.RESEND_IN' | translate: { resendTimer: formattedTimerValue } }}</span>
             } @else {
-              <a class="signup-link" (click)="resendCode()">{{ 'OTP.RESEND' | translate }}</a>
+              <a class="signup-link" tabindex="0" (click)="resendCode()" (keydown.enter)="resendCode()">{{ 'OTP.RESEND' | translate }}</a>
             }
           </span><br><br>
-          <span class="signup-text"><a class="signup-link" (click)="goToLogin()">{{ 'OTP.BACK_LINK' | translate }}</a></span>
+          <span class="signup-text"><a class="signup-link" tabindex="0" (click)="goToLogin()" (keydown.enter)="goToLogin()">{{ 'OTP.BACK_LINK' | translate }}</a></span>
         </div>
       </form>
     </div>

@@ -18,7 +18,7 @@ describe('ResetPasswordPage', () => {
   const navCtrlSpy: any = jasmine.createSpyObj('NavController', ['navigateRoot', 'navigateForward', 'navigateBack']);
   const animCtrlSpy: any = jasmine.createSpyObj('AnimationController', ['create']);
   const authSvcSpy: any = jasmine.createSpyObj('AuthService', ['resetPassword']);
-  const translationSvcSpy: any = jasmine.createSpyObj('TranslationService', ['translate']);
+  const translationSvcSpy: jasmine.SpyObj<TranslationService> = jasmine.createSpyObj('TranslationService', ['translate']);
   translationSvcSpy.translate.and.returnValue('');
 
   beforeEach(async () => {

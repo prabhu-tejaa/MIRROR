@@ -7,8 +7,8 @@ import { Subscription } from 'rxjs';
 })
 export class TranslationService implements OnDestroy {
   private http: HttpClient = inject(HttpClient);
-  private currentLang = signal<string>('en');
-  private translations = signal<Record<string, string | unknown>>({});
+  private currentLang: import('@angular/core').WritableSignal<string> = signal<string>('en');
+  private translations: import('@angular/core').WritableSignal<Record<string, unknown>> = signal<Record<string, unknown>>({});
   private sub?: Subscription;
 
   private readonly fallbackTranslations: Record<string, Record<string, string>> = {
@@ -40,8 +40,6 @@ export class TranslationService implements OnDestroy {
     }
   };
 
-  constructor() {
-  }
 
   public setLanguage(lang: string): void {
     if (this.currentLang() !== lang) {
@@ -52,13 +50,13 @@ export class TranslationService implements OnDestroy {
 
   public initTranslations(lang: string = 'en'): Promise<boolean> {
     return new Promise((resolve: (value: boolean | PromiseLike<boolean>) => void) => {
-      this.http.get<Record<string, string | unknown>>(`assets/i18n/${lang}.json`)
+      this.http.get<Record<string, unknown>>(`assets/i18n/${lang}.json`)
         .subscribe({
           next: (data: Record<string, unknown>) => {
             this.translations.set(data);
             resolve(true);
           },
-          error: (err: any) => {
+          error: () => {
             this.translations.set(this.fallbackTranslations);
             resolve(true);
           }
@@ -71,10 +69,10 @@ export class TranslationService implements OnDestroy {
       this.sub.unsubscribe();
     }
     
-    this.sub = this.http.get<Record<string, string | unknown>>(`assets/i18n/${lang}.json`)
+    this.sub = this.http.get<Record<string, unknown>>(`assets/i18n/${lang}.json`)
       .subscribe({
         next: (data: Record<string, unknown>) => this.translations.set(data),
-        error: (err: any) => {
+        error: () => {
           this.translations.set(this.fallbackTranslations);
         }
       });
@@ -85,9 +83,9 @@ export class TranslationService implements OnDestroy {
     if (!dict) {return key;}
 
     const keys: string[] = key.split('.');
-    let result: string | unknown = dict;
+    let result: unknown = dict;
 
-    for (const k: string of keys) {
+    for (const k of keys) {
       if (result && typeof result === 'object' && k in (result as Record<string, unknown>)) {
         result = (result as Record<string, unknown>)[k];
       } else {

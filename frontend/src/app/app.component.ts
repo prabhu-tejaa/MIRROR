@@ -60,7 +60,7 @@ export class AppComponent {
     });
   }
 
-  public handleGlobalRefresh(event: Event): void {
+  public handleGlobalRefresh(_event: Event): void {
     setTimeout(() => {
       window.location.reload();
     }, 500);

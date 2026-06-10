@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import {
   Component, ChangeDetectionStrategy, Signal, signal, inject,
-  computed, effect, NgZone, ViewChild, ElementRef, OnDestroy
+  computed, effect, NgZone, ViewChild, ElementRef, OnDestroy, WritableSignal
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
@@ -11,8 +11,7 @@ import { environment } from '../../../../environments/environment';
 import { ToastService } from '../../../core/services/toast.service';
 import { selectUserEmail, selectUsername } from '../../auth/data-access/store/auth.selectors';
 import { AudioVisualizerService } from '../../chat/data-access/audio-visualizer.service';
-import { YouActions } from '../data-access/store/you.actions';
-import { EmotionStat, AnalyticsResponse, Reflection } from '../data-access/store/you.actions';
+import { YouActions, EmotionStat, AnalyticsResponse, Reflection } from '../data-access/store/you.actions';
 import { selectAnalytics, selectMemories, selectDataLoadedOnce, selectLoadingAnalytics } from '../data-access/store/you.selectors';
 
 const DEFAULT_EMOTION_STAT = { name: 'Calm', primaryColor: '#2ecc71', secondaryColor: 'rgba(46, 204, 113, 0.4)' };
@@ -31,7 +30,7 @@ type OrbStat = EmotionStat & { orbScale: number };
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class YouPage implements OnDestroy {
-  private store: Store<object> = inject(Store);
+  private store: Store<object> = inject(Store) as unknown as Store<object>;
   private router: Router = inject(Router);
   private toastSvc: ToastService = inject(ToastService);
   private ngZone: NgZone = inject(NgZone);
@@ -63,10 +62,10 @@ export class YouPage implements OnDestroy {
   public readonly scale4: Signal<number> = this.audioVisualizerSvc.scale4;
 
   public readonly isLoading: Signal<boolean> = this.store.selectSignal(selectLoadingAnalytics);
-  public readonly isTabActive: Signal<boolean> = signal<boolean>(true);
-  public readonly selectedEmotion: Signal<string | null> = signal<string | null>(null);
-  public readonly isAllEmotionsOpen: Signal<boolean> = signal<boolean>(false);
-  public readonly openedFromAllEmotions: Signal<boolean> = signal<boolean>(false);
+  public readonly isTabActive: WritableSignal<boolean> = signal<boolean>(true);
+  public readonly selectedEmotion: WritableSignal<string | null> = signal<string | null>(null);
+  public readonly isAllEmotionsOpen: WritableSignal<boolean> = signal<boolean>(false);
+  public readonly openedFromAllEmotions: WritableSignal<boolean> = signal<boolean>(false);
 
   public readonly totalCount: Signal<number> = computed(() => this.analyticsSignal()?.totalMemories ?? 0);
   public readonly dominantEmotion: Signal<string> = computed(() => this.analyticsSignal()?.dominantEmotion ?? 'CALM');
@@ -114,37 +113,36 @@ export class YouPage implements OnDestroy {
   }
 
   public ionViewWillEnter(): void {
-    (this.isTabActive as ReturnType<typeof signal<boolean>>).set(true);
+    this.isTabActive.set(true);
     const email: string = this.store.selectSignal(selectUserEmail)() || 'guest@mirror.tech';
     if (!this.dataLoadedOnce()) {
       this.store.dispatch(YouActions.loadAnalytics({ email }));
-      this.store.dispatch(YouActions.loadMemories({ email }));
     }
   }
 
   public ionViewDidLeave(): void {
-    (this.isTabActive as ReturnType<typeof signal<boolean>>).set(false);
+    this.isTabActive.set(false);
   }
 
   public selectEmotion(emotionKey: string | null): void {
-    (this.selectedEmotion as ReturnType<typeof signal<string | null>>).set(emotionKey === this.selectedEmotion() ? null : emotionKey);
-    (this.openedFromAllEmotions as ReturnType<typeof signal<boolean>>).set(false);
+    this.selectedEmotion.set(emotionKey === this.selectedEmotion() ? null : emotionKey);
+    this.openedFromAllEmotions.set(false);
   }
 
   public selectFromAllEmotions(emotionKey: string): void {
-    (this.selectedEmotion as ReturnType<typeof signal<string | null>>).set(emotionKey);
-    (this.openedFromAllEmotions as ReturnType<typeof signal<boolean>>).set(true);
+    this.selectedEmotion.set(emotionKey);
+    this.openedFromAllEmotions.set(true);
   }
 
   public goBackToAllEmotions(): void {
-    (this.selectedEmotion as ReturnType<typeof signal<string | null>>).set(null);
-    (this.openedFromAllEmotions as ReturnType<typeof signal<boolean>>).set(false);
+    this.selectedEmotion.set(null);
+    this.openedFromAllEmotions.set(false);
   }
 
   public closeModals(): void {
-    (this.selectedEmotion as ReturnType<typeof signal<string | null>>).set(null);
-    (this.isAllEmotionsOpen as ReturnType<typeof signal<boolean>>).set(false);
-    (this.openedFromAllEmotions as ReturnType<typeof signal<boolean>>).set(false);
+    this.selectedEmotion.set(null);
+    this.isAllEmotionsOpen.set(false);
+    this.openedFromAllEmotions.set(false);
   }
 
   public trackByKey(_index: number, item: { key: string }): string {
@@ -171,29 +169,9 @@ export class YouPage implements OnDestroy {
     this.attachDragListeners(el, e);
   }
 
-  public ngOnDestroy(): void {
-    this.cancelSpring();
+  public getTextShadow(key: string, color: string): string {
+    return this.selectedEmotion() === key ? '0 0 15px ' + color : 'none';
   }
-
-  public get isTabActiveValue(): boolean { return this.isTabActive(); }
-  public get totalCountValue(): number { return this.totalCount(); }
-  public get displayUsernameValue(): string { return this.displayUsername(); }
-  public get auraGradientValue(): string { return this.auraGradient(); }
-  public get isAllEmotionsOpenValue(): boolean { return this.isAllEmotionsOpen(); }
-  public get topOrbsValue(): OrbStat[] { return this.topOrbs(); }
-  public get isLoadingValue(): boolean { return this.isLoading(); }
-  public get selectedEmotionValue(): string | null { return this.selectedEmotion(); }
-  public get modalBorderColorValue(): string { return this.modalBorderColor(); }
-  public get openedFromAllEmotionsValue(): boolean { return this.openedFromAllEmotions(); }
-  public get filteredReflectionsValue(): Reflection[] { return this.filteredReflections(); }
-  public get emotionStatsValue(): EmotionStat[] { return this.emotionStats(); }
-  public get isPlayingValue(): boolean { return this.isPlaying(); }
-  public get isLoadingAudioValue(): boolean { return this.isLoadingAudio(); }
-  public get scale1Value(): number { return this.scale1(); }
-  public get scale2Value(): number { return this.scale2(); }
-  public get scale3Value(): number { return this.scale3(); }
-  public get scale4Value(): number { return this.scale4(); }
-  public get selectedEmotionStatValue(): typeof DEFAULT_EMOTION_STAT | EmotionStat { return this.selectedEmotionStat(); }
 
   private buildDisplayUsername(): string {
     const name: string = this.store.selectSignal(selectUsername)() || 'Soul';
@@ -280,5 +258,9 @@ export class YouPage implements OnDestroy {
       cancelAnimationFrame(this.rafId);
       this.rafId = null;
     }
+  }
+
+  public ngOnDestroy(): void {
+    this.cancelSpring();
   }
 }

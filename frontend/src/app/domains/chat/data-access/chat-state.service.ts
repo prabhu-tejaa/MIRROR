@@ -6,9 +6,9 @@ import { StorageService } from '../../../core/services/storage.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { AuthService } from '../../auth/data-access/auth.service';
 
+import { Message, Quote } from './chat-state.models';
 import * as chatActions from './store/chat.actions';
 import * as chatSelectors from './store/chat.selectors';
-import { Message, Quote } from './chat-state.models';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +17,7 @@ export class ChatStateService {
   private authSvc: AuthService = inject(AuthService);
   private toastSvc: ToastService = inject(ToastService);
   private storageSvc: StorageService = inject(StorageService);
-  private store: Store = inject(Store);
+  private store: Store<object> = inject(Store) as unknown as Store<object>;
 
   public activeQuote: Signal<Quote> = this.store.selectSignal(chatSelectors.selectActiveQuote);
   public activeStyle: Signal<'cyberpunk' | 'aurora'> = this.store.selectSignal(chatSelectors.selectActiveStyle);
@@ -39,7 +39,7 @@ export class ChatStateService {
   public isInitialLoad: Signal<boolean> = this.store.selectSignal(chatSelectors.selectIsInitialLoad);
   public loadedEmail: Signal<string | null> = this.store.selectSignal(chatSelectors.selectLoadedEmail);
 
-  public readonly pageSize = 20 as const;
+  public readonly pageSize: number = 20;
   
   private checkMidnightInterval: ReturnType<typeof setInterval> | null = null;
   private currentDayOfMonth: number = new Date().getDate();

@@ -13,7 +13,7 @@ import { RoleService } from './role.service';
   providedIn: 'root'
 })
 export class PresenceService {
-  private store: Store<any> = inject(Store);
+  private store: Store<object> = inject(Store) as unknown as Store<object>;
   private roleService: RoleService = inject(RoleService);
   
   private onlineUsersSubject: BehaviorSubject<number> = new BehaviorSubject<number>(0);
@@ -58,6 +58,7 @@ export class PresenceService {
       
       this.listenToOnlineUsers();
     } catch {
+      // ignore
     }
   }
 
@@ -77,6 +78,7 @@ export class PresenceService {
                           });
               });
     } catch {
+      // ignore
     }
   }
 
@@ -90,6 +92,7 @@ export class PresenceService {
       const userStatusRef = ref(db, `/status/${this.currentUserId}`);
       void set(userStatusRef, null);
     } catch {
+      // ignore
     }
   }
 
@@ -110,6 +113,7 @@ export class PresenceService {
         }
       });
     } catch {
+      // ignore
     }
   }
 }

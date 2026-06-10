@@ -164,8 +164,8 @@
         </ion-button>
 
         <div class="signup-wrapper">
-          <span class="signup-text">{{ 'SIGNUP.LOGIN_PREFIX' | translate }}<a class="signup-link"
-              (click)="goToLogin()">{{ 'SIGNUP.LOGIN_LINK' | translate }}</a></span>
+          <span class="signup-text">{{ 'SIGNUP.LOGIN_PREFIX' | translate }}<a class="signup-link" tabindex="0"
+              (click)="goToLogin()" (keydown.enter)="goToLogin()">{{ 'SIGNUP.LOGIN_LINK' | translate }}</a></span>
         </div>
       </form>
     </div>

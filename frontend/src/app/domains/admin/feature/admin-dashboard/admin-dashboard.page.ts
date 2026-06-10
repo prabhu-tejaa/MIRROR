@@ -17,7 +17,7 @@ export class AdminDashboardPage {
   private navCtrl: NavController = inject(NavController);
   private presenceService: PresenceService = inject(PresenceService);
 
-  public onlineUsersCount$ = this.presenceService.onlineUsersCount$;
+  public onlineUsersCount$: import('rxjs').Observable<number> = this.presenceService.onlineUsersCount$;
 
   constructor() {
     addIcons({ shieldCheckmarkOutline, arrowBackOutline, peopleOutline, peopleCircleOutline, serverOutline, pulseOutline, lockClosedOutline });

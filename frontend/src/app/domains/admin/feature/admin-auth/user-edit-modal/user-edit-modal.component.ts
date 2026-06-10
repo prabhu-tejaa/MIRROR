@@ -44,8 +44,8 @@ export class UserEditModalComponent implements OnInit {
   @Input() public user!: AdminUserResponse;
 
   private modalCtrl: ModalController = inject(ModalController);
-  private store: Store<any> = inject(Store);
-  private actions$: Actions<any> = inject(Actions);
+  private store: Store<object> = inject(Store) as unknown as Store<object>;
+  private actions$: Actions<import('@ngrx/store').Action<string>> = inject(Actions) as unknown as Actions<import('@ngrx/store').Action<string>>;
   private toastSvc: ToastService = inject(ToastService);
   private destroyRef: DestroyRef = inject(DestroyRef);
 
@@ -76,15 +76,14 @@ export class UserEditModalComponent implements OnInit {
     void this.modalCtrl.dismiss({ updated });
   }
 
+  private validateForm(): boolean {
+    if (!this.editForm.username.trim()) { void this.toastSvc.showError('Username cannot be empty'); return false; }
+    if (!this.editForm.email.trim()) { void this.toastSvc.showError('Email cannot be empty'); return false; }
+    return true;
+  }
+
   public save(): void {
-    if (!this.editForm.username.trim()) {
-      void this.toastSvc.showError('Username cannot be empty');
-      return;
-    }
-    if (!this.editForm.email.trim()) {
-      void this.toastSvc.showError('Email cannot be empty');
-      return;
-    }
+    if (!this.validateForm()) { return; }
 
     this.isSubmitting = true;
     const request: AdminUserUpdateRequest = {
@@ -103,15 +102,11 @@ export class UserEditModalComponent implements OnInit {
     this.actions$.pipe(
       ofType(AdminActions.updateUserSuccess),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.dismiss(true);
-    });
+    ).subscribe(() => this.dismiss(true));
 
     this.actions$.pipe(
       ofType(AdminActions.updateUserFailure),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(() => {
-      this.isSubmitting = false;
-    });
+    ).subscribe(() => { this.isSubmitting = false; });
   }
 }

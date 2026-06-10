@@ -23,6 +23,7 @@ export class ToastService {
       try {
         await this.activeToast.dismiss();
       } catch {
+        // ignore
       }
       this.activeToast = null;
     }

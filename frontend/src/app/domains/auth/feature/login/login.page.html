@@ -66,11 +66,11 @@
         </ion-button>
         
         <div class="forgot-wrapper">
-          <a class="forgot-link" (click)="goToForgot()">{{ 'LOGIN.FORGOT_LINK' | translate }}</a>
+          <a class="forgot-link" tabindex="0" (click)="goToForgot()" (keydown.enter)="goToForgot()">{{ 'LOGIN.FORGOT_LINK' | translate }}</a>
         </div>
         
         <div class="signup-wrapper">
-          <span class="signup-text">{{ 'LOGIN.SIGNUP_PREFIX' | translate }}<a class="signup-link" (click)="goToSignup()">{{ 'LOGIN.SIGNUP_LINK' | translate }}</a></span>
+          <span class="signup-text">{{ 'LOGIN.SIGNUP_PREFIX' | translate }}<a class="signup-link" tabindex="0" (click)="goToSignup()" (keydown.enter)="goToSignup()">{{ 'LOGIN.SIGNUP_LINK' | translate }}</a></span>
         </div>
       </form>
     </div>

@@ -34,7 +34,7 @@ export class LoginPage implements OnInit {
   private analyticsSvc: AnalyticsService = inject(AnalyticsService);
   private authSvc: AuthService = inject(AuthService);
   private translationSvc: TranslationService = inject(TranslationService);
-  private el: ElementRef<any> = inject(ElementRef);
+  private el: ElementRef<HTMLElement> = inject(ElementRef) as ElementRef<HTMLElement>;
   private destroyRef: DestroyRef = inject(DestroyRef);
 
   public loginForm!: FormGroup;
@@ -62,8 +62,8 @@ export class LoginPage implements OnInit {
   }
 
   public ionViewWillEnter(): void {
-    const card: HTMLElement = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
-    const header: HTMLElement = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
+    const card: HTMLElement | null = this.el.nativeElement.querySelector('.glassy-card');
+    const header: HTMLElement | null = this.el.nativeElement.querySelector('.branding-header');
     if (card) { card.style.opacity = '1'; card.style.transition = 'none'; }
     if (header) { header.style.opacity = '1'; header.style.transition = 'none'; }
     this.isLoading = false;
@@ -99,7 +99,8 @@ export class LoginPage implements OnInit {
         this.loginSub.unsubscribe();
       }
 
-      const { email, password }: any = this.loginForm.value;
+      const email: string = this.loginForm.get('email')?.value as string;
+      const password: string = this.loginForm.get('password')?.value as string;
 
       this.loginSub = this.authSvc.loginUser({ email, password }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (res) => {
@@ -108,8 +109,8 @@ export class LoginPage implements OnInit {
           this.showHeartUsername = true;
           this.cdr.markForCheck();
 
-          const card: HTMLElement = this.el.nativeElement.querySelector('.glassy-card') as HTMLElement;
-          const header: HTMLElement = this.el.nativeElement.querySelector('.branding-header') as HTMLElement;
+          const card: HTMLElement | null = this.el.nativeElement.querySelector('.glassy-card');
+          const header: HTMLElement | null = this.el.nativeElement.querySelector('.branding-header');
 
           if (card) {
             card.style.transition = 'opacity 1s';
