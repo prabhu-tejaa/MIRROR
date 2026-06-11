@@ -29,10 +29,10 @@ public class AuthController {
     private ResponseCookie buildRefreshTokenCookie(String token, int maxAgeDays) {
         return ResponseCookie.from("refreshToken", token)
                 .httpOnly(true)
-                .secure(true) // Should be true for HTTPS (production)
+                .secure(true)
                 .path("/api/auth")
                 .maxAge(Duration.ofDays(maxAgeDays))
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 
@@ -42,7 +42,7 @@ public class AuthController {
                 .secure(true)
                 .path("/api/auth")
                 .maxAge(0)
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 

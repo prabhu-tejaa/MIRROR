@@ -27,6 +27,7 @@ export class AuthService {
   private injector: Injector = inject(Injector);
   private lastValidationTime: number = 0;
   private isValidating: boolean = false;
+  private accessToken: string | null = null;
   private store: Store<object> = inject<Store<object>>(Store);
 
   private getSessionInstanceId(): string {
@@ -213,6 +214,7 @@ export class AuthService {
     };
 
     const roles: string[] = this.extractRolesFromToken(patchedResponse.accessToken, patchedResponse.username);
+    this.accessToken = patchedResponse.accessToken || null;
     this.storageSvc.set(StorageKeys.ROLES, JSON.stringify(roles));
     // eslint-disable-next-line @ngrx/avoid-dispatching-multiple-actions-sequentially
     this.store.dispatch(AuthActions.loginSuccess({ response: patchedResponse }));
@@ -238,7 +240,12 @@ export class AuthService {
       // Ignored
     } 
 
+    this.accessToken = null;
     this.store.dispatch(AuthActions.clearSession());
+  }
+
+  public getAccessToken(): string | null {
+    return this.accessToken;
   }
 
 
