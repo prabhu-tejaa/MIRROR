@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, ChangeDetectionStrategy, ApplicationRef, HostListener } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
+import { SplashScreen } from '@capacitor/splash-screen';
 import { IonApp, IonRouterOutlet, IonContent } from '@ionic/angular/standalone';
 import { Observable , map, filter } from 'rxjs';
 
@@ -58,6 +59,16 @@ export class AppComponent {
         activeElement.blur();
       }
     });
+
+    this.initializeApp();
+  }
+
+  private initializeApp(): void {
+    setTimeout(() => {
+      void SplashScreen.hide().catch(() => {
+        // Ignored
+      });
+    }, 250);
   }
 
   public handleGlobalRefresh(_event: Event): void {

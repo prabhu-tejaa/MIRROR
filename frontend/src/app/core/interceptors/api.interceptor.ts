@@ -27,7 +27,7 @@ export const apiInterceptor: HttpInterceptorFn = (req, next) => {
 
   const apiReq = req.clone({
     url: `${baseUrl}${req.url}`,
-    headers,
+    headers: headers.set('X-Requested-With', 'XMLHttpRequest'),
     withCredentials: true
   });
   
