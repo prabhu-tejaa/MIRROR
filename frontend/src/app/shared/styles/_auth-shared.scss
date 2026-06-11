@@ -22,7 +22,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     min-height: 100%;
     width: 100%;
     padding: clamp(2rem, 8vh, 4rem) clamp(1rem, 4vw, 2rem) clamp(1rem, 4vh, 2rem);
@@ -33,7 +33,7 @@
   .glassy-card {
     width: 100%;
     max-width: 420px;
-    margin: auto 0;
+    margin: 0;
     background: transparent;
     border: none;
     border-radius: clamp(12px, 3vw, 20px);
