@@ -21,9 +21,9 @@ export class AuthEffects {
     { return this.actions$.pipe(
       ofType(AuthActions.loginSuccess),
       tap(({ response }) => {
-        this.storageSvc.set(StorageKeys.ACCESS_TOKEN, response.accessToken);
-
-        this.storageSvc.set(StorageKeys.USERNAME, response.username);
+        if (response.username) {
+          this.storageSvc.set(StorageKeys.USERNAME, response.username);
+        }
         
         if (response.email) {
           this.storageSvc.set(StorageKeys.EMAIL, response.email);
@@ -47,8 +47,8 @@ export class AuthEffects {
         if (email) {
           this.storageSvc.remove(getActiveSessionKey(email));
         }
-        this.storageSvc.remove(StorageKeys.ACCESS_TOKEN);
 
+        this.storageSvc.remove(StorageKeys.ROLES);
         this.storageSvc.remove(StorageKeys.USERNAME);
         this.storageSvc.remove(StorageKeys.EMAIL);
         this.storageSvc.remove(StorageKeys.SESSION_INSTANCE_ID);

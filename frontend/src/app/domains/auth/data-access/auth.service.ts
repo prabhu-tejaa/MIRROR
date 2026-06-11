@@ -39,15 +39,14 @@ export class AuthService {
   }
 
   constructor() {
-    const token: string | null = this.storageSvc.get(StorageKeys.ACCESS_TOKEN);
-    const hasToken: boolean = !!token;
+    const rolesStr: string | null = this.storageSvc.get(StorageKeys.ROLES);
     const email: string | null = this.storageSvc.get(StorageKeys.EMAIL);
     const username: string | null = this.storageSvc.get(StorageKeys.USERNAME);
     
-    let roles: string[] = [];
-    if (token) {
-      roles = this.extractRolesFromToken(token, username || '');
-    }
+    // Fallback: If we have an email, we assume we have a session (handled by cookies now)
+    const hasToken: boolean = !!email;
+    
+    const roles: string[] = rolesStr ? (JSON.parse(rolesStr) as string[]) : ['USER'];
 
     this.store.dispatch(AuthActions.setAuthenticated({ 
       isAuthenticated: hasToken, 
@@ -76,7 +75,7 @@ export class AuthService {
       if (event.key && event.key.startsWith('mirror_active_session_')) {
         this.handleSessionKeyChange(event);
       }
-      if (event.key === StorageKeys.ACCESS_TOKEN && !event.newValue) {
+      if (event.key === StorageKeys.ROLES && !event.newValue) {
         this.clearSession();
       }
     });
@@ -204,14 +203,24 @@ export class AuthService {
   }
 
   private saveSession(response: AuthResponse): void {
-    const roles: string[] = this.extractRolesFromToken(response.accessToken, response.username || '');
+    const currentUsername = response.username || this.getUserId() || '';
+    const currentEmail = response.email || this.getEmail() || '';
+
+    const patchedResponse: AuthResponse = {
+      ...response,
+      username: currentUsername,
+      email: currentEmail
+    };
+
+    const roles: string[] = this.extractRolesFromToken(patchedResponse.accessToken, patchedResponse.username);
+    this.storageSvc.set(StorageKeys.ROLES, JSON.stringify(roles));
     // eslint-disable-next-line @ngrx/avoid-dispatching-multiple-actions-sequentially
-    this.store.dispatch(AuthActions.loginSuccess({ response }));
+    this.store.dispatch(AuthActions.loginSuccess({ response: patchedResponse }));
     // eslint-disable-next-line @ngrx/avoid-dispatching-multiple-actions-sequentially
     this.store.dispatch(AuthActions.setAuthenticated({
       isAuthenticated: true,
-      email: response.email || undefined,
-      username: response.username,
+      email: patchedResponse.email || undefined,
+      username: patchedResponse.username || undefined,
       roles
     }));
   }
@@ -227,7 +236,7 @@ export class AuthService {
       }
     } catch {
       // Ignored
-    }
+    } 
 
     this.store.dispatch(AuthActions.clearSession());
   }
@@ -247,12 +256,9 @@ export class AuthService {
     return this.storageSvc.get(StorageKeys.USERNAME);
   }
 
+
   public getEmail(): string | null {
     return this.storageSvc.get(StorageKeys.EMAIL);
-  }
-
-  public getAccessToken(): string | null {
-    return this.storageSvc.get(StorageKeys.ACCESS_TOKEN);
   }
 
   private normalizeRole(r: unknown): string {
@@ -277,7 +283,8 @@ export class AuthService {
     return ['USER'];
   }
 
-  private extractRolesFromToken(token: string, username: string): string[] {
+  private extractRolesFromToken(token: string | undefined | null, username: string): string[] {
+    if (!token) { return ['USER']; }
     if (token.startsWith('mock_jwt_access_token')) {
       return username.toLowerCase().startsWith('admin') ? ['ADMIN'] : ['USER'];
     }

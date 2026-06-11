@@ -22,7 +22,6 @@ describe('ProfilePage', () => {
     getUserId: jasmine.createSpy('getUserId').and.returnValue(null),
     getEmail: jasmine.createSpy('getEmail').and.returnValue(null),
     isAuthenticated: signal(false),
-    getAccessToken: jasmine.createSpy('getAccessToken').and.returnValue(null),
     logout: jasmine.createSpy('logout'),
   };
   const roleSvcStub = {

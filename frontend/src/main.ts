@@ -10,7 +10,6 @@ import { provideStore } from '@ngrx/store';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 import { apiInterceptor } from './app/core/interceptors/api.interceptor';
-import { authInterceptor } from './app/core/interceptors/auth.interceptor';
 import { cancelInterceptor } from './app/core/interceptors/cancel.interceptor';
 import { errorInterceptor } from './app/core/interceptors/error.interceptor';
 import { mockInterceptor } from './app/core/interceptors/mock.interceptor';
@@ -81,7 +80,7 @@ void bootstrapApplication(AppComponent, {
     }),
     provideAnimationsAsync(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(withInterceptors([cancelInterceptor, errorInterceptor, mockInterceptor, authInterceptor, apiInterceptor])),
+    provideHttpClient(withInterceptors([cancelInterceptor, errorInterceptor, mockInterceptor, apiInterceptor])),
     {
       provide: APP_INITIALIZER,
       useFactory: () => {

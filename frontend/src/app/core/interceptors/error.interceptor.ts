@@ -147,11 +147,12 @@ function performTokenRefresh(ctx: RefreshContext): Observable<HttpEvent<unknown>
       ctx.authSvc.clearSession();
       return throwError(() => err instanceof Error ? err : new Error(String(err)));
     }),
-    switchMap((token: { accessToken: string }) => {
+    switchMap((token: { accessToken?: string }) => {
       completed = true;
       isRefreshing = false;
-      refreshTokenSubject.next(token.accessToken);
-      return ctx.next(addTokenHeader(ctx.request, token.accessToken));
+      const validToken = token && token.accessToken ? token.accessToken : 'SUCCESS';
+      refreshTokenSubject.next(validToken);
+      return ctx.next(addTokenHeader(ctx.request, validToken));
     }),
     finalize(() => {
       if (!completed && isRefreshing) {
@@ -189,6 +190,9 @@ function handle401Error(request: HttpRequest<unknown>, next: HttpHandlerFn, inje
 }
 
 function addTokenHeader(request: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
+  if (!token || token === 'SUCCESS') {
+    return request;
+  }
   return request.clone({
     setHeaders: {
       Authorization: `Bearer ${token}`
