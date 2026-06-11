@@ -3,7 +3,7 @@ import {
   Component, ChangeDetectionStrategy, Signal, signal, inject,
   computed, effect, NgZone, ViewChild, ElementRef, OnDestroy, WritableSignal
 } from '@angular/core';
-import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { Store } from '@ngrx/store';
@@ -73,10 +73,8 @@ export class YouPage implements OnDestroy {
   public readonly dominantEmotion: Signal<string> = computed(() => this.analyticsSignal()?.dominantEmotion ?? 'CALM');
   public readonly activeStreak: Signal<number> = computed(() => this.analyticsSignal()?.activeStreak ?? 0);
   public readonly emotionStats: Signal<EmotionStat[]> = computed(() => this.analyticsSignal()?.emotionStats ?? []);
-  public readonly auraGradient: Signal<SafeStyle | string> = computed(() => {
-    const grad = this.analyticsSignal()?.auraGradient ?? 'transparent';
-    // eslint-disable-next-line sonarjs/no-angular-bypass-sanitization
-    return grad === 'transparent' ? grad : this.sanitizer.bypassSecurityTrustStyle(grad);
+  public readonly auraGradient: Signal<string> = computed(() => {
+    return this.analyticsSignal()?.auraGradient ?? 'transparent';
   });
   public readonly reflectionsList: Signal<Reflection[]> = computed(() => this.memoriesSignal() ?? []);
 

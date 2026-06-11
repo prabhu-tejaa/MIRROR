@@ -277,4 +277,27 @@ ion-footer {
     font-weight: 600 !important;
     font-size: 1.05rem !important;
   }
+
+  @media (max-width: 767px) {
+    .alert-wrapper {
+      max-width: 85% !important;
+      border-radius: 20px !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+    }
+    .alert-title {
+      font-size: 1.1rem !important;
+    }
+    .alert-message {
+      font-size: 0.85rem !important;
+      line-height: 1.4 !important;
+      margin-top: 10px !important;
+    }
+    .alert-button-group {
+      padding: 10px 16px 16px !important;
+    }
+    .alert-awesome-btn {
+      font-size: 0.95rem !important;
+    }
+  }
 }
+

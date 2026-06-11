@@ -58,7 +58,6 @@ export class AuthService {
 
     this.setupStorageListener();
     this.setupVisibilityAndRouteListeners();
-    this.startSessionValidationTimer();
   }
 
   private handleSessionKeyChange(event: StorageEvent): void {
@@ -101,15 +100,6 @@ export class AuthService {
     });
   }
 
-  private startSessionValidationTimer(): void {
-    this.ngZone.runOutsideAngular(() => {
-      setInterval(() => {
-        this.ngZone.run(() => {
-          this.checkSessionValidity();
-        });
-      }, 60000);
-    });
-  }
 
   private checkSessionValidity(): void {
     const email: string | null = this.getEmail();

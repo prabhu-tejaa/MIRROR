@@ -5,8 +5,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { NavController, AlertController } from '@ionic/angular';
 import { provideIonicAngular } from '@ionic/angular/standalone';
-import { provideEffects } from '@ngrx/effects';
-import { provideStore } from '@ngrx/store';
+import { provideMockStore } from '@ngrx/store/testing';
 import { NEVER } from 'rxjs';
 
 import { RoleService } from '../../../core/services/role.service';
@@ -80,8 +79,18 @@ describe('ChatPage', () => {
         provideHttpClientTesting(),
         provideRouter([]),
         provideIonicAngular(),
-        provideStore({}),
-        provideEffects([]),
+        provideMockStore({
+          initialState: {
+            auth: {
+              isAuthenticated: false,
+              email: null,
+              username: null,
+              loading: false,
+              error: null,
+              roles: []
+            }
+          }
+        }),
         { provide: AuthService, useValue: authSvcStub },
         { provide: RoleService, useValue: roleSvcStub },
         { provide: VoiceRecognitionService, useValue: voiceRecognitionSvcStub },
