@@ -21,6 +21,8 @@ public class GatewaySecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(csrf -> csrf.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(formLogin -> formLogin.disable())
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/otp/**", "/api/auth/forgot-password/**", "/api/auth/refresh", "/api/auth/logout", "/api/auth/validate", "/api/auth/keepalive", "/api/memory/keepalive", "/actuator/health").permitAll()
                         .anyExchange().authenticated()
