@@ -1,10 +1,6 @@
 <ion-app [class.app-reveal]="isAppReady()">
   <app-starfield [nebulaGlow]="false"></app-starfield>
-  
-  <ion-content force-overscroll="true" class="extracted-style-1781088649370-1" [fullscreen]="true" [scrollY]="true">
-
-    <ion-router-outlet [animated]="false"></ion-router-outlet>
-  </ion-content>
+  <ion-router-outlet [animated]="false"></ion-router-outlet>
 
   <app-no-internet [isVisible]="(isOffline$ | async) || false"></app-no-internet>
   <app-scroll-assistant></app-scroll-assistant>

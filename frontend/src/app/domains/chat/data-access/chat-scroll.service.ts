@@ -27,6 +27,8 @@ export class ChatScrollService {
       const mo: MutationObserver = new MutationObserver(() => {
         if (!initialScrollCompleted.value) {
           scrollEl.scrollTop = scrollEl.scrollHeight - scrollEl.clientHeight;
+        } else {
+          mo.disconnect();
         }
       });
       mo.observe(scrollEl, { childList: true, subtree: true, characterData: true });

@@ -124,7 +124,8 @@ export class VoiceRecognitionService {
       const alert: HTMLIonAlertElement = await this.alertCtrl.create({
         header: 'Permission Denied',
         message: 'Microphone and speech recognition permissions are required to capture voice input.',
-        buttons: ['OK']
+        buttons: ['OK'],
+        cssClass: 'premium-alert'
       });
       await alert.present();
       return false;
@@ -138,7 +139,8 @@ export class VoiceRecognitionService {
       const alert: HTMLIonAlertElement = await this.alertCtrl.create({
         header: 'Speech Recognition Unavailable',
         message: 'Speech recognition is not supported on this device.',
-        buttons: ['OK']
+        buttons: ['OK'],
+        cssClass: 'premium-alert'
       });
       await alert.present();
       return false;

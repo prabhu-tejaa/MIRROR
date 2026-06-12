@@ -8,10 +8,8 @@ export class AudioVisualizerService implements OnDestroy {
   public readonly isLoadingAudio: WritableSignal<boolean> = signal<boolean>(false);
   public readonly isRealtimeSync: WritableSignal<boolean> = signal<boolean>(false);
   
-  public readonly scale1: WritableSignal<number> = signal<number>(0);
-  public readonly scale2: WritableSignal<number> = signal<number>(0);
-  public readonly scale3: WritableSignal<number> = signal<number>(0);
-  public readonly scale4: WritableSignal<number> = signal<number>(0);
+  private spectrumElement: HTMLElement | null = null;
+  public registerSpectrumElement(el: HTMLElement): void { this.spectrumElement = el; }
 
   private audioObj: HTMLAudioElement | null = null;
   private audioCtx: AudioContext | null = null;
@@ -298,10 +296,12 @@ export class AudioVisualizerService implements OnDestroy {
         s4 = Math.min(1.4, 0.12 + Math.pow(v4 / 255, 2) * 1.3);
       }
 
-      this.scale1.set(s1);
-      this.scale2.set(s2);
-      this.scale3.set(s3);
-      this.scale4.set(s4);
+      if (this.spectrumElement) {
+        this.spectrumElement.style.setProperty('--bar1-scale', s1.toString());
+        this.spectrumElement.style.setProperty('--bar2-scale', s2.toString());
+        this.spectrumElement.style.setProperty('--bar3-scale', s3.toString());
+        this.spectrumElement.style.setProperty('--bar4-scale', s4.toString());
+      }
 
       this.animationFrameId = requestAnimationFrame(update);
     };

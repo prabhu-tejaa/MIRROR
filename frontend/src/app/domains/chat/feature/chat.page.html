@@ -41,7 +41,7 @@
       }
 
       @for (msg of todayMessagesFormatted(); track trackByMessageId($index, msg)) {
-        <div class="message-wrapper" [@messageAnimation] [class.user-message]="msg.isUser"
+        <div class="message-wrapper" [class.user-message]="msg.isUser"
           [class.mirror-message]="msg.isMirror">
           @if (msg.isMirror) {
             <div class="avatar">

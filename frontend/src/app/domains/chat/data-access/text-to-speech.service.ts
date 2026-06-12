@@ -50,6 +50,10 @@ export class TextToSpeechService {
   }
 
   public speakText(msgId: string, text: string): void {
+    if (typeof window === 'undefined' || !window.speechSynthesis) {
+      return;
+    }
+
     if (this.currentlySpeakingId() === msgId) {
       window.speechSynthesis.cancel();
       this.currentlySpeakingId.set(null);

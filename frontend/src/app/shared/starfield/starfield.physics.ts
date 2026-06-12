@@ -27,22 +27,25 @@ export class StarfieldPhysics {
           star.transitionProgress = Math.min(1, (star.transitionProgress || 0) + dt / star.transitionDuration!);
           
           const t: number = star.transitionProgress;
-          const ease: number = 1 - Math.pow(1 - t, 3);
+          const invT: number = 1 - t;
+          const ease: number = 1 - (invT * invT * invT);
           
           const baseX: number = star.startX! + (star.targetX - star.startX!) * ease;
           const baseY: number = star.startY! + (star.targetY - star.startY!) * ease;
           
-          const curveMagnitude: number = Math.sin(t * Math.PI) * (1 - t);
+          // Approximates the original curve
+          const curveMagnitude: number = t * invT * 4 * invT;
           star.x = baseX + (star.curveX || 0) * curveMagnitude;
           star.y = baseY + (star.curveY || 0) * curveMagnitude;
 
-          star.color = star.originalColor || star.color;
+          // Add a smooth continuous pulse that scales up as the transition completes
+          const sway: number = Math.cos(now * 0.001 + i * 0.5) * 2;
+          const pulse: number = Math.sin(now * 0.0025 + i) * 1.5;
+          
+          star.x += sway * ease;
+          star.y += pulse * ease;
 
-          if (t >= 1) {
-            const pulse: number = Math.sin(now / 400 + i) * 1.5;
-            star.x = star.targetX + (Math.cos(now / 1000 + i * 0.5) * 2);
-            star.y = star.targetY + pulse;
-          }
+          star.color = star.originalColor || star.color;
         }
       } else {
         star.x += star.vx * (dt / 16);

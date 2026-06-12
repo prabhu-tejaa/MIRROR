@@ -1,4 +1,4 @@
-import { trigger, transition, style, animate } from '@angular/animations';
+
 import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, ViewChild, ElementRef, OnDestroy, effect, DestroyRef, Signal, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -38,14 +38,6 @@ import { VoiceRecognitionService } from '../data-access/voice-recognition.servic
     FormsModule,
     IonContent,
     IonIcon
-  ],
-  animations: [
-    trigger('messageAnimation', [
-      transition(':leave', [
-        style({ opacity: 1, transform: 'scale(1)', height: '*' }),
-        animate('600ms cubic-bezier(0.16, 1, 0.3, 1)', style({ opacity: 0, transform: 'scale(0.9)', height: 0, padding: 0, margin: 0 }))
-      ])
-    ])
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -125,7 +117,7 @@ export class ChatPage implements OnDestroy {
 
   private handleKeyboardOpened(): void {
     const scrollEl: HTMLDivElement | undefined = this.streamScroll?.nativeElement;
-    if (scrollEl) {
+    if (scrollEl && !this.showWelcomeBanner()) {
       const maxScroll: number = scrollEl.scrollHeight - scrollEl.clientHeight;
       if (maxScroll - scrollEl.scrollTop <= 250) {
         setTimeout(() => {
@@ -139,15 +131,15 @@ export class ChatPage implements OnDestroy {
     effect(() => {
       if (this.isRecording()) { this.initialInputText = this.chatInput(); }
     });
-    this.voiceRecognitionSvc.transcriptionUpdate.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((update: { text: string; isPartial: boolean; }) => {
-      if (update.isPartial) { this.chatInput.set(this.initialInputText ? `${this.initialInputText} ${update.text}` : update.text); } 
-      else { this.chatInput.update((curr: string) => curr ? `${curr} ${update.text}` : update.text); }
+    this.voiceRecognitionSvc.transcriptionUpdate.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({text, isPartial}) => {
+      const baseText = isPartial ? this.initialInputText : this.chatInput();
+      this.chatInput.set(baseText ? `${baseText} ${text}` : text);
       setTimeout(() => this.adjustTextareaHeight(), 0);
     });
     effect(() => {
       if (this.chatState.scrollToBottomTrigger() > 0) {
         const behavior: "smooth" | "auto" = this.initialScrollState.value ? 'smooth' : 'auto';
-        if (this.streamScroll?.nativeElement) { this.scrollSvc.triggerDynamicScrollToBottom(this.streamScroll.nativeElement, behavior, this.initialScrollState); }
+        if (this.streamScroll?.nativeElement && !this.showWelcomeBanner()) { this.scrollSvc.triggerDynamicScrollToBottom(this.streamScroll.nativeElement, behavior, this.initialScrollState); }
       }
     });
     effect(() => {
@@ -200,7 +192,7 @@ export class ChatPage implements OnDestroy {
     const currentEmail: string | null = this.authSvc.getEmail();
     const isSameUser: boolean = this.chatState.loadedEmail() === currentEmail;
     
-    if (!this.chatState.isInitialLoad() && isSameUser) {
+    if (!this.chatState.isInitialLoad() && isSameUser && !this.showWelcomeBanner()) {
       this.scrollSvc.triggerDynamicScrollToBottom(scrollEl, 'auto', this.initialScrollState);
     }
     this.scrollSvc.setupScrollListener(scrollEl, this.initialScrollState, () => this.isLoadingMore()); 
@@ -216,7 +208,7 @@ export class ChatPage implements OnDestroy {
         inputEl.focus();
         const len: number = inputEl.value.length;
         inputEl.setSelectionRange(len, len);
-        setTimeout(() => { if (scrollEl) { this.scrollSvc.scrollToBottom(scrollEl, 'auto'); } }, 50);
+        setTimeout(() => { if (scrollEl && !this.showWelcomeBanner()) { this.scrollSvc.scrollToBottom(scrollEl, 'auto'); } }, 50);
       }
     }, 150);
   }

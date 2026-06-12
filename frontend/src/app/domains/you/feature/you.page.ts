@@ -39,6 +39,13 @@ export class YouPage implements OnDestroy {
   private sanitizer: DomSanitizer = inject(DomSanitizer);
 
   @ViewChild('auraStage') private stageRef!: ElementRef<HTMLElement>;
+  
+  @ViewChild('spectrumContainer', { static: false }) 
+  public set spectrumContainer(el: ElementRef<HTMLElement> | undefined) {
+    if (el) {
+      this.audioVisualizerSvc.registerSpectrumElement(el.nativeElement);
+    }
+  }
 
   private stageOff: { x: number; y: number; } = { x: 0, y: 0 };
   private stageVel: { x: number; y: number; } = { x: 0, y: 0 };
@@ -58,10 +65,7 @@ export class YouPage implements OnDestroy {
   public readonly isPlaying: Signal<boolean> = this.audioVisualizerSvc.isPlaying;
   public readonly isLoadingAudio: Signal<boolean> = this.audioVisualizerSvc.isLoadingAudio;
   public readonly isRealtimeSync: Signal<boolean> = this.audioVisualizerSvc.isRealtimeSync;
-  public readonly scale1: Signal<number> = this.audioVisualizerSvc.scale1;
-  public readonly scale2: Signal<number> = this.audioVisualizerSvc.scale2;
-  public readonly scale3: Signal<number> = this.audioVisualizerSvc.scale3;
-  public readonly scale4: Signal<number> = this.audioVisualizerSvc.scale4;
+
 
   public readonly isLoading: Signal<boolean> = this.store.selectSignal(selectLoadingAnalytics);
   public readonly isTabActive: WritableSignal<boolean> = signal<boolean>(true);

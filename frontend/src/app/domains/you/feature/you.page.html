@@ -129,11 +129,7 @@
           </svg>
         }
         @if (isPlaying() && !isLoadingAudio()) {
-          <div class="playing-spectrum"
-            [style.--bar1-scale]="scale1()"
-            [style.--bar2-scale]="scale2()"
-            [style.--bar3-scale]="scale3()"
-            [style.--bar4-scale]="scale4()"
+          <div #spectrumContainer class="playing-spectrum"
             [style.--color-1]="topOrbs()[0]?.primaryColor || '#ffffff'"
             [style.--color-2]="topOrbs()[1]?.primaryColor || '#ffffff'"
             [style.--color-3]="topOrbs()[2]?.primaryColor || '#ffffff'"
