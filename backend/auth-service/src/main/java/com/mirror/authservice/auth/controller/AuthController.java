@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Duration;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Value;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -26,24 +28,38 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @Value("${app.cookie.secure:true}")
+    private boolean secureCookie;
+
+    @Value("${app.cookie.same-site:None}")
+    private String sameSiteCookie;
+
     private ResponseCookie buildRefreshTokenCookie(String token, int maxAgeDays) {
         return ResponseCookie.from("refreshToken", token)
                 .httpOnly(true)
-                .secure(true)
+                .secure(secureCookie)
                 .path("/api/auth")
                 .maxAge(Duration.ofDays(maxAgeDays))
-                .sameSite("None")
+                .sameSite(sameSiteCookie)
                 .build();
     }
 
     private ResponseCookie buildClearRefreshTokenCookie() {
         return ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(true)
+                .secure(secureCookie)
                 .path("/api/auth")
                 .maxAge(0)
-                .sameSite("None")
+                .sameSite(sameSiteCookie)
                 .build();
+    }
+
+    private String getCookieString(ResponseCookie cookie) {
+        String cookieStr = cookie.toString();
+        if (secureCookie && "None".equalsIgnoreCase(sameSiteCookie)) {
+            cookieStr += "; Partitioned";
+        }
+        return cookieStr;
     }
 
     @PostMapping("/signup")
@@ -65,7 +81,7 @@ public class AuthController {
         response.setRefreshToken(null); // Don't expose in JSON
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, getCookieString(cookie))
                 .body(response);
     }
 
@@ -83,7 +99,7 @@ public class AuthController {
         response.setRefreshToken(null);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, getCookieString(cookie))
                 .body(response);
     }
 
@@ -129,7 +145,7 @@ public class AuthController {
         response.setRefreshToken(null);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, getCookieString(cookie))
                 .body(response);
     }
 
@@ -140,7 +156,7 @@ public class AuthController {
         }
         ResponseCookie cookie = buildClearRefreshTokenCookie();
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .header(HttpHeaders.SET_COOKIE, getCookieString(cookie))
                 .body("Logged out successfully.");
     }
 
