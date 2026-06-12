@@ -119,7 +119,11 @@ public class MemoryServiceImpl implements MemoryService {
         for (com.mirror.memoryservice.admin.dto.EmotionStatDTO stat : rawStats) {
             boolean merged = false;
             for (com.mirror.memoryservice.admin.dto.EmotionStatDTO group : groupedStats) {
-                if (colorDistance(stat.getPrimaryColor(), group.getPrimaryColor()) < COLOR_THRESHOLD) {
+                boolean nameMatch = stat.getName() != null && group.getName() != null && 
+                                    stat.getName().trim().equalsIgnoreCase(group.getName().trim());
+                boolean colorMatch = colorDistance(stat.getPrimaryColor(), group.getPrimaryColor()) < COLOR_THRESHOLD;
+                
+                if (nameMatch || colorMatch) {
                     mapping.put(stat.getKey(), group.getKey());
                     group.setCount(group.getCount() + stat.getCount());
                     merged = true;
@@ -239,7 +243,8 @@ public class MemoryServiceImpl implements MemoryService {
         if (!pastMemories.isEmpty()) {
             for (int i = 0; i < pastMemories.size(); i++) {
                 Memory m = pastMemories.get(i);
-                contextBuilder.append(String.format("Memory %d: %s (Emotion tagged: %s)\n", i + 1, m.getContent(), m.getEmotion()));
+                String friendlyEmotionName = parseEmotionTag(m.getEmotion()).getName();
+                contextBuilder.append(String.format("Memory %d: %s (Emotion tagged: %s)\n", i + 1, m.getContent(), friendlyEmotionName));
             }
         } else {
             contextBuilder.append("No past memories recorded yet.");

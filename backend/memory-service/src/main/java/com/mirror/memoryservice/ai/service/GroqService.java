@@ -202,7 +202,7 @@ public class GroqService {
         }
 
         String pillar        = nonBlankOrDefault(parsed.get("pillar"),         "FEELINGS");
-        String rawEmotion    = nonBlankOrDefault(parsed.get("emotion"),         "NEUTRAL");
+        String rawEmotion    = nonBlankOrDefault(parsed.get("emotion"),         "NEUTRAL").replace("|", "-");
         String primaryColor  = nonBlankOrDefault(parsed.get("primaryColor"),    "#a855f7");
         String secondaryColor= nonBlankOrDefault(parsed.get("secondaryColor"),  "#06b6d4");
 
@@ -223,16 +223,7 @@ public class GroqService {
         boolean hasPastMemories = pastContext != null && !pastContext.isBlank() && !pastContext.equalsIgnoreCase("None");
         context.put("hasPastMemories", hasPastMemories);
 
-        return promptService.renderSystemPrompt(context) +
-            "\n\nCRITICAL INSTRUCTION: You MUST respond ONLY with a valid JSON object. " +
-            "No markdown, no code blocks, no prose — just raw JSON. " +
-            "Required keys and formats:\n" +
-            "  \"reflection\"   : empathetic response string (non-null, non-empty)\n" +
-            "  \"emotion\"      : single emotion word e.g. CALM, JOY, ANXIOUS (non-null)\n" +
-            "  \"pillar\"       : one of FEELINGS, GROWTH, RELATIONSHIPS, CREATIVITY, PRODUCTIVITY, HEALTH, LEARNING\n" +
-            "  \"primaryColor\" : valid hex color string (invent any color!)\n" +
-            "  \"secondaryColor\": valid hex color string (invent any color!)\n" +
-            "All five keys are REQUIRED. Null values are NOT acceptable.";
+        return promptService.renderSystemPrompt(context);
     }
 
     private String nonBlankOrDefault(String value, String defaultValue) {
