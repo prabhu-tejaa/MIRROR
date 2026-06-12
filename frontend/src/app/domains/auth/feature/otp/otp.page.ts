@@ -2,12 +2,12 @@
 import { Component, OnInit, OnDestroy, ViewChildren, QueryList, ElementRef, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavController, AnimationController } from '@ionic/angular';
 import { IonContent, IonButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { alertCircleOutline } from 'ionicons/icons';
-import { Subscription } from 'rxjs';
+
 
 import { TranslationService } from '../../../../core/services/translation.service';
 import { TranslatePipe } from '../../../../shared/pipes/translate.pipe';
@@ -54,14 +54,13 @@ export class OtpPage implements OnInit, OnDestroy {
   public readonly alertCircleOutline: string = alertCircleOutline;
 
   private timerInterval: ReturnType<typeof setInterval> | null = null;
-  private routeSub!: Subscription;
+  private router: Router = inject(Router);
 
   constructor() {
     addIcons({ alertCircleOutline });
-    this.routeSub = this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params: Params) => {
-      this.flowContext = (params['flow'] as string) || 'signup';
-      this.email = (params['email'] as string) || '';
-    });
+    const state = history.state as Record<string, unknown>;
+    this.flowContext = (state['flow'] as string) || 'signup';
+    this.email = (state['email'] as string) || '';
   }
 
   public getMaskedEmail(): string {
@@ -288,9 +287,6 @@ export class OtpPage implements OnInit, OnDestroy {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
     }
-    if (this.routeSub) {
-      this.routeSub.unsubscribe();
-    }
   }
 
   public get f(): { [key: string]: AbstractControl } {
@@ -322,7 +318,7 @@ export class OtpPage implements OnInit, OnDestroy {
               this.isLoading = false;
               this.cdr.markForCheck();
               void this.navCtrl.navigateRoot('/reset-password', {
-                                queryParams: { email: this.email, token: token },
+                                state: { email: this.email, token: token },
                                 animation: getCrossfadeAnimation(this.animationCtrl)
                               });
             }, 1000);

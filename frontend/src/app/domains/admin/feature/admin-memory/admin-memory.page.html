@@ -81,6 +81,7 @@
                       <thead>
                         <tr>
                           <th>ID</th>
+                          <th>Sender</th>
                           <th>Emotion</th>
                           <th>Date</th>
                           <th>Actions</th>
@@ -90,6 +91,9 @@
                         @for (record of group.records; track record) {
                           <tr>
                             <td>#{{ record.id }}</td>
+                            <td>
+                              <span class="sender-badge" [ngClass]="record.sender === 'MIRROR' ? 'mirror-badge' : 'user-badge'">{{ record.sender || 'USER' }}</span>
+                            </td>
                             <td>
                               <div class="memory-emotion">
                                 <span class="emotion-badge" [ngClass]="record.cleanEmotion.toLowerCase()">{{ record.cleanEmotion }}</span>
@@ -170,6 +174,17 @@
               <div class="input-wrapper">
                 <ion-icon name="heart-half-outline" class="input-icon"></ion-icon>
                 <input id="emotionInput" type="text" name="emotion" placeholder="e.g. Thoughtful Curiosity" class="glass-input" required [(ngModel)]="modalForm.emotion" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="field-label" for="senderInput">Sender</label>
+              <div class="input-wrapper select-wrapper">
+                <ion-icon name="person-outline" class="input-icon"></ion-icon>
+                <select id="senderInput" name="sender" class="glass-select" required [(ngModel)]="modalForm.sender">
+                  <option value="USER">USER</option>
+                  <option value="MIRROR">MIRROR</option>
+                </select>
               </div>
             </div>
 

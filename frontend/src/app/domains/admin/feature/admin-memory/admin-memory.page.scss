@@ -322,6 +322,18 @@
   &.sad { background: rgba(0, 255, 213, 0.2); color: #00ffd5; }
 }
 
+.sender-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  
+  &.user-badge { background: rgba(52, 152, 219, 0.2); color: #3498db; }
+  &.mirror-badge { background: rgba(139, 92, 246, 0.2); color: #a855f7; }
+}
+
 .table-header-actions {
   display: flex;
   margin-bottom: 15px;

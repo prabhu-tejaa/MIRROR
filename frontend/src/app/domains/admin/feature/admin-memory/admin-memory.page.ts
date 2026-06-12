@@ -12,7 +12,7 @@ import {
   addCircleOutline, createOutline, trashOutline, saveOutline, 
   checkmarkCircleOutline, searchOutline, closeOutline, serverOutline,
   mailOutline, documentTextOutline, heartHalfOutline,
-  chevronDownOutline, chevronUpOutline, refreshOutline
+  chevronDownOutline, chevronUpOutline, refreshOutline, personOutline
 } from 'ionicons/icons';
 import { take } from 'rxjs';
 
@@ -110,7 +110,7 @@ export class AdminMemoryPage implements OnInit {
       addCircleOutline, createOutline, trashOutline, saveOutline,
       checkmarkCircleOutline, searchOutline, closeOutline, serverOutline,
       mailOutline, documentTextOutline, heartHalfOutline,
-      chevronDownOutline, chevronUpOutline, refreshOutline
+      chevronDownOutline, chevronUpOutline, refreshOutline, personOutline
     });
   }
 
@@ -159,16 +159,17 @@ export class AdminMemoryPage implements OnInit {
   public isModalOpen: import('@angular/core').WritableSignal<boolean> = signal<boolean>(false);
   public modalMode: 'ADD' | 'EDIT' = 'ADD';
   public editingId: string | null = null;
-  public modalForm: { userId: string; content: string; emotion: string; } = {
+  public modalForm: { userId: string; content: string; emotion: string; sender: string; } = {
     userId: '',
     content: '',
-    emotion: ''
+    emotion: '',
+    sender: 'USER'
   };
 
   public addRecord(): void {
     this.modalMode = 'ADD';
     this.editingId = null;
-    this.modalForm = { userId: '', content: '', emotion: '' };
+    this.modalForm = { userId: '', content: '', emotion: '', sender: 'USER' };
     this.isModalOpen.set(true);
   }
 
@@ -180,7 +181,8 @@ export class AdminMemoryPage implements OnInit {
       this.modalForm = { 
         userId: record.userId, 
         content: record.content, 
-        emotion: record.emotion 
+        emotion: record.emotion,
+        sender: record.sender || 'USER'
       };
     }
     this.isModalOpen.set(true);
@@ -193,10 +195,11 @@ export class AdminMemoryPage implements OnInit {
   public saveModalRecord(): void {
     this.isModalOpen.set(false);
     
-    const payload: { userId: string; content: string; emotion: string; } = {
+    const payload: { userId: string; content: string; emotion: string; sender: string; } = {
       userId: this.modalForm.userId,
       content: this.modalForm.content,
-      emotion: this.modalForm.emotion
+      emotion: this.modalForm.emotion,
+      sender: this.modalForm.sender
     };
 
     if (this.modalMode === 'ADD') {

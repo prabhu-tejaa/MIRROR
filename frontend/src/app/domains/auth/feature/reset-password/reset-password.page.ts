@@ -2,7 +2,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { ActivatedRoute, Params } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavController, AnimationController } from '@ionic/angular';
 import { IonContent, IonInput, IonButton, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -44,12 +44,13 @@ export class ResetPasswordPage implements OnInit {
   private email: string = '';
   private token: string = '';
 
+  private router: Router = inject(Router);
+
   constructor() {
     addIcons({ eye, eyeOff, alertCircleOutline });
-    this.route.queryParams.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params: Params) => {
-      this.email = (params['email'] as string) || '';
-      this.token = (params['token'] as string) || '';
-    });
+    const state = history.state as Record<string, unknown>;
+    this.email = (state['email'] as string) || '';
+    this.token = (state['token'] as string) || '';
   }
 
   public ngOnInit(): void {

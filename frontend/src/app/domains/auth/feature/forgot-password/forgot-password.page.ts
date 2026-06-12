@@ -65,7 +65,7 @@ export class ForgotPasswordPage implements OnInit {
           this.isLoading = false;
           this.cdr.markForCheck();
           void this.navCtrl.navigateForward('/otp', {
-                          queryParams: { flow: 'reset', email: emailValue },
+                          state: { flow: 'reset', email: emailValue },
                           animation: getCrossfadeAnimation(this.animationCtrl)
                         });
         },

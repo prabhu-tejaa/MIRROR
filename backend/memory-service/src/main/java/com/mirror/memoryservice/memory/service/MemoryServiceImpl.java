@@ -258,9 +258,28 @@ public class MemoryServiceImpl implements MemoryService {
             semanticContextBuilder.append("No relevant past memories found.");
         }
 
-        // 2. Short-term memory (Chronological Recent Chat)
-        List<Memory> recentMemoriesRaw = repository.findMemoriesKeysetPaginated(userId, 5, null);
-        List<Memory> recentMemories = new ArrayList<>(recentMemoriesRaw);
+        // 2. Short-term memory (Hybrid Context Window)
+        List<Memory> recentMemoriesRaw = repository.findMemoriesKeysetPaginated(userId, 40, null);
+        List<Memory> recentMemoriesFiltered = new ArrayList<>();
+        ZonedDateTime cutoffTime = ZonedDateTime.now(ZoneId.systemDefault()).minus(24, ChronoUnit.HOURS);
+        
+        for (int i = 0; i < recentMemoriesRaw.size(); i++) {
+            Memory m = recentMemoriesRaw.get(i);
+            if (i < 10) {
+                // Always keep at least 10 messages for base context
+                recentMemoriesFiltered.add(m);
+            } else {
+                // For messages beyond 10, only keep them if they occurred in the last 24 hours
+                ZonedDateTime msgTime = m.getCreatedAt().atZone(ZoneId.systemDefault());
+                if (msgTime.isAfter(cutoffTime)) {
+                    recentMemoriesFiltered.add(m);
+                } else {
+                    break;
+                }
+            }
+        }
+        
+        List<Memory> recentMemories = new ArrayList<>(recentMemoriesFiltered);
         Collections.reverse(recentMemories); // Reverse so oldest is first, newest is last
         
         // 3. Time Awareness
