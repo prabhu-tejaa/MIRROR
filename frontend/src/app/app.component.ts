@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, ChangeDetectionStrategy, ApplicationRef, HostListener, signal } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
 import { SplashScreen } from '@capacitor/splash-screen';
-import { IonApp, IonRouterOutlet, IonContent, Platform } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet, Platform } from '@ionic/angular/standalone';
 import { Observable , map, filter } from 'rxjs';
 
 

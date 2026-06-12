@@ -66,7 +66,7 @@ public class GroqService {
         
     }
 
-    public Map<String, String> generateReflectionAndEmotion(String prompt, String pastContext) {
+    public Map<String, String> generateReflectionAndEmotion(String prompt, String recentContext, String semanticContext) {
         if (prompt == null || prompt.isBlank()) {
             return Map.of(
                 "reflection", "Please enter some text so I can reflect with you.",
@@ -74,8 +74,8 @@ public class GroqService {
             );
         }
 
-        String userContent = buildUserContent(prompt, pastContext);
-        String systemPrompt = buildSystemPrompt(pastContext);
+        String userContent = buildUserContent(prompt, recentContext, semanticContext);
+        String systemPrompt = buildSystemPrompt(recentContext, semanticContext);
 
         int maxRetries = 3;
         int attempt = 0;
@@ -210,20 +210,67 @@ public class GroqService {
         return parsed;
     }
 
-    private String buildUserContent(String prompt, String pastContext) {
-        return "USER PROMPT: " + prompt + "\n\n" +
-               "PAST RELEVANT MEMORIES CONTEXT:\n" +
-               (pastContext != null && !pastContext.isBlank() ? pastContext : "None") + "\n\n" +
+    private String buildUserContent(String prompt, String recentContext, String semanticContext) {
+        return "--- RECENT CHAT HISTORY (Immediate Context) ---\n" +
+               (recentContext != null && !recentContext.isBlank() ? recentContext : "No recent chat history.") + "\n\n" +
+               "--- PAST RELEVANT MEMORIES (Long-term Context) ---\n" +
+               (semanticContext != null && !semanticContext.isBlank() ? semanticContext : "No relevant past memories found.") + "\n\n" +
+               "--- CURRENT USER PROMPT ---\n" +
+               prompt + "\n\n" +
                "Respond ONLY with a valid JSON object containing exactly these keys: " +
                "reflection, emotion, pillar, primaryColor, secondaryColor.";
     }
 
-    private String buildSystemPrompt(String pastContext) {
+    private String buildSystemPrompt(String recentContext, String semanticContext) {
         Map<String, Object> context = new HashMap<>();
-        boolean hasPastMemories = pastContext != null && !pastContext.isBlank() && !pastContext.equalsIgnoreCase("None");
+        boolean hasPastMemories = semanticContext != null && !semanticContext.isBlank() && !semanticContext.equalsIgnoreCase("None");
         context.put("hasPastMemories", hasPastMemories);
 
         return promptService.renderSystemPrompt(context);
+    }
+
+    public String extractAndMergeFacts(String newMessage, String existingFacts) {
+        if (newMessage == null || newMessage.isBlank()) return existingFacts;
+        
+        String systemPrompt = "You are a data extraction system. Your job is to extract absolute, hard facts about the user from their message (e.g., their name, job, relationships, core struggles, age). " +
+                "Merge any new facts found with the existing facts. If no new facts are found, return the existing facts exactly as they were. " +
+                "Output ONLY a raw, concise string of facts (e.g., 'User is a software engineer. User has a dog named Max.'). Do not use JSON or conversational text.";
+                
+        String userContent = "EXISTING FACTS:\n" + (existingFacts != null ? existingFacts : "None") + "\n\nNEW MESSAGE:\n" + newMessage;
+
+        try {
+            Map<String, Object> systemMessage = Map.of("role", "system", "content", systemPrompt);
+            Map<String, Object> userMessage   = Map.of("role", "user",   "content", userContent);
+
+            Map<String, Object> payload = new LinkedHashMap<>();
+            payload.put("model", textModel);
+            payload.put("messages", List.of(systemMessage, userMessage));
+            payload.put("temperature", 0.1); // Low temp for factual extraction
+            payload.put("max_tokens", 512);
+
+            String url = apiUrl + "/chat/completions";
+            ResponseEntity<Map> response = restClient.post()
+                    .uri(url)
+                    .header("Authorization", "Bearer " + apiKey)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(payload)
+                    .retrieve()
+                    .toEntity(Map.class);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                Map<String, Object> body = response.getBody();
+                List<Map<String, Object>> choices = (List<Map<String, Object>>) body.get("choices");
+                if (choices != null && !choices.isEmpty()) {
+                    Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
+                    if (message != null) {
+                        return (String) message.get("content");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to extract facts: {}", e.getMessage());
+        }
+        return existingFacts;
     }
 
     private String nonBlankOrDefault(String value, String defaultValue) {

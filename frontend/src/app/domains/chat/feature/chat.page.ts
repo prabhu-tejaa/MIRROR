@@ -137,10 +137,7 @@ export class ChatPage implements OnDestroy {
       setTimeout(() => this.adjustTextareaHeight(), 0);
     });
     effect(() => {
-      if (this.chatState.scrollToBottomTrigger() > 0) {
-        const behavior: "smooth" | "auto" = this.initialScrollState.value ? 'smooth' : 'auto';
-        if (this.streamScroll?.nativeElement && !this.showWelcomeBanner()) { this.scrollSvc.triggerDynamicScrollToBottom(this.streamScroll.nativeElement, behavior, this.initialScrollState); }
-      }
+      this.handleScrollToBottomEffect();
     });
     effect(() => {
       if (this.chatState.maintainScrollTrigger() > 0) {
@@ -155,6 +152,21 @@ export class ChatPage implements OnDestroy {
     effect(() => {
       if (!this.isLoadingHistory()) { setTimeout(() => { this.initialScrollState.value = true; }, 500); }
     });
+  }
+
+  private handleScrollToBottomEffect(): void {
+    if (this.chatState.scrollToBottomTrigger() > 0) {
+      this.executeScroll();
+    }
+  }
+
+  private executeScroll(): void {
+    if (!this.streamScroll) { return; }
+    if (this.showWelcomeBanner()) { return; }
+    
+    const el = this.streamScroll.nativeElement;
+    const behavior: "smooth" | "auto" = this.initialScrollState.value ? 'smooth' : 'auto';
+    this.scrollSvc.triggerDynamicScrollToBottom(el, behavior, this.initialScrollState);
   }
 
   public readonly username: Signal<string | null> = this.store.selectSignal(selectUsername);

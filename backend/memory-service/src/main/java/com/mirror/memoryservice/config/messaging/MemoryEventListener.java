@@ -7,6 +7,8 @@ import com.mirror.memoryservice.memory.service.MemoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mirror.memoryservice.config.messaging.RabbitMQConfig;
 import com.mirror.memoryservice.memory.event.MemorySaveEvent;
+import com.mirror.memoryservice.memory.model.UserProfile;
+import com.mirror.memoryservice.memory.repository.UserProfileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -22,12 +24,14 @@ public class MemoryEventListener {
     private final GeminiService geminiService;
     private final GroqService groqService;
     private final ObjectMapper objectMapper;
+    private final UserProfileRepository userProfileRepository;
 
-    public MemoryEventListener(MemoryService memoryService, GeminiService geminiService, GroqService groqService, ObjectMapper objectMapper) {
+    public MemoryEventListener(MemoryService memoryService, GeminiService geminiService, GroqService groqService, ObjectMapper objectMapper, UserProfileRepository userProfileRepository) {
         this.memoryService = memoryService;
         this.geminiService = geminiService;
         this.groqService = groqService;
         this.objectMapper = objectMapper;
+        this.userProfileRepository = userProfileRepository;
     }
 
     @RabbitListener(queues = RabbitMQConfig.MEMORY_SAVE_QUEUE)
@@ -36,10 +40,16 @@ public class MemoryEventListener {
             MemorySaveEvent event = objectMapper.readValue(message, MemorySaveEvent.class);
 
             float[] embedding = geminiService.getEmbedding(event.content());
-            Map<String, String> sentiment = groqService.generateReflectionAndEmotion(event.content(), null);
+            Map<String, String> sentiment = groqService.generateReflectionAndEmotion(event.content(), null, null);
             String emotion = sentiment.getOrDefault("emotion", "NEUTRAL");
             
             memoryService.saveMemory(event.userId(), event.content(), emotion, "user", embedding);
+            
+            // Extract and update user profile facts
+            UserProfile profile = userProfileRepository.findById(event.userId()).orElse(new UserProfile(event.userId(), null));
+            String updatedFacts = groqService.extractAndMergeFacts(event.content(), profile.getCoreFacts());
+            profile.setCoreFacts(updatedFacts);
+            userProfileRepository.save(profile);
             
         } catch (Exception e) {
             log.error("Failed to process memory save event", e);

@@ -5,7 +5,9 @@ import com.mirror.memoryservice.admin.dto.EmotionStatDTO;
 import com.mirror.memoryservice.admin.dto.AnalyticsResponseDTO;
 
 import com.mirror.memoryservice.memory.model.Memory;
+import com.mirror.memoryservice.memory.model.UserProfile;
 import com.mirror.memoryservice.memory.repository.MemoryRepository;
+import com.mirror.memoryservice.memory.repository.UserProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.cache.annotation.Cacheable;
@@ -14,6 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
 import com.mirror.memoryservice.common.exception.MemoryNotFoundException;
 import com.mirror.memoryservice.common.exception.MemoryProcessingException;
 
@@ -33,13 +39,15 @@ public class MemoryServiceImpl implements MemoryService {
     private final GroqService groqService;
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
+    private final UserProfileRepository userProfileRepository;
 
-    public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService, GroqService groqService, RabbitTemplate rabbitTemplate, ObjectMapper objectMapper) {
+    public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService, GroqService groqService, RabbitTemplate rabbitTemplate, ObjectMapper objectMapper, UserProfileRepository userProfileRepository) {
         this.repository = repository;
         this.geminiService = geminiService;
         this.groqService = groqService;
         this.rabbitTemplate = rabbitTemplate;
         this.objectMapper = objectMapper;
+        this.userProfileRepository = userProfileRepository;
     }
 
     @Override
@@ -237,20 +245,64 @@ public class MemoryServiceImpl implements MemoryService {
 
     @Override
     public Map<String, String> generateReflection(String userId, String prompt) {
+        // 1. Long-term memory (Semantic Search)
         List<Memory> pastMemories = getSimilarMemories(userId, prompt, 5);
-        
-        StringBuilder contextBuilder = new StringBuilder();
+        StringBuilder semanticContextBuilder = new StringBuilder();
         if (!pastMemories.isEmpty()) {
             for (int i = 0; i < pastMemories.size(); i++) {
                 Memory m = pastMemories.get(i);
                 String friendlyEmotionName = parseEmotionTag(m.getEmotion()).getName();
-                contextBuilder.append(String.format("Memory %d: %s (Emotion tagged: %s)\n", i + 1, m.getContent(), friendlyEmotionName));
+                semanticContextBuilder.append(String.format("Memory %d: %s (Emotion tagged: %s)\n", i + 1, m.getContent(), friendlyEmotionName));
             }
         } else {
-            contextBuilder.append("No past memories recorded yet.");
+            semanticContextBuilder.append("No relevant past memories found.");
         }
 
-        Map<String, String> aiResponse = groqService.generateReflectionAndEmotion(prompt, contextBuilder.toString());
+        // 2. Short-term memory (Chronological Recent Chat)
+        List<Memory> recentMemoriesRaw = repository.findMemoriesKeysetPaginated(userId, 5, null);
+        List<Memory> recentMemories = new ArrayList<>(recentMemoriesRaw);
+        Collections.reverse(recentMemories); // Reverse so oldest is first, newest is last
+        
+        // 3. Time Awareness
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.systemDefault());
+        String timeElapsedStr = "This is the first interaction.";
+        if (!recentMemoriesRaw.isEmpty()) {
+            ZonedDateTime lastTime = recentMemoriesRaw.get(0).getCreatedAt().atZone(ZoneId.systemDefault());
+            long hours = ChronoUnit.HOURS.between(lastTime, now);
+            if (hours > 24) {
+                timeElapsedStr = (hours / 24) + " days ago.";
+            } else if (hours > 0) {
+                timeElapsedStr = hours + " hours ago.";
+            } else {
+                long minutes = ChronoUnit.MINUTES.between(lastTime, now);
+                timeElapsedStr = minutes + " minutes ago.";
+            }
+        }
+        
+        // 4. Emotional & Profile Awareness
+        com.mirror.memoryservice.admin.dto.AnalyticsResponseDTO analytics = getEmotionalAnalytics(userId);
+        UserProfile profile = userProfileRepository.findById(userId).orElse(null);
+
+        StringBuilder recentContextBuilder = new StringBuilder();
+        recentContextBuilder.append("--- SYSTEM REALITY CONTEXT ---\n");
+        recentContextBuilder.append("Current Time: ").append(now.format(DateTimeFormatter.ofPattern("EEEE, hh:mm a"))).append("\n");
+        recentContextBuilder.append("Time since last interaction: ").append(timeElapsedStr).append("\n");
+        recentContextBuilder.append("User's Recent Dominant Emotion: ").append(analytics.getDominantEmotion() != null ? analytics.getDominantEmotion() : "UNKNOWN").append("\n");
+        if (profile != null && profile.getCoreFacts() != null && !profile.getCoreFacts().isBlank()) {
+            recentContextBuilder.append("Known User Facts: ").append(profile.getCoreFacts()).append("\n");
+        }
+        recentContextBuilder.append("\n");
+
+        if (!recentMemories.isEmpty()) {
+            for (Memory m : recentMemories) {
+                String senderStr = m.getSender().equalsIgnoreCase("mirror") ? "Mirror" : "User";
+                recentContextBuilder.append(String.format("%s: %s\n", senderStr, m.getContent()));
+            }
+        } else {
+            recentContextBuilder.append("No recent chat history.");
+        }
+
+        Map<String, String> aiResponse = groqService.generateReflectionAndEmotion(prompt, recentContextBuilder.toString(), semanticContextBuilder.toString());
         
         try {
             String detectedEmotion = aiResponse.getOrDefault("emotion", "NEUTRAL");
