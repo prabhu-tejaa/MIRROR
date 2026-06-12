@@ -1,9 +1,10 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable , timeout } from 'rxjs';
+import { Observable, of, timeout } from 'rxjs';
 
 
-import { environment } from '../../../../environments/environment';
+
+import { REFLECTION_QUOTES } from '../../../core/constants/quotes.constants';
 import { SKIP_CANCEL } from '../../../core/interceptors/cancel.interceptor';
 import { ApiService } from '../../../core/services/api.service';
 
@@ -43,7 +44,8 @@ export class ChatService {
   }
 
   public getRandomQuote(): Observable<{ quote: string, author: string }> {
-    return this.http.get<{ quote: string, author: string }>((environment as Record<string, unknown>)['quoteApiUrl'] as string || 'https://dummyjson.com/quotes/random');
+    const randomIdx: number = Math.floor(Math.random() * REFLECTION_QUOTES.length);
+    return of(REFLECTION_QUOTES[randomIdx]);
   }
 }
 

@@ -60,4 +60,14 @@ public class MemoryEventListener {
             log.error("Failed to process background reflection save event", e);
         }
     }
+
+    @RabbitListener(queues = RabbitMQConfig.USER_DELETE_QUEUE)
+    public void handleUserDeleteEvent(String username) {
+        try {
+            log.info("Received user deletion event for username: {}", username);
+            memoryService.deleteAllMemoriesForUser(username);
+        } catch (Exception e) {
+            log.error("Failed to process user delete event", e);
+        }
+    }
 }

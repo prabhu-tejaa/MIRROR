@@ -26,4 +26,6 @@ public interface MemoryService {
     void updateMemory(Long id, String userId, String content, String emotion);
 
     List<Memory> getAllMemoriesAdmin();
+
+    void deleteAllMemoriesForUser(String userId);
 }

@@ -1,5 +1,5 @@
 
-import { Component, Input, OnDestroy, ElementRef, ViewChild, AfterViewInit, OnInit, NgZone, HostListener, inject, OnChanges } from '@angular/core';
+import { Component, Input, OnDestroy, ElementRef, ViewChild, AfterViewInit, OnInit, NgZone, inject, OnChanges } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { StarfieldEngine, StarfieldConfig } from './starfield.engine';
@@ -53,6 +53,8 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnChanges, OnD
     
     this.ngZone.runOutsideAngular(() => {
       this.engine = new StarfieldEngine(this.canvasRef.nativeElement, config);
+      window.addEventListener('mousemove', this.mouseMoveHandler, { passive: true });
+      window.addEventListener('touchmove', this.touchMoveHandler, { passive: true });
     });
 
     document.addEventListener('visibilitychange', this.visibilityHandler);
@@ -72,22 +74,22 @@ export class StarfieldComponent implements OnInit, AfterViewInit, OnChanges, OnD
       this.engine.destroy();
     }
     document.removeEventListener('visibilitychange', this.visibilityHandler);
+    window.removeEventListener('mousemove', this.mouseMoveHandler);
+    window.removeEventListener('touchmove', this.touchMoveHandler);
   }
 
-  @HostListener('window:mousemove', ['$event'])
-  public onMouseMove(e: MouseEvent): void {
+  private mouseMoveHandler: (e: MouseEvent) => void = (e: MouseEvent) => {
     if (this.engine) {
       this.engine.onMouseMove(e.clientX, e.clientY);
     }
-  }
+  };
 
-  @HostListener('window:touchmove', ['$event'])
-  public onTouchMove(e: TouchEvent): void {
+  private touchMoveHandler: (e: TouchEvent) => void = (e: TouchEvent) => {
     if (this.engine && e.touches.length > 0) {
       const t: Touch = e.touches[0];
       this.engine.onMouseMove(t.clientX, t.clientY);
     }
-  }
+  };
 
   private onVisibilityChange(): void {
     if (!this.engine) {return;}

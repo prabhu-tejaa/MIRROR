@@ -64,7 +64,16 @@ export class LoginPage implements OnInit {
   public ionViewWillEnter(): void {
     const card: HTMLElement | null = this.el.nativeElement.querySelector('.glassy-card');
     const header: HTMLElement | null = this.el.nativeElement.querySelector('.branding-header');
-    if (card) { card.style.opacity = '1'; card.style.transition = 'none'; }
+    if (card) { 
+      card.style.opacity = '1'; 
+      card.style.transition = 'none'; 
+      const inputs: NodeListOf<HTMLElement> = card.querySelectorAll('.glassy-input');
+      inputs.forEach((input: HTMLElement) => {
+        input.style.backdropFilter = '';
+        input.style.setProperty('-webkit-backdrop-filter', '');
+        input.style.boxShadow = '';
+      });
+    }
     if (header) { header.style.opacity = '1'; header.style.transition = 'none'; }
     this.isLoading = false;
     this.isSubmitted = false;
@@ -113,11 +122,17 @@ export class LoginPage implements OnInit {
           const header: HTMLElement | null = this.el.nativeElement.querySelector('.branding-header');
 
           if (card) {
-            card.style.transition = 'opacity 1s';
+            const inputs: NodeListOf<HTMLElement> = card.querySelectorAll('.glassy-input');
+            inputs.forEach((input: HTMLElement) => {
+              input.style.backdropFilter = 'none';
+              input.style.setProperty('-webkit-backdrop-filter', 'none');
+              input.style.boxShadow = 'none';
+            });
+            card.style.transition = 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)';
             card.style.opacity = '0';
           }
           if (header) {
-            header.style.transition = 'opacity 1s';
+            header.style.transition = 'opacity 1s cubic-bezier(0.4, 0, 0.2, 1)';
             header.style.opacity = '0';
           }
 

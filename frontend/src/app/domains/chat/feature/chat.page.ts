@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Component, ChangeDetectionStrategy, signal, computed, inject, ViewChild, ElementRef, OnDestroy, effect, DestroyRef, Signal, WritableSignal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, PluginListenerHandle } from '@capacitor/core';
+import { Keyboard } from '@capacitor/keyboard';
 import {
   IonContent, IonIcon, NavController, AlertController
 } from '@ionic/angular/standalone';
@@ -66,6 +67,10 @@ export class ChatPage implements OnDestroy {
   private isSpeechToggleInFlight: boolean = false;
   public initialScrollState: { value: boolean } = { value: false };
 
+  private keyboardListenerHandle?: PluginListenerHandle;
+  private resizeListener?: () => void;
+  private prevViewportHeight: number = 0;
+
   @ViewChild('streamScroll', { static: false }) private streamScroll?: ElementRef<HTMLDivElement>;
   @ViewChild('textInput', { static: false }) private textInput?: ElementRef<HTMLTextAreaElement>;
 
@@ -95,6 +100,39 @@ export class ChatPage implements OnDestroy {
     });
     this.chatState.fetchDynamicQuote();
     this.setupEffects();
+    this.setupKeyboardListeners();
+  }
+
+  private setupKeyboardListeners(): void {
+    if (Capacitor.isNativePlatform()) {
+      void Keyboard.addListener('keyboardWillShow', () => {
+        this.handleKeyboardOpened();
+      }).then(handle => this.keyboardListenerHandle = handle);
+    } else {
+      if (typeof window !== 'undefined' && window.visualViewport) {
+        this.prevViewportHeight = window.visualViewport.height;
+        this.resizeListener = () => {
+          const currentHeight = window.visualViewport?.height || window.innerHeight;
+          if (this.prevViewportHeight - currentHeight > 150) {
+            this.handleKeyboardOpened();
+          }
+          this.prevViewportHeight = currentHeight;
+        };
+        window.visualViewport.addEventListener('resize', this.resizeListener);
+      }
+    }
+  }
+
+  private handleKeyboardOpened(): void {
+    const scrollEl: HTMLDivElement | undefined = this.streamScroll?.nativeElement;
+    if (scrollEl) {
+      const maxScroll: number = scrollEl.scrollHeight - scrollEl.clientHeight;
+      if (maxScroll - scrollEl.scrollTop <= 250) {
+        setTimeout(() => {
+          this.scrollSvc.scrollToBottom(scrollEl, 'smooth');
+        }, 50);
+      }
+    }
   }
 
   private setupEffects(): void {
@@ -270,7 +308,7 @@ export class ChatPage implements OnDestroy {
   public readonly isSendDisabled: Signal<boolean> = computed(() => !this.chatInput().trim() || this.isWaitingForResponse());
 
   public showWelcomeBanner(): boolean {
-    return this.todayMessagesFormatted().length === 0 && !this.isLoadingHistory();
+    return this.todayMessagesFormatted().length === 0 && !this.isLoadingHistory() && this.chatState.initialChatLoadedGlobally();
   }
 
   public getContainerClasses(): string {
@@ -289,5 +327,11 @@ export class ChatPage implements OnDestroy {
     this.ttsSvc.cancel();
     this.voiceRecognitionSvc.destroy();
     this.chatState.destroy();
+    if (this.keyboardListenerHandle) {
+      void this.keyboardListenerHandle.remove();
+    }
+    if (this.resizeListener && typeof window !== 'undefined' && window.visualViewport) {
+      window.visualViewport.removeEventListener('resize', this.resizeListener);
+    }
   }
 }

@@ -46,7 +46,9 @@ export class ChatStateService {
 
 
   public fetchDynamicQuote(): void {
-    this.store.dispatch(chatActions.loadDynamicQuote());
+    if (!this.activeQuote() || !this.activeQuote().text) {
+      this.store.dispatch(chatActions.loadDynamicQuote());
+    }
   }
 
   public destroy(): void {

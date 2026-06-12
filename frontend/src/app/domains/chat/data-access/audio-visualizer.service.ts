@@ -260,6 +260,7 @@ export class AudioVisualizerService implements OnDestroy {
 
   private startAnalysisLoop(): void {
     if (!this.analyser) {return;}
+    this.cancelAnalysisLoop();
 
     const bufferLength: number = this.analyser.frequencyBinCount;
     const dataArray: Uint8Array<ArrayBuffer> = new Uint8Array(bufferLength);

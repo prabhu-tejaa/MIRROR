@@ -226,8 +226,10 @@ export class YouPage implements OnDestroy {
       this.startSpring();
     };
 
-    el.addEventListener('pointermove', onMove as EventListener);
-    el.addEventListener('pointerup', onUp);
+    this.ngZone.runOutsideAngular(() => {
+      el.addEventListener('pointermove', onMove as EventListener);
+      el.addEventListener('pointerup', onUp);
+    });
   }
 
   private applyStageTransform(): void {

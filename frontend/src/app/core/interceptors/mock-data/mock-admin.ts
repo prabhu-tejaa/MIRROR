@@ -19,6 +19,11 @@ export function handleAdminRoutes(req: HttpRequest<unknown>, url: string): Obser
       }
     }
     if (req.method === 'DELETE') {
+      const userToDelete = MockState.usersList.find(u => u.id === id);
+      if (userToDelete) {
+        // Cascade delete memories associated with this user
+        MockState.memoryRecords = MockState.memoryRecords.filter(m => m.userId !== userToDelete.username);
+      }
       MockState.usersList = MockState.usersList.filter(u => u.id !== id);
       return of(new HttpResponse({ status: 200, body: null })).pipe(delay(300));
     }

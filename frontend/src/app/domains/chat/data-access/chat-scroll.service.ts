@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, NgZone } from '@angular/core';
 import { Store } from '@ngrx/store';
 
 import { ChatStateService } from './chat-state.service';
@@ -8,6 +8,7 @@ import * as chatActions from './store/chat.actions';
 export class ChatScrollService {
   private store: Store<object> = inject<Store<object>>(Store);
   private chatState: ChatStateService = inject(ChatStateService);
+  private ngZone: NgZone = inject(NgZone);
 
   private scrollListenerAttached: boolean = false;
   private scrollObserver?: MutationObserver;
@@ -21,23 +22,29 @@ export class ChatScrollService {
   private attachScrollObserver(scrollEl: HTMLDivElement, initialScrollCompleted: { value: boolean }, isLoadingMore: () => boolean): void {
     if (!scrollEl) { return; }
     this.scrollListenerAttached = true;
-    const mo: MutationObserver = new MutationObserver(() => {
-      if (!initialScrollCompleted.value) {
-        scrollEl.scrollTop = scrollEl.scrollHeight - scrollEl.clientHeight;
-      }
+    
+    this.ngZone.runOutsideAngular(() => {
+      const mo: MutationObserver = new MutationObserver(() => {
+        if (!initialScrollCompleted.value) {
+          scrollEl.scrollTop = scrollEl.scrollHeight - scrollEl.clientHeight;
+        }
+      });
+      mo.observe(scrollEl, { childList: true, subtree: true, characterData: true });
+      
+      scrollEl.addEventListener('scroll', () => {
+        if (!initialScrollCompleted.value) { return; }
+        const maxScroll: number = scrollEl.scrollHeight - scrollEl.clientHeight;
+        if (maxScroll <= 0) { return; } 
+        const isAtTop: boolean = scrollEl.scrollTop <= 10;
+        const isAtBottom: boolean = scrollEl.scrollTop >= (maxScroll - 10);
+        const canLoadMore: boolean = this.chatState.hasMoreHistory() && !isLoadingMore() && !this.chatState.isInitialLoad();
+        if (isAtTop && !isAtBottom && canLoadMore) {
+          this.ngZone.run(() => {
+            this.store.dispatch(chatActions.loadMoreHistory());
+          });
+        }
+      }, { passive: true });
     });
-    mo.observe(scrollEl, { childList: true, subtree: true, characterData: true });
-    scrollEl.addEventListener('scroll', () => {
-      if (!initialScrollCompleted.value) { return; }
-      const maxScroll: number = scrollEl.scrollHeight - scrollEl.clientHeight;
-      if (maxScroll <= 0) { return; } 
-      const isAtTop: boolean = scrollEl.scrollTop <= 10;
-      const isAtBottom: boolean = scrollEl.scrollTop >= (maxScroll - 10);
-      const canLoadMore: boolean = this.chatState.hasMoreHistory() && !isLoadingMore() && !this.chatState.isInitialLoad();
-      if (isAtTop && !isAtBottom && canLoadMore) {
-        this.store.dispatch(chatActions.loadMoreHistory());
-      }
-    }, { passive: true });
   }
 
   public triggerDynamicScrollToBottom(scrollEl: HTMLDivElement, behavior: ScrollBehavior, initialScrollCompleted: { value: boolean }): void {
@@ -55,19 +62,21 @@ export class ChatScrollService {
       scrollEl.scrollTo({ top: scrollEl.scrollHeight, behavior: actualBehavior });
     };
 
-    doScroll();
+    this.ngZone.runOutsideAngular(() => {
+      doScroll();
 
-    if (this.scrollObserver) {
-      this.scrollObserver.disconnect();
-      clearTimeout(this.scrollObserverTimeout);
-    }
-    this.scrollObserver = new MutationObserver(() => doScroll());
-    this.scrollObserver.observe(scrollEl, { childList: true, subtree: true, characterData: true });
-    this.scrollObserverTimeout = setTimeout(() => {
-      this.scrollObserver?.disconnect();
-      this.scrollObserver = undefined;
-      if (!initialScrollCompleted.value) { initialScrollCompleted.value = true; }
-    }, 800);
+      if (this.scrollObserver) {
+        this.scrollObserver.disconnect();
+        clearTimeout(this.scrollObserverTimeout);
+      }
+      this.scrollObserver = new MutationObserver(() => doScroll());
+      this.scrollObserver.observe(scrollEl, { childList: true, subtree: true, characterData: true });
+      this.scrollObserverTimeout = setTimeout(() => {
+        this.scrollObserver?.disconnect();
+        this.scrollObserver = undefined;
+        if (!initialScrollCompleted.value) { initialScrollCompleted.value = true; }
+      }, 800);
+    });
   }
 
   public scrollToBottom(scrollEl: HTMLDivElement, behavior: ScrollBehavior = 'smooth'): void {

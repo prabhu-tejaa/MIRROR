@@ -11,6 +11,8 @@ public class RabbitMQConfig {
 
     public static final String REFLECTION_SAVE_QUEUE = "reflection.save.queue";
 
+    public static final String USER_DELETE_QUEUE = "user.delete.queue";
+
     @Bean
     public Queue memorySaveQueue() {
         return new Queue(MEMORY_SAVE_QUEUE, true);
@@ -19,5 +21,10 @@ public class RabbitMQConfig {
     @Bean
     public Queue reflectionSaveQueue() {
         return new Queue(REFLECTION_SAVE_QUEUE, true);
+    }
+
+    @Bean
+    public Queue userDeleteQueue() {
+        return new Queue(USER_DELETE_QUEUE, true);
     }
 }

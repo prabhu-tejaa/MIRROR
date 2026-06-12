@@ -1,5 +1,5 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { APP_INITIALIZER, inject, ErrorHandler, Injectable, Injector } from '@angular/core';
+import { APP_INITIALIZER, inject, ErrorHandler, Injectable, Injector, provideZoneChangeDetection } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
@@ -46,6 +46,19 @@ class GlobalErrorHandler implements ErrorHandler {
     }
   }
 
+  private logCrash(errMessage: string, error: unknown): void {
+    try {
+      const stack: string = error instanceof Error ? (error.stack || '') : '';
+      localStorage.setItem('mirror_last_crash', JSON.stringify({
+        time: new Date().toISOString(),
+        message: errMessage,
+        stack: stack.substring(0, 500)
+      }));
+    } catch {
+      // Ignore localStorage errors
+    }
+  }
+
   public handleError(error: unknown): void {
     const errMessage: string = this.getErrorMessage(error);
     
@@ -54,24 +67,57 @@ class GlobalErrorHandler implements ErrorHandler {
       return;
     }
 
-    // Ignore HTTP errors here because the error.interceptor already shows a toast for them
     if (errMessage.includes('Http failure response')) {
       return;
     }
 
+    this.logCrash(errMessage, error);
     this.showToast(errMessage);
+    // eslint-disable-next-line no-console
+    console.error('GlobalErrorHandler caught:', error);
   }
 }
 
 if (environment.production) {
   window.console.log = () => {};
   window.console.warn = () => {};
-  window.console.error = () => {};
   window.console.info = () => {};
 }
 
+window.addEventListener('error', (event: ErrorEvent) => {
+  try {
+    const err: unknown = event.error;
+    const stack: string = err instanceof Error && err.stack ? String(err.stack).substring(0, 500) : '';
+    localStorage.setItem('mirror_last_crash_native', JSON.stringify({
+      time: new Date().toISOString(),
+      message: String(event.message),
+      source: event.filename,
+      line: event.lineno,
+      stack: stack
+    }));
+  } catch {
+    // Ignore
+  }
+});
+
+window.addEventListener('unhandledrejection', (event: PromiseRejectionEvent) => {
+  try {
+    const reason: unknown = event.reason;
+    const msg: string = reason instanceof Error ? reason.message : String(reason);
+    const stack: string = reason instanceof Error && reason.stack ? reason.stack.substring(0, 500) : '';
+    localStorage.setItem('mirror_last_crash_promise', JSON.stringify({
+      time: new Date().toISOString(),
+      message: msg,
+      stack: stack
+    }));
+  } catch {
+    // Ignore
+  }
+});
+
 void bootstrapApplication(AppComponent, {
   providers: [
+    provideZoneChangeDetection({ eventCoalescing: true, runCoalescing: true }),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular({

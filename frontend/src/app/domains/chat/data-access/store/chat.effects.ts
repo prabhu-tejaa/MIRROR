@@ -163,7 +163,6 @@ export class ChatEffects {
             return { type: '[Chat] Load Dynamic Quote Failed' };
           }),
           catchError((): Observable<Action> => {
-            void this.toastSvc.showInfo('Using local quotes (offline mode).');
             return of({ type: '[Chat] Load Dynamic Quote Failed' } as Action);
           })
         )

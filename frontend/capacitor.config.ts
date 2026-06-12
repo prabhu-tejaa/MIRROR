@@ -6,12 +6,12 @@ const config: CapacitorConfig = {
   webDir: 'www',
   plugins: {
     Keyboard: {
-      resize: 'ionic',
-      resizeOnFullScreen: true,
+      resize: 'none',
     },
     SplashScreen: {
-      launchShowDuration: 0,
+      launchShowDuration: 3000,
       launchAutoHide: false,
+      launchFadeOutDuration: 500,
       backgroundColor: "#05050f",
       androidSplashResourceName: "splash",
       androidScaleType: "CENTER_CROP",

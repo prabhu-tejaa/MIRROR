@@ -61,4 +61,8 @@ public interface MemoryRepository extends JpaRepository<Memory, Long> {
     );
 
     long countByUserId(String userId);
+
+    @Modifying
+    @Transactional
+    void deleteByUserId(String userId);
 }

@@ -14,16 +14,20 @@ import com.mirror.authservice.recovery.repository.OtpTokenRepository;
 import com.mirror.authservice.common.exception.UserNotFoundException;
 import com.mirror.authservice.common.exception.InvalidOtpException;
 import com.mirror.authservice.config.security.JwtUtil;
+import com.mirror.authservice.config.messaging.RabbitMQConfig;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import com.mirror.authservice.common.exception.LoginFailureException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final UserRepository userRepository;
@@ -33,6 +37,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final OtpService otpService;
     private final EmailService emailService;
+    private final RabbitTemplate rabbitTemplate;
 
     public User registerUser(String username, String email, String rawPassword) {
         if (userRepository.existsByEmail(email)) {
@@ -295,10 +300,15 @@ public class AuthService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
+        String username = user.getUsername();
+
         refreshTokenRepository.deleteByUser(user);
         otpTokenRepository.deleteByUser(user);
 
         userRepository.delete(user);
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.USER_DELETE_QUEUE, username);
+        log.info("User {} deleted and cascade delete event published", username);
     }
 
     private com.mirror.authservice.user.dto.UserResponse mapToUserResponse(User user) {

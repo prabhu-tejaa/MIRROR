@@ -343,6 +343,14 @@ public class MemoryServiceImpl implements MemoryService {
         return repository.findAll();
     }
 
+    @Override
+    @Transactional
+    @CacheEvict(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
+    public void deleteAllMemoriesForUser(String userId) {
+        log.info("Deleting all memories for user: {}", userId);
+        repository.deleteByUserId(userId);
+    }
+
     private String formatVectorForSql(float[] vector) {
         if (vector == null || vector.length == 0) {
             return null;
