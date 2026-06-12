@@ -58,6 +58,7 @@ describe('ChatPage', () => {
     maintainScrollTrigger: signal(0),
     fetchDynamicQuote: jasmine.createSpy('fetchDynamicQuote'),
     isInitialLoad: signal(false),
+    initialChatLoadedGlobally: signal(false),
     loadedEmail: signal<string | null>(null),
     hasMoreHistory: signal(true),
     destroy: jasmine.createSpy('destroy'),
