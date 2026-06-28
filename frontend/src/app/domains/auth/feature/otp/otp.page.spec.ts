@@ -55,7 +55,9 @@ describe('OtpPage', () => {
   });
 
   afterEach(() => {
-    component.ngOnDestroy();
+    if (component) {
+      component.ngOnDestroy();
+    }
   });
 
   it('should create', () => {

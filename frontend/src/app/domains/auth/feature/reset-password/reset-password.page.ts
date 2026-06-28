@@ -48,19 +48,19 @@ export class ResetPasswordPage implements OnInit {
 
   constructor() {
     addIcons({ eye, eyeOff, alertCircleOutline });
-    const state = history.state as Record<string, unknown>;
+    const state = (history.state || {}) as Record<string, unknown>;
     this.email = (state['email'] as string) || '';
     this.token = (state['token'] as string) || '';
   }
 
   public ngOnInit(): void {
-    if (!this.email) {
-      void this.navCtrl.navigateRoot('/forgot-password');
-      return;
-    }
     this.resetForm = this.fb.group({
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(64), strictPasswordValidator]]
     });
+    
+    if (!this.email) {
+      void this.navCtrl.navigateRoot('/forgot-password');
+    }
   }
 
   public get f(): { [key: string]: AbstractControl } { 

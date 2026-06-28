@@ -115,32 +115,4 @@ public class TelemetryService {
         return new TelemetryStats(totalRequestsToday.get(), whitelistedCount.get(), globalRateLimit);
     }
 
-    public Mono<List<ServiceHealth>> getServicesHealth() {
-        Mono<ServiceHealth> authHealth = probeServiceHealth("Auth Service", "auth-service-route", 8080);
-        Mono<ServiceHealth> memoryHealth = probeServiceHealth("Memory Service", "memory-service-route", 8081);
-
-        return Mono.zip(authHealth, memoryHealth)
-                .map(tuple -> Arrays.asList(tuple.getT1(), tuple.getT2()));
-    }
-
-    private Mono<ServiceHealth> probeServiceHealth(String displayName, String routeId, int fallbackPort) {
-        String destinationUri = "http://localhost:" + fallbackPort;
-        String keepAlivePath = routeId.equals("auth-service-route") ? "/api/auth/keepalive" : "/api/memory/keepalive";
-        String pingUrl = destinationUri + keepAlivePath;
-
-        long start = System.currentTimeMillis();
-        return webClient.get()
-                .uri(pingUrl)
-                .exchangeToMono(response -> Mono.just(response.statusCode().is2xxSuccessful()))
-                .onErrorReturn(false)
-                .map(ok -> {
-                    int latency = (int) (System.currentTimeMillis() - start);
-                    return new ServiceHealth(displayName, fallbackPort, ok ? "ONLINE" : "OFFLINE", ok ? latency : 0, ok ? "success" : "danger");
-                });
-    }
-
-    @Scheduled(fixedRate = 240000)
-    public void executeKeepAlive() {
-        getServicesHealth().subscribe();
-    }
 }

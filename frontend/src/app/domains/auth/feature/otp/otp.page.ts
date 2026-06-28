@@ -58,7 +58,7 @@ export class OtpPage implements OnInit, OnDestroy {
 
   constructor() {
     addIcons({ alertCircleOutline });
-    const state = history.state as Record<string, unknown>;
+    const state = (history.state || {}) as Record<string, unknown>;
     this.flowContext = (state['flow'] as string) || 'signup';
     this.email = (state['email'] as string) || '';
   }
