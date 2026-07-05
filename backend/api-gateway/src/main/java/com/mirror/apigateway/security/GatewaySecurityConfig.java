@@ -24,8 +24,15 @@ public class GatewaySecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .formLogin(formLogin -> formLogin.disable())
                 .authorizeExchange(exchange -> exchange
+                        .pathMatchers(org.springframework.http.HttpMethod.OPTIONS).permitAll()
                         .pathMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/otp/**", "/api/auth/forgot-password/**", "/api/auth/refresh", "/api/auth/logout", "/api/auth/validate", "/api/auth/keepalive", "/api/memory/keepalive", "/actuator/health").permitAll()
                         .anyExchange().authenticated()
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint((swe, e) -> {
+                            swe.getResponse().setStatusCode(org.springframework.http.HttpStatus.UNAUTHORIZED);
+                            return swe.getResponse().setComplete();
+                        })
                 )
                 .addFilterAt(jwtWebFilter, SecurityWebFiltersOrder.AUTHENTICATION);
         return http.build();

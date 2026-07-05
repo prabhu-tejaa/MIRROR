@@ -13,6 +13,8 @@ public interface MemoryService {
 
     com.mirror.memoryservice.admin.dto.AnalyticsResponseDTO getEmotionalAnalytics(String userId);
 
+    Map<String, String> getEmotionMapping(String userId);
+
     Map<String, String> generateReflection(String userId, String prompt);
 
     List<Memory> getAllMemories(String userId);

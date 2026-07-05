@@ -20,6 +20,13 @@ const config: CapacitorConfig = {
       splashImmersive: true
     }
   },
+  ios: {
+    plugins: {
+      Keyboard: {
+        resize: 'ionic',
+      }
+    }
+  }
 };
 
 export default config;

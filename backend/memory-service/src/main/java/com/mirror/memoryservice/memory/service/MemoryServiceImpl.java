@@ -41,6 +41,10 @@ public class MemoryServiceImpl implements MemoryService {
     private final ObjectMapper objectMapper;
     private final UserProfileRepository userProfileRepository;
 
+    @org.springframework.beans.factory.annotation.Autowired
+    @org.springframework.context.annotation.Lazy
+    private MemoryService self;
+
     public MemoryServiceImpl(MemoryRepository repository, GeminiService geminiService, GroqService groqService, RabbitTemplate rabbitTemplate, ObjectMapper objectMapper, UserProfileRepository userProfileRepository) {
         this.repository = repository;
         this.geminiService = geminiService;
@@ -52,7 +56,7 @@ public class MemoryServiceImpl implements MemoryService {
 
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
+    @CacheEvict(value = {CACHE_EMOTION_ANALYTICS, "emotionMapping"}, key = "#userId")
     public String saveMemory(String userId, String content, String emotion, String sender, float[] embedding) {
         try {
             String embeddingStr = formatVectorForSql(embedding);
@@ -338,8 +342,15 @@ public class MemoryServiceImpl implements MemoryService {
         return aiResponse;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "emotionMapping", key = "#userId")
+    public Map<String, String> getEmotionMapping(String userId) {
+        return getGroupedEmotions(userId).mapping;
+    }
+
     private List<Memory> mapMemoriesWithGroupedEmotions(String userId, List<Memory> memories) {
-        Map<String, String> mapping = getGroupedEmotions(userId).mapping;
+        Map<String, String> mapping = self.getEmotionMapping(userId);
         List<Memory> mapped = new ArrayList<>();
         for (Memory m : memories) {
             Memory newMem = new Memory(m.getId(), m.getUserId(), m.getContent(), m.getEmotion(), m.getSender(), m.getEmbedding(), m.getCreatedAt());
@@ -395,7 +406,7 @@ public class MemoryServiceImpl implements MemoryService {
 
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
+    @CacheEvict(value = {CACHE_EMOTION_ANALYTICS, "emotionMapping"}, key = "#userId")
     public void updateMemory(Long id, String userId, String content, String emotion) {
         Memory memory = repository.findById(id).orElseThrow(() -> new MemoryNotFoundException("Memory " + id + " not found"));
         
@@ -421,7 +432,7 @@ public class MemoryServiceImpl implements MemoryService {
 
     @Override
     @Transactional
-    @CacheEvict(value = CACHE_EMOTION_ANALYTICS, key = "#userId")
+    @CacheEvict(value = {CACHE_EMOTION_ANALYTICS, "emotionMapping"}, key = "#userId")
     public void deleteAllMemoriesForUser(String userId) {
         log.info("Deleting all memories for user: {}", userId);
         repository.deleteByUserId(userId);
