@@ -1,4 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
 
 import { AudioVisualizerService } from './audio-visualizer.service';
 
@@ -50,23 +52,40 @@ export class TextToSpeechService {
   }
 
   public speakText(msgId: string, text: string): void {
-    if (typeof window === 'undefined' || !window.speechSynthesis) {
+    if (!Capacitor.isNativePlatform() && (typeof window === 'undefined' || !window.speechSynthesis)) {
       return;
     }
 
     if (this.currentlySpeakingId() === msgId) {
-      window.speechSynthesis.cancel();
-      this.currentlySpeakingId.set(null);
-      this.audioVisualizer.restoreVolume();
+      this.cancel();
       return;
     }
 
-    window.speechSynthesis.cancel();
+    if (!Capacitor.isNativePlatform()) {
+      window.speechSynthesis.cancel();
+    }
 
+    this.currentlySpeakingId.set(msgId);
+    this.audioVisualizer.duckVolume(0.18);
+
+    if (Capacitor.isNativePlatform()) {
+      this.speakNative(msgId, text);
+    } else {
+      this.speakWeb(msgId, text);
+    }
+  }
+
+  private speakNative(msgId: string, text: string): void {
+    TextToSpeech.speak({ text, rate: 0.95, pitch: 1.05 }).then(() => {
+      this.clearSpeakingId(msgId);
+    }).catch(() => {
+      this.clearSpeakingId(msgId);
+    });
+  }
+
+  private speakWeb(msgId: string, text: string): void {
     const utterance: SpeechSynthesisUtterance = new SpeechSynthesisUtterance(text);
-
     const voices: SpeechSynthesisVoice[] = window.speechSynthesis.getVoices();
-
 
     const selectedVoice: SpeechSynthesisVoice = voices.find((v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('google uk english female')) ||
       voices.find((v: SpeechSynthesisVoice) => v.name.toLowerCase().includes('google uk english')) ||
@@ -78,37 +97,34 @@ export class TextToSpeechService {
       voices[0];
 
     if (selectedVoice) {
-
       utterance.voice = selectedVoice;
     }
 
     utterance.rate = 0.95;
     utterance.pitch = 1.05;
 
-    utterance.onend = () => {
-      if (this.currentlySpeakingId() === msgId) {
-        this.currentlySpeakingId.set(null);
-      }
-      this.audioVisualizer.restoreVolume();
-    };
-    utterance.onerror = () => {
-
-      if (this.currentlySpeakingId() === msgId) {
-        this.currentlySpeakingId.set(null);
-      }
-      this.audioVisualizer.restoreVolume();
-    };
-
-    this.currentlySpeakingId.set(msgId);
-
-    this.audioVisualizer.duckVolume(0.18);
+    utterance.onend = () => { this.clearSpeakingId(msgId); };
+    utterance.onerror = () => { this.clearSpeakingId(msgId); };
 
     setTimeout(() => {
       window.speechSynthesis.speak(utterance);
     }, 100);
   }
 
+  private clearSpeakingId(msgId: string): void {
+    if (this.currentlySpeakingId() === msgId) {
+      this.currentlySpeakingId.set(null);
+    }
+    this.audioVisualizer.restoreVolume();
+  }
+
   public cancel(): void {
+    if (Capacitor.isNativePlatform()) {
+      TextToSpeech.stop().catch(() => {});
+      this.currentlySpeakingId.set(null);
+      this.audioVisualizer.restoreVolume();
+      return;
+    }
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel();
       this.currentlySpeakingId.set(null);

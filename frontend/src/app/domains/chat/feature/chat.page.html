@@ -100,7 +100,7 @@
         <textarea #textInput aria-label="Chat input message"
           rows="1" [placeholder]="isRecording() ? 'Listening & transcribing...' : 'Speak or type...'"
           [ngModel]="chatInput()" (ngModelChange)="chatInput.set($event); adjustTextareaHeight()" (keydown)="handleKeyDown($event)"
-        (focus)="moveCursorToEnd($event)" (click)="moveCursorToEnd($event)"></textarea>
+        (focus)="moveCursorToEnd($event)"></textarea>
 
         <button class="send-btn" aria-label="Send message" [class.disabled]="isSendDisabled()"
           [disabled]="isSendDisabled()" (click)="triggerSend()">

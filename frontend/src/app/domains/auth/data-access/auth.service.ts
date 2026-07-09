@@ -1,6 +1,8 @@
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable, inject, NgZone, Injector } from '@angular/core';
 import { Router, NavigationStart } from '@angular/router';
+import { Capacitor } from '@capacitor/core';
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import { Store } from '@ngrx/store';
 import { Observable, tap, filter } from 'rxjs';
 
@@ -229,7 +231,9 @@ export class AuthService {
 
   public clearSession(): void {
     try {
-      if (window.speechSynthesis) {
+      if (Capacitor.isNativePlatform()) {
+        TextToSpeech.stop().catch(() => {});
+      } else if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel();
       }
       const audioSvc: AudioVisualizerService = this.injector.get(AudioVisualizerService);
