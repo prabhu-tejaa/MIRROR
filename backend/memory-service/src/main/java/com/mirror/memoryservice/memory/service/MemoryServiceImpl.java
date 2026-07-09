@@ -434,8 +434,9 @@ public class MemoryServiceImpl implements MemoryService {
     @Transactional
     @CacheEvict(value = {CACHE_EMOTION_ANALYTICS, "emotionMapping"}, key = "#userId")
     public void deleteAllMemoriesForUser(String userId) {
-        log.info("Deleting all memories for user: {}", userId);
+        log.info("Deleting all memories and profile for user: {}", userId);
         repository.deleteByUserId(userId);
+        userProfileRepository.deleteById(userId);
     }
 
     private String formatVectorForSql(float[] vector) {
