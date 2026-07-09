@@ -66,6 +66,11 @@ public class MemoryEventListener {
             
             memoryService.saveMemory(event.userId(), event.reflection(), event.emotion(), "mirror", null);
 
+            UserProfile profile = userProfileRepository.findById(event.userId()).orElse(new UserProfile(event.userId(), null));
+            String updatedFacts = groqService.extractAndMergeFacts(event.prompt(), profile.getCoreFacts());
+            profile.setCoreFacts(updatedFacts);
+            userProfileRepository.save(profile);
+
         } catch (Exception e) {
             log.error("Failed to process background reflection save event", e);
         }
