@@ -138,10 +138,9 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: frontend/android/app/build/outputs/apk/debug/Mirror.apk
-        tag_name: mirror
-        name: Mirror Mobile Build
+        tag_name: build-${{ github.run_number }}
+        name: Mirror Mobile Build #${{ github.run_number }}
         make_latest: true
-        allowUpdates: true
 
   # ────────────────────────────────────────────────────────
   # JOB 4: SPRING BOOT MICROSERVICES TO AZURE APP SERVICE
