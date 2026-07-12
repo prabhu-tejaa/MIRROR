@@ -139,7 +139,7 @@ jobs:
       with:
         files: frontend/android/app/build/outputs/apk/debug/Mirror.apk
         tag_name: build-${{ github.run_number }}
-        name: Mirror Mobile Build #${{ github.run_number }}
+        name: Mirror Mobile Build
         make_latest: true
 
   # ────────────────────────────────────────────────────────
