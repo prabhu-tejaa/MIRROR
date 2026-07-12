@@ -1,0 +1,147 @@
+<ion-content [fullscreen]="true" [scrollY]="true">
+  <div class="mind-space-wrapper" [class.animations-paused]="!isTabActive()">
+
+
+    <div class="aura-visualization-area">
+      <div #auraStage class="aura-stage-container" [class.animate-intro]="shouldAnimateIntro">
+
+        <div tabindex="0" class="aura-orb dominant-orb glassy-core" [class.animate-intro]="shouldAnimateIntro" [style.--dynamic-aura-gradient]="auraGradient()" [style.--aura-opacity]="totalCount() > 0 ? 1 : 0" [style.cursor]="totalCount() > 0 ? 'grab' : 'default'" (pointerdown)="onCenterPointerDown($event)" (click)="!hasDragged && totalCount() > 0 && isAllEmotionsOpen.set(true)" (keyup.enter)="!hasDragged && totalCount() > 0 && isAllEmotionsOpen.set(true)">
+          <span class="orb-label">{{ displayUsername() }}</span>
+        </div>
+
+        @if (totalCount() > 0) {
+          <div class="outer-orbs-wrapper" [class.play-fade-in]="isFirstVisit">
+            @for (stat of topOrbs(); track trackByKey(i, stat); let i = $index) {
+              <div
+                tabindex="0"
+                class="aura-orb cursor-pointer"
+                [ngClass]="orbClasses[i]"
+                [style.--orb-scale]="stat.orbScale"
+                [style.--orb-color]="stat.primaryColor"
+                [style.background]="stat.primaryColor"
+                [style.box-shadow]="'0 0 28px ' + stat.primaryColor"
+                (click)="selectEmotion(stat.key)"
+                (keyup.enter)="selectEmotion(stat.key)">
+              </div>
+            }
+          </div>
+        }
+
+      </div>
+
+      @if (totalCount() === 0) {
+        <div class="status-overlay">
+          @if (isLoading()) {
+            <div class="syncing-indicator">
+              <span>Syncing Aura</span>
+            </div>
+          }
+          @if (!isLoading()) {
+            <div class="empty-guidance-card">
+              <h3>Your Mind Space</h3>
+              <p>Your aura is currently clear. Start a reflection in the chat to begin mapping your emotions.</p>
+              <button class="btn-reflect-now" (click)="startReflection()">
+                Begin Reflection
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    @if (totalCount() > 0) {
+      <div class="emotion-text-selectors" [class.play-fade-in]="isFirstVisit">
+        @for (stat of topOrbs(); track trackByKey($index, stat)) {
+          <button
+            class="emotion-text-btn"
+            [class.active]="selectedEmotion() === stat.key"
+            [style.color]="stat.primaryColor"
+            [style.text-shadow]="getTextShadow(stat.key, stat.primaryColor)"
+            (click)="selectEmotion(stat.key)">
+            {{ stat.name }}
+          </button>
+        }
+      </div>
+    }
+
+    @if (selectedEmotion() || isAllEmotionsOpen()) {
+      <div class="timeline-popup-overlay" tabindex="0" (click)="closeModals()" (keyup.enter)="closeModals()">
+        <div tabindex="0" class="timeline-popup-card extracted-style-1781088649439-1"  [style.border-color]="modalBorderColor()" (click)="$event.stopPropagation()" (keyup.enter)="$event.stopPropagation()">
+          @if (selectedEmotion()) {
+            <div class="popup-header">
+              <button class="btn-back-popup" [style.visibility]="openedFromAllEmotions() ? 'visible' : 'hidden'" (click)="goBackToAllEmotions()">←</button>
+              <h4 class="extracted-style-1781088649439-2">Reflections: <span [style.color]="selectedEmotionStat().primaryColor">{{ selectedEmotionStat().name }}</span></h4>
+              <button class="btn-close-popup" (click)="closeModals()">✕</button>
+            </div>
+            <div class="popup-scroller">
+              @for (item of filteredReflections(); track trackByCreatedAt($index, item)) {
+                <div class="popup-card">
+                  <div class="extracted-style-1781088649439-3">
+                    <span class="card-time extracted-style-1781088649439-4" >{{ item.createdAt | date:'shortTime' }} • {{ item.createdAt | date:'mediumDate' }}</span>
+                    @if (item.originalEmotionName) {
+                      <span class="extracted-style-1781088649439-5" [style.color]="selectedEmotionStat().primaryColor">{{ item.originalEmotionName }}</span>
+                    }
+                  </div>
+                  <p class="card-text extracted-style-1781088649439-6" >"{{ item.content }}"</p>
+                </div>
+              }
+              @if (filteredReflections().length === 0) {
+                <div class="empty-popup-logs">
+                  <p class="no-memories-text">No reflections recorded for this emotion state yet.</p>
+                </div>
+              }
+            </div>
+          }
+          @if (isAllEmotionsOpen() && !selectedEmotion()) {
+            <div class="popup-header">
+              <h4 class="extracted-style-1781088649439-7">{{ displayUsername() }}'s Emotional States</h4>
+              <button class="btn-close-popup" (click)="closeModals()">✕</button>
+            </div>
+            <div class="popup-scroller extracted-style-1781088649439-8" >
+              <div class="all-emotions-grid extracted-style-1781088649439-9" >
+                @for (stat of emotionStats(); track trackByKey($index, stat)) {
+                  <button
+                    class="emotion-list-item-btn extracted-style-1781088649439-10"
+                    
+                    [style.color]="stat.primaryColor"
+                    [style.border-color]="stat.primaryColor"
+                    (click)="selectFromAllEmotions(stat.key)"
+                    >
+                    <span>{{ stat.name }}</span>
+                    <span class="extracted-style-1781088649439-11">{{ stat.percentage }}%</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <div class="music-floating-system">
+      <button class="floating-music-btn" [class.playing]="isPlaying()" [class.loading]="isLoadingAudio()" [disabled]="isLoadingAudio()" (click)="togglePlay()">
+        @if (isLoadingAudio()) {
+          <div class="music-btn-spinner"></div>
+        }
+        @if (!isPlaying() && !isLoadingAudio()) {
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" class="music-icon-svg">
+            <path d="M8 5v14l11-7z"/>
+          </svg>
+        }
+        @if (isPlaying() && !isLoadingAudio()) {
+          <div #spectrumContainer class="playing-spectrum"
+            [style.--color-1]="topOrbs()[0]?.primaryColor || '#ffffff'"
+            [style.--color-2]="topOrbs()[1]?.primaryColor || '#ffffff'"
+            [style.--color-3]="topOrbs()[2]?.primaryColor || '#ffffff'"
+            [style.--color-4]="topOrbs()[3]?.primaryColor || '#ffffff'">
+            <span class="spec-bar bar-1"></span>
+            <span class="spec-bar bar-2"></span>
+            <span class="spec-bar bar-3"></span>
+            <span class="spec-bar bar-4"></span>
+          </div>
+        }
+      </button>
+    </div>
+
+  </div>
+</ion-content>

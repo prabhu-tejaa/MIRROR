@@ -1,0 +1,135 @@
+<ion-header class="glassy-modal-header">
+  <ion-toolbar>
+    <ion-title>Edit User Account</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss(false)">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding glassy-modal-content">
+  <div class="modal-form-wrapper">
+    <div class="user-overview">
+      <div class="modal-avatar">
+        {{ editForm.username.charAt(0).toUpperCase() }}
+      </div>
+      <div class="user-meta">
+        <h3>{{ editForm.username || 'User' }}</h3>
+        <p class="user-id-sub">ID: {{ user.id }}</p>
+      </div>
+    </div>
+
+    <form #userForm="ngForm" class="modal-form" (ngSubmit)="save()">
+      <div class="form-group">
+        <label for="username" class="field-label">Username</label>
+        <div class="input-wrapper">
+          <ion-icon name="person-outline" class="input-icon"></ion-icon>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            required 
+            placeholder="Enter username" 
+            class="glass-input"
+            [(ngModel)]="editForm.username"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="field-label">Email Address</label>
+        <div class="input-wrapper">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            required 
+            placeholder="Enter email address" 
+            class="glass-input"
+            [(ngModel)]="editForm.email"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="role" class="field-label">Access Role</label>
+        <div class="input-wrapper select-wrapper">
+          <ion-icon name="shield-outline" class="input-icon"></ion-icon>
+          <select 
+            id="role" 
+            name="role" 
+            class="glass-select" 
+            [(ngModel)]="editForm.role">
+            <option value="ROLE_USER">User (Standard Access)</option>
+            <option value="ROLE_ADMIN">Admin (Privileged Access)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group toggle-group">
+        <div class="toggle-info">
+          <span class="field-label">Verified Status</span>
+          <span class="field-desc">Confirm if this user's email is verified</span>
+        </div>
+        <ion-toggle 
+          name="isVerified" 
+          color="success" 
+          class="custom-toggle"
+          [(ngModel)]="editForm.isVerified">
+        </ion-toggle>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <div class="form-group">
+        <div class="label-with-badge">
+          <label for="password" class="field-label">Update Password</label>
+          <span class="optional-badge">Optional</span>
+        </div>
+        <div class="input-wrapper">
+          <ion-icon name="key-outline" class="input-icon"></ion-icon>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Enter new password to change" 
+            class="glass-input"
+            [(ngModel)]="editForm.password"
+          />
+        </div>
+        <p class="field-note">
+          Leave this field blank to keep the user's current password unchanged. If changed, the backend will securely hash this password.
+        </p>
+      </div>
+
+      <div class="modal-actions">
+        <ion-button 
+          type="button" 
+          fill="clear" 
+          class="cancel-btn" 
+          [disabled]="isSubmitting"
+          (click)="dismiss(false)">
+          Cancel
+        </ion-button>
+        
+        <ion-button 
+          type="submit" 
+          class="save-btn" 
+          [disabled]="isSubmitting || !userForm.valid">
+          @if (!isSubmitting) {
+            <span>Save Changes</span>
+          } @else {
+            <div class="loading-dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+          }
+        </ion-button>
+      </div>
+    </form>
+  </div>
+</ion-content>

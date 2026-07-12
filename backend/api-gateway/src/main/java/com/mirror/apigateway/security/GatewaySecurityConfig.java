@@ -1,0 +1,40 @@
+package com.mirror.apigateway.security;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+
+@Configuration
+@EnableWebFluxSecurity
+public class GatewaySecurityConfig {
+
+    @Autowired
+    private JwtWebFilter jwtWebFilter;
+
+    @Bean
+    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, CorsConfigurationSource corsConfigurationSource) {
+        http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .csrf(csrf -> csrf.disable())
+                .httpBasic(httpBasic -> httpBasic.disable())
+                .formLogin(formLogin -> formLogin.disable())
+                .authorizeExchange(exchange -> exchange
+                        .pathMatchers(org.springframework.http.HttpMethod.OPTIONS).permitAll()
+                        .pathMatchers("/api/auth/signup", "/api/auth/login", "/api/auth/otp/**", "/api/auth/forgot-password/**", "/api/auth/refresh", "/api/auth/logout", "/api/auth/validate", "/api/auth/keepalive", "/api/memory/keepalive", "/actuator/health").permitAll()
+                        .anyExchange().authenticated()
+                )
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint((swe, e) -> {
+                            swe.getResponse().setStatusCode(org.springframework.http.HttpStatus.UNAUTHORIZED);
+                            return swe.getResponse().setComplete();
+                        })
+                )
+                .addFilterAt(jwtWebFilter, SecurityWebFiltersOrder.AUTHENTICATION);
+        return http.build();
+    }
+}

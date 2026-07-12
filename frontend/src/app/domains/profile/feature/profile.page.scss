@@ -1,0 +1,303 @@
+ion-content {
+  --padding-bottom: env(safe-area-inset-bottom, 16px);
+  height: 100%;
+
+  &::part(scroll) {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+}
+
+.profile-page-inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 100.2%;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+}
+
+.profile-hero {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: calc(env(safe-area-inset-top, 0px) + 24px) 20px 16px;
+  gap: 12px;
+
+  .avatar-icon {
+    font-size: 40px;
+    color: rgba(255, 255, 255, 0.8);
+    filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.08));
+    flex-shrink: 0;
+  }
+
+  .user-email {
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    margin: 0;
+    letter-spacing: 0.2px;
+    text-align: left;
+    word-break: break-all;
+  }
+}
+
+.profile-content-area {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.list-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  padding: 0 16px 8px;
+  margin-top: 8px;
+}
+
+.profile-list {
+  margin: 0 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.profile-item {
+  --background: transparent;
+  --color: #ffffff;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --inner-padding-end: 0;
+  --min-height: 52px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: #ffffff !important;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  .item-icon {
+    font-size: 20px;
+    color: #ffffff;
+    margin-right: 12px;
+  }
+
+  ion-label {
+    font-size: 14px;
+    color: #ffffff !important;
+  }
+
+  ion-note {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7) !important;
+    max-width: 55%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+  }
+
+  .chevron-icon {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.7) !important;
+  }
+
+  .admin-color {
+    color: #8b5cf6 !important;
+  }
+
+  .style-heart-icon {
+    color: #ff6b81 !important;
+  }
+
+  .capitalize-style {
+    text-transform: capitalize;
+  }
+}
+
+ion-footer {
+  background: transparent !important;
+  --background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.logout-container {
+  padding: 4px 16px 16px;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.logout-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+
+  ion-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  &:active {
+    transform: scale(0.97);
+    background: rgba(239, 68, 68, 0.22);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.25);
+  }
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.18);
+  }
+}
+
+@media (min-width: 768px) {
+  .profile-page-inner {
+    max-width: 100%;
+    padding-top: 8px;
+  }
+
+  .profile-hero {
+    padding: calc(env(safe-area-inset-top, 0px) + 28px) 28px 16px;
+    gap: 14px;
+
+    .avatar-icon {
+      font-size: 44px;
+    }
+
+    .user-email {
+      font-size: 16px;
+    }
+  }
+
+  .profile-list {
+    margin: 0 28px;
+  }
+
+  .logout-container {
+    padding: 28px 28px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .profile-page-inner {
+    max-width: 100%;
+    padding-top: 16px;
+  }
+
+  .profile-hero {
+    padding: calc(env(safe-area-inset-top, 0px) + 32px) 32px 20px;
+
+    .avatar-icon {
+      font-size: 48px;
+    }
+
+    .user-email {
+      font-size: 17px;
+    }
+  }
+
+  .profile-list {
+    margin: 0 32px;
+  }
+
+  .profile-item {
+    ion-note {
+      max-width: 320px;
+    }
+  }
+
+  .logout-container {
+    padding: 32px 32px;
+  }
+
+  .logout-btn {
+    max-width: 360px;
+    margin: 0 auto;
+    display: flex;
+  }
+}
+
+@media (min-width: 1280px) {
+  .profile-page-inner {
+    max-width: 100%;
+  }
+}
+::ng-deep .about-alert {
+  --background: rgba(255, 255, 255, 0.02);
+  --backdrop-opacity: 0.6;
+
+  .alert-wrapper {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.25) !important;
+    border-radius: 24px !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(40px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(200%) !important;
+  }
+
+  .alert-title {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 1.25rem !important;
+    letter-spacing: 0.02em !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .alert-message {
+    color: rgba(255, 255, 255, 0.85) !important;
+    font-size: 0.95rem !important;
+    line-height: 1.6 !important;
+    margin-top: 12px !important;
+  }
+
+  .alert-button-group {
+    padding: 12px 20px 20px !important;
+  }
+
+  .alert-awesome-btn {
+    color: #0a84ff !important;
+    font-weight: 600 !important;
+    font-size: 1.05rem !important;
+  }
+
+  @media (max-width: 767px) {
+    .alert-wrapper {
+      max-width: 85% !important;
+      border-radius: 20px !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.1) !important;
+    }
+    .alert-title {
+      font-size: 1.1rem !important;
+    }
+    .alert-message {
+      font-size: 0.85rem !important;
+      line-height: 1.4 !important;
+      margin-top: 10px !important;
+    }
+    .alert-button-group {
+      padding: 10px 16px 16px !important;
+    }
+    .alert-awesome-btn {
+      font-size: 0.95rem !important;
+    }
+  }
+}
+

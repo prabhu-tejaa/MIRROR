@@ -1,0 +1,97 @@
+.welcome-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px;
+  margin: auto 0;
+  width: 100%;
+  max-width: 720px;
+  align-self: center;
+  box-sizing: border-box;
+  animation: bannerFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+
+  .banner-orb {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    animation: floatIcon 6s ease-in-out infinite;
+
+    .banner-icon {
+      font-size: 32px;
+      color: #ffffff;
+      background: linear-gradient(135deg, #00ffd5, #8800ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .greeting-title {
+    margin: 0;
+    color: #ffffff;
+    line-height: 1.2;
+
+    .greeting-time-text {
+      display: block;
+      font-size: 2.2rem;
+      font-weight: 500;
+      letter-spacing: -0.5px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .username-highlight {
+      display: inline-block;
+      font-size: 3.4rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-top: 8px;
+      background: linear-gradient(
+        110deg,
+        #9ba3af 0%,
+        #cbd5e1 35%,
+        #ffffff 50%,
+        #cbd5e1 65%,
+        #9ba3af 100%
+      );
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 4px 12px rgba(203, 213, 225, 0.3));
+      animation: silverShine 12s linear infinite;
+    }
+  }
+
+  .greeting-subtitle {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.65);
+    margin: 24px 0 0 0;
+    max-width: 620px;
+    font-weight: 400;
+    letter-spacing: 0.2px;
+
+    .quote-text {
+      font-style: italic;
+      display: block;
+    }
+
+    .quote-author {
+      display: block;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.45);
+      margin-top: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+  }
+}

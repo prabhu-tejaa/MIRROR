@@ -1,0 +1,7 @@
+package com.mirror.memoryservice.memory.repository;
+
+import com.mirror.memoryservice.memory.model.UserProfile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserProfileRepository extends JpaRepository<UserProfile, String> {
+}

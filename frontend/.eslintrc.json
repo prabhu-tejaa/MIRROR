@@ -1,0 +1,210 @@
+{
+  "root": true,
+  "ignorePatterns": ["projects/**/*", "dist/**/*", "node_modules/**/*"],
+  "overrides": [
+    {
+      "files": ["*.ts"],
+      "parserOptions": {
+        "project": ["tsconfig.eslint.json"],
+        "createDefaultProgram": false
+      },
+      "extends": [
+        "eslint:recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:@typescript-eslint/strict",
+        "plugin:@ngrx/all",
+        "plugin:rxjs-x/recommended-legacy",
+        "plugin:sonarjs/recommended-legacy"
+      ],
+      "plugins": [
+        "@typescript-eslint", 
+        "import", 
+        "rxjs-x", 
+        "@ngrx", 
+        "sonarjs"
+      ],
+      "rules": {
+        "@angular-eslint/component-class-suffix": ["error", { "suffixes": ["Component", "Page"] }],
+        "@angular-eslint/component-selector": ["error", { "type": "element", "prefix": "app", "style": "kebab-case" }],
+        "@angular-eslint/directive-selector": ["error", { "type": "attribute", "prefix": "app", "style": "camelCase" }],
+
+        "no-console": "error",
+        "no-debugger": "error",
+        "no-alert": "error",
+
+        "@typescript-eslint/no-unused-vars": ["error", { "args": "all", "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+        "@typescript-eslint/explicit-member-accessibility": [
+          "error",
+          {
+            "accessibility": "explicit",
+            "overrides": { "constructors": "no-public" }
+          }
+        ],
+        "@typescript-eslint/naming-convention": [
+          "error",
+          { "selector": "default", "format": ["camelCase"], "leadingUnderscore": "forbid", "trailingUnderscore": "forbid" },
+          { "selector": "variable", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+          { "selector": "property", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+          { "selector": "typeProperty", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+          { "selector": "enumMember", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+          { "selector": "method", "format": ["camelCase", "UPPER_CASE", "PascalCase"] },
+          { "selector": "objectLiteralProperty", "format": null, "filter": { "regex": "[-_]", "match": true } },
+          { "selector": "objectLiteralProperty", "format": ["camelCase", "UPPER_CASE", "PascalCase"], "filter": { "regex": "[-_]", "match": false } },
+          { "selector": "parameter", "format": ["camelCase"], "leadingUnderscore": "allow" },
+          { "selector": "typeLike", "format": ["PascalCase"] }
+        ],
+
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-unsafe-argument": "error",
+        "@typescript-eslint/no-unsafe-assignment": "error",
+        "@typescript-eslint/no-unsafe-member-access": "error",
+        "@typescript-eslint/no-unsafe-return": "error",
+        "@typescript-eslint/explicit-module-boundary-types": "error",
+        "@typescript-eslint/no-non-null-assertion": "error",
+        "@typescript-eslint/typedef": [
+          "error",
+          {
+            "arrowParameter": false,
+            "variableDeclaration": false,
+            "parameter": true,
+            "propertyDeclaration": true,
+            "memberVariableDeclaration": true
+          }
+        ],
+        "@typescript-eslint/unbound-method": "off",
+
+        "no-restricted-syntax": [
+          "error",
+          { 
+            "selector": "Line:not([value=/^\\s*(eslint-disable|ts-ignore|todo|fixme)/i])", 
+            "message": "Direct Line Comments are forbidden. Code must be self-documenting. Use explicit ESLint flags or TODO/FIXME annotations if documenting an architectural or engine-level bypass." 
+          },
+          { 
+            "selector": "Block:not([value=/^\\s*(eslint-disable|ts-ignore|todo|fixme)/i])", 
+            "message": "Block Comments are forbidden. Code must be self-documenting. Use explicit ESLint flags or TODO/FIXME annotations if documenting an architectural or engine-level bypass." 
+          }
+        ],
+        "no-inline-comments": "error",
+
+        "eqeqeq": ["error", "always"],
+        "curly": ["error", "all"],
+        "no-eval": "error",
+        "no-implied-eval": "error",
+        "no-param-reassign": "error",
+
+        "max-lines-per-function": ["error", { "max": 25, "skipBlankLines": true }],
+        "max-lines": ["error", { "max": 200, "skipBlankLines": true }],
+        "complexity": ["error", { "max": 5 }],
+        "max-depth": ["error", { "max": 2 }],
+        "max-params": ["error", { "max": 3 }],
+
+        "import/no-duplicates": "error",
+        "import/order": ["error", { "alphabetize": { "order": "asc" }, "newlines-between": "always" }],
+
+        "rxjs-x/no-ignored-observable": "error",
+        "rxjs-x/no-nested-subscribe": "error", 
+        "rxjs-x/no-implicit-any-catch": "off",
+        "sonarjs/deprecation": "off",
+        "sonarjs/pseudo-random": "off",
+        "sonarjs/function-return-type": "off",
+        "sonarjs/no-nested-conditional": "off",
+        "sonarjs/slow-regex": "off",
+        "sonarjs/no-async-constructor": "off"
+      }
+    },
+    {
+      "files": ["*.spec.ts"],
+      "rules": {
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "max-lines-per-function": "off",
+        "max-lines": "off",
+        "sonarjs/no-duplicate-string": "off"
+      }
+    },
+    {
+      "files": ["*.routes.ts"],
+      "rules": {
+        "@typescript-eslint/no-unsafe-return": "off"
+      }
+    },
+    {
+      "files": ["*.page.ts"],
+      "rules": {
+        "max-lines": ["error", { "max": 400, "skipBlankLines": true }],
+        "max-lines-per-function": ["error", { "max": 55, "skipBlankLines": true }]
+      }
+    },
+    {
+      "files": ["*.effects.ts"],
+      "rules": {
+        "max-lines": "off",
+        "max-lines-per-function": "off",
+        "complexity": "off",
+        "@ngrx/prefer-effect-callback-in-block-statement": "off",
+        "@ngrx/prefer-concat-latest-from": "off",
+        "@typescript-eslint/no-unsafe-argument": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off"
+      }
+    },
+    {
+      "files": ["*.service.ts"],
+      "rules": {
+        "max-lines": ["error", { "max": 400, "skipBlankLines": true }],
+        "max-lines-per-function": ["error", { "max": 55, "skipBlankLines": true }],
+        "complexity": ["error", { "max": 12 }],
+        "max-depth": ["error", { "max": 4 }]
+      }
+    },
+    {
+      "files": ["mock-*.ts"],
+      "rules": {
+        "max-lines-per-function": "off",
+        "complexity": "off",
+        "sonarjs/cognitive-complexity": "off",
+        "sonarjs/no-hardcoded-ip": "off"
+      }
+    },
+    {
+      "files": [
+        "starfield.physics.ts",
+        "starfield.shapes.ts",
+        "starfield.renderer.ts",
+        "starfield.engine.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-extraneous-class": "off",
+        "max-lines-per-function": "off",
+        "max-params": "off",
+        "complexity": "off",
+        "max-depth": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "sonarjs/cognitive-complexity": "off"
+      }
+    },
+    {
+      "files": ["*.html"],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:@angular-eslint/template/accessibility"
+      ],
+      "rules": {
+        "@angular-eslint/template/no-negated-async": "error",
+        "@angular-eslint/template/no-any": "error",
+        "@angular-eslint/template/conditional-complexity": ["error", { "maxComplexity": 2 }],
+        "@angular-eslint/template/no-duplicate-attributes": "error",
+        "@angular-eslint/template/attributes-order": "error",
+        "@angular-eslint/template/no-call-expression": "off",
+        "@angular-eslint/template/eqeqeq": "error",
+        "@angular-eslint/template/no-inline-styles": ["error", { "allowNgStyle": true, "allowBindToStyle": true }],
+        "@angular-eslint/template/prefer-control-flow": "error"
+      }
+    }
+  ]
+}

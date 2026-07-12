@@ -1,0 +1,76 @@
+<ion-content class="transparent-bg" [fullscreen]="true">
+  <div class="login-wrapper">
+
+<div class="branding-header">
+      <div class="title-glow">
+        <h1 class="splash-title extracted-style-1781088649416-1" >{{ 'OTP.HEADER' | translate }}</h1>
+      </div>
+      <p class="splash-tagline">{{ 'OTP.TAGLINE' | translate }}</p>
+    </div>
+
+    <div class="glassy-card">
+      <h2 class="form-title">{{ 'OTP.TITLE' | translate }}</h2>
+      <p class="otp-instruction">
+        {{ 'OTP.INSTRUCTION' | translate }}<br>
+        <span class="masked-email">{{ maskedEmailValue }}</span>
+      </p>
+      
+      <form [formGroup]="otpForm" (ngSubmit)="onVerify()">
+        
+
+
+        <div class="input-group otp-group">
+          <div class="otp-boxes-container" tabindex="0" (click)="focusInput($event)" (keydown.enter)="focusInput($event)">
+            @for (digit of otpDigits; track $index) {
+              <input
+                #otpInput
+                type="tel"
+                pattern="[0-9]*"
+                inputmode="numeric"
+                class="otp-box"
+                [class.active]="focusedIndex === $index"
+                [value]="displayDigitsValue[$index]"
+                (focus)="onFocus($index)"
+                (blur)="onBlur()"
+                (input)="onInput($event, $index)"
+                (keydown)="onKeydown($event, $index)"
+                (paste)="onPaste($event)"
+              />
+            }
+          </div>
+          
+          @if (isSubmitted && f['code'].errors) {
+            <div class="error-msg extracted-style-1781088649416-2" >
+              @if (f['code'].errors['required']) { <span>{{ 'OTP.ERROR_REQUIRED' | translate }}</span> }
+              @if (f['code'].errors['pattern']) { <span>{{ 'OTP.ERROR_PATTERN' | translate }}</span> }
+            </div>
+          }
+        </div>
+
+        <ion-button type="submit" expand="block" class="premium-btn" [disabled]="isLoading">
+          @if (!isLoading) {
+            <span>{{ flowContext === 'reset' ? ('OTP.BUTTON_VERIFY_RESET' | translate) : ('OTP.BUTTON_VERIFY_ENTER' | translate) }}</span>
+          } @else {
+            <div class="loading-dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+          }
+        </ion-button>
+        
+        <div class="signup-wrapper">
+          <span class="signup-text">{{ 'OTP.DIDNT_RECEIVE' | translate }}
+            @if (resendTimer > 0) {
+              <span class="extracted-style-1781088649416-3">{{ 'OTP.RESEND_IN' | translate: { resendTimer: formattedTimerValue } }}</span>
+            } @else {
+              <a class="signup-link" tabindex="0" (click)="resendCode()" (keydown.enter)="resendCode()">{{ 'OTP.RESEND' | translate }}</a>
+            }
+          </span><br><br>
+          <span class="signup-text"><a class="signup-link" tabindex="0" (click)="goToLogin()" (keydown.enter)="goToLogin()">{{ 'OTP.BACK_LINK' | translate }}</a></span>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</ion-content>

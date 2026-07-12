@@ -1,0 +1,71 @@
+package com.mirror.authservice.admin.controller;
+import com.mirror.authservice.admin.dto.AdminCreateUserRequest;
+import com.mirror.authservice.auth.service.AuthService;
+import com.mirror.authservice.user.dto.UserResponse;
+import com.mirror.authservice.user.dto.UserUpdateRequest;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import java.util.List;
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/auth/admin/users")
+@RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
+public class AdminController {
+
+    private final AuthService authService;
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        return ResponseEntity.ok(authService.getAllUsers());
+    }
+
+    @GetMapping("/metrics")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> getMetrics() {
+        long userCount = authService.getUserCount();
+        return ResponseEntity.ok(java.util.Map.of("user_count", userCount));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> getUserById(@PathVariable UUID id) {
+        return ResponseEntity.ok(authService.getUserById(id));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> createUser(@Valid @RequestBody AdminCreateUserRequest request) {
+        try {
+            UserResponse created = authService.adminCreateUser(
+                    request.username(),
+                    request.email(),
+                    request.password(),
+                    request.role()
+            );
+            return ResponseEntity.ok(created);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> updateUser(@PathVariable UUID id, @Valid @RequestBody UserUpdateRequest request) {
+        return ResponseEntity.ok(authService.updateUser(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+        authService.deleteUser(id);
+        return ResponseEntity.noContent().build();
+    }
+}

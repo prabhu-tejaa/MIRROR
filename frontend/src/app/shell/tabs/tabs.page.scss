@@ -1,0 +1,231 @@
+ion-tab-bar {
+  --background: rgba(18, 18, 18, 0.85);
+  --border: none;
+  background: transparent;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  width: 100%;
+  height: max(44px, env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+
+  z-index: 1000;
+}
+
+ion-tab-button {
+  --color: rgba(255, 255, 255, 0.4);
+  --color-selected: #ffffff;
+  --background: transparent;
+  --background-focused: transparent;
+  --ripple-color: rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+
+  &.tab-selected {
+    --background: transparent;
+
+    ion-icon {
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    }
+  }
+
+  ion-icon {
+    font-size: 20px;
+  }
+
+  ion-label {
+    font-weight: 600;
+    font-size: 9px;
+    text-transform: uppercase;
+    margin-top: 1px;
+    letter-spacing: 0.3px;
+  }
+}
+
+@keyframes heartbeatIcon {
+  0% { transform: scale(1); }
+  15% { transform: scale(1.15); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.15); }
+  60% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+ion-tab-button[tab="you"] {
+  &.tab-selected {
+    ion-icon {
+      color: #ff4757 !important;
+      filter: drop-shadow(0 0 8px rgba(255, 71, 87, 0.55)) !important;
+      animation: heartbeatIcon 1.2s ease-in-out infinite;
+    }
+  }
+}
+
+.sidebar-toggle-btn {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  ion-tabs {
+    display: flex;
+    flex-direction: row;
+  }
+
+  ion-tab-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 64px;
+    height: 100% !important;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    border-top: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 12px 0 24px;
+    gap: 4px;
+    z-index: 100;
+    transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+
+    &.sidebar-expanded {
+      width: 200px;
+      align-items: flex-start;
+      padding: 12px 10px 24px;
+    }
+  }
+
+  .sidebar-toggle-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease;
+    padding: 0;
+    outline: none;
+    margin-bottom: 12px;
+    
+    margin-left: 10px;
+    align-self: flex-start;
+
+    ion-icon {
+      font-size: 24px;
+      pointer-events: none;
+    }
+
+    &:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.07);
+    }
+  }
+
+  ion-tab-button {
+    width: calc(100% - 12px);
+    margin: 0 6px;
+    height: 48px;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    padding: 0;
+    transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &::part(native) {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 0 12px;
+      gap: 12px;
+    }
+
+    ion-icon {
+      font-size: 24px;
+      flex-shrink: 0;
+      transition: filter 0.2s ease;
+      margin: 0 !important;
+    }
+
+    ion-label {
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0.2px;
+      margin-top: 0;
+      
+      opacity: 0;
+      width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      transition: opacity 0.28s cubic-bezier(0.4, 0, 0.2, 1), width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    &.tab-selected {
+      background: rgba(255, 255, 255, 0.07) !important;
+
+      ion-icon {
+        filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.35));
+      }
+    }
+  }
+
+  ion-tab-bar.sidebar-expanded ion-tab-button {
+    ion-label {
+      opacity: 1;
+      width: 120px;
+    }
+  }
+
+  ion-tab-button.profile-tab-btn {
+    margin-top: auto;
+    margin-bottom: 24px;
+  }
+
+  ::ng-deep ion-router-outlet {
+    margin-left: 0 !important;
+  }
+
+  ::ng-deep ion-tabs.sidebar-expanded ion-router-outlet {
+    margin-left: 0 !important;
+  }
+
+  ::ng-deep .chat-wrapper,
+  ::ng-deep .profile-page-inner,
+  ::ng-deep app-explore-container {
+    transition: padding-left 0.28s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  @media (min-width: 1024px) {
+    ::ng-deep .chat-wrapper {
+      padding-left: calc(64px + 24px) !important;
+    }
+
+    ::ng-deep ion-tabs.sidebar-expanded .chat-wrapper {
+      padding-left: calc(200px + 24px) !important;
+    }
+
+    ::ng-deep .profile-page-inner {
+      padding-left: 64px !important;
+    }
+
+    ::ng-deep ion-tabs.sidebar-expanded .profile-page-inner {
+      padding-left: 200px !important;
+    }
+
+    ::ng-deep app-explore-container {
+      padding-left: 64px !important;
+      display: block;
+    }
+
+    ::ng-deep ion-tabs.sidebar-expanded app-explore-container {
+      padding-left: 200px !important;
+      display: block;
+    }
+  }
+}

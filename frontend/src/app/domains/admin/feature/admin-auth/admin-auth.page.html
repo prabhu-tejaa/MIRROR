@@ -1,0 +1,106 @@
+<ion-content class="ion-padding" [fullscreen]="true">
+  <div class="dashboard-nav">
+    <button class="back-circle-btn" title="Back to Dashboard" (click)="goBack()">
+      <ion-icon name="arrow-back-outline"></ion-icon>
+    </button>
+
+    <div class="nav-title-text">Auth Service</div>
+
+    <div class="nav-right-group">
+      <button class="refresh-circle-btn" title="Refresh Users" (click)="loadUsers()">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="glass-container">
+    <div class="header-section">
+      <div class="header-top-row">
+        <div class="title-with-icon">
+          <ion-icon name="people-outline" class="title-icon"></ion-icon>
+          <h2>User Management</h2>
+        </div>
+        <ion-button class="add-user-btn" (click)="addUser()">
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+          Add User
+        </ion-button>
+      </div>
+      <p>Manage user accounts, roles, verification statuses and credentials.</p>
+    </div>
+
+    <div class="telemetry-grid">
+      <div class="telemetry-card">
+        <div class="card-icon-wrapper blue">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <span class="value">
+            @if (!isLoadingValue) {
+              {{ usersList.length }}
+            } @else {
+              <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
+            }
+          </span>
+          <span class="label">Total Accounts</span>
+        </div>
+      </div>
+
+      <div class="telemetry-card">
+        <div class="card-icon-wrapper green">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <span class="value">
+            @if (!isLoadingValue) {
+              {{ verifiedCountValue }}
+            } @else {
+              <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
+            }
+          </span>
+          <span class="label">Verified Profiles</span>
+        </div>
+      </div>
+
+      <div class="telemetry-card">
+        <div class="card-icon-wrapper red">
+          <ion-icon name="lock-closed-outline"></ion-icon>
+        </div>
+        <div class="card-info">
+          <span class="value">
+            @if (!isLoadingValue) {
+              {{ lockedCountValue }}
+            } @else {
+              <ion-spinner name="crescent" class="card-spinner"></ion-spinner>
+            }
+          </span>
+          <span class="label">Locked Out</span>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="search-filter-bar">
+      <ion-searchbar
+        class="glass-searchbar"
+        placeholder="Search by username or email..."
+        [ngModel]="searchQueryValue"
+        (ionInput)="updateSearch($event)">
+      </ion-searchbar>
+
+      <ion-select class="glass-select" label="" [interface]="'popover'" [interfaceOptions]="{ cssClass: 'role-select-popover' }" [ngModel]="roleFilterValue" (ionChange)="updateRoleFilter($event)">
+        <ion-select-option value="ALL">All Roles</ion-select-option>
+        <ion-select-option value="USER">User</ion-select-option>
+        <ion-select-option value="ADMIN">Admin</ion-select-option>
+      </ion-select>
+    </div>
+
+    <app-admin-user-list
+      [users]="filteredUsersList"
+      [isLoading]="isLoadingValue"
+      (edit)="editUser($event)"
+      (delete)="deleteUser($event)"
+      (unlock)="unlockUser($event)"
+      (lock)="lockUser($event)">
+    </app-admin-user-list>
+  </div>
+</ion-content>

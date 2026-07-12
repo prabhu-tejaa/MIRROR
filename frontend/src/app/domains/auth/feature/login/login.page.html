@@ -1,0 +1,103 @@
+<ion-content class="transparent-bg" [fullscreen]="true">
+  <div class="login-wrapper">
+
+    <div class="branding-header">
+      <div class="title-glow">
+        <h1 class="splash-title">
+          <span class="title-left">MIЯ</span><span class="title-right">ROЯ</span>
+        </h1>
+      </div>
+      <p class="splash-tagline">{{ 'LOGIN.TAGLINE' | translate }}</p>
+    </div>
+
+    <div class="glassy-card">
+      <h2 class="form-title">{{ 'LOGIN.TITLE' | translate }}</h2>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+
+
+
+        <div class="input-group">
+          <ion-input
+            id="login-email"
+            formControlName="email"
+            type="email"
+            class="glassy-input"
+            [placeholder]="'LOGIN.PLACEHOLDER_EMAIL' | translate"
+            (keyup.enter)="onLogin()"
+          ></ion-input>
+
+          @if (isSubmitted && f['email'].errors) {
+            <div class="error-msg">
+              @if (f['email'].errors['required']) {
+                <span>{{ 'LOGIN.ERROR_EMAIL_REQUIRED' | translate }}</span>
+              }
+              @if (f['email'].errors['email'] || f['email'].errors['pattern']) {
+                <span>{{ 'LOGIN.ERROR_EMAIL_INVALID' | translate }}</span>
+              }
+              @if (f['email'].errors['maxlength']) {
+                <span>{{ 'LOGIN.ERROR_EMAIL_MAXLENGTH' | translate }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="input-group">
+          <ion-input
+            id="login-password"
+            formControlName="password"
+            class="glassy-input"
+            [type]="showPassword ? 'text' : 'password'"
+            [placeholder]="'LOGIN.PLACEHOLDER_PASSWORD' | translate"
+            (keyup.enter)="onLogin()"
+            >
+            <button type="button" slot="end" class="eye-toggle" aria-label="Toggle password visibility" (click)="showPassword = !showPassword">
+              <ion-icon [icon]="showPassword ? eye : eyeOff"></ion-icon>
+            </button>
+          </ion-input>
+
+          @if (isSubmitted && f['password'].errors) {
+            <div class="error-msg">
+              @if (f['password'].errors['required']) {
+                <span>{{ 'LOGIN.ERROR_PASSWORD_REQUIRED' | translate }}</span>
+              }
+              @if (f['password'].errors['maxlength']) {
+                <span>{{ 'LOGIN.ERROR_PASSWORD_MAXLENGTH' | translate }}</span>
+              }
+              @if (!f['password'].errors['required'] && !f['password'].errors['maxlength']) {
+                <span>{{ 'LOGIN.ERROR_PASSWORD_INVALID' | translate }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        <ion-button type="button" expand="block" class="premium-btn" [disabled]="isLoading" (click)="onLogin()">
+          @if (!isLoading) {
+            <span>{{ 'LOGIN.BUTTON_SIGNIN' | translate }}</span>
+          } @else {
+            <div class="loading-dots">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+          }
+        </ion-button>
+
+        <div class="forgot-wrapper">
+          <a class="forgot-link" tabindex="0" (click)="goToForgot()" (keydown.enter)="goToForgot()">{{ 'LOGIN.FORGOT_LINK' | translate }}</a>
+        </div>
+
+        <div class="signup-wrapper">
+          <span class="signup-text">{{ 'LOGIN.SIGNUP_PREFIX' | translate }}<a class="signup-link" tabindex="0" (click)="goToSignup()" (keydown.enter)="goToSignup()">{{ 'LOGIN.SIGNUP_LINK' | translate }}</a></span>
+        </div>
+      </form>
+    </div>
+
+  </div>
+
+  @if (showHeartUsername) {
+    <div class="heart-username-overlay">
+      <span class="user-name style-chrome">{{ username }}</span>
+    </div>
+  }
+</ion-content>

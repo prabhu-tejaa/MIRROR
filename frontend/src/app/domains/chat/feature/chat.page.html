@@ -1,0 +1,114 @@
+<ion-content [fullscreen]="true" [scrollY]="false"
+  [ngClass]="getContainerClasses()"
+  [style.--emotion-color-primary]="currentPrimaryColor()"
+  [style.--emotion-color-secondary]="currentSecondaryColor()">
+
+  <div class="chat-wrapper">
+
+    <div #streamScroll class="message-stream">
+
+      @if (isLoadingMore()) {
+        <div class="load-more-indicator">
+          <div class="load-more-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="load-more-text">Loading older messages...</span>
+        </div>
+      }
+
+      @if (isLoadingHistory()) {
+        <div class="history-loading-skeleton">
+          <div class="skeleton-dot-wave">
+            <span></span><span></span><span></span>
+          </div>
+          <p class="skeleton-text">Connecting...</p>
+        </div>
+      }
+
+      @if (showWelcomeBanner()) {
+        <div class="welcome-banner">
+          <h1 class="greeting-title">
+            <span class="greeting-time-text">{{ getGreeting() }},</span>
+            <span class="username-highlight">
+              {{ getUsername() }}
+            </span>
+          </h1>
+          <p class="greeting-subtitle">
+            <span class="quote-text">“{{ activeQuote().text }}”</span>
+            <span class="quote-author">{{ activeQuote().author }}</span>
+          </p>
+        </div>
+      }
+
+      @for (msg of todayMessagesFormatted(); track trackByMessageId($index, msg)) {
+        <div class="message-wrapper" [class.user-message]="msg.isUser"
+          [class.mirror-message]="msg.isMirror">
+          @if (msg.isMirror) {
+            <div class="avatar">
+              <ion-icon name="finger-print" [class.loading-fingerprint]="msg.isTyping"></ion-icon>
+            </div>
+          }
+          <div [class]="getMessageBubbleClass(msg)"
+            [style.--bubble-color-primary]="msg.primaryColor"
+            [style.--bubble-color-secondary]="msg.secondaryColor">
+            @if (!msg.isTyping) {
+              <p class="msg-text">{{ msg.text }}</p>
+              <div class="bubble-meta">
+                @if (msg.isMirror) {
+                  <button class="tts-button" aria-label="Listen to reflection" [class.speaking]="currentlySpeakingId() === msg.id" (click)="speakText(msg.id, msg.text, $event)">
+                    <ion-icon [name]="currentlySpeakingId() === msg.id ? 'volume-high-outline' : 'volume-mute-outline'"></ion-icon>
+                  </button>
+                }
+                @if (showVibeBadge(msg)) {
+                  <span class="vibe-badge">
+                    {{ msg.emotion }}
+                  </span>
+                }
+                <span class="msg-time">{{ msg.timestamp | date:'shortTime' }}</span>
+              </div>
+            } @else {
+              <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="entry-capsule-container">
+      <div class="bottom-ambient-glow"></div>
+      <div class="bottom-ambient-glow-secondary"></div>
+      <div class="entry-capsule">
+        <button class="voice-btn" [class.recording]="isRecording()" [class.disabled]="isWaitingForResponse()" [disabled]="isWaitingForResponse()" [aria-label]="isRecording() ? 'Stop voice input' : 'Start voice input'"
+          (click)="toggleRecording()">
+          @if (!isRecording()) {
+            <ion-icon name="mic-outline" class="mic-icon"></ion-icon>
+          }
+          @if (isRecording()) {
+            <div class="mini-equalizer">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          }
+          @if (isRecording()) {
+            <span class="record-ring"></span>
+          }
+        </button>
+
+        <textarea #textInput aria-label="Chat input message"
+          rows="1" [placeholder]="isRecording() ? 'Listening & transcribing...' : 'Speak or type...'"
+          [ngModel]="chatInput()" (ngModelChange)="chatInput.set($event); adjustTextareaHeight()" (keydown)="handleKeyDown($event)"
+        (focus)="moveCursorToEnd($event)"></textarea>
+
+        <button class="send-btn" aria-label="Send message" [class.disabled]="isSendDisabled()"
+          [disabled]="isSendDisabled()" (click)="triggerSend()">
+          <ion-icon name="send-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>

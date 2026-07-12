@@ -1,0 +1,64 @@
+@use 'animations';
+@use 'themes';
+@use 'header';
+@use 'messages';
+@use 'input';
+@use 'welcome';
+
+.chat-content-container {
+  --background: #0d0b18;
+  --overflow: hidden;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.chat-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: calc(env(safe-area-inset-top, 0px) + 16px) 24px 4px 24px;
+  position: relative;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.ambient-glows {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .orb-1 {
+    width: 280px;
+    height: 280px;
+    background: #7928ca;
+    top: -20px;
+    left: -20px;
+  }
+
+  .orb-2 {
+    width: 260px;
+    height: 260px;
+    background: #ff0080;
+    bottom: 60px;
+    right: -20px;
+  }
+}

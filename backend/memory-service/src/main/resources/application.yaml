@@ -1,0 +1,80 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: memory-service
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 3
+    table: memory_flyway_schema_history
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      max-lifetime: 240000
+      minimum-idle: 0
+      idle-timeout: 60000
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 50
+        order_inserts: true
+        order_updates: true
+    show-sql: false
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST}
+      port: ${SPRING_DATA_REDIS_PORT}
+      password: ${SPRING_DATA_REDIS_PASSWORD}
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST}
+    port: ${SPRING_RABBITMQ_PORT}
+    username: ${SPRING_RABBITMQ_USERNAME}
+    password: ${SPRING_RABBITMQ_PASSWORD}
+    virtual-host: ${SPRING_RABBITMQ_VIRTUAL_HOST}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+  ai:
+    temperature: 0.7
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY:}
+    url: ${GEMINI_API_URL}
+  prompts:
+    system: ${GEMINI_SYSTEM_PROMPT:}
+  generation:
+    temperature: 0.7
+
+groq:
+  api:
+    key: ${GROQ_API_KEY}
+    url: ${GROQ_API_URL}
+  model:
+    text: ${GROQ_MODEL}
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+

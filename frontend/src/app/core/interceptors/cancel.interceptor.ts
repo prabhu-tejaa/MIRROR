@@ -1,0 +1,19 @@
+import { HttpInterceptorFn, HttpContextToken } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { takeUntil } from 'rxjs';
+
+import { HttpCancelService } from '../services/http-cancel.service';
+
+export const SKIP_CANCEL: HttpContextToken<boolean> = new HttpContextToken<boolean>(() => false);
+
+export const cancelInterceptor: HttpInterceptorFn = (req, next) => {
+  const httpCancelService: HttpCancelService = inject(HttpCancelService);
+
+  if (req.context.get(SKIP_CANCEL)) {
+    return next(req);
+  }
+
+  return next(req).pipe(
+    takeUntil(httpCancelService.cancelPendingRequests$)
+  );
+};

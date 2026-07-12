@@ -1,0 +1,46 @@
+<ion-content [fullscreen]="true">
+
+
+  <div class="profile-page-inner">
+    <div class="profile-hero">
+      <ion-icon class="avatar-icon" [icon]="'person-circle-outline'"></ion-icon>
+      <p class="user-email">{{ userIdValue }}</p>
+    </div>
+
+    <div class="profile-content-area">
+      <ion-list class="profile-list" lines="none">
+        <div class="list-section-label">{{ 'PROFILE.ACCOUNT' | translate }}</div>
+
+        <ion-item class="profile-item" button detail="false">
+          <ion-icon slot="start" name="mail-outline" class="item-icon"></ion-icon>
+          <ion-label>{{ 'PROFILE.EMAIL' | translate }}</ion-label>
+          <ion-note slot="end">{{ userEmailValue }}</ion-note>
+        </ion-item>
+
+        @if (isAdminValue) {
+          <ion-item class="profile-item" button detail="false" (click)="navigateToAdmin()">
+            <ion-icon slot="start" name="shield-checkmark-outline" class="item-icon admin-color"></ion-icon>
+            <ion-label>{{ 'PROFILE.ADMIN_VIEW' | translate }}</ion-label>
+            <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+          </ion-item>
+        }
+
+        <ion-item class="profile-item" button detail="false" (click)="onShowAbout()">
+          <ion-icon slot="start" name="information-circle-outline" class="item-icon"></ion-icon>
+          <ion-label>{{ 'PROFILE.ABOUT' | translate }}</ion-label>
+          <ion-icon slot="end" name="chevron-forward-outline" class="chevron-icon"></ion-icon>
+        </ion-item>
+      </ion-list>
+    </div>
+  </div>
+
+</ion-content>
+
+<ion-footer class="ion-no-border">
+  <div class="logout-container">
+    <button class="logout-btn" id="logout-btn" (click)="onLogout()">
+      <ion-icon name="log-out-outline"></ion-icon>
+      <span>{{ 'PROFILE.LOGOUT' | translate }}</span>
+    </button>
+  </div>
+</ion-footer>
