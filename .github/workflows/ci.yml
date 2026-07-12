@@ -134,6 +134,9 @@ jobs:
         ./gradlew assembleDebug
         mv app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/Mirror.apk
 
+    - name: Sync latest tag with newest code
+      uses: EndBug/latest-tag@latest
+
     - name: Upload Mirror.apk to GitHub Releases
       uses: softprops/action-gh-release@v2
       with:
